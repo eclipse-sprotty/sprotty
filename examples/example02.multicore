@@ -1,0 +1,219 @@
+program ExampleFlow2 for 16 cores
+
+kernel k1 {
+    stackSize = 100
+    stackStartAddr = 0x7FFF
+}
+kernel k2 {
+    stackSize = 120
+    stackStartAddr = 0x7FFF
+}
+kernel k3 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k4 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k5 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k6 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k7 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k8 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k9 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k10 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+kernel k11 {
+    stackSize = 80
+    stackStartAddr = 0x7FFF
+}
+
+task t11: execute k1
+
+barrier b1: join t11
+then {
+    task t21: execute k2
+    task t22: execute k2
+    task t23: execute k2
+    task t24: execute k2
+}
+
+barrier b2: join t21
+then task t31: execute k3
+barrier b3: join t22
+then task t32: execute k3
+barrier b4: join t23
+then task t33: execute k3
+barrier b5: join t24
+then task t34: execute k3
+
+barrier b6: join t31, t32
+then task t41: execute k4
+barrier b7: join t33, t34
+then task t42: execute k4
+
+barrier b8: join t41
+then {
+   task t51: execute k5
+   task t52: execute k5
+}  
+barrier b9: join t42
+then {
+   task t53: execute k5
+   task t54: execute k5
+}
+
+barrier b10: join t51, t52, t53, t54
+then {
+   task t61: execute k6
+   task t62: execute k6
+   task t63: execute k6
+   task t64: execute k6
+}
+
+barrier b11: join t61, t62, t63, t64
+then {
+	task t71: execute k7
+	task t72: execute k7
+	task t73: execute k7
+	task t74: execute k7
+	task t75: execute k7
+	task t76: execute k7
+}
+
+barrier b12: join t71
+then {
+   task t81: execute k8
+   task t82: execute k8
+}
+barrier b13: join t72
+then {
+   task t83: execute k8
+   task t84: execute k8
+}
+barrier b14: join t73
+then {
+   task t85: execute k8
+   task t86: execute k8
+}
+barrier b15: join t74
+then {
+   task t87: execute k8
+   task t88: execute k8
+}
+barrier b16: join t75
+then {
+   task t89: execute k8
+   task t810: execute k8
+}
+barrier b17: join t76
+then {
+   task t811: execute k8
+   task t812: execute k8
+}
+
+barrier b18: join t81, t82, t83, t84, t85, t86, t87, t88, t89, t810, t811, t812
+then task t91: execute k9
+
+barrier b19: join t91
+then {
+   task t101: execute k10
+   task t102: execute k10
+}
+
+barrier b20: join t101, t102
+then task t111: execute k11
+
+
+step 1 {
+    core 1 runs t11 { $pc=0x1234 $sp = 0x7FA0 srcfile="k1/main.c" }
+}
+
+step 2 {
+    core 1 finished t11 { $pc = 0xFFFF }
+    core 2 runs t21 { $pc=0x1234 $sp = 0x7FA0 srcfile="k2/main.c" }
+    core 3 runs t22 { $pc=0x1234 $sp = 0x7FA0 srcfile="k2/main.c" }
+    core 4 runs t23 { $pc=0x1234 $sp = 0x7FA0 srcfile="k2/main.c" }
+    core 5 runs t24 { $pc=0x1234 $sp = 0x7FA0 srcfile="k2/main.c" }
+}
+
+step 3 {
+	core 2 runs t31 { $pc=0x1234 $sp = 0x7FA0 srcfile="k3/main.c" }
+    core 3 runs t32 { $pc=0x1234 $sp = 0x7FA0 srcfile="k3/main.c" }
+    core 4 runs t33 { $pc=0x1234 $sp = 0x7FA0 srcfile="k3/main.c" }
+    core 5 runs t34 { $pc=0x1234 $sp = 0x7FA0 srcfile="k3/main.c" }
+}
+
+step 4 {
+	core 2 runs t41 { $pc=0x1234 $sp = 0x7FA0 srcfile="k4/main.c" }
+    core 5 runs t42 { $pc=0x1234 $sp = 0x7FA0 srcfile="k4/main.c" }
+}
+
+step 5 {
+	core 2 runs t51 { $pc=0x1234 $sp = 0x7FA0 srcfile="k5/main.c" }
+    core 3 runs t52 { $pc=0x1234 $sp = 0x7FA0 srcfile="k5/main.c" }
+    core 5 runs t53 { $pc=0x1234 $sp = 0x7FA0 srcfile="k5/main.c" }
+    core 6 runs t54 { $pc=0x1234 $sp = 0x7FA0 srcfile="k5/main.c" }
+}
+
+step 6 {
+	core 2 runs t61 { $pc=0x1234 $sp = 0x7FA0 srcfile="k6/main.c" }
+    core 3 runs t62 { $pc=0x1234 $sp = 0x7FA0 srcfile="k6/main.c" }
+    core 5 runs t63 { $pc=0x1234 $sp = 0x7FA0 srcfile="k6/main.c" }
+    core 6 runs t64 { $pc=0x1234 $sp = 0x7FA0 srcfile="k6/main.c" }
+}
+
+step 7 {
+	core 2 runs t71 { $pc=0x1234 $sp = 0x7FA0 srcfile="k7/main.c" }
+    core 3 runs t72 { $pc=0x1234 $sp = 0x7FA0 srcfile="k7/main.c" }
+    core 4 runs t73 { $pc=0x1234 $sp = 0x7FA0 srcfile="k7/main.c" }
+    core 5 runs t74 { $pc=0x1234 $sp = 0x7FA0 srcfile="k7/main.c" }
+    core 6 runs t75 { $pc=0x1234 $sp = 0x7FA0 srcfile="k7/main.c" }
+    core 10 runs t76 { $pc=0x1234 $sp = 0x7FA0 srcfile="k7/main.c" }
+}
+
+step 8 {
+	core 2 runs t81 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 3 runs t82 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 4 runs t83 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 5 runs t84 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 6 runs t85 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 7 runs t86 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+	core 8 runs t87 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 9 runs t88 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 12 runs t89 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 13 runs t810 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 14 runs t811 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+    core 15 runs t812 { $pc=0x1234 $sp = 0x7FA0 srcfile="k8/main.c" }
+}
+
+
+step 9 {
+	core 11 runs t91 { $pc=0x1234 $sp = 0x7FA0 srcfile="k9/main.c" }
+}
+
+step 10 {
+	core 14 runs t101 { $pc=0x1234 $sp = 0x7FA0 srcfile="k10/main.c" }
+	core 15 runs t102 { $pc=0x1234 $sp = 0x7FA0 srcfile="k10/main.c" }
+}
+
+step 11 {
+	core 14 runs t111 { $pc=0x1234 $sp = 0x7FA0 srcfile="k11/main.c" }
+}

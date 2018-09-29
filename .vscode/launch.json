@@ -1,0 +1,26 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Current Test File",
+            "protocol": "inspector",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+            "args": [
+                "${file}",
+                "--no-timeouts",
+                "--opts",
+                "${workspaceRoot}/configs/mocha.opts"
+            ],
+            "env": {
+                "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"
+            },
+            "sourceMaps": true,
+            "smartStep": true,
+            "internalConsoleOptions": "openOnSessionStart",
+            "outputCapture": "std"
+        }
+	]
+}

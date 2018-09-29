@@ -1,0 +1,118 @@
+/********************************************************************************
+ * Copyright (c) 2017-2018 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+.sprotty-graph {
+    font-size: 15pt;
+}
+
+.sprotty-node {
+    fill: #cdc;
+    stroke: #152;
+    stroke-width: 0;
+    font-weight: bold;
+}
+
+.sprotty-node.selected {
+    stroke-width: 5;
+}
+
+.sprotty-node.mouseover:not(.selected) {
+    stroke-width: 3;
+}
+
+.sprotty-comp {
+    line-height: 3px;
+    font-weight: normal;
+    text-align: left;
+}
+
+.sprotty-label {
+    stroke-width: 0;
+    fill: #000;
+    font-weight: inherit;
+    text-align: inherit;
+    font-size: 100%;
+}
+
+.sprotty-label.heading {
+    font-weight: bold;
+}
+
+.sprotty-icon {
+    fill: #153;
+    stroke-width: 0;
+}
+
+.sprotty-label.icon {
+    fill: #fff;
+}
+
+.sprotty-button {
+    fill: #152;
+    stroke-width: 0;
+}
+
+.sprotty-edge {
+    fill: none;
+    stroke: #488;
+    stroke-width: 2px;
+}
+
+.sprotty-edge.selected {
+    stroke: #844;
+    stroke-width: 4px;
+}
+
+.sprotty-edge.mouseover:not(.selected) {
+    stroke-width: 3px;
+}
+
+.sprotty-edge > .sprotty-routing-handle {
+    r: 7px;
+    fill: #884;
+    stroke: none;
+    z-index: 1000;
+}
+
+.sprotty-edge > .sprotty-routing-handle[data-kind='line'] {
+    opacity: 0.35;
+}
+
+.sprotty-edge > .sprotty-routing-handle.selected {
+    fill: #66a;
+}
+
+.sprotty-edge > .sprotty-routing-handle.mouseover {
+    stroke: #112;
+    stroke-width: 1;
+}
+
+.sprotty-missing {
+    stroke-width: 1;
+    stroke: #f00;
+    fill: #f00;
+    font-size: 14pt;
+    text-anchor: middle;
+}
+
+.sprotty-popup-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.sprotty-popup-body > p {
+    margin-bottom: 2px;
+}

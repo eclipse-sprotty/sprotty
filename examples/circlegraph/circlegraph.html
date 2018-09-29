@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sprotty Circles Example</title>
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/sprotty.css">
+    <link rel="stylesheet" href="css/page.css">
+    <link rel="stylesheet" href="css/diagram.css">
+    <!-- support Microsoft browsers -->
+    <script src="../../node_modules/dom4/build/dom4.js">/* DOM4 */</script>
+</head>
+<body>
+    <div class="container">
+        <div class="row" id="sprotty-app" data-app="circlegraph">
+            <div class="col-md-10">
+                <h1>sprotty Circles Example</h1>
+                <p>
+                    <button id="addNode">Add node</button>
+                    <button id="scrambleNodes">Scramble nodes</button>
+                </p>
+            </div>
+            <div class="help col-md-2">
+                <a href='https://github.com/theia-ide/sprotty/wiki/Using-sprotty'>Help</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="sprotty" class="sprotty"/>
+            </div>
+            <div class="copyright">
+                &copy; 2017 <a href="http://typefox.io">TypeFox GmbH</a>.
+            </div>
+        </div>
+        </div>
+    </div>
+<script src="../bundle.js"></script>
+</body>
+</html>

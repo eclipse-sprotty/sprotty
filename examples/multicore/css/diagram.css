@@ -1,0 +1,80 @@
+/********************************************************************************
+ * Copyright (c) 2017-2018 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+.core {
+    stroke: #666;
+    stroke-width: 1;
+}
+
+.crossbar {
+    fill: #aaa;
+    stroke: #333;
+    stroke-width: 0;
+}
+
+.channel {
+    stroke: #666;
+    stroke-width: 1;
+}
+
+.sprotty-label {
+    stroke-width: 0;
+    fill: #000;
+    font-weight: inherit;
+    font-size: 100%;
+    padding: 0;
+}
+
+.core.selected {
+    stroke-width: 3;
+}
+
+.mouseover {
+    stroke: #f4daa6;
+}
+
+.heading {
+    stroke-width: 0;
+    stroke: #000;
+    fill: #000;
+    font-size: 9pt;
+    font-weight: bold;
+}
+
+.info {
+    stroke-width: 0;
+    stroke: #000;
+    fill: #000;
+    font-size: 4pt;
+    text-align: start;
+}
+
+.sprotty-missing {
+    stroke-width: 1;
+    stroke: #f00;
+    fill: #f00;
+    font-size: 14pt;
+    text-anchor: middle;
+}
+
+.sprotty-popup-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.sprotty-popup-body > p {
+    margin-bottom: 2px;
+}

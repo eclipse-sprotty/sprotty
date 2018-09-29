@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "lib": [
+            "es6", "dom"
+        ],
+        "types": [
+            "node", "reflect-metadata"
+        ],
+        "typeRoots": [
+            "node_modules/@types", "typings"
+        ],
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "strictNullChecks": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "jsx": "react"
+    }
+}

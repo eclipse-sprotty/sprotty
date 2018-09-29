@@ -1,0 +1,14 @@
+{
+  "extends": "./base.tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out",
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": [
+    "../examples", "../src", "../typings"
+  ],
+  "exclude": [
+    "**/*.spec.ts", "**/*.spec.tsx"
+  ]
+}

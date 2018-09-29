@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sprotty Examples</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>sprotty Examples</h1>
+            <a href="https://github.com/theia-ide/sprotty">sprotty</a> is a web-based diagramming framework.
+            For information how to use these examples see <a href="https://github.com/theia-ide/sprotty/wiki/Using-sprotty">Using sprotty</a>.
+
+            <h3>Without server</h3>
+            <ul>
+                <li><a href="circlegraph/circlegraph.html">Circles and lines:</a><br>
+                A basic diagram showing a graph of moveable nodes and edges.</li>
+                <li><a href="classdiagram/class-diagram.html">Class diagram:</a><br>
+                A basic class diagram using node layouts and hovers.</li>
+                <li><a href="mindmap/mindmap.html">Mindmap:</a><br>
+                A simple mindmap editor.</li>
+                <li><a href="svg/svg-prerendered.html">SVG:</a><br>
+                Demonstrates how to use existing SVG figures.</li>
+                <li><a href="multicore/multicore.html">Multicore:</a><br>
+                Shows a multi-core chip. The color of the cores changes with the code they execute.
+                If you zoom in, the communication channels between the cores appear.</li>
+            </ul>
+            <!--Served by <em>SimpleServerLauncher:</em>
+            <ul>
+                <li><a href="circlegraph/simple-server.html">Simple server</a></li>
+            </ul>-->
+            <h3>With server</h3> 
+            (requires to run <code>./gradlew jettyRun</code> in the directory <em>server</em>)
+            <ul>
+                <li><a href="flow/flow-server.html">Flow with Xtext:</a><br>
+                An editor for an Xtext-based DSL that describes parallel algorithms. 
+                Tasks can be ordered and synchronized using barriers.
+                The diagram shows the structure of the algorithm. 
+                It is synchronized on model and selection changes. 
+                When you walk through the steps of the algorithm, the diagram highlights 
+                which tasks are currently active and which ones are finished.
+                </li>
+                <li><a href="multicore/multicore-server.html">Multicore with Xtext:</a><br>
+                The same Xtext-based DSL as before also describes the allocation of the 
+                cores of a multicore-chip with tasks and their execution state at a 
+                given point in time.
+                The diagram shows the chip with the allocated cores. If you select an 
+                active core, the diagram focusses on all 
+                cores executing the same task within the same timestep.</li>
+                </li>
+                <li><a href="multicore/multicore-flow-combined.html">Multicore and Flow combined:</a><br>
+                A combination of the above.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

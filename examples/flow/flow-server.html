@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sprotty Flow Example</title>
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/xtext/2.13.0/xtext-ace.css" />
+    <link rel="stylesheet" href="../../css/sprotty.css">
+    <link rel="stylesheet" href="css/page.css">
+    <link rel="stylesheet" href="css/diagram.css">
+    <!-- support Microsoft browsers -->
+    <script src="../../node_modules/dom4/build/dom4.js">/* DOM4 */</script>        
+</head>
+
+<body>
+    <div class="container">
+        <div class="row" id="sprotty-app" data-app="flow-server">
+            <div class="col-md-10">
+                <h1>sprotty Flow Example</h1>
+            </div>
+            <div class="help col-md-2">
+                <a href='https://github.com/theia-ide/sprotty/wiki/Using-sprotty'>Help</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="example-selection">Choose an example:</label>
+                        <select id="example-selection" class="form-control"></select>
+                    </div>
+                    <div class="form-group executionButtons">
+                        <button type="button" class="btn btn-default" id="execution-run" title="Start Execution">
+                            <span class="glyphicon glyphicon-play"></span>
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" id="execution-previous" title="Previous Step">
+                                <span class="glyphicon glyphicon-step-backward"></span>
+                            </button>
+                            <button type="button" class="btn btn-default" id="execution-next" title="Next Step">
+                                <span class="glyphicon glyphicon-step-forward"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div id="xtext-editor"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="sprotty-flow" class="sprotty"></div>
+            </div>
+            <div class="col-md-12">
+                <div class="copyright">
+                    &copy; 2017 <a href="http://typefox.io">TypeFox GmbH</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/webjars/requirejs/2.3.2/require.min.js"
+            data-main="/examples/multicore/src/xtext-editor-setup.js"></script>
+    <script src="../bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+program ExampleFlow for 4 cores
+
+kernel k0 {
+    stackSize = 1000
+    stackStartAddr = 0x7FFF
+}
+kernel k1 {
+    stackSize = 1200
+    stackStartAddr = 0x7FFF
+}
+kernel k2 {
+    stackSize = 800
+    stackStartAddr = 0x7FFF
+}
+
+task t0: execute k0
+task t1: execute k1
+
+barrier b1: join t0, t1
+then {
+    task t2: execute k0
+    task t3: execute k1
+    task t4: execute k2
+}
+
+barrier b2: join t4
+then task t5: execute k2
+
+barrier b3: join t2, t3, t5
+then task t6: execute k2
+
+step 1 {
+    core 1 runs t0 { $pc=0x1234 $sp = 0x7FA0 srcfile="k0/main.c" }
+    core 2 runs t1 { $pc=0x1234 $sp = 0x7E00 srcfile = "k1/main.c" }
+}
+
+step 2 {
+    core 1 finished t0 { $pc = 0xFFFF }
+    core 2 runs t1 { $pc=0x1234 $sp=0x7E10 srcfile="k1/main.c" }
+}
+
+step 3 {
+    core 2 runs t2 { $pc=0x1234 $sp=0x7EB6 srcfile="k1/main.c" }
+    core 3 runs t3 { $pc=0x1234 $sp=0x7D78 srcfile="k1/main.c" }
+    core 4 runs t4 { $pc=0x1234 $sp=0x7E44 srcfile="k1/main.c" }
+}
+
+step 4 {
+    core 2 finished t2 { $pc = 0xFFFF }
+    core 1 runs t5 { $pc=0x1234 $sp=0x7F00 srcfile="k1/main.c" }
+    core 3 runs t3 { $pc=0x1234 $sp=0x7E02 srcfile="k1/main.c" }
+}
+
+step 5 {
+    core 4 runs t6 { $pc=0x1234 $sp=0x7FF0 srcfile="k1/main.c" }
+}
+
+
