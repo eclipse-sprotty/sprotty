@@ -233,19 +233,25 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
     mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
 
-        if (this.state.popupOpen) {
-            const popupTarget = findParent(target, hasPopupFeature);
-            if (this.state.previousPopupElement !== undefined && popupTarget !== undefined
-                && this.state.previousPopupElement.id === popupTarget.id)
-                result.push(this.startMouseOutTimer());
+        const elementUnderMouse = document.elementFromPoint(event.x, event.y);
+        if (!this.isSprottyPopup(elementUnderMouse)) {
+            if (this.state.popupOpen) {
+                const popupTarget = findParent(target, hasPopupFeature);
+                if (this.state.previousPopupElement !== undefined && popupTarget !== undefined
+                    && this.state.previousPopupElement.id === popupTarget.id)
+                    result.push(this.startMouseOutTimer());
+            }
+            this.stopMouseOverTimer();
+            const hoverTarget = findParentByFeature(target, isHoverable);
+            if (hoverTarget !== undefined)
+                result.push(new HoverFeedbackAction(hoverTarget.id, false));
         }
-        this.stopMouseOverTimer();
-
-        const hoverTarget = findParentByFeature(target, isHoverable);
-        if (hoverTarget !== undefined)
-            result.push(new HoverFeedbackAction(hoverTarget.id, false));
-
         return result;
+    }
+
+    protected isSprottyPopup(element: Element): boolean {
+        return element && (element.id === 'sprotty-popup'
+            || (!!element.parentElement && this.isSprottyPopup(element.parentElement)));
     }
 
     mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
