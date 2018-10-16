@@ -23,6 +23,13 @@ import { BoundsData } from './hidden-bounds-updater';
 import { EMPTY_DIMENSION } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
 import { Dimension } from '../../utils/geometry';
+import { layoutableChildFeature } from './model';
+
+class ChildNode extends SNode {
+    hasFeature(feature: symbol) {
+        return feature === layoutableChildFeature || super.hasFeature(feature);
+    }
+}
 
 describe('HBoxLayouter', () => {
 
@@ -31,7 +38,7 @@ describe('HBoxLayouter', () => {
     const map = new Map<SModelElement, BoundsData>();
 
     function snode(size: Dimension): SNode {
-        const node = new SNode();
+        const node = new ChildNode();
         node.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
@@ -181,8 +188,8 @@ describe('HBoxLayouter', () => {
         expect(map.get(comp0)!.bounds).to.deep.equal({
             "height": 80,
             "width": 131, // 50 + 50 + 1 [hGap] + 3 * (5 + 5) [padding compLeft, compRight, comp0]
-            "x": 0,
-            "y": 0
+            "x": 5, // padding model left
+            "y": 55 // 10 + 10 [labels] + 2 * 15 [ model.vGap ] + 5 [padding model top]
         });
     });
 });

@@ -19,7 +19,7 @@ import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, HAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
-import { LayoutContainer } from './model';
+import { LayoutContainer, isLayoutableChild } from './model';
 import { StatefulLayouter } from './layout';
 
 export interface VBoxLayoutOptions extends AbstractLayoutOptions {
@@ -42,14 +42,16 @@ export class VBoxLayouter extends AbstractLayout<VBoxLayoutOptions> {
         let isFirst = true;
         container.children.forEach(
             child => {
-                const bounds = layouter.getBoundsData(child).bounds;
-                if (bounds !== undefined && isValidDimension(bounds)) {
-                    maxHeight += bounds.height;
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        maxHeight += containerOptions.vGap;
-                    maxWidth = Math.max(maxWidth, bounds.width);
+                if (isLayoutableChild(child)) {
+                    const bounds = layouter.getBoundsData(child).bounds;
+                    if (bounds !== undefined && isValidDimension(bounds)) {
+                        maxHeight += bounds.height;
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            maxHeight += containerOptions.vGap;
+                        maxWidth = Math.max(maxWidth, bounds.width);
+                    }
                 }
             }
         );
