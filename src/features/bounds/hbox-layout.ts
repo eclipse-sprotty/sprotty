@@ -92,7 +92,9 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
             paddingRight: 5,
             paddingFactor: 1,
             hGap: 1,
-            vAlign: 'center'
+            vAlign: 'center',
+            minWidth: 0,
+            minHeight: 0
         };
     }
 

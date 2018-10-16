@@ -82,7 +82,9 @@ export class StackLayouter extends AbstractLayout<StackLayoutOptions> {
             paddingRight: 5,
             paddingFactor: 1,
             hAlign: 'center',
-            vAlign: 'center'
+            vAlign: 'center',
+            minWidth: 0,
+            minHeight: 0
         };
     }
 
