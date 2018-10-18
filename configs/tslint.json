@@ -13,7 +13,7 @@
     "eofline": true,
     "file-header": {
       "options": [
-        "[\n\r]+ \\* Copyright \\(C\\) \\d{4}(-\\d{4})? .*[\n\r]+"
+        "[\n\r]+ \\* Copyright \\([cC]\\) \\d{4}(-\\d{4})? .*[\n\r]+"
       ],
       "severity": "error"
     },
