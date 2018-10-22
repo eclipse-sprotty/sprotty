@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
- /** @jsx svg */
-import { svg } from 'snabbdom-jsx';
+ /** @jsx html */
+import { html } from 'snabbdom-jsx';
 
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
