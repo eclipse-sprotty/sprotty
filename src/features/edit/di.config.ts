@@ -22,8 +22,9 @@ import { configureModelElement } from "../../base/views/view";
 import { SDanglingAnchor } from "../../graph/sgraph";
 import { EmptyGroupView } from "../../lib/svg-views";
 import { DeleteElementCommand } from "./delete";
+import { EditLabelMouseListener } from "./edit-label";
 
-const edgeEditModule = new ContainerModule(bind => {
+export const edgeEditModule = new ContainerModule(bind => {
     bind(TYPES.ICommand).toConstructor(SwitchEditModeCommand);
     bind(TYPES.ICommand).toConstructor(MoveRoutingHandleCommand);
     bind(TYPES.ICommand).toConstructor(ReconnectCommand);
@@ -31,4 +32,6 @@ const edgeEditModule = new ContainerModule(bind => {
     configureModelElement({bind}, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);
 });
 
-export default edgeEditModule;
+export const labelEditModule = new ContainerModule(bind => {
+    bind(TYPES.MouseListener).to(EditLabelMouseListener);
+});
