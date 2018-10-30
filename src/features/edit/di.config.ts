@@ -17,10 +17,18 @@
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
 import { SwitchEditModeCommand, MoveRoutingHandleCommand } from "./edit-routing";
+import { ReconnectCommand } from "./reconnect";
+import { configureModelElement } from "../../base/views/view";
+import { SDanglingAnchor } from "../../graph/sgraph";
+import { EmptyGroupView } from "../../lib/svg-views";
+import { DeleteElementCommand } from "./delete";
 
 const edgeEditModule = new ContainerModule(bind => {
     bind(TYPES.ICommand).toConstructor(SwitchEditModeCommand);
     bind(TYPES.ICommand).toConstructor(MoveRoutingHandleCommand);
+    bind(TYPES.ICommand).toConstructor(ReconnectCommand);
+    bind(TYPES.ICommand).toConstructor(DeleteElementCommand);
+    configureModelElement({bind}, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);
 });
 
 export default edgeEditModule;

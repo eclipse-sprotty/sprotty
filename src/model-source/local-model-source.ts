@@ -340,9 +340,9 @@ export interface IPopupModelProvider {
 }
 
 export interface IStateAwareModelProvider  {
-    getModel(diagramState: DiagramState, currentRoot?: SModelRootSchema): SModelRootSchema
+    getModel(diagramState: DiagramState, currentRoot?: SModelRootSchema): SModelRootSchema;
 }
 
 export interface IModelLayoutEngine {
-    layout(model: SModelRootSchema, index?: SModelIndex<SModelElementSchema>): SModelRootSchema | Promise<SModelRootSchema>
+    layout(model: SModelRootSchema, index?: SModelIndex<SModelElementSchema>): SModelRootSchema | Promise<SModelRootSchema>;
 }

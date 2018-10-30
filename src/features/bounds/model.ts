@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, EMPTY_BOUNDS, EMPTY_DIMENSION, Dimension, isBounds, ORIGIN_POINT, Point } from "../../utils/geometry";
+import { Bounds, EMPTY_BOUNDS, EMPTY_DIMENSION, Dimension, isBounds, ORIGIN_POINT, Point, includes } from "../../utils/geometry";
 import { SModelElement, SModelElementSchema, SParentElement, SChildElement, SModelRoot } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from '../../base/model/smodel-utils';
@@ -94,6 +94,23 @@ export function getAbsoluteBounds(element: SModelElement): Bounds {
     } else {
         return EMPTY_BOUNDS;
     }
+}
+
+export function findChildrenAtPosition(parent: SParentElement, point: Point) {
+    const matches: SModelElement[] = [];
+    doFindChildrenAtPosition(parent, point, matches);
+    return matches;
+}
+
+function doFindChildrenAtPosition(parent: SParentElement, point: Point, matches: SModelElement[]) {
+    parent.children.forEach(child => {
+        if (isBoundsAware(child) && includes(child.bounds, point))
+            matches.push(child);
+        if (child instanceof SParentElement) {
+            const newPoint = child.parentToLocal(point);
+            doFindChildrenAtPosition(child, newPoint, matches);
+        }
+    });
 }
 
 /**

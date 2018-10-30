@@ -19,7 +19,7 @@ import { Point, centerOfLine } from '../../utils/geometry';
 import { SChildElement } from '../../base/model/smodel';
 import { VNode } from "snabbdom/vnode";
 import { SModelElement, SModelIndex, SModelRoot } from "../../base/model/smodel";
-import { findParentByFeature } from "../../base/model/smodel-utils";
+import { findParentByFeature, translatePoint } from "../../base/model/smodel-utils";
 import { Action } from "../../base/actions/action";
 import { ICommand, CommandExecutionContext, MergeableCommand } from "../../base/commands/command";
 import { Animation } from "../../base/animations/animation";
@@ -28,11 +28,16 @@ import { setAttr } from "../../base/views/vnode-utils";
 import { IVNodeDecorator } from "../../base/views/vnode-decorators";
 import { isViewport } from "../viewport/model";
 import { isSelectable } from "../select/model";
-import { isAlignable } from "../bounds/model";
+import { isAlignable, findChildrenAtPosition } from "../bounds/model";
 import { Routable, isRoutable, SRoutingHandle } from '../edit/model';
 import { MoveRoutingHandleAction, HandleMove, SwitchEditModeAction } from "../edit/edit-routing";
 import { isMoveable, Locateable, isLocateable } from './model';
 import { RoutedPoint } from "../../graph/routing";
+import { isCreatingOnDrag } from "../edit/create-on-drag";
+import { SelectAllAction, SelectAction } from "../select/select";
+import { SDanglingAnchor } from "../../graph/sgraph";
+import { isConnectable, ReconnectAction } from "../edit/reconnect";
+import { DeleteElementAction } from "../edit/delete";
 
 export class MoveAction implements Action {
     kind = MoveCommand.KIND;
@@ -217,6 +222,8 @@ export class MoveAnimation extends Animation {
     }
 }
 
+export const edgeInProgressID = 'edge-in-progress';
+
 export class MoveMouseListener extends MouseListener {
 
     hasDragged = false;
@@ -227,13 +234,20 @@ export class MoveMouseListener extends MouseListener {
         if (event.button === 0) {
             const moveable = findParentByFeature(target, isMoveable);
             const isRoutingHandle = target instanceof SRoutingHandle;
-            if (moveable !== undefined || isRoutingHandle) {
+            if (moveable !== undefined || isRoutingHandle || isCreatingOnDrag(target)) {
                 this.lastDragPosition = { x: event.pageX, y: event.pageY };
             } else {
                 this.lastDragPosition = undefined;
             }
             this.hasDragged = false;
-            if (isRoutingHandle) {
+            if (isCreatingOnDrag(target)) {
+                result.push(new SelectAllAction(false));
+                result.push(target.createAction(edgeInProgressID));
+                result.push(new SelectAction([edgeInProgressID], []));
+                result.push(new SwitchEditModeAction([edgeInProgressID], []));
+                result.push(new SelectAction([edgeInProgressID + '-target-anchor'], []));
+                result.push(new SwitchEditModeAction([edgeInProgressID + '-target-anchor'], []));
+            } else if (isRoutingHandle) {
                 result.push(new SwitchEditModeAction([target.id], []));
             }
         }
@@ -295,31 +309,47 @@ export class MoveMouseListener extends MouseListener {
         if (!isRoutable(parent)) {
             return undefined;
         }
-        if (handle.kind === 'line') {
-            const getIndex = (rp: RoutedPoint) => {
-                if (rp.pointIndex !== undefined)
-                    return rp.pointIndex;
-                else if (rp.kind === 'target')
-                    return parent.routingPoints.length;
+        switch (handle.kind) {
+            case 'source':
+                if (parent.source instanceof SDanglingAnchor)
+                    return parent.source.position;
                 else
-                    return -1;
-            };
-            const route = parent.route();
-            let rp1, rp2: RoutedPoint | undefined;
-            for (const rp of route) {
-                const i = getIndex(rp);
-                if (i <= handle.pointIndex && (rp1 === undefined || i > getIndex(rp1)))
-                    rp1 = rp;
-                if (i > handle.pointIndex && (rp2 === undefined || i < getIndex(rp2)))
-                    rp2 = rp;
+                    return parent.route()[0];
+            case 'target':
+                if (parent.target instanceof SDanglingAnchor)
+                    return parent.target.position;
+                else {
+                    const route = parent.route();
+                    return route[route.length - 1];
+                }
+            case 'line': {
+                const getIndex = (rp: RoutedPoint) => {
+                    if (rp.pointIndex !== undefined)
+                        return rp.pointIndex;
+                    else if (rp.kind === 'target')
+                        return parent.routingPoints.length;
+                    else
+                        return -1;
+                };
+                const route = parent.route();
+                let rp1, rp2: RoutedPoint | undefined;
+                for (const rp of route) {
+                    const i = getIndex(rp);
+                    if (i <= handle.pointIndex && (rp1 === undefined || i > getIndex(rp1)))
+                        rp1 = rp;
+                    if (i > handle.pointIndex && (rp2 === undefined || i < getIndex(rp2)))
+                        rp2 = rp;
+                }
+                if (rp1 !== undefined && rp2 !== undefined) {
+                    return centerOfLine(rp1, rp2);
+                }
+                return undefined;
             }
-            if (rp1 !== undefined && rp2 !== undefined) {
-                return centerOfLine(rp1, rp2);
-            }
-        } else if (handle.pointIndex >= 0) {
-            return parent.routingPoints[handle.pointIndex];
+            default:
+                if (handle.pointIndex >= 0)
+                    return parent.routingPoints[handle.pointIndex];
+                return undefined;
         }
-        return undefined;
     }
 
     mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
@@ -333,8 +363,26 @@ export class MoveMouseListener extends MouseListener {
         if (this.lastDragPosition) {
             target.root.index.all()
                 .forEach(element => {
-                    if (element instanceof SRoutingHandle && element.editMode)
-                        result.push(new SwitchEditModeAction([], [element.id]));
+                    if (element instanceof SRoutingHandle) {
+                        const parent = element.parent;
+                        if (isRoutable(parent) && element.danglingAnchor) {
+                            const handlePos = this.getHandlePosition(element);
+                            if (handlePos) {
+                                const handlePosAbs = translatePoint(handlePos, element.parent, element.root);
+                                const newEnd = findChildrenAtPosition(target.root, handlePosAbs)
+                                    .find(e => isConnectable(e) && e.canConnect(parent, element.kind as ('source' | 'target')));
+                                if (newEnd) {
+                                    result.push(new ReconnectAction(element.parent.id,
+                                        element.kind === 'source' ? newEnd.id : parent.sourceId,
+                                        element.kind === 'target' ? newEnd.id : parent.targetId));
+                                } else if (parent.id === edgeInProgressID) {
+                                    result.push(new DeleteElementAction([edgeInProgressID, element.danglingAnchor.id]));
+                                }
+                            }
+                        }
+                        if (element.editMode)
+                            result.push(new SwitchEditModeAction([], [element.id]));
+                    }
                 });
         }
         this.hasDragged = false;

@@ -65,8 +65,12 @@ export * from "./features/bounds/stack-layout";
 export * from "./features/button/button-handler";
 export * from "./features/button/model";
 
+export * from "./features/edit/create";
+export * from "./features/edit/create-on-drag";
+export * from "./features/edit/delete";
 export * from "./features/edit/edit-routing";
 export * from "./features/edit/model";
+export * from "./features/edit/reconnect";
 
 export * from "./features/expand/expand";
 export * from "./features/expand/model";

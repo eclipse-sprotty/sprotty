@@ -16,28 +16,33 @@
 
 import { injectable } from "inversify";
 import { Point } from "../../utils/geometry";
-import { Routable, isRoutable, canEditRouting, SRoutingHandle } from './model';
+import { Routable, isRoutable, canEditRouting, SRoutingHandle, RoutingHandleKind } from './model';
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
 import { SModelElement, SModelRoot, SParentElement, SModelIndex } from '../../base/model/smodel';
 import { Animation } from '../../base/animations/animation';
+import { SDanglingAnchor } from "../../graph/sgraph";
 
-export function createRoutingHandle(kind: 'junction' | 'line', parentId: string, index: number): SRoutingHandle {
+export function createRoutingHandle(kind: RoutingHandleKind, parentId: string, index: number): SRoutingHandle {
     const handle = new SRoutingHandle();
-    handle.type = kind === 'junction' ? 'routing-point' : 'volatile-routing-point';
+    handle.type = kind === 'line' ? 'volatile-routing-point' : 'routing-point';
     handle.kind = kind;
     handle.pointIndex = index;
+    if (kind === 'target')
+        handle.id = parentId + '-target-anchor';
     return handle;
 }
 
 export function createRoutingHandles(editTarget: SParentElement & Routable): void {
     const rpCount = editTarget.routingPoints.length;
     const targetId = editTarget.id;
+    editTarget.add(createRoutingHandle('source', targetId, -2));
     editTarget.add(createRoutingHandle('line', targetId, -1));
     for (let i = 0; i < rpCount; i++) {
         editTarget.add(createRoutingHandle('junction', targetId, i));
         editTarget.add(createRoutingHandle('line', targetId, i));
     }
+    editTarget.add(createRoutingHandle('target', targetId, rpCount));
 }
 
 export class SwitchEditModeAction implements Action {
@@ -90,8 +95,19 @@ export class SwitchEditModeCommand extends Command {
         this.elementsToDeactivate.forEach(element => {
             if (isRoutable(element) && element instanceof SParentElement)
                 element.removeAll(child => child instanceof SRoutingHandle);
-            else if (element instanceof SRoutingHandle)
+            else if (element instanceof SRoutingHandle) {
                 element.editMode = false;
+                if (element.danglingAnchor) {
+                    if (isRoutable(element.parent) && element.danglingAnchor.original)  {
+                        if (element.parent.source === element.danglingAnchor)
+                            element.parent.sourceId = element.danglingAnchor.original.id;
+                        else if (element.parent.target === element.danglingAnchor)
+                            element.parent.targetId = element.danglingAnchor.original.id;
+                        element.danglingAnchor.parent.remove(element.danglingAnchor);
+                        element.danglingAnchor = undefined;
+                    }
+                }
+            }
         });
         this.elementsToActivate.forEach(element => {
             if (canEditRouting(element) && element instanceof SParentElement)
@@ -192,6 +208,25 @@ export class MoveRoutingHandleCommand extends Command {
     protected resolve(move: HandleMove, index: SModelIndex<SModelElement>): ResolvedHandleMove | undefined {
         const element = index.getById(move.elementId);
         if (element instanceof SRoutingHandle) {
+            if (isRoutable(element.parent)) {
+                if (element.kind === 'source' && !(element.parent.source instanceof SDanglingAnchor)) {
+                    const anchor = new SDanglingAnchor();
+                    anchor.id = element.parent.id + '_dangling-source';
+                    anchor.original = element.parent.source;
+                    anchor.position = move.toPosition;
+                    element.root.add(anchor);
+                    element.danglingAnchor = anchor;
+                    element.parent.sourceId = anchor.id;
+                } else if (element.kind === 'target' && !(element.parent.target instanceof SDanglingAnchor)) {
+                    const anchor = new SDanglingAnchor();
+                    anchor.id = element.parent.id + '_dangling-target';
+                    anchor.original = element.parent.target;
+                    anchor.position = move.toPosition;
+                    element.root.add(anchor);
+                    element.danglingAnchor = anchor;
+                    element.parent.targetId = anchor.id;
+                }
+            }
             return {
                 elementId: move.elementId,
                 element: element,
@@ -208,6 +243,10 @@ export class MoveRoutingHandleCommand extends Command {
             const handle = res.element;
             const parent = res.parent;
             if (isRoutable(parent)) {
+                if (handle.danglingAnchor) {
+                    handle.danglingAnchor.position = res.toPosition;
+                    return;
+                }
                 const points = parent.routingPoints;
                 let index = handle.pointIndex;
                 if (handle.kind === 'line') {
@@ -301,3 +340,4 @@ export class MoveHandlesAnimation extends Animation {
         return this.model;
     }
 }
+
