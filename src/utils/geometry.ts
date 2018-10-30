@@ -380,12 +380,9 @@ export class Diamond {
  * A line represented in its standard form `a*x + b*y = c`.
  */
 export interface Line {
-
     readonly a: number
     readonly b: number
     readonly c: number
-
-    intersection(otherLine: Line): Point
 }
 
 /**
@@ -406,11 +403,17 @@ export class PointToPointLine implements Line {
     get c(): number {
         return this.p2.x * this.p1.y - this.p1.x * this.p2.y;
     }
+}
 
-    intersection(other: Line): Point {
-        return {
-            x: (this.c * other.b - other.c * this.b) / (this.a * other.b - other.a * this.b),
-            y: (this.a * other.c - other.a * this.c) / (this.a * other.b - other.a * this.b)
-        };
-    }
+/**
+ * Returns the intersection of two lines `l1` and `l2`
+ * @param {Line} l1 - A line
+ * @param {Line} l2 - Another line
+ * @returns {Point} The intersection point of `l1` and `l2`
+ */
+export function intersection(l1: Line, l2: Line): Point {
+    return {
+        x: (l1.c * l2.b - l2.c * l1.b) / (l1.a * l2.b - l2.a * l1.b),
+        y: (l1.a * l2.c - l2.a * l1.c) / (l1.a * l2.b - l2.a * l1.b)
+    };
 }
