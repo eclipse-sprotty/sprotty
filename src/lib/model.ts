@@ -16,7 +16,7 @@
 
 import { SModelRoot, SModelRootSchema, SChildElement, SModelElementSchema } from "../base/model/smodel";
 import { Point, Dimension, ORIGIN_POINT, EMPTY_DIMENSION, Bounds } from "../utils/geometry";
-import { computeCircleAnchor, computeRectangleAnchor } from '../utils/anchors';
+import { computeCircleAnchor, computeRectangleAnchor, computeDiamondAnchor } from '../utils/anchors';
 import { BoundsAware, boundsFeature, Alignable, alignFeature } from "../features/bounds/model";
 import { Locateable, moveFeature } from "../features/move/model";
 import { Selectable, selectFeature } from "../features/select/model";
@@ -50,6 +50,19 @@ export class RectangularNode extends SNode {
         return computeRectangleAnchor(this.bounds, refPoint, offset + strokeCorrection);
     }
 }
+
+/**
+ * A node that is represented by a diamond.
+ */
+export class DiamondNode extends SNode {
+    strokeWidth: number = 0;
+
+    getAnchor(refPoint: Point, offset: number = 0): Point {
+        const strokeCorrection = 0.5 * this.strokeWidth;
+        return computeDiamondAnchor(this.bounds, refPoint, offset + strokeCorrection);
+    }
+}
+
 
 /**
  * A port that is represented by a circle.

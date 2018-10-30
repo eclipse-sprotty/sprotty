@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point, Bounds, center, almostEquals } from './geometry';
+import { Point, Bounds, center, almostEquals, PointToPointLine, Diamond, shiftTowards, intersection } from './geometry';
 
 export function computeCircleAnchor(position: Point, radius: number, refPoint: Point, offset: number = 0): Point {
     const cx = position.x + radius;
@@ -88,4 +88,11 @@ export function computeRectangleAnchor(bounds: Bounds, refPoint: Point, offset: 
             finder.addCandidate(bounds.x + bounds.width + offset, yRight);
     }
     return finder.best;
+}
+
+export function computeDiamondAnchor(bounds: Bounds, refPoint: Point, offset: number): Point {
+    const referenceLine = new PointToPointLine(center(bounds), refPoint);
+    const closestDiamondSide = new Diamond(bounds).closestSideLine(refPoint);
+    const anchorPoint = intersection(closestDiamondSide, referenceLine);
+    return shiftTowards(anchorPoint, refPoint, offset);
 }

@@ -234,6 +234,44 @@ export function angleBetweenPoints(a: Point, b: Point): number {
 }
 
 /**
+ * Computes a point that is the original `point` shifted towards `refPoint` by the given `distance`.
+ * @param {Point} point - Point to shift
+ * @param {Point} refPoint - Point to shift towards
+ * @param {Point} distance - Distance to shift
+ */
+export function shiftTowards(point: Point, refPoint: Point, distance: number): Point {
+    const diff = subtract(refPoint, point);
+    const normalized = normalize(diff);
+    const shift = {x: normalized.x * distance, y: normalized.y * distance};
+    return add(point, shift);
+}
+
+/**
+ * Computes the normalized vector from the vector given in `point`; that is, computing its unit vector.
+ * @param {Point} point - Point representing the vector to be normalized
+ * @returns {Point} The normalized point
+ */
+export function normalize(point: Point): Point {
+    const mag = magnitude(point);
+    if (mag === 0 || mag === 1) {
+        return ORIGIN_POINT;
+    }
+    return {
+        x: point.x / mag,
+        y: point.y / mag
+    };
+}
+
+/**
+ * Computes the magnitude of the vector given in `point`.
+ * @param {Point} point - Point representing the vector to compute the magnitude for
+ * @returns {number} The magnitude or also known as length of the `point`
+ */
+export function magnitude(point: Point): number {
+    return Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
+}
+
+/**
  * Converts from radians to degrees
  * @param {number} a - A value in radians
  * @returns {number} The converted value
@@ -259,4 +297,123 @@ export function toRadians(a: number): number {
  */
 export function almostEquals(a: number, b: number): boolean {
     return Math.abs(a - b) < 1e-3;
+}
+
+/**
+ * A diamond or rhombus is a quadrilateral whose four sides all have the same length.
+ * It consinsts of four points, a `topPoint`, `rightPoint`, `bottomPoint`, and a `leftPoint`,
+ * which are connected by four lines -- the `topRightSideLight`, `topLeftSideLine`, `bottomRightSideLine`,
+ * and the `bottomLeftSideLine`.
+ */
+export class Diamond {
+
+    constructor(protected bounds: Bounds) { }
+
+    get topPoint(): Point {
+        return {
+            x: this.bounds.x + this.bounds.width / 2,
+            y: this.bounds.y
+        };
+    }
+
+    get rightPoint(): Point {
+        return {
+            x: this.bounds.x + this.bounds.width,
+            y: this.bounds.y + this.bounds.height / 2
+        };
+    }
+
+    get bottomPoint(): Point {
+        return {
+            x: this.bounds.x + this.bounds.width / 2,
+            y: this.bounds.y + this.bounds.height
+        };
+    }
+
+    get leftPoint(): Point {
+        return {
+            x: this.bounds.x,
+            y: this.bounds.y + this.bounds.height / 2
+        };
+    }
+
+    get topRightSideLine(): Line {
+        return new PointToPointLine(this.topPoint, this.rightPoint);
+    }
+
+    get topLeftSideLine(): Line {
+        return new PointToPointLine(this.topPoint, this.leftPoint);
+    }
+
+    get bottomRightSideLine(): Line {
+        return new PointToPointLine(this.bottomPoint, this.rightPoint);
+    }
+
+    get bottomLeftSideLine(): Line {
+        return new PointToPointLine(this.bottomPoint, this.leftPoint);
+    }
+
+    /**
+     * Return the closest side of this diamond to the specified `refPoint`.
+     * @param {Point} refPoint a reference point
+     * @returns {Line} a line representing the closest side
+     */
+    closestSideLine(refPoint: Point): Line {
+        const c = center(this.bounds);
+        if (refPoint.x > c.x) {
+            if (refPoint.y > c.y) {
+                return this.bottomRightSideLine;
+            } else {
+                return this.topRightSideLine;
+            }
+        } else {
+            if (refPoint.y > c.y) {
+                return this.bottomLeftSideLine;
+            } else {
+                return this.topLeftSideLine;
+            }
+        }
+    }
+}
+
+/**
+ * A line represented in its standard form `a*x + b*y = c`.
+ */
+export interface Line {
+    readonly a: number
+    readonly b: number
+    readonly c: number
+}
+
+/**
+ * A line made up from two points.
+ */
+export class PointToPointLine implements Line {
+
+    constructor(protected p1: Point, protected p2: Point) { }
+
+    get a(): number {
+        return this.p1.y - this.p2.y;
+    }
+
+    get b(): number {
+        return this.p2.x - this.p1.x;
+    }
+
+    get c(): number {
+        return this.p2.x * this.p1.y - this.p1.x * this.p2.y;
+    }
+}
+
+/**
+ * Returns the intersection of two lines `l1` and `l2`
+ * @param {Line} l1 - A line
+ * @param {Line} l2 - Another line
+ * @returns {Point} The intersection point of `l1` and `l2`
+ */
+export function intersection(l1: Line, l2: Line): Point {
+    return {
+        x: (l1.c * l2.b - l2.c * l1.b) / (l1.a * l2.b - l2.a * l1.b),
+        y: (l1.a * l2.c - l2.a * l1.c) / (l1.a * l2.b - l2.a * l1.b)
+    };
 }
