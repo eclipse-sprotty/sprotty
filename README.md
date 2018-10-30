@@ -1,5 +1,7 @@
 # sprotty
 
+[![Join the chat at https://gitter.im/eclipse/sprotty](https://badges.gitter.im/eclipse/sprotty.svg)](https://gitter.im/eclipse/sprotty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the client part of _Sprotty_, a next-generation, open-source diagramming framework built with web technologies. 
 
 Some selected features:
