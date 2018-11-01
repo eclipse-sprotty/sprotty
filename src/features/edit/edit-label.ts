@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2018 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,11 @@ import { Action } from "../../base/actions/action";
 import { SModelElement } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { SLabel } from "../../graph/sgraph";
+import { SModelExtension } from "../../base/model/smodel-extension";
 
-export const editLabelFeature = Symbol('labelEditFeature');
+export const editLabelFeature = Symbol('editLabelFeature');
 
-export interface EditableLabel {
+export interface EditableLabel extends SModelExtension {
 }
 
 export function isEditableLabel<T extends SModelElement>(element: T): element is T & EditableLabel {
