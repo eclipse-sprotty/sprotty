@@ -21,7 +21,6 @@ import { IVNodeDecorator } from "../../base/views/vnode-decorators";
 import { isDecoration, Decoration } from "./model";
 import { setAttr } from "../../base/views/vnode-utils";
 import { Point, ORIGIN_POINT } from "../../utils/geometry";
-import { SEdge } from "../../graph/sgraph";
 import { isSizeable } from "../bounds/model";
 import { isRoutable } from "../edit/model";
 
