@@ -21,17 +21,20 @@ import { Selectable, selectFeature } from '../select/model';
 import { moveFeature } from '../move/model';
 import { Hoverable, hoverFeedbackFeature } from '../hover/model';
 import { RoutedPoint } from '../../graph/routing';
+import { SDanglingAnchor } from '../../graph/sgraph';
 
 export const editFeature = Symbol('editFeature');
 
 export interface Routable extends SModelExtension {
-    routingPoints: Point[]
-    readonly source?: SModelElement
-    readonly target?: SModelElement
-    route(): RoutedPoint[]
+    routingPoints: Point[];
+    readonly source?: SModelElement;
+    readonly target?: SModelElement;
+    sourceId?: string,
+    targetId?: string,
+    route(): RoutedPoint[];
 }
 
-export function isRoutable(element: SModelElement): element is SModelElement & Routable {
+export function isRoutable<T extends SModelElement>(element: T): element is T & Routable {
     return (element as any).routingPoints !== undefined && typeof((element as any).route) === 'function';
 }
 
@@ -39,9 +42,15 @@ export function canEditRouting(element: SModelElement): element is SModelElement
     return isRoutable(element) && element.hasFeature(editFeature);
 }
 
+export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target';
+
 export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {
-    /** 'junction' is a point where two line segments meet, 'line' is a volatile handle placed on a line segment. */
-    kind: 'junction' | 'line';
+    /**
+     * 'junction' is a point where two line segments meet,
+     * 'line' is a volatile handle placed on a line segment,
+     * 'source' and 'target are the respective anchors.
+     */
+    kind: RoutingHandleKind;
     /** The actual routing point index (junction) or the previous point index (line). */
     pointIndex: number;
     /** Whether the routing point is being dragged. */
@@ -49,6 +58,7 @@ export class SRoutingHandle extends SChildElement implements Selectable, Hoverab
 
     hoverFeedback: boolean = false;
     selected: boolean = false;
+    danglingAnchor?: SDanglingAnchor;
 
     hasFeature(feature: symbol): boolean {
         return feature === selectFeature || feature === moveFeature || feature === hoverFeedbackFeature;

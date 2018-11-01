@@ -25,6 +25,7 @@ import { SShapeElement } from '../features/bounds/model';
 import { Hoverable } from '../features/hover/model';
 import { Selectable } from '../features/select/model';
 import { Diamond, Point } from '../utils/geometry';
+import { SModelElement } from '../base/model/smodel';
 
 export class SvgViewportView implements IView {
     render(model: Readonly<ViewportRootElement>, context: RenderingContext): VNode {
@@ -80,4 +81,9 @@ export class DiamondNodeView implements IView {
 
 function svgStr(point: Point) {
     return `${point.x},${point.y}`;
+}
+export class EmptyGroupView implements IView {
+    render(node: Readonly<SModelElement>, context: RenderingContext): VNode {
+        return <g></g>;
+    }
 }
