@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2018 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import { setAttr } from "../../base/views/vnode-utils";
 import { Point, ORIGIN_POINT } from "../../utils/geometry";
 import { SEdge } from "../../graph/sgraph";
 import { isSizeable } from "../bounds/model";
+import { isRoutable } from "../edit/model";
 
 @injectable()
 export class DecorationPlacer implements IVNodeDecorator {
@@ -36,7 +37,7 @@ export class DecorationPlacer implements IVNodeDecorator {
     }
 
     protected getPosition(element: SModelElement & Decoration): Point {
-        if (element instanceof SChildElement && element.parent instanceof SEdge) {
+        if (element instanceof SChildElement && isRoutable(element.parent)) {
             const route = element.parent.route();
             if (route.length > 1) {
                 const index = Math.floor(0.5  * (route.length - 1));
