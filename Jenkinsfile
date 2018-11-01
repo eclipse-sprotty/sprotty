@@ -28,7 +28,7 @@ pipeline {
             steps {
                 container('node') {
                     sh "yarn ${env.YARN_ARGS} install"
-                    sh "yarn ${env.YARN_ARGS} build"
+                    sh "yarn ${env.YARN_ARGS} examples:build"
                     sh "yarn ${env.YARN_ARGS} test || true" // Ignore test failures
                 }
             }
