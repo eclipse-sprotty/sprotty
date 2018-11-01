@@ -96,7 +96,7 @@ export function getAbsoluteBounds(element: SModelElement): Bounds {
     }
 }
 
-export function findChildrenAtPosition(parent: SParentElement, point: Point) {
+export function findChildrenAtPosition(parent: SParentElement, point: Point): SModelElement[] {
     const matches: SModelElement[] = [];
     doFindChildrenAtPosition(parent, point, matches);
     return matches;

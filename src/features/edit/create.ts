@@ -16,13 +16,12 @@
 
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
-import { SParentElement, SChildElement } from "../../base/model/smodel";
-import { SEdgeSchema } from "../../graph/sgraph";
+import { SParentElement, SChildElement, SModelElementSchema } from "../../base/model/smodel";
 
 export class CreateElementAction implements Action {
     readonly kind = CreateElementCommand.KIND;
 
-    constructor(readonly containerId: string, readonly edgeSchema: SEdgeSchema) {}
+    constructor(readonly containerId: string, readonly elementSchema: SModelElementSchema) {}
 }
 
 export class CreateElementCommand extends Command {
@@ -39,7 +38,7 @@ export class CreateElementCommand extends Command {
         const container = context.root.index.getById(this.action.containerId);
         if (container instanceof SParentElement) {
             this.container = container;
-            this.newElement = context.modelFactory.createElement(this.action.edgeSchema);
+            this.newElement = context.modelFactory.createElement(this.action.elementSchema);
             this.container.add(this.newElement);
         }
         return context.root;

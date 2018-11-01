@@ -18,10 +18,11 @@ import { Routable, isRoutable } from "./model";
 import { SModelElement } from "../../base/model/smodel";
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { SModelExtension } from "../../base/model/smodel-extension";
 
 export const connectableFeature = Symbol('connectableFeature');
 
-export interface Connectable {
+export interface Connectable extends SModelExtension {
     canConnect(routable: Routable, role: 'source' | 'target'): boolean;
 }
 

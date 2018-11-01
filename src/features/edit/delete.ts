@@ -17,10 +17,11 @@
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
 import { Action } from "../../base/actions/action";
 import { SModelElement, SParentElement, SChildElement } from "../../base/model/smodel";
+import { SModelExtension } from "../../base/model/smodel-extension";
 
 export const deletableFeature = Symbol('deletableFeature');
 
-export interface Deletable {
+export interface Deletable extends SModelExtension {
 }
 
 export function isDeletable<T extends SModelElement>(element: T): element is T & Deletable & SChildElement {
@@ -67,7 +68,7 @@ export class DeleteElementCommand extends Command {
 
     redo(context: CommandExecutionContext): CommandResult {
         for (const resolvedDelete of this.resolvedDeletes)
-            resolvedDelete.parent.add(resolvedDelete.child);
+            resolvedDelete.parent.remove(resolvedDelete.child);
         return context.root;
     }
 }
