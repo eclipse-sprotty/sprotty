@@ -56,8 +56,8 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions & Object> i
         return {
             x: container.bounds.x,
             y: container.bounds.y,
-            width: maxWidth + options.paddingLeft + options.paddingRight,
-            height: maxHeight + options.paddingTop + options.paddingBottom
+            width: Math.max(options.minWidth, maxWidth + options.paddingLeft + options.paddingRight),
+            height: Math.max(options.minHeight, maxHeight + options.paddingTop + options.paddingBottom)
         };
     }
 

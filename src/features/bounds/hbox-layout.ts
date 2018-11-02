@@ -19,7 +19,7 @@ import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
-import { LayoutContainer } from './model';
+import { LayoutContainer, isLayoutableChild } from './model';
 import { StatefulLayouter } from './layout';
 
 export interface HBoxLayoutOptions extends AbstractLayoutOptions {
@@ -42,14 +42,16 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
         let isFirst = true;
         container.children.forEach(
             child => {
-                const bounds = layouter.getBoundsData(child).bounds;
-                if (bounds !== undefined && isValidDimension(bounds)) {
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        maxWidth += containerOptions.hGap;
-                    maxWidth += bounds.width;
-                    maxHeight = Math.max(maxHeight, bounds.height);
+                if (isLayoutableChild(child)) {
+                    const bounds = layouter.getBoundsData(child).bounds;
+                    if (bounds !== undefined && isValidDimension(bounds)) {
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            maxWidth += containerOptions.hGap;
+                        maxWidth += bounds.width;
+                        maxHeight = Math.max(maxHeight, bounds.height);
+                    }
                 }
             }
         );
@@ -90,7 +92,9 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
             paddingRight: 5,
             paddingFactor: 1,
             hGap: 1,
-            vAlign: 'center'
+            vAlign: 'center',
+            minWidth: 0,
+            minHeight: 0
         };
     }
 
