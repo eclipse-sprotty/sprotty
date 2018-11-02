@@ -161,6 +161,8 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
 @injectable()
 export class HoverMouseListener extends AbstractHoverMouseListener {
 
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+
     protected computePopupBounds(target: SModelElement, mousePosition: Point): Bounds {
         // Default position: below the mouse cursor
         let offset: Point = { x: -5, y: 20 };
@@ -250,7 +252,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
     }
 
     protected isSprottyPopup(element: Element): boolean {
-        return element && (element.id === 'sprotty-popup'
+        return element && (element.id === this.options.popupDiv
             || (!!element.parentElement && this.isSprottyPopup(element.parentElement)));
     }
 
