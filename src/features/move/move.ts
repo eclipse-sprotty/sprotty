@@ -365,18 +365,21 @@ export class MoveMouseListener extends MouseListener {
                 .forEach(element => {
                     if (element instanceof SRoutingHandle) {
                         const parent = element.parent;
-                        if (isRoutable(parent) && element.danglingAnchor) {
+                        if (isRoutable(parent) && (element.danglingAnchor || parent.id === edgeInProgressID)) {
                             const handlePos = this.getHandlePosition(element);
                             if (handlePos) {
                                 const handlePosAbs = translatePoint(handlePos, element.parent, element.root);
                                 const newEnd = findChildrenAtPosition(target.root, handlePosAbs)
                                     .find(e => isConnectable(e) && e.canConnect(parent, element.kind as ('source' | 'target')));
-                                if (newEnd) {
+                                if (newEnd && this.hasDragged) {
                                     result.push(new ReconnectAction(element.parent.id,
                                         element.kind === 'source' ? newEnd.id : parent.sourceId,
                                         element.kind === 'target' ? newEnd.id : parent.targetId));
                                 } else if (parent.id === edgeInProgressID) {
-                                    result.push(new DeleteElementAction([edgeInProgressID, element.danglingAnchor.id]));
+                                    if (element.danglingAnchor)
+                                        result.push(new DeleteElementAction([edgeInProgressID, element.danglingAnchor.id]));
+                                    else
+                                        result.push(new DeleteElementAction([edgeInProgressID]));
                                 }
                             }
                         }
