@@ -59,7 +59,7 @@
     "@types/file-saver": "^0.0.1",
     "@types/mocha": "^2.2.41",
     "@types/node": "^8.0.14",
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^4.0.0",
     "chai": "^4.1.0",
     "circular-dependency-plugin": "^2.0.0",
     "core-js": "^2.5.1",
