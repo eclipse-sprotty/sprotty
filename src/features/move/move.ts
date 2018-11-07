@@ -360,12 +360,13 @@ export class MoveMouseListener extends MouseListener {
 
     mouseUp(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
+        let hasReconnected = false;
         if (this.lastDragPosition) {
             target.root.index.all()
                 .forEach(element => {
                     if (element instanceof SRoutingHandle) {
                         const parent = element.parent;
-                        if (isRoutable(parent) && (element.danglingAnchor || parent.id === edgeInProgressID)) {
+                        if (isRoutable(parent) && element.danglingAnchor) {
                             const handlePos = this.getHandlePosition(element);
                             if (handlePos) {
                                 const handlePosAbs = translatePoint(handlePos, element.parent, element.root);
@@ -375,11 +376,7 @@ export class MoveMouseListener extends MouseListener {
                                     result.push(new ReconnectAction(element.parent.id,
                                         element.kind === 'source' ? newEnd.id : parent.sourceId,
                                         element.kind === 'target' ? newEnd.id : parent.targetId));
-                                } else if (parent.id === edgeInProgressID) {
-                                    if (element.danglingAnchor)
-                                        result.push(new DeleteElementAction([edgeInProgressID, element.danglingAnchor.id]));
-                                    else
-                                        result.push(new DeleteElementAction([edgeInProgressID]));
+                                    hasReconnected = true;
                                 }
                             }
                         }
@@ -387,6 +384,18 @@ export class MoveMouseListener extends MouseListener {
                             result.push(new SwitchEditModeAction([], [element.id]));
                     }
                 });
+        }
+        if (!hasReconnected) {
+            const edgeInProgress = target.root.index.getById(edgeInProgressID);
+            if (edgeInProgress instanceof SChildElement) {
+                const deleteIds: string[] = [];
+                deleteIds.push(edgeInProgressID);
+                edgeInProgress.children.forEach(c => {
+                    if (c instanceof SRoutingHandle && c.danglingAnchor)
+                        deleteIds.push(c.danglingAnchor.id);
+                });
+                result.push(new DeleteElementAction(deleteIds));
+            }
         }
         this.hasDragged = false;
         this.lastDragPosition = undefined;
