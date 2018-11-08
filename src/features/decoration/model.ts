@@ -41,7 +41,10 @@ export class SDecoration extends SShapeElement implements Decoration {
 export type SIssueSeverity = 'error' | 'warning' | 'info';
 
 export class SIssueMarker extends SDecoration {
-    messages: string[];
-    severity: SIssueSeverity;
+    issues: SIssue[];
 }
 
+export class SIssue {
+    message: string;
+    severity: SIssueSeverity;
+}
