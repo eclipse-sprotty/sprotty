@@ -26,6 +26,7 @@ export interface SModelElementSchema {
     type: string
     id: string
     children?: SModelElementSchema[]
+    cssClasses?: string[]
 }
 
 /**
@@ -43,6 +44,7 @@ export interface SModelRootSchema extends SModelElementSchema {
 export class SModelElement {
     type: string;
     id: string;
+    cssClasses?: string[];
 
     get root(): SModelRoot {
         let current: SModelElement | undefined = this;

@@ -35,6 +35,7 @@ import { ViewerCache } from "./views/viewer-cache";
 import { DOMHelper } from "./views/dom-helper";
 import { IdDecorator } from "./views/id-decorator";
 import { CommandActionHandlerInitializer } from "./commands/command";
+import { CssClassDecorator } from "./views/css-class-decorator";
 
 const defaultContainerModule = new ContainerModule(bind => {
     // Logging ---------------------------------------------
@@ -101,24 +102,20 @@ const defaultContainerModule = new ContainerModule(bind => {
 
     // Tools & Decorators --------------------------------------
     bind(IdDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toDynamicValue(context =>
-        context.container.get(IdDecorator)).inSingletonScope();
+    bind(TYPES.IVNodeDecorator).toService(IdDecorator);
+    bind(TYPES.HiddenVNodeDecorator).toService(IdDecorator);
+    bind(CssClassDecorator).toSelf().inSingletonScope();
+    bind(TYPES.IVNodeDecorator).toService(CssClassDecorator);
+    bind(TYPES.HiddenVNodeDecorator).toService(CssClassDecorator);
     bind(MouseTool).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toDynamicValue(context =>
-        context.container.get(MouseTool)).inSingletonScope();
+    bind(TYPES.IVNodeDecorator).toService(MouseTool);
     bind(KeyTool).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toDynamicValue(context =>
-        context.container.get(KeyTool)).inSingletonScope();
+    bind(TYPES.IVNodeDecorator).toService(KeyTool);
     bind(FocusFixDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toDynamicValue(context =>
-        context.container.get(FocusFixDecorator)).inSingletonScope();
-    bind(TYPES.PopupVNodeDecorator).toDynamicValue(context =>
-        context.container.get(IdDecorator)).inSingletonScope();
+    bind(TYPES.IVNodeDecorator).toService(FocusFixDecorator);
+    bind(TYPES.PopupVNodeDecorator).toService(IdDecorator);
     bind(PopupMouseTool).toSelf().inSingletonScope();
-    bind(TYPES.PopupVNodeDecorator).toDynamicValue(context =>
-        context.container.get(PopupMouseTool)).inSingletonScope();
-    bind(TYPES.HiddenVNodeDecorator).toDynamicValue(context =>
-        context.container.get(IdDecorator)).inSingletonScope();
+    bind(TYPES.PopupVNodeDecorator).toService(PopupMouseTool);
 
     // Animation Frame Sync ------------------------------------------
     bind(TYPES.AnimationFrameSyncer).to(AnimationFrameSyncer).inSingletonScope();
@@ -126,8 +123,7 @@ const defaultContainerModule = new ContainerModule(bind => {
     // Canvas Initialization ---------------------------------------------
     bind(TYPES.ICommand).toConstructor(InitializeCanvasBoundsCommand);
     bind(CanvasBoundsInitializer).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toDynamicValue(context =>
-        context.container.get(CanvasBoundsInitializer)).inSingletonScope();
+    bind(TYPES.IVNodeDecorator).toService(CanvasBoundsInitializer);
     bind(TYPES.SModelStorage).to(SModelStorage).inSingletonScope();
 
 });
