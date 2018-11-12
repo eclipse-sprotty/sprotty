@@ -92,7 +92,9 @@
     "prepare": "yarn run clean && yarn run build",
     "prepublishOnly": "yarn run test",
     "examples:build": "webpack --progress --config ./configs/webpack.config.js",
-    "examples:watch": "webpack --watch --progress --config ./configs/webpack.config.js"
+    "examples:watch": "webpack --watch --progress --config ./configs/webpack.config.js",
+    "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --exact --canary=next --npm-tag=next --skip-git --yes",
+    "publish:latest": "lerna publish --registry=https://registry.npmjs.org/ --exact --skip-git"
   },
   "files": [
     "lib",
