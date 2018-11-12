@@ -1,6 +1,6 @@
 {
   "name": "sprotty",
-  "version": "0.5.0-next.32+bb2a9ce",
+  "version": "0.4.2",
   "description": "A next-gen framework for graphical views",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
@@ -100,5 +100,5 @@
     "lib",
     "css",
     "src"
-  ],
+  ]
 }
