@@ -64,10 +64,10 @@
     "circular-dependency-plugin": "^2.0.0",
     "core-js": "^2.5.1",
     "dom4": "^1.8.5",
-    "lerna": "3.4.3",
     "jenkins-mocha": "^6.0.0",
     "jsdom": "9.12.0",
     "jsdom-global": "2.1.1",
+    "lerna": "3.4.3",
     "mocha": "^3.4.2",
     "nyc": "^11.0.3",
     "reconnecting-websocket": "^3.0.7",
@@ -94,12 +94,13 @@
     "prepublishOnly": "yarn run test",
     "examples:build": "webpack --progress --config ./configs/webpack.config.js",
     "examples:watch": "webpack --watch --progress --config ./configs/webpack.config.js",
-    "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --exact --canary=next --npm-tag=next --no-git-tag-version --no-push --yes",
+    "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --exact --canary preminor --preid next --npm-tag next --no-git-tag-version --no-push --yes",
     "publish:latest": "lerna publish --registry=https://registry.npmjs.org/ --exact --no-git-tag-version --no-push"
   },
   "files": [
     "lib",
     "css",
     "src"
-  ]
+  ],
+  "gitHead": "f92778e73e115fccb1ea161a76052724852c783a"
 }
