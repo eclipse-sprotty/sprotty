@@ -1,6 +1,6 @@
 {
   "name": "sprotty",
-  "version": "0.4.2",
+  "version": "0.5.0-next.32+bb2a9ce",
   "description": "A next-gen framework for graphical views",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
@@ -91,7 +91,6 @@
     "watch": "tsc -w -p ./tsconfig.json",
     "test": "jenkins-mocha --opts ./configs/mocha.opts \"./src/**/*.spec.?(ts|tsx)\"",
     "prepare": "yarn run clean && yarn run build",
-    "prepublishOnly": "yarn run test",
     "examples:build": "webpack --progress --config ./configs/webpack.config.js",
     "examples:watch": "webpack --watch --progress --config ./configs/webpack.config.js",
     "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --exact --canary preminor --preid next --npm-tag next --no-git-tag-version --no-push --yes",
@@ -102,5 +101,4 @@
     "css",
     "src"
   ],
-  "gitHead": "f92778e73e115fccb1ea161a76052724852c783a"
 }
