@@ -93,6 +93,7 @@
     "prepare": "yarn run clean && yarn run build",
     "examples:build": "webpack --progress --config ./configs/webpack.config.js",
     "examples:watch": "webpack --watch --progress --config ./configs/webpack.config.js",
+    "prepublishOnly": "yarn run test",
     "publish:next": "yarn publish --new-version \"$(semver $npm_package_version -i minor)-next.$(git rev-parse --short HEAD)\" --tag next",
     "publish:latest": "yarn publish --tag latest"
   },
