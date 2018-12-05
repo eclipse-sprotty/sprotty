@@ -4,7 +4,7 @@ kind: Pod
 spec:
   containers:
   - name: node
-    image: node:8.12
+    image: node:8.14-alpine
     tty: true
 """
 
