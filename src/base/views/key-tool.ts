@@ -53,12 +53,17 @@ export class KeyTool implements IVNodeDecorator {
         this.handleEvent('keyDown', element, event);
     }
 
+    keyUp(element: SModelRoot, event: KeyboardEvent): void {
+        this.handleEvent('keyUp', element, event);
+    }
+
     focus() {}
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (element instanceof SModelRoot) {
             on(vnode, 'focus', this.focus.bind(this), element);
             on(vnode, 'keydown', this.keyDown.bind(this), element);
+            on(vnode, 'keyup', this.keyUp.bind(this), element);
         }
         return vnode;
     }
@@ -70,6 +75,10 @@ export class KeyTool implements IVNodeDecorator {
 @injectable()
 export class KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+        return [];
+    }
+
+    keyUp(element: SModelElement, event: KeyboardEvent): Action[] {
         return [];
     }
 }
