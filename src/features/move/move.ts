@@ -29,15 +29,16 @@ import { IVNodeDecorator } from "../../base/views/vnode-decorators";
 import { isViewport } from "../viewport/model";
 import { isSelectable } from "../select/model";
 import { isAlignable, findChildrenAtPosition } from "../bounds/model";
-import { Routable, isRoutable, SRoutingHandle } from '../edit/model';
+import { SRoutingHandle } from '../edit/model';
 import { MoveRoutingHandleAction, HandleMove, SwitchEditModeAction } from "../edit/edit-routing";
 import { isMoveable, Locateable, isLocateable } from './model';
-import { RoutedPoint } from "../../graph/routing";
+import { RoutedPoint } from "../routing/routing";
 import { isCreatingOnDrag } from "../edit/create-on-drag";
 import { SelectAllAction, SelectAction } from "../select/select";
 import { SDanglingAnchor } from "../../graph/sgraph";
-import { isConnectable, ReconnectAction } from "../edit/reconnect";
+import { ReconnectAction } from "../edit/reconnect";
 import { DeleteElementAction } from "../edit/delete";
+import { isConnectable, isRoutable, Routable } from "../routing/model";
 
 export class MoveAction implements Action {
     kind = MoveCommand.KIND;

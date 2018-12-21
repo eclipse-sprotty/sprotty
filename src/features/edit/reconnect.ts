@@ -14,22 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Routable, isRoutable } from "./model";
+import { Routable, isRoutable } from "../routing/model";
 import { SModelElement } from "../../base/model/smodel";
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
-import { SModelExtension } from "../../base/model/smodel-extension";
-
-export const connectableFeature = Symbol('connectableFeature');
-
-export interface Connectable extends SModelExtension {
-    canConnect(routable: Routable, role: 'source' | 'target'): boolean;
-}
-
-export function isConnectable<T extends SModelElement>(element: T): element is Connectable & T {
-    return element.hasFeature(connectableFeature) && (element as any).canConnect;
-}
-
 
 export class ReconnectAction implements Action {
     readonly kind =  ReconnectCommand.KIND;

@@ -65,6 +65,10 @@ export * from "./features/bounds/stack-layout";
 export * from "./features/button/button-handler";
 export * from "./features/button/model";
 
+export * from "./features/edge-layout/di.config";
+export * from "./features/edge-layout/edge-layout";
+export * from "./features/edge-layout/model";
+
 export * from "./features/edit/create";
 export * from "./features/edit/create-on-drag";
 export * from "./features/edit/di.config";
@@ -98,6 +102,9 @@ export * from "./features/move/move";
 export * from "./features/open/open";
 export * from "./features/open/model";
 
+export * from "./features/routing/model";
+export * from "./features/routing/routing";
+
 export * from "./features/select/model";
 export * from "./features/select/select";
 
@@ -125,8 +132,10 @@ import expandModule from "./features/expand/di.config";
 import openModule from "./features/open/di.config";
 import buttonModule from "./features/button/di.config";
 import decorationModule from "./features/decoration/di.config";
+import edgeLayoutModule from "./features/edge-layout/di.config";
 
-export { moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, hoverModule, exportModule, expandModule, openModule, buttonModule, decorationModule };
+export { moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, hoverModule,
+    exportModule, expandModule, openModule, buttonModule, decorationModule, edgeLayoutModule };
 
 
 // ------------------ Graph ------------------

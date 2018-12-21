@@ -174,8 +174,11 @@ export interface Insets {
 
 /**
  * Enumeration of possible directions (left, right, up, down)
+ * @deprecated do we use this? We should rather use a string type
  */
 export enum Direction { left, right, up, down }
+
+export type Orientation = 'north' | 'south' | 'east' | 'west';
 
 /**
  * Returns the "straight line" distance between two points.
@@ -297,6 +300,20 @@ export function toRadians(a: number): number {
  */
 export function almostEquals(a: number, b: number): boolean {
     return Math.abs(a - b) < 1e-3;
+}
+
+/**
+ * Calculates a linear combination of p0 and p1 using lambda, i.e.
+ *   (1-lambda) * p0 + lambda * p1
+ * @param p0
+ * @param p1
+ * @param lambda
+ */
+export function linear(p0: Point, p1: Point, lambda: number): Point {
+    return {
+        x: (1 - lambda) * p0.x + lambda * p1.x,
+        y: (1 - lambda) * p0.y + lambda * p1.y
+    };
 }
 
 /**

@@ -28,9 +28,10 @@ import { KeyListener } from "../../base/views/key-tool";
 import { setClass } from "../../base/views/vnode-utils";
 import { ButtonHandlerRegistry } from '../button/button-handler';
 import { SButton } from '../button/model';
-import { isRoutable, SRoutingHandle } from '../edit/model';
+import { SRoutingHandle } from '../edit/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { isSelectable } from "./model";
+import { isRoutable } from '../routing/model';
 
 /**
  * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting

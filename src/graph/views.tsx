@@ -22,9 +22,10 @@ import { Point, centerOfLine, maxDistance } from '../utils/geometry';
 import { setAttr } from '../base/views/vnode-utils';
 import { RenderingContext, IView } from "../base/views/view";
 import { getSubType } from "../base/model/smodel-utils";
-import { SRoutingHandle, isRoutable } from '../features/edit/model';
+import { SRoutingHandle } from '../features/edit/model';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
-import { RoutedPoint } from './routing';
+import { RoutedPoint } from '../features/routing/routing';
+import { isRoutable } from '../features/routing/model';
 
 /**
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.

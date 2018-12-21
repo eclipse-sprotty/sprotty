@@ -14,25 +14,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
-import {
-    SChildElement, SModelElementSchema, SModelRootSchema, SModelIndex, SModelElement, SParentElement
-} from '../base/model/smodel';
-import {
-    boundsFeature, layoutContainerFeature, layoutableChildFeature, Alignable, alignFeature, ModelLayoutOptions
-} from '../features/bounds/model';
+import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
+import { Alignable, alignFeature, boundsFeature, layoutableChildFeature, layoutContainerFeature, ModelLayoutOptions,
+    SShapeElement, SShapeElementSchema } from '../features/bounds/model';
+import { deletableFeature } from '../features/edit/delete';
+import { editFeature, filterEditModeHandles } from '../features/edit/model';
 import { Fadeable, fadeFeature } from '../features/fade/model';
 import { Hoverable, hoverFeedbackFeature, popupFeature } from '../features/hover/model';
 import { moveFeature } from '../features/move/model';
+import { Routable, SConnectableElement, connectableFeature } from '../features/routing/model';
 import { Selectable, selectFeature } from '../features/select/model';
 import { ViewportRootElement } from '../features/viewport/viewport-root';
-import { Bounds, ORIGIN_POINT, Point, center } from '../utils/geometry';
-import { SShapeElement, SShapeElementSchema } from '../features/bounds/model';
-import { editFeature, Routable, filterEditModeHandles } from '../features/edit/model';
-import { translatePoint } from '../base/model/smodel-utils';
-import { RoutedPoint, LinearEdgeRouter, IEdgeRouter } from './routing';
-import { connectableFeature, Connectable } from '../features/edit/reconnect';
-import { deletableFeature } from '../features/edit/delete';
+import { Bounds, ORIGIN_POINT, Point } from '../utils/geometry';
+import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
+import { IEdgeRouter, LinearEdgeRouter, RoutedPoint } from '../features/routing/routing';
+import { edgeLayoutFeature } from '../features/edge-layout/model';
 
 /**
  * Serializable schema for graph-like models.
@@ -53,65 +49,6 @@ export class SGraph extends ViewportRootElement {
 
     constructor(index = new SGraphIndex()) {
         super(index);
-    }
-}
-
-/**
- * A connectable element is one that can have outgoing and incoming edges, i.e. it can be the source
- * or target element of an edge. There are two kinds of connectable elements: nodes (`SNode`) and
- * ports (`SPort`). A node represents a main entity, while a port is a connection point inside a node.
- */
-export abstract class SConnectableElement extends SShapeElement implements Connectable {
-
-    /**
-     * The incoming edges of this connectable element. They are resolved by the index, which must
-     * be an `SGraphIndex`.
-     */
-    get incomingEdges(): FluentIterable<SEdge> {
-        return (this.index as SGraphIndex).getIncomingEdges(this);
-    }
-
-    /**
-     * The outgoing edges of this connectable element. They are resolved by the index, which must
-     * be an `SGraphIndex`.
-     */
-    get outgoingEdges(): FluentIterable<SEdge> {
-        return (this.index as SGraphIndex).getOutgoingEdges(this);
-    }
-
-    /**
-     * Compute an anchor position for routing an edge towards this element.
-     *
-     * The default implementation returns the element's center point. If edges should be connected
-     * differently, e.g. to some point on the boundary of the element's view, the according computation
-     * should be implemented in a subclass by overriding this method.
-     *
-     * @param referencePoint The point from which the edge is routed towards this element
-     * @param offset An optional offset value to be considered in the anchor computation;
-     *               positive values should shift the anchor away from this element, negative values
-     *               should shift the anchor more to the inside.
-     */
-    getAnchor(referencePoint: Point, offset?: number): Point {
-        return center(this.bounds);
-    }
-
-    /**
-     * Compute an anchor position for routing an edge towards this element and correct any mismatch
-     * of the coordinate systems.
-     *
-     * @param refPoint The point from which the edge is routed towards this element
-     * @param refContainer The parent element that defines the coordinate system for `refPoint`
-     * @param edge The edge for which the anchor is computed
-     * @param offset An optional offset value (see `getAnchor`)
-     */
-    getTranslatedAnchor(refPoint: Point, refContainer: SParentElement, edge: SEdge, offset?: number): Point {
-        const translatedRefPoint = translatePoint(refPoint, refContainer, this.parent);
-        const anchor = this.getAnchor(translatedRefPoint, offset);
-        return translatePoint(anchor, this.parent, edge.parent);
-    }
-
-    canConnect(routable: Routable, role: string) {
-        return true;
     }
 }
 
@@ -197,7 +134,7 @@ export class SEdge extends SChildElement implements Fadeable, Selectable, Routab
     opacity: number = 1;
     sourceAnchorCorrection?: number;
     targetAnchorCorrection?: number;
-    router?: IEdgeRouter;
+    _router?: IEdgeRouter;
 
     get source(): SConnectableElement | undefined {
         return this.index.getById(this.sourceId) as SConnectableElement;
@@ -207,9 +144,13 @@ export class SEdge extends SChildElement implements Fadeable, Selectable, Routab
         return this.index.getById(this.targetId) as SConnectableElement;
     }
 
+    get router() {
+        if (!this._router)
+            this._router = new LinearEdgeRouter();
+        return this._router;
+    }
+
     route(): RoutedPoint[] {
-        if (this.router === undefined)
-            this.router = new LinearEdgeRouter();
         const route = this.router.route(this);
         return filterEditModeHandles(route, this);
     }
@@ -239,7 +180,7 @@ export class SLabel extends SShapeElement implements Selectable, Alignable, Fade
     opacity = 1;
 
     hasFeature(feature: symbol) {
-        return feature === boundsFeature || feature === alignFeature || feature === fadeFeature || feature === layoutableChildFeature;
+        return feature === boundsFeature || feature === alignFeature || feature === fadeFeature || feature === layoutableChildFeature || feature === edgeLayoutFeature;
     }
 }
 

@@ -22,7 +22,7 @@ import { isDecoration, Decoration } from "./model";
 import { setAttr } from "../../base/views/vnode-utils";
 import { Point, ORIGIN_POINT } from "../../utils/geometry";
 import { isSizeable } from "../bounds/model";
-import { isRoutable } from "../edit/model";
+import { isRoutable } from "../routing/model";
 
 @injectable()
 export class DecorationPlacer implements IVNodeDecorator {

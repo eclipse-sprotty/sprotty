@@ -16,27 +16,14 @@
 
 import { Point, angleBetweenPoints } from '../../utils/geometry';
 import { SModelElement, SChildElement, SParentElement } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { Selectable, selectFeature } from '../select/model';
 import { moveFeature } from '../move/model';
 import { Hoverable, hoverFeedbackFeature } from '../hover/model';
-import { RoutedPoint } from '../../graph/routing';
+import { RoutedPoint } from '../routing/routing';
 import { SDanglingAnchor } from '../../graph/sgraph';
+import { Routable, isRoutable } from '../routing/model';
 
 export const editFeature = Symbol('editFeature');
-
-export interface Routable extends SModelExtension {
-    routingPoints: Point[];
-    readonly source?: SModelElement;
-    readonly target?: SModelElement;
-    sourceId?: string,
-    targetId?: string,
-    route(): RoutedPoint[];
-}
-
-export function isRoutable<T extends SModelElement>(element: T): element is T & Routable {
-    return (element as any).routingPoints !== undefined && typeof((element as any).route) === 'function';
-}
 
 export function canEditRouting(element: SModelElement): element is SModelElement & Routable {
     return isRoutable(element) && element.hasFeature(editFeature);

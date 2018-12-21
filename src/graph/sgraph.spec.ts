@@ -20,7 +20,7 @@ import { createRoutingHandles } from '../features/edit/edit-routing';
 import { SRoutingHandle } from '../features/edit/model';
 import { RectangularNode, RectangularPort } from '../lib/model';
 import { SNode, SEdge, SGraph, SPort } from './sgraph';
-import { RoutedPoint } from "./routing";
+import { RoutedPoint } from "../features/routing/routing";
 
 describe('SEdge', () => {
     const graph = new SGraph();

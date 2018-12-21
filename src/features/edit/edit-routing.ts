@@ -16,12 +16,13 @@
 
 import { injectable } from "inversify";
 import { Point } from "../../utils/geometry";
-import { Routable, isRoutable, canEditRouting, SRoutingHandle, RoutingHandleKind } from './model';
+import { canEditRouting, SRoutingHandle, RoutingHandleKind } from './model';
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
 import { SModelElement, SModelRoot, SParentElement, SModelIndex } from '../../base/model/smodel';
 import { Animation } from '../../base/animations/animation';
 import { SDanglingAnchor } from "../../graph/sgraph";
+import { Routable, isRoutable } from "../routing/model";
 
 export function createRoutingHandle(kind: RoutingHandleKind, parentId: string, index: number): SRoutingHandle {
     const handle = new SRoutingHandle();

@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { DiagramState, SModelRootSchema, SGraphSchema, IStateAwareModelProvider, SEdgeSchema } from "../../../src";
+import { DiagramState, SModelRootSchema, SGraphSchema, IStateAwareModelProvider, SEdgeSchema, SLabelSchema } from "../../../src";
 
 @injectable()
 export class ModelProvider implements IStateAwareModelProvider {
@@ -165,16 +165,163 @@ export class ModelProvider implements IStateAwareModelProvider {
                 ]
             });
         }
+        const node2 = {
+            id: 'node2',
+            type: 'node:class',
+            expanded: false,
+            position: {
+                x: 200,
+                y: 350
+            },
+            layout: 'vbox',
+            children: [
+                {
+                    id: 'node2_header',
+                    type: 'comp:header',
+                    layout: 'hbox',
+                    children: [
+                        {
+                            id: 'node2_icon',
+                            type: 'icon',
+                            layout: 'stack',
+                            layoutOptions: {
+                                hAlign: 'center',
+                                resizeContainer: false
+                            },
+                            children: [
+                                {
+                                    id: 'node2_ticon',
+                                    type: 'label:icon',
+                                    text: 'C'
+                                },
+                            ]
+                        }, {
+                        id: 'node2_classname',
+                        type: 'label:heading',
+                        text: 'Baz'
+                    }, {
+                        id: 'node2_expand',
+                        type: 'button:expand'
+                    }]
+                }
+            ]
+        };
         const edge = {
             id: 'edge',
             type: 'edge:straight',
             sourceId: node0.id,
-            targetId: node1.id
+            targetId: node1.id,
+            children: [
+                <SLabelSchema> { 
+                    id: 'edge_label_on',
+                    type: 'label:text',
+                    text: 'on',
+                    edgePlacement:  {
+                        position: 0.5,
+                        side: 'on',
+                        rotate: false
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge_label_top',
+                    type: 'label:text',
+                    text: 'top',
+                    edgePlacement:  {
+                        position: 0.3,
+                        side: 'top',
+                        rotate: false
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge_label_bottom',
+                    type: 'label:text',
+                    text: 'bottom',
+                    edgePlacement:  {
+                        position: 0.3,
+                        side: 'bottom',
+                        rotate: false
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge_label_left',
+                    type: 'label:text',
+                    text: 'left',
+                    edgePlacement:  {
+                        position: 0.7,
+                        side: 'left',
+                        rotate: false
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge_label_right',
+                    type: 'label:text',
+                    text: 'right',
+                    edgePlacement:  {
+                        position: 0.7,
+                        side: 'right',
+                        rotate: false
+                    }
+                }
+            ]
+        } as SEdgeSchema;
+        const edge1 = {
+            id: 'edge1',
+            type: 'edge:straight',
+            sourceId: node0.id,
+            targetId: node2.id,
+            children: [
+                <SLabelSchema> { 
+                    id: 'edge1_label_on',
+                    type: 'label:text',
+                    text: 'on',
+                    edgePlacement:  {
+                        position: 0.5,
+                        side: 'on',
+                        rotate: true
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge1_label_top',
+                    type: 'label:text',
+                    text: 'top',
+                    edgePlacement:  {
+                        position: 0,
+                        side: 'top',
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge1_label_bottom',
+                    type: 'label:text',
+                    text: 'bottom',
+                    edgePlacement:  {
+                        position: 0,
+                        side: 'bottom',
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge1_label_left',
+                    type: 'label:text',
+                    text: 'left',
+                    edgePlacement:  {
+                        position: 1,
+                        side: 'left'
+                    }
+                },
+                <SLabelSchema> { 
+                    id: 'edge1_label_right',
+                    type: 'label:text',
+                    text: 'right',
+                    edgePlacement:  {
+                        position: 1,
+                        side: 'right'
+                    }
+                }
+            ]
         } as SEdgeSchema;
         const graph: SGraphSchema = {
             id: 'graph',
             type: 'graph',
-            children: [node0, node1, edge],
+            children: [node0, node1, node2, edge, edge1 ],
             layoutOptions: {
                 hGap: 5,
                 hAlign: 'left',
