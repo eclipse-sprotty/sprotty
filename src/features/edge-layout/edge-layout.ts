@@ -70,7 +70,7 @@ export class EdgeLayoutDecorator implements IVNodeDecorator {
             if (placement.position < 0.3333333)
                 x -= bounds.width + placement.offset;
             else if (placement.position < 0.6666666)
-                x += 0.5 * bounds.width;
+                x -= 0.5 * bounds.width;
             else
                 x += placement.offset;
             switch (placement.side) {
@@ -86,7 +86,7 @@ export class EdgeLayoutDecorator implements IVNodeDecorator {
             if (placement.position < 0.3333333)
                 x += placement.offset;
             else if (placement.position < 0.6666666)
-                x += 0.5 * bounds.width;
+                x -= 0.5 * bounds.width;
             else
                 x -= bounds.width + placement.offset;
             switch (placement.side) {
