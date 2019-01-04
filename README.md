@@ -5,6 +5,12 @@
 
 This is the client part of _Sprotty_, a next-generation, open-source diagramming framework built with web technologies. 
 
+<img src="images/screenshot0.png" width="23%" align="left">
+<img src="images/screenshot1.png" width="23%" align="left">
+<img src="images/screenshot2.png" width="23%" align="left">
+<img src="images/screenshot3.png" width="23%"> 
+
+  
 Some selected features:
 
 * fast, scalable SVG rendering that is compatible with many browsers and stylable with CSS,
