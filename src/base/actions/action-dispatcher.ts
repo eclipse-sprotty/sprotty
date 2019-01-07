@@ -111,3 +111,5 @@ export interface PostponedAction {
     resolve: () => void
     reject: (reason: any) => void
 }
+
+export type IActionDispatcherProvider = () => Promise<IActionDispatcher>;
