@@ -56,5 +56,6 @@ export const TYPES = {
     IViewerProvider: Symbol('IViewerProvider'),
     ViewRegistration: Symbol('ViewRegistration'),
     ViewRegistry: Symbol('ViewRegistry'),
-    IVNodeDecorator: Symbol('IVNodeDecorator')
+    IVNodeDecorator: Symbol('IVNodeDecorator'),
+    ToolManager: Symbol('ToolManager')
 };

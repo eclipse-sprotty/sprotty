@@ -36,6 +36,7 @@ import { DOMHelper } from "./views/dom-helper";
 import { IdDecorator } from "./views/id-decorator";
 import { CommandActionHandlerInitializer } from "./commands/command";
 import { CssClassDecorator } from "./views/css-class-decorator";
+import { DefaultToolManager, StandardToolsEnablingKeyListener, ToolManagerActionHandlerInitializer } from "./tool-manager/tool-manager";
 
 const defaultContainerModule = new ContainerModule(bind => {
     // Logging ---------------------------------------------
@@ -126,6 +127,10 @@ const defaultContainerModule = new ContainerModule(bind => {
     bind(TYPES.IVNodeDecorator).toService(CanvasBoundsInitializer);
     bind(TYPES.SModelStorage).to(SModelStorage).inSingletonScope();
 
+    // Tool manager initialization ------------------------------------
+    bind(TYPES.ToolManager).to(DefaultToolManager).inSingletonScope();
+    bind(TYPES.KeyListener).to(StandardToolsEnablingKeyListener);
+    bind(TYPES.IActionHandlerInitializer).to(ToolManagerActionHandlerInitializer);
 });
 
 export default defaultContainerModule;
