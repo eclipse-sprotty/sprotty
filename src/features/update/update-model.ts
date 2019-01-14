@@ -24,7 +24,7 @@ import { SModelRootSchema, SModelRoot, SChildElement, SModelElement, SParentElem
 import { MoveAnimation, ResolvedElementMove } from "../move/move";
 import { Fadeable, isFadeable } from "../fade/model";
 import { isLocateable } from "../move/model";
-import { isBoundsAware } from "../bounds/model";
+import { isSizeable } from "../bounds/model";
 import { ViewportRootElement } from "../viewport/viewport-root";
 import { isSelectable } from "../select/model";
 import { MatchResult, ModelMatcher, Match, forEachMatch } from "./model-matching";
@@ -206,7 +206,7 @@ export class UpdateModelCommand extends Command {
                 right.position = leftPos;
             }
         }
-        if (isBoundsAware(left) && isBoundsAware(right)) {
+        if (isSizeable(left) && isSizeable(right)) {
             if (!isValidDimension(right.bounds)) {
                 right.bounds = {
                     x: right.bounds.x,

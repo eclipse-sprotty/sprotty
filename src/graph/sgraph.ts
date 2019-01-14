@@ -16,7 +16,7 @@
 
 import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
 import { Alignable, alignFeature, boundsFeature, layoutableChildFeature, layoutContainerFeature, ModelLayoutOptions,
-    SShapeElement, SShapeElementSchema } from '../features/bounds/model';
+    SShapeElement, SShapeElementSchema, BoundsAware } from '../features/bounds/model';
 import { deletableFeature } from '../features/edit/delete';
 import { editFeature, filterEditModeHandles } from '../features/edit/model';
 import { Fadeable, fadeFeature } from '../features/fade/model';
@@ -25,7 +25,7 @@ import { moveFeature } from '../features/move/model';
 import { Routable, SConnectableElement, connectableFeature } from '../features/routing/model';
 import { Selectable, selectFeature } from '../features/select/model';
 import { ViewportRootElement } from '../features/viewport/viewport-root';
-import { Bounds, ORIGIN_POINT, Point } from '../utils/geometry';
+import { Bounds, ORIGIN_POINT, Point, EMPTY_BOUNDS, combine } from '../utils/geometry';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
 import { IEdgeRouter, LinearEdgeRouter, RoutedPoint } from '../features/routing/routing';
 import { edgeLayoutFeature } from '../features/edge-layout/model';
@@ -125,7 +125,7 @@ export interface SEdgeSchema extends SModelElementSchema {
  * each of which can be either a node or a port. The source and target elements are referenced via their
  * ids and can be resolved with the index stored in the root element.
  */
-export class SEdge extends SChildElement implements Fadeable, Selectable, Routable, Hoverable {
+export class SEdge extends SChildElement implements Fadeable, Selectable, Routable, Hoverable, BoundsAware {
     sourceId: string;
     targetId: string;
     routingPoints: Point[] = [];
@@ -153,6 +153,16 @@ export class SEdge extends SChildElement implements Fadeable, Selectable, Routab
     route(): RoutedPoint[] {
         const route = this.router.route(this);
         return filterEditModeHandles(route, this);
+    }
+
+    get bounds(): Bounds {
+        // this should also work for splines, which have the convex hull property
+        return this.routingPoints.reduce<Bounds>((bounds, routingPoint) => combine(bounds, {
+            x: routingPoint.x,
+            y: routingPoint.y,
+            width: 0,
+            height: 0
+        }), EMPTY_BOUNDS);
     }
 
     hasFeature(feature: symbol): boolean {
