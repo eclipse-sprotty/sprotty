@@ -23,10 +23,12 @@ import {
     HtmlRoot, configureModelElement
 } from "../../../src";
 import { MindmapNodeView, PopupButtonView } from "./views";
-import { popupModelFactory, PopupButtonMouseListener, AddElementCommand } from "./popup";
+import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
 import { Mindmap, PopupButton } from "./model";
 
 export default (useWebsocket: boolean, containerId: string) => {
+    require("../../../css/sprotty.css");
+    require("../css/diagram.css");
     const mindmapModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         if (useWebsocket)
             bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();
@@ -35,7 +37,7 @@ export default (useWebsocket: boolean, containerId: string) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
-        bind(TYPES.PopupModelFactory).toConstantValue(popupModelFactory);
+        bind(TYPES.IPopupModelProvider).to(PopupModelProvider).inSingletonScope();
         bind(TYPES.PopupMouseListener).to(PopupButtonMouseListener);
         bind(TYPES.ICommand).toConstructor(AddElementCommand);
         const context = { bind, unbind, isBound, rebind };

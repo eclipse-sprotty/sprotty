@@ -28,6 +28,12 @@
     stroke-width: 3;
 }
 
+.sprotty-popup {
+    min-width: 0px;
+    min-height: 0px;
+    border: none;
+}
+
 .add-icon {
     fill: #152;
     stroke: none;
@@ -37,3 +43,4 @@
     fill: #d24;
     stroke: none;
 }
+
