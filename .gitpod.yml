@@ -1,2 +1,8 @@
+ports:
+  - port: 8080
 tasks:
-  - command: "yarn install && yarn examples:build && yarn examples:run"
+  - init: >
+      yarn install &&
+      yarn examples:build
+    command: >
+      yarn examples:run
