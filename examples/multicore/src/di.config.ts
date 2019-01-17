@@ -35,6 +35,8 @@ class FilteringSvgExporter extends SvgExporter {
 }
 
 export default (useWebsocket: boolean) => {
+    require("../../../css/sprotty.css");
+    require("../css/diagram.css");
     const multicoreModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         if (useWebsocket)
             bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();

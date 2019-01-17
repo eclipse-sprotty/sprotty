@@ -22,6 +22,8 @@ import {
 } from "../../../src";
 
 export default () => {
+    require("../../../css/sprotty.css");
+    require("../css/diagram.css");
     const svgModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

@@ -29,6 +29,8 @@ import { ModelProvider } from './model-provider';
 import { Icon, ClassNode } from "./model";
 
 export default (useWebsocket: boolean, containerId: string) => {
+    require("../../../css/sprotty.css");
+    require("../css/diagram.css");
     const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         if (useWebsocket)
             bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();

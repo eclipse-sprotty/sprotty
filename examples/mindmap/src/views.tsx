@@ -40,7 +40,7 @@ export class PopupButtonView implements IView {
     render(model: PopupButton, context: RenderingContext): VNode {
         switch (model.kind) {
             case 'add-node':
-                return <svg>
+                return <svg viewBox="-1 -1 26 26">
                     <rect class-sprotty-node={true}
                         x={0} y={0} rx={8} ry={8}
                         width={PopupButtonView.SIZE} height={PopupButtonView.SIZE}>

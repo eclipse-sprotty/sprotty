@@ -31,6 +31,11 @@ module.exports = {
                         configFile: path.resolve(__dirname, 'examples.tsconfig.json')
                     }
                 }]
+            },
+            {
+                test: /\.css$/,
+                exclude: /\.useable\.css$/,
+                loader: 'style-loader!css-loader'
             }
         ]
     },

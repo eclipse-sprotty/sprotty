@@ -19,27 +19,30 @@ import {
     TYPES, SModelElementSchema, SModelRootSchema, RequestPopupModelAction, MouseListener,
     SModelElement, Action, LocalModelSource, SNodeSchema, SetPopupModelAction, EMPTY_ROOT,
     Point, Command, CommandExecutionContext, CommandResult, SChildElement, FadeAnimation,
-    isFadeable, isLocateable, isBoundsAware, subtract
+    isFadeable, isLocateable, isBoundsAware, subtract, IPopupModelProvider
 } from "../../../src";
 import { PopupButtonSchema, PopupButton } from "./model";
 import { PopupButtonView } from "./views";
 
-export function popupModelFactory(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined {
-    if (element === undefined || element.type === 'mindmap') {
-        return <PopupButtonSchema> {
-            type: 'popup:button',
-            id: 'button',
-            kind: 'add-node'
-        };
-    } else if (element !== undefined && element.type === 'node') {
-        return <PopupButtonSchema> {
-            type: 'popup:button',
-            id: 'button',
-            kind: 'remove-node',
-            target: element.id
-        };
+@injectable()
+export class PopupModelProvider implements IPopupModelProvider {
+    getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined {
+        if (element === undefined || element.type === 'mindmap') {
+            return <PopupButtonSchema> {
+                type: 'popup:button',
+                id: 'button',
+                kind: 'add-node'
+            };
+        } else if (element !== undefined && element.type === 'node') {
+            return <PopupButtonSchema> {
+                type: 'popup:button',
+                id: 'button',
+                kind: 'remove-node',
+                target: element.id
+            };
+        }
+        return undefined;
     }
-    return undefined;
 }
 
 @injectable()
