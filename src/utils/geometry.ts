@@ -109,6 +109,10 @@ export function isBounds(element: any): element is Bounds {
  * @returns {Bounds} The combined bounds
  */
 export function combine(b0: Bounds, b1: Bounds): Bounds {
+    if (!isValidDimension(b0))
+        return isValidDimension(b1) ? b1 : EMPTY_BOUNDS;
+    if (!isValidDimension(b1))
+        return b0;
     const minX = Math.min(b0.x, b1.x);
     const minY = Math.min(b0.y, b1.y);
     const maxX = Math.max(b0.x + (b0.width >= 0 ? b0.width : 0), b1.x + (b1.width >= 0 ? b1.width : 0));
