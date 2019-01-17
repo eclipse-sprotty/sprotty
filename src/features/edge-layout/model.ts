@@ -16,8 +16,8 @@
 
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { SModelElement, SChildElement } from "../../base/model/smodel";
-import { SEdge } from "../../graph/sgraph";
 import { BoundsAware, isBoundsAware } from "../bounds/model";
+import { isRoutable } from "../routing/model";
 
 export const edgeLayoutFeature = Symbol('edgeLayout');
 
@@ -27,7 +27,7 @@ export interface EdgeLayoutable extends SModelExtension {
 
 export function isEdgeLayoutable<T extends SModelElement>(element: T): element is T & SChildElement & BoundsAware & EdgeLayoutable {
     return element instanceof SChildElement
-        && element.parent instanceof SEdge
+        && isRoutable(element.parent)
         && 'edgePlacement' in element
         && isBoundsAware(element)
         && element.hasFeature(edgeLayoutFeature);
