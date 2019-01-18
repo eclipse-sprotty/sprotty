@@ -1,16 +1,21 @@
-/*******************************************************************************
- * Copyright (c) 2018 EclipseSource
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v2.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v20.html
+/********************************************************************************
+ * Copyright (c) 2019 EclipseSource and others.
  *
- * Contributors:
- * 	Philip Langer - initial API and implementation
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
-import { EnableStandardToolsAction, EnableToolsAction, Tool } from "./tool";
+import { EnableDefaultToolsAction, EnableToolsAction, Tool } from "./tool";
 import { IActionHandlerInitializer, IActionHandler, ActionHandlerRegistry } from "../actions/action-handler";
 import { Action } from "../actions/action";
 import { ICommand } from "../commands/command";
@@ -25,15 +30,15 @@ import { matchesKeystroke } from "../../utils/keyboard";
  * this editor. A tool can be active or not. A tool manager ensures that activating a set of tools
  * will disable all other tools, allowing them to invoke behavior when they become enabled or disabled.
  */
-export interface ToolManager {
+export interface IToolManager {
 
     /** All tools managed by this tool manager. */
     readonly managedTools: Tool[];
 
-    /** The tools that are enabled by standard, whenever no other tool is enabled. */
-    readonly standardTools: Tool[];
+    /** The tools that are enabled by default, whenever no other tool is enabled. */
+    readonly defaultTools: Tool[];
 
-    /** The currently active tools, which are either specifically enabled tools, or the standard tools. */
+    /** The currently active tools, which are either specifically enabled tools, or the default tools. */
     readonly activeTools: Tool[];
 
     /**
@@ -42,34 +47,34 @@ export interface ToolManager {
      * tools indicated in `toolIds`, making them the currently active tools. If this manager
      * doesn't manage one or more tools specified in `toolIds`, it'll do nothing. If not a
      * single tool that shall be enabled was found in the managed tools, it'll fall back to
-     * the standard tools.
+     * the default tools.
      *
      * @param tools The tools to be enabled.
      */
     enable(toolIds: string[]): void;
 
     /**
-     * Enables all standard tools.
+     * Enables all default tools.
      */
-    enableStandardTools(): void;
+    enableDefaultTools(): void;
 
     /** Disables all currently active tools. After this call, no tool will be active anymore. */
     disableActiveTools(): void;
 
-    registerStandardTools(...tools: Tool[]): void;
+    registerDefaultTools(...tools: Tool[]): void;
 
     registerTools(...tools: Tool[]): void;
 }
 
 @injectable()
-export class DefaultToolManager implements ToolManager {
+export class ToolManager implements IToolManager {
 
-    readonly standardTools: Tool[] = [];
     readonly tools: Tool[] = [];
-    private actives: Tool[] = [];
+    readonly defaultTools: Tool[] = [];
+    readonly actives: Tool[] = [];
 
     get managedTools(): Tool[] {
-        return this.standardTools.concat(this.tools);
+        return this.defaultTools.concat(this.tools);
     }
 
     get activeTools(): Tool[] {
@@ -78,11 +83,11 @@ export class DefaultToolManager implements ToolManager {
 
     disableActiveTools() {
         this.actives.forEach(tool => tool.disable());
-        this.actives = [];
+        this.actives.splice(0, this.actives.length);
     }
 
-    enableStandardTools() {
-        this.enable(this.standardTools.map(tool => tool.id));
+    enableDefaultTools() {
+        this.enable(this.defaultTools.map(tool => tool.id));
     }
 
     enable(toolIds: string[]) {
@@ -100,9 +105,9 @@ export class DefaultToolManager implements ToolManager {
         return this.managedTools.find(tool => tool.id === toolId);
     }
 
-    registerStandardTools(...tools: Tool[]) {
+    registerDefaultTools(...tools: Tool[]) {
         for (const tool of tools) {
-            this.standardTools.push(tool);
+            this.defaultTools.push(tool);
         }
     }
 
@@ -115,17 +120,17 @@ export class DefaultToolManager implements ToolManager {
 
 @injectable()
 export class ToolManagerActionHandlerInitializer implements IActionHandlerInitializer, IActionHandler {
-    @inject(TYPES.ToolManager)
-    readonly toolManager: ToolManager;
+    @inject(TYPES.IToolManager)
+    readonly toolManager: IToolManager;
 
     initialize(registry: ActionHandlerRegistry): void {
-        registry.register(EnableStandardToolsAction.KIND, this);
+        registry.register(EnableDefaultToolsAction.KIND, this);
         registry.register(EnableToolsAction.KIND, this);
     }
 
     handle(action: Action): void | ICommand | Action {
-        if (action instanceof EnableStandardToolsAction) {
-            this.toolManager.enableStandardTools();
+        if (action instanceof EnableDefaultToolsAction) {
+            this.toolManager.enableDefaultTools();
         } else if (action instanceof EnableToolsAction) {
             this.toolManager.enable(action.toolIds);
         }
@@ -133,10 +138,10 @@ export class ToolManagerActionHandlerInitializer implements IActionHandlerInitia
 }
 
 @injectable()
-export class StandardToolsEnablingKeyListener extends KeyListener {
+export class DefaultToolsEnablingKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new EnableStandardToolsAction()];
+            return [new EnableDefaultToolsAction()];
         }
         return [];
     }
