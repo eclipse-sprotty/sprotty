@@ -197,7 +197,7 @@ export class FitToScreenCommand extends BoundsAwareViewportCommand {
             : 2 *  this.action.padding;
         let zoom = Math.min(
             model.canvasBounds.width / (bounds.width + delta),
-            model.canvasBounds.height / bounds.height + delta);
+            model.canvasBounds.height / (bounds.height + delta));
         if (this.action.maxZoom !== undefined)
            zoom = Math.min(zoom, this.action.maxZoom);
         return {
