@@ -37,6 +37,9 @@ export * from './base/model/smodel-storage';
 export * from './base/model/smodel-utils';
 export * from './base/model/smodel';
 
+export * from './base/tool-manager/tool-manager';
+export * from './base/tool-manager/tool';
+
 export * from './base/views/key-tool';
 export * from './base/views/mouse-tool';
 export * from './base/views/thunk-view';
