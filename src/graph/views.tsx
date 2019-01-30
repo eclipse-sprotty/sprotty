@@ -84,13 +84,17 @@ export class SRoutingHandleView implements IView {
             if (position !== undefined) {
                 const node = <circle class-sprotty-routing-handle={true}
                         class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
-                        cx={position.x} cy={position.y}/>;   // Radius must be specified via CSS
+                        cx={position.x} cy={position.y} r={this.getRadius()}/>;
                 setAttr(node, 'data-kind', handle.kind);
                 return node;
             }
         }
         // Fallback: Create an empty group
         return <g/>;
+    }
+
+    getRadius(): number {
+        return 7;
     }
 
     protected getPosition(handle: SRoutingHandle, route: RoutedPoint[]): Point | undefined {
