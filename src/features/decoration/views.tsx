@@ -21,7 +21,9 @@ import { VNode } from 'snabbdom/vnode';
 import { IView, RenderingContext } from '../../base/views/view';
 import { SIssueMarker, SIssueSeverity } from './model';
 import { setClass } from '../../base/views/vnode-utils';
+import { injectable } from 'inversify';
 
+@injectable()
 export class IssueMarkerView implements IView {
     render(marker: SIssueMarker, context: RenderingContext): VNode {
         const scale = 16 / 1792;

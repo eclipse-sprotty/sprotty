@@ -15,6 +15,7 @@
  ********************************************************************************/
 
 export const TYPES = {
+    Action: Symbol('Action'),
     IActionDispatcher: Symbol('IActionDispatcher'),
     IActionDispatcherProvider: Symbol('IActionDispatcherProvider'),
     IActionHandlerInitializer: Symbol('IActionHandlerInitializer'),
@@ -22,7 +23,7 @@ export const TYPES = {
     AnimationFrameSyncer: Symbol('AnimationFrameSyncer'),
     CommandStackOptions: Symbol('CommandStackOptions'),
     IButtonHandler: Symbol('IButtonHandler'),
-    ICommand: Symbol('ICommand'),
+    CommandRegistration: Symbol('CommandRegistration'),
     ICommandStack: Symbol('ICommandStack'),
     ICommandStackProvider: Symbol('ICommandStackProvider'),
     DOMHelper: Symbol('DOMHelper'),

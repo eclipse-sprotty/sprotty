@@ -17,10 +17,12 @@
 /** @jsx svg */
 import { svg } from 'snabbdom-jsx';
 
-import { RenderingContext, RectangularNodeView, IView, SNode } from "../../../src";
 import { VNode } from "snabbdom/vnode";
+import { IView, RectangularNodeView, RenderingContext, SNode } from "../../../src";
 import { PopupButton } from "./model";
+import { injectable } from "inversify";
 
+@injectable()
 export class MindmapNodeView extends RectangularNodeView {
     render(node: SNode, context: RenderingContext): VNode {
         return <g class-node={true}>
@@ -33,6 +35,7 @@ export class MindmapNodeView extends RectangularNodeView {
     }
 }
 
+@injectable()
 export class PopupButtonView implements IView {
 
     static readonly SIZE = 24;

@@ -18,11 +18,13 @@ import { h } from "snabbdom";
 import { VNode, VNodeData } from "snabbdom/vnode";
 import { SModelElement } from "../model/smodel";
 import { RenderingContext, IView } from "./view";
+import { injectable } from "inversify";
 
 /**
  * An view that avoids calculation and patching of VNodes unless some model properties have changed.
  * Based on snabbdom's thunks.
  */
+@injectable()
 export abstract class ThunkView implements IView {
 
     /**

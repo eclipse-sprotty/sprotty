@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { Point } from "../../utils/geometry";
 import { canEditRouting, SRoutingHandle, RoutingHandleKind } from './model';
 import { Action } from "../../base/actions/action";
@@ -23,6 +23,7 @@ import { SModelElement, SModelRoot, SParentElement, SModelIndex } from '../../ba
 import { Animation } from '../../base/animations/animation';
 import { SDanglingAnchor } from "../../graph/sgraph";
 import { Routable, isRoutable } from "../routing/model";
+import { TYPES } from "../../base/types";
 
 export function createRoutingHandle(kind: RoutingHandleKind, parentId: string, index: number): SRoutingHandle {
     const handle = new SRoutingHandle();
@@ -62,7 +63,7 @@ export class SwitchEditModeCommand extends Command {
     protected elementsToDeactivate: SModelElement[] = [];
     protected handlesToRemove: { handle: SRoutingHandle, parent: SParentElement & Routable, point?: Point }[] = [];
 
-    constructor(public action: SwitchEditModeAction) {
+    constructor(@inject(TYPES.Action) public action: SwitchEditModeAction) {
         super();
     }
 
@@ -182,7 +183,7 @@ export class MoveRoutingHandleCommand extends Command {
     resolvedMoves: Map<string, ResolvedHandleMove> = new Map;
     originalRoutingPoints: Map<string, Point[]> = new Map;
 
-    constructor(protected action: MoveRoutingHandleAction) {
+    constructor(@inject(TYPES.Action) protected action: MoveRoutingHandleAction) {
         super();
     }
 

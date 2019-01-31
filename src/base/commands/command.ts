@@ -14,15 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { injectable } from "inversify";
 import { ILogger } from "../../utils/logging";
+import { Action } from "../actions/action";
+import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { SModelRoot } from "../model/smodel";
 import { IModelFactory } from "../model/smodel-factory";
 import { IViewer } from "../views/viewer";
-import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { Action } from "../actions/action";
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler";
-import { injectable, multiInject, optional } from "inversify";
-import { TYPES } from "../types";
 
 /**
  * A command holds the behaviour of an action.
@@ -63,14 +61,24 @@ export interface ICommand {
  */
 export type CommandResult = SModelRoot | Promise<SModelRoot>;
 
-export interface ICommandFactory {
-    KIND: string
-    new (a: Action): ICommand
-}
-
 /**
  * Base class for all commands.
+ *
+ * Command instances are created via dependency injection and should take
+ * the respective action as an injected constructor parameter. They must
+ * also define a static <code>KIND</code> which is used to map an
+ * <code>Action#kind</code>.
+ *
+ * <pre>
+ * export class MyCommand extends Command {
+ *   static KIND = 'MyCommand'
+ *   constructor(@inject(TYPES.Action) action: MyAction) {
+ *   ...
+ * }
+ * @inject(TYPES.Action)
+ * </pre>
  */
+@injectable()
 export abstract class Command implements ICommand {
 
     abstract execute(context: CommandExecutionContext): CommandResult;
@@ -88,6 +96,7 @@ export abstract class Command implements ICommand {
  * the user would have to push CTRL-Z for each mouse move element that
  * resuted in a command.
  */
+@injectable()
 export abstract class MergeableCommand extends Command {
     /**
      * Tries to merge the given command with this.
@@ -99,7 +108,6 @@ export abstract class MergeableCommand extends Command {
         return false;
     }
 }
-
 
 /**
  * A hidden command is used to trigger the rendering of a model on a
@@ -115,6 +123,7 @@ export abstract class MergeableCommand extends Command {
  * neither undoable nor redoable. The command stack does not push them on
  * any stack and forwards the resulting model to the invisible viewer.
  */
+@injectable()
 export abstract class HiddenCommand extends Command {
     abstract execute(context: CommandExecutionContext): SModelRoot;
 
@@ -129,6 +138,7 @@ export abstract class HiddenCommand extends Command {
     }
 }
 
+@injectable()
 export abstract class PopupCommand extends Command {
 }
 
@@ -142,6 +152,7 @@ export abstract class PopupCommand extends Command {
  * based on a model state that has changed. The command stack handles system
  * commands in a special way to overcome these issues.
  */
+@injectable()
 export abstract class SystemCommand extends Command {
 }
 
@@ -169,27 +180,4 @@ export interface CommandExecutionContext {
 
     /** provides the ticks for animations */
     syncer: AnimationFrameSyncer
-}
-
-export class CommandActionHandler implements IActionHandler {
-    constructor(private commandType: ICommandFactory) {
-    }
-
-    handle(action: Action): ICommand {
-        return new this.commandType(action);
-    }
-}
-
-@injectable()
-export class CommandActionHandlerInitializer implements IActionHandlerInitializer {
-
-    constructor(@multiInject(TYPES.ICommand) @optional() protected commandCtrs: (ICommandFactory)[]) {
-
-    }
-
-    initialize(registry: ActionHandlerRegistry): void {
-        this.commandCtrs.forEach(
-            commandCtr => registry.registerCommand(commandCtr)
-        );
-    }
 }

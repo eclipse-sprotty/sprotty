@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { Point, centerOfLine } from '../../utils/geometry';
 import { SChildElement } from '../../base/model/smodel';
 import { VNode } from "snabbdom/vnode";
@@ -39,6 +39,7 @@ import { SDanglingAnchor } from "../../graph/sgraph";
 import { ReconnectAction } from "../edit/reconnect";
 import { DeleteElementAction } from "../edit/delete";
 import { isConnectable, isRoutable, Routable } from "../routing/model";
+import { TYPES } from "../../base/types";
 
 export class MoveAction implements Action {
     kind = MoveCommand.KIND;
@@ -68,13 +69,14 @@ export interface ResolvedElementRoute {
     toRoute: Point[]
 }
 
+@injectable()
 export class MoveCommand extends MergeableCommand {
     static readonly KIND = 'move';
 
     resolvedMoves: Map<string, ResolvedElementMove> = new Map;
     resolvedRoutes: Map<string, ResolvedElementRoute> = new Map;
 
-    constructor(protected action: MoveAction) {
+    constructor(@inject(TYPES.Action) protected action: MoveAction) {
         super();
     }
 

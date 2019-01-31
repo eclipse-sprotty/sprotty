@@ -18,6 +18,8 @@ import { Command, CommandExecutionContext, CommandResult } from "../../base/comm
 import { Action } from "../../base/actions/action";
 import { SModelElement, SParentElement, SChildElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
+import { TYPES } from "../../base/types";
+import { inject, injectable } from "inversify";
 
 export const deletableFeature = Symbol('deletableFeature');
 
@@ -39,12 +41,13 @@ export class ResolvedDelete {
     parent: SParentElement;
 }
 
+@injectable()
 export class DeleteElementCommand extends Command {
     static readonly KIND = 'delete';
 
     resolvedDeletes: ResolvedDelete[] = [];
 
-    constructor(readonly action: DeleteElementAction) {
+    constructor(@inject(TYPES.Action) readonly action: DeleteElementAction) {
         super();
     }
 

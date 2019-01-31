@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { isValidDimension, almostEquals } from "../../utils/geometry";
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
-import { Command, CommandExecutionContext, CommandResult } from '../../base/commands/command';
+import { CommandExecutionContext, CommandResult, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
 import { Action } from '../../base/actions/action';
 import { SModelRootSchema, SModelRoot, SChildElement, SModelElement, SParentElement } from "../../base/model/smodel";
@@ -29,6 +29,7 @@ import { ViewportRootElement } from "../viewport/viewport-root";
 import { isSelectable } from "../select/model";
 import { MatchResult, ModelMatcher, Match, forEachMatch } from "./model-matching";
 import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
+import { TYPES } from "../../base/types";
 
 /**
  * Sent from the model source to the client in order to update the model. If no model is present yet,
@@ -62,7 +63,7 @@ export class UpdateModelCommand extends Command {
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(public action: UpdateModelAction) {
+    constructor(@inject(TYPES.Action) public action: UpdateModelAction) {
         super();
     }
 

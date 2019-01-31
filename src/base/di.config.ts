@@ -34,11 +34,12 @@ import { ViewRegistry } from "./views/view";
 import { ViewerCache } from "./views/viewer-cache";
 import { DOMHelper } from "./views/dom-helper";
 import { IdDecorator } from "./views/id-decorator";
-import { CommandActionHandlerInitializer } from "./commands/command";
+import { configureCommand, CommandActionHandlerInitializer } from "./commands/command-registration";
 import { CssClassDecorator } from "./views/css-class-decorator";
 import { ToolManager, DefaultToolsEnablingKeyListener, ToolManagerActionHandlerInitializer } from "./tool-manager/tool-manager";
+import { SetModelCommand } from "./features/set-model";
 
-const defaultContainerModule = new ContainerModule(bind => {
+const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // Logging ---------------------------------------------
     bind(TYPES.ILogger).to(NullLogger).inSingletonScope();
     bind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
@@ -122,10 +123,13 @@ const defaultContainerModule = new ContainerModule(bind => {
     bind(TYPES.AnimationFrameSyncer).to(AnimationFrameSyncer).inSingletonScope();
 
     // Canvas Initialization ---------------------------------------------
-    bind(TYPES.ICommand).toConstructor(InitializeCanvasBoundsCommand);
+    configureCommand({ bind, isBound }, InitializeCanvasBoundsCommand);
     bind(CanvasBoundsInitializer).toSelf().inSingletonScope();
     bind(TYPES.IVNodeDecorator).toService(CanvasBoundsInitializer);
     bind(TYPES.SModelStorage).to(SModelStorage).inSingletonScope();
+
+    // Model commands ---------------------------------------------
+    configureCommand({ bind, isBound }, SetModelCommand);
 
     // Tool manager initialization ------------------------------------
     bind(TYPES.IToolManager).to(ToolManager).inSingletonScope();

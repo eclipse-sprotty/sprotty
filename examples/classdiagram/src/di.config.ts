@@ -21,7 +21,8 @@ import {
     viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule, expandModule,
     fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, SGraphFactory,
     PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
-    edgeLayoutModule
+    edgeLayoutModule,
+    updateModule
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
@@ -65,6 +66,6 @@ export default (useWebsocket: boolean, containerId: string) => {
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        edgeEditModule, edgeLayoutModule, classDiagramModule);
+        updateModule, edgeEditModule, edgeLayoutModule, classDiagramModule);
     return container;
 };

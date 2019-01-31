@@ -17,6 +17,8 @@
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
 import { SParentElement, SChildElement, SModelElementSchema } from "../../base/model/smodel";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../base/types";
 
 export class CreateElementAction implements Action {
     readonly kind = CreateElementCommand.KIND;
@@ -24,13 +26,14 @@ export class CreateElementAction implements Action {
     constructor(readonly containerId: string, readonly elementSchema: SModelElementSchema) {}
 }
 
+@injectable()
 export class CreateElementCommand extends Command {
     static readonly KIND = "createElement";
 
     container: SParentElement;
     newElement: SChildElement;
 
-    constructor(readonly action: CreateElementAction) {
+    constructor(@inject(TYPES.Action) readonly action: CreateElementAction) {
         super();
     }
 

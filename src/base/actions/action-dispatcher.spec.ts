@@ -17,7 +17,7 @@
 import 'reflect-metadata';
 import 'mocha';
 import { expect } from "chai";
-import { Container } from "inversify";
+import { Container, injectable } from "inversify";
 import { TYPES } from "../types";
 import { EMPTY_BOUNDS } from '../../utils/geometry';
 import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
@@ -25,12 +25,13 @@ import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
 import { Command, CommandExecutionContext, CommandResult, ICommand } from '../commands/command';
 import { ICommandStack } from "../commands/command-stack";
 import { IActionDispatcher } from "./action-dispatcher";
-import { ActionHandlerRegistry } from "./action-handler";
 import { Action } from "./action";
 import defaultModule from "../di.config";
+import { SetModelAction } from '../features/set-model';
+import { EMPTY_ROOT } from '../model/smodel-factory';
 
 describe('ActionDispatcher', () => {
-
+    @injectable()
     class MockCommand extends Command {
         static KIND = 'mock';
 
@@ -56,7 +57,7 @@ describe('ActionDispatcher', () => {
             execCount: 0,
             undoCount: 0,
             redoCount: 0
-        }
+        };
 
         const mockCommandStack: ICommandStack = {
             execute(command: ICommand): Promise<any> {
@@ -82,12 +83,11 @@ describe('ActionDispatcher', () => {
         container.rebind(TYPES.ICommandStack).toConstantValue(mockCommandStack);
 
         const actionDispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-        const registry = container.get<ActionHandlerRegistry>(TYPES.ActionHandlerRegistry);
-        return { actionDispatcher, registry, state };
+        return { actionDispatcher, state };
     }
 
     it('should execute/undo/redo', () => {
-        const { actionDispatcher, registry, state } = setup();
+        const { actionDispatcher, state } = setup();
 
         // an initial SetModelAction is fired automatically
         expect(state.execCount).to.be.equal(1);
@@ -121,21 +121,16 @@ describe('ActionDispatcher', () => {
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(1);
-
-        registry.registerCommand(MockCommand);
-        actionDispatcher.dispatch(new MockAction());
-        expect(state.execCount).to.be.equal(3);
-        expect(state.undoCount).to.be.equal(1);
-        expect(state.redoCount).to.be.equal(1);
     });
 
     it('should resolve/reject promises', async () => {
-        const { actionDispatcher, registry } = setup();
-        actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
-        registry.registerCommand(MockCommand);
-        
-        await actionDispatcher.dispatch(new MockAction());
+        const { actionDispatcher } = setup();
+        await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+
+        await actionDispatcher.dispatch(new SetModelAction(EMPTY_ROOT));
         // We expect this promis to be resolved
+        await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+        // remove the blocking
 
         try {
             await actionDispatcher.dispatch({ kind: 'unknown' });

@@ -16,10 +16,10 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    SCompartmentView, SLabelView, defaultModule, TYPES, ViewRegistry, configureViewerOptions,
+    SCompartmentView, SLabelView, defaultModule, TYPES, configureViewerOptions,
     ConsoleLogger, LogLevel, WebSocketDiagramServer, boundsModule, selectModule, viewportModule,
     moveModule, fadeModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView,
-    exportModule, SvgExporter
+    exportModule, SvgExporter, configureView
 } from '../../../src';
 import { ChipModelFactory } from "./chipmodel-factory";
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from "./views";
@@ -54,24 +54,24 @@ export default (useWebsocket: boolean) => {
             needsClientLayout: true,
             needsServerLayout: false
         });
+
+        // Register views
+        configureView({ bind, isBound }, 'processor', ProcessorView);
+        configureView({ bind, isBound }, 'core', CoreView);
+        configureView({ bind, isBound }, 'simplecore', SimpleCoreView);
+        configureView({ bind, isBound }, 'crossbar', CrossbarView);
+        configureView({ bind, isBound }, 'channel', ChannelView);
+        configureView({ bind, isBound }, 'label:heading', SLabelView);
+        configureView({ bind, isBound }, 'label:info', SLabelView);
+        configureView({ bind, isBound }, 'comp', SCompartmentView);
+        configureView({ bind, isBound }, 'html', HtmlRootView);
+        configureView({ bind, isBound }, 'pre-rendered', PreRenderedView);
     });
 
     const container = new Container();
     container.load(defaultModule, boundsModule, selectModule, moveModule, viewportModule, fadeModule,
         exportModule, hoverModule, multicoreModule);
 
-    // Register views
-    const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
-    viewRegistry.register('processor', ProcessorView);
-    viewRegistry.register('core', CoreView);
-    viewRegistry.register('simplecore', SimpleCoreView);
-    viewRegistry.register('crossbar', CrossbarView);
-    viewRegistry.register('channel', ChannelView);
-    viewRegistry.register('label:heading', SLabelView);
-    viewRegistry.register('label:info', SLabelView);
-    viewRegistry.register('comp', SCompartmentView);
-    viewRegistry.register('html', HtmlRootView);
-    viewRegistry.register('pre-rendered', PreRenderedView);
 
     return container;
 };

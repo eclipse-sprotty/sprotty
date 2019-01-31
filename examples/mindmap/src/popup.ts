@@ -106,7 +106,7 @@ export class AddElementAction implements Action {
 export class AddElementCommand extends Command {
     static readonly KIND = 'addElement';
 
-    constructor(public action: AddElementAction) {
+    constructor(@inject(TYPES.Action) public action: AddElementAction) {
         super();
     }
 

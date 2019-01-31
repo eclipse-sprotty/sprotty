@@ -25,6 +25,8 @@ import { isBoundsAware } from "../bounds/model";
 import { isSelectable } from "../select/model";
 import { ViewportAnimation } from "./viewport";
 import { isViewport, Viewport } from "./model";
+import { injectable, inject } from "inversify";
+import { TYPES } from "../../base/types";
 
 /**
  * Triggered when the user requests the viewer to center on the current model. The resulting
@@ -56,6 +58,7 @@ export class FitToScreenAction implements Action {
     }
 }
 
+@injectable()
 export abstract class BoundsAwareViewportCommand extends Command {
 
     oldViewport: Viewport;
@@ -153,7 +156,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
 export class CenterCommand extends BoundsAwareViewportCommand {
     static readonly KIND = 'center';
 
-    constructor(protected action: CenterAction) {
+    constructor(@inject(TYPES.Action) protected action: CenterAction) {
         super(action.animate);
     }
 
@@ -179,7 +182,7 @@ export class CenterCommand extends BoundsAwareViewportCommand {
 export class FitToScreenCommand extends BoundsAwareViewportCommand {
     static readonly KIND = 'fit';
 
-    constructor(protected action: FitToScreenAction) {
+    constructor(@inject(TYPES.Action) protected action: FitToScreenAction) {
         super(action.animate);
     }
 

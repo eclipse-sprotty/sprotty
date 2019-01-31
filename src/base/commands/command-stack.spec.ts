@@ -17,7 +17,7 @@
 import "reflect-metadata";
 import "mocha";
 import { expect } from "chai";
-import { Container } from "inversify";
+import { Container, injectable } from "inversify";
 import { TYPES } from "../types";
 import defaultModule from "../di.config";
 import { IViewer } from "../views/viewer";
@@ -28,7 +28,7 @@ import { ICommandStack } from "./command-stack";
 
 let operations: string[] = [];
 
-
+@injectable()
 class TestCommand extends Command {
     constructor(public name: string) {
         super();

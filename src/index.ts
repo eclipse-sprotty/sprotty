@@ -24,9 +24,10 @@ export * from './base/animations/animation-frame-syncer';
 export * from './base/animations/animation';
 export * from './base/animations/easing';
 
+export * from './base/commands/command';
+export * from './base/commands/command-registration';
 export * from './base/commands/command-stack-options';
 export * from './base/commands/command-stack';
-export * from './base/commands/command';
 
 export * from './base/features/initialize-canvas';
 export * from './base/features/set-model';
@@ -126,6 +127,7 @@ import fadeModule from "./features/fade/di.config";
 import selectModule from "./features/select/di.config";
 import undoRedoModule from "./features/undo-redo/di.config";
 import viewportModule from "./features/viewport/di.config";
+import updateModule from "./features/update/di.config";
 import hoverModule from "./features/hover/di.config";
 import exportModule from "./features/export/di.config";
 import expandModule from "./features/expand/di.config";
@@ -134,7 +136,7 @@ import buttonModule from "./features/button/di.config";
 import decorationModule from "./features/decoration/di.config";
 import edgeLayoutModule from "./features/edge-layout/di.config";
 
-export { moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, hoverModule,
+export { moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, updateModule, hoverModule,
     exportModule, expandModule, openModule, buttonModule, decorationModule, edgeLayoutModule };
 
 
@@ -172,5 +174,6 @@ export * from "./utils/anchors";
 export * from "./utils/browser";
 export * from "./utils/color";
 export * from "./utils/geometry";
+export * from "./utils/inversify";
 export * from "./utils/logging";
 export * from "./utils/registry";

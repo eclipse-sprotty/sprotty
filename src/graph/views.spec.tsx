@@ -26,7 +26,7 @@ import { TYPES } from "../base/types";
 import { IVNodeDecorator } from '../base/views/vnode-decorators';
 import { CircularNodeView, RectangularNodeView } from "../lib/svg-views";
 import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
-import { RenderingContext, ViewRegistry } from "../base/views/view";
+import { RenderingContext, configureView } from "../base/views/view";
 import { ModelRendererFactory } from "../base/views/viewer";
 import { PolylineEdgeView, SGraphView } from './views';
 import { SModelElement, SParentElement } from "../base/model/smodel";
@@ -60,10 +60,11 @@ describe('graph views', () => {
         constr: CircularNode
     });
 
-    const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
-    viewRegistry.register('graph', SGraphView);
-    viewRegistry.register('node:circle', CircleNodeView);
-    viewRegistry.register('edge:straight', PolylineEdgeView);
+    configureView(container, 'graph', SGraphView);
+    configureView(container, 'node:circle', CircleNodeView);
+    configureView(container, 'edge:straight', PolylineEdgeView);
+    configureView(container, 'port', RectangularNodeView);
+
     const decorators = container.getAll<IVNodeDecorator>(TYPES.IVNodeDecorator);
     const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)(decorators);
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
@@ -189,7 +190,6 @@ describe('PolylineEdgeView', () => {
         renderElement: function(element: SModelElement): VNode { return <g></g>; },
         renderChildren: function(element: SParentElement): VNode[] { return []; }
     } as RenderingContext;
-    context.viewRegistry.register('port', RectangularNodeView);
 
     it('correctly translates edge source and target position', () => {
         const edge = model.index.getById('edge1') as SEdge;

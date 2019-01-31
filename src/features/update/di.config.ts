@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2019 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,11 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from '../../base/types';
-import { MoveCommand, MoveMouseListener, LocationDecorator } from './move';
 import { configureCommand } from "../../base/commands/command-registration";
+import { UpdateModelCommand } from "./update-model";
 
-const moveModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.MouseListener).to(MoveMouseListener);
-    configureCommand({ bind, isBound }, MoveCommand);
-    bind(TYPES.IVNodeDecorator).to(LocationDecorator);
-    bind(TYPES.HiddenVNodeDecorator).to(LocationDecorator);
+const updateModule = new ContainerModule((bind, _unbind, isBound) => {
+    configureCommand({ bind, isBound }, UpdateModelCommand);
 });
 
-export default moveModule;
+export default updateModule;

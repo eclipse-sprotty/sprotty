@@ -21,8 +21,8 @@ import { IssueMarkerView } from "./views";
 import { TYPES } from "../../base/types";
 import { DecorationPlacer } from "./decoration-placer";
 
-const decorationModule = new ContainerModule(bind => {
-    configureModelElement({bind}, 'marker', SIssueMarker, IssueMarkerView);
+const decorationModule = new ContainerModule((bind, _unbind, isBound)  => {
+    configureModelElement({ bind, isBound }, 'marker', SIssueMarker, IssueMarkerView);
     bind(DecorationPlacer).toSelf().inSingletonScope();
     bind(TYPES.IVNodeDecorator).toService(DecorationPlacer);
 });

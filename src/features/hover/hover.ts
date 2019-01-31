@@ -39,10 +39,11 @@ export class HoverFeedbackAction implements Action {
     }
 }
 
+@injectable()
 export class HoverFeedbackCommand extends Command {
     static readonly KIND = 'hoverFeedback';
 
-    constructor(public action: HoverFeedbackAction) {
+    constructor(@inject(TYPES.Action) public action: HoverFeedbackAction) {
         super();
     }
 
@@ -93,13 +94,14 @@ export class SetPopupModelAction implements Action {
     }
 }
 
+@injectable()
 export class SetPopupModelCommand extends PopupCommand {
     static readonly KIND = 'setPopupModel';
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(public action: SetPopupModelAction) {
+    constructor(@inject(TYPES.Action) public action: SetPopupModelAction) {
         super();
     }
 

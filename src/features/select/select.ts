@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, optional } from 'inversify';
+import { inject, optional, injectable } from 'inversify';
 import { VNode } from "snabbdom/vnode";
 import { isCtrlOrCmd } from "../../utils/browser";
 import { matchesKeystroke } from "../../utils/keyboard";
@@ -32,6 +32,7 @@ import { SRoutingHandle } from '../edit/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { isSelectable } from "./model";
 import { isRoutable } from '../routing/model';
+import { TYPES } from '../../base/types';
 
 /**
  * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting
@@ -66,13 +67,14 @@ export type ElementSelection = {
     index: number
 };
 
+@injectable()
 export class SelectCommand extends Command {
     static readonly KIND = 'elementSelected';
 
     protected selected: ElementSelection[] = [];
     protected deselected: ElementSelection[] = [];
 
-    constructor(public action: SelectAction) {
+    constructor(@inject(TYPES.Action) public action: SelectAction) {
         super();
     }
 
@@ -135,12 +137,13 @@ export class SelectCommand extends Command {
     }
 }
 
+@injectable()
 export class SelectAllCommand extends Command {
     static readonly KIND = 'allSelected';
 
     protected previousSelection: Record<string, boolean> = {};
 
-    constructor(public action: SelectAllAction) {
+    constructor(@inject(TYPES.Action) public action: SelectAllAction) {
         super();
     }
 

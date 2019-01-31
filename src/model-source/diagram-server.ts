@@ -90,9 +90,6 @@ export abstract class DiagramServer extends ModelSource {
     protected initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
-        // Register model manipulation commands
-        registry.registerCommand(UpdateModelCommand);
-
         // Register this model source
         registry.register(ComputedBoundsAction.KIND, this);
         registry.register(RequestBoundsCommand.KIND, this);

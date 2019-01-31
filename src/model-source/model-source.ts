@@ -15,13 +15,13 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { TYPES } from "../base/types";
 import { Action } from "../base/actions/action";
-import { ActionHandlerRegistry, IActionHandler } from "../base/actions/action-handler";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
-import { ViewerOptions } from "../base/views/viewer-options";
-import { RequestModelAction, SetModelCommand } from "../base/features/set-model";
+import { ActionHandlerRegistry, IActionHandler } from "../base/actions/action-handler";
 import { ICommand } from "../base/commands/command";
+import { RequestModelAction } from "../base/features/set-model";
+import { TYPES } from "../base/types";
+import { ViewerOptions } from "../base/views/viewer-options";
 import { ExportSvgAction } from '../features/export/svg-exporter';
 
 /**
@@ -52,9 +52,6 @@ export abstract class ModelSource implements IActionHandler {
     }
 
     protected initialize(registry: ActionHandlerRegistry): void {
-        // Register model manipulation commands
-        registry.registerCommand(SetModelCommand);
-
         // Register this model source
         registry.register(RequestModelAction.KIND, this);
         registry.register(ExportSvgAction.KIND, this);

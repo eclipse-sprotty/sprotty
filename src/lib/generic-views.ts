@@ -18,7 +18,9 @@ import virtualize from "snabbdom-virtualize/strings";
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
 import { PreRenderedElement } from "./model";
+import { injectable } from "inversify";
 
+@injectable()
 export class PreRenderedView implements IView {
     render(model: PreRenderedElement, context: RenderingContext): VNode {
         const node = virtualize(model.code);

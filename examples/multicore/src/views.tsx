@@ -20,7 +20,9 @@ import { svg } from 'snabbdom-jsx';
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb } from '../../../src';
 import { Channel, Core, Crossbar, Processor } from './chipmodel';
+import { injectable } from 'inversify';
 
+@injectable()
 export class ProcessorView implements IView {
     render(model: Processor, context: RenderingContext): VNode {
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
@@ -40,6 +42,7 @@ export class ProcessorView implements IView {
 export const CORE_WIDTH = 50;
 export const CORE_DISTANCE = 10;
 
+@injectable()
 export class SimpleCoreView extends ThunkView {
 
     watchedArgs(model: Core): any[] {
@@ -68,6 +71,7 @@ export class SimpleCoreView extends ThunkView {
     }
 }
 
+@injectable()
 export class CoreView implements IView {
 
     render(model: Core, context: RenderingContext): VNode {
@@ -89,6 +93,7 @@ export class CoreView implements IView {
     }
 }
 
+@injectable()
 export class CrossbarView implements IView {
     render(model: Crossbar, context: RenderingContext): VNode {
         const rows = (model.parent as Processor).rows;
@@ -149,6 +154,7 @@ class KernelColor {
 
 const CHANNEL_WIDTH = 2;
 
+@injectable()
 export class ChannelView extends ThunkView {
 
     watchedArgs(model: Channel): any[] {

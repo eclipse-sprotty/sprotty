@@ -167,7 +167,7 @@ describe('HBoxLayouter', () => {
         compLeft.layout = 'vbox';
         compLeft.layoutOptions = {
             vGap: 15
-        }
+        };
         compLeft.children = [
             slabel({width: 50, height: 10}),
             slabel({width: 50, height: 10}),
@@ -177,7 +177,7 @@ describe('HBoxLayouter', () => {
         compRight.layout = 'vbox';
         model.layoutOptions = {
             vGap: 15
-        }
+        };
         compRight.children = [
             slabel({width: 50, height: 10}),
             slabel({width: 50, height: 10}),

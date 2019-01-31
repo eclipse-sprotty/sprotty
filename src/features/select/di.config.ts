@@ -17,10 +17,11 @@
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
 import { SelectCommand, SelectAllCommand, SelectKeyboardListener, SelectMouseListener } from "./select";
+import { configureCommand } from "../../base/commands/command-registration";
 
-const selectModule = new ContainerModule(bind => {
-    bind(TYPES.ICommand).toConstructor(SelectCommand);
-    bind(TYPES.ICommand).toConstructor(SelectAllCommand);
+const selectModule = new ContainerModule((bind, _unbind, isBound) => {
+    configureCommand({ bind, isBound }, SelectCommand);
+    configureCommand({ bind, isBound }, SelectAllCommand);
     bind(TYPES.KeyListener).to(SelectKeyboardListener);
     bind(TYPES.MouseListener).to(SelectMouseListener);
 });

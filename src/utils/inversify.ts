@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2019 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,6 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ContainerModule } from "inversify";
-import { TYPES } from '../../base/types';
-import { MoveCommand, MoveMouseListener, LocationDecorator } from './move';
-import { configureCommand } from "../../base/commands/command-registration";
-
-const moveModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.MouseListener).to(MoveMouseListener);
-    configureCommand({ bind, isBound }, MoveCommand);
-    bind(TYPES.IVNodeDecorator).to(LocationDecorator);
-    bind(TYPES.HiddenVNodeDecorator).to(LocationDecorator);
-});
-
-export default moveModule;
+export function isInjectable(constr: new (...args: any[]) => any): boolean {
+    return Reflect.getMetadata('inversify:paramtypes', constr) !== undefined;
+}

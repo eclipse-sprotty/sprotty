@@ -17,13 +17,15 @@
 import { ContainerModule } from "inversify";
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
+import { configureCommand } from "../base/commands/command-registration";
+import { UpdateModelCommand } from "../features/update/update-model";
 
 /**
  * This container module does NOT provide any binding for TYPES.ModelSource because that needs to be
  * done according to the needs of the application. You can choose between a local (LocalModelSource)
  * and a remote (e.g. WebSocketDiagramServer) implementation.
  */
-const modelSourceModule = new ContainerModule(bind => {
+const modelSourceModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.ModelSourceProvider).toProvider<ModelSource>((context) => {
         return () => {
             return new Promise<ModelSource>((resolve) => {
@@ -31,6 +33,7 @@ const modelSourceModule = new ContainerModule(bind => {
             });
         };
     });
+    configureCommand({ bind, isBound }, UpdateModelCommand);
 });
 
 export default modelSourceModule;

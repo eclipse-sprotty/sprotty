@@ -79,12 +79,13 @@ export class InitializeCanvasBoundsAction implements Action {
     }
 }
 
+@injectable()
 export class InitializeCanvasBoundsCommand extends SystemCommand {
     static readonly KIND: string  = 'initializeCanvasBounds';
 
     private newCanvasBounds: Bounds;
 
-    constructor(protected action: InitializeCanvasBoundsAction) {
+    constructor(@inject(TYPES.Action) protected action: InitializeCanvasBoundsAction) {
         super();
     }
 
