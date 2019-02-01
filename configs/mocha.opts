@@ -1,6 +1,5 @@
---require ts-node/register
 --require reflect-metadata/Reflect
 --reporter spec
 --colors
---watch-extensions ts,tsx
+--watch-extensions js
 --timeout 5000
