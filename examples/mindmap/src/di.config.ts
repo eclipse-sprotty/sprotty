@@ -19,8 +19,8 @@ import {
     defaultModule, TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger,
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
     viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule,
-    expandModule, fadeModule, buttonModule, SGraphFactory, PreRenderedElement, SNode, SLabel,
-    HtmlRoot, configureModelElement, configureCommand, updateModule
+    expandModule, fadeModule, buttonModule, PreRenderedElement, SNode, SLabel, HtmlRoot,
+    configureModelElement, configureCommand, graphModule, updateModule
 } from "../../../src";
 import { MindmapNodeView, PopupButtonView } from "./views";
 import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
@@ -36,7 +36,6 @@ export default (useWebsocket: boolean, containerId: string) => {
             bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider).inSingletonScope();
         bind(TYPES.PopupMouseListener).to(PopupButtonMouseListener);
         configureCommand(container, AddElementCommand);
@@ -57,6 +56,6 @@ export default (useWebsocket: boolean, containerId: string) => {
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        updateModule, mindmapModule);
+        updateModule, graphModule, mindmapModule);
     return container;
 };

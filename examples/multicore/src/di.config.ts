@@ -19,7 +19,7 @@ import {
     SCompartmentView, SLabelView, defaultModule, TYPES, configureViewerOptions,
     ConsoleLogger, LogLevel, WebSocketDiagramServer, boundsModule, selectModule, viewportModule,
     moveModule, fadeModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView,
-    exportModule, SvgExporter, configureView, updateModule
+    exportModule, SvgExporter, configureView, graphModule, updateModule
 } from '../../../src';
 import { ChipModelFactory } from "./chipmodel-factory";
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from "./views";
@@ -70,8 +70,7 @@ export default (useWebsocket: boolean) => {
 
     const container = new Container();
     container.load(defaultModule, boundsModule, selectModule, moveModule, viewportModule, fadeModule,
-        exportModule, hoverModule, updateModule, multicoreModule);
-
+        exportModule, hoverModule, graphModule, updateModule, multicoreModule);
 
     return container;
 };

@@ -124,6 +124,8 @@ export * from "./features/viewport/viewport-root";
 export * from "./features/viewport/viewport";
 export * from "./features/viewport/zoom";
 
+import graphModule from "./graph/di.config";
+
 import moveModule from "./features/move/di.config";
 import boundsModule from "./features/bounds/di.config";
 import fadeModule from "./features/fade/di.config";
@@ -139,9 +141,8 @@ import buttonModule from "./features/button/di.config";
 import decorationModule from "./features/decoration/di.config";
 import edgeLayoutModule from "./features/edge-layout/di.config";
 
-export { moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, updateModule, hoverModule,
+export { graphModule, moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, updateModule, hoverModule,
     exportModule, expandModule, openModule, buttonModule, decorationModule, edgeLayoutModule };
-
 
 // ------------------ Graph ------------------
 
