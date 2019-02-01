@@ -16,9 +16,10 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    defaultModule, TYPES, configureViewerOptions, SGraphFactory, SGraphView, PolylineEdgeView, ConsoleLogger,
+    defaultModule, TYPES, configureViewerOptions, SGraphView, PolylineEdgeView, ConsoleLogger,
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule, viewportModule,
-    LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge, updateModule
+    LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge, updateModule,
+    graphModule
 } from "../../../src";
 import { CircleNodeView } from "./views";
 
@@ -32,7 +33,6 @@ export default (useWebsocket: boolean) => {
             bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
@@ -43,7 +43,7 @@ export default (useWebsocket: boolean) => {
     });
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule, exportModule,
-        updateModule, circlegraphModule);
+    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule, 
+        exportModule, updateModule, graphModule, circlegraphModule);
     return container;
 };

@@ -14,26 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import {
-    SShapeElement, Expandable, boundsFeature, expandFeature, fadeFeature, layoutContainerFeature,
-    layoutableChildFeature, RectangularNode
-} from "../../../src";
+import { ContainerModule } from "inversify";
+import { TYPES } from "../base/types";
+import { SGraphFactory } from "./sgraph-factory";
 
-export class ClassNode extends RectangularNode implements Expandable {
-    expanded: boolean = false;
+const graphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
+});
 
-    hasFeature(feature: symbol) {
-        return feature === expandFeature || super.hasFeature(feature);
-    }
-}
-
-export class Icon extends SShapeElement {
-    size = {
-        width: 32,
-        height: 32
-    };
-
-    hasFeature(feature: symbol): boolean {
-        return feature === boundsFeature || feature === layoutContainerFeature || feature === layoutableChildFeature || feature === fadeFeature;
-    }
-}
+export default graphModule;

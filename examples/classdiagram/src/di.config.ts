@@ -19,10 +19,9 @@ import {
     defaultModule, TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, PolylineEdgeView,
     ConsoleLogger, LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
     viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule, expandModule,
-    fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, SGraphFactory,
-    PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
-    edgeLayoutModule,
-    updateModule
+    fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
+    HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
+    edgeLayoutModule, updateModule, graphModule
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
@@ -39,7 +38,6 @@ export default (useWebsocket: boolean, containerId: string) => {
             bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider);
         bind(TYPES.StateAwareModelProvider).to(ModelProvider);
         const context = { bind, unbind, isBound, rebind };
@@ -66,6 +64,6 @@ export default (useWebsocket: boolean, containerId: string) => {
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        updateModule, edgeEditModule, edgeLayoutModule, classDiagramModule);
+        updateModule, graphModule, edgeEditModule, edgeLayoutModule, classDiagramModule);
     return container;
 };
