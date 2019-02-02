@@ -212,7 +212,7 @@ export class ModelProvider implements IStateAwareModelProvider {
             sourceId: node0.id,
             targetId: node1.id,
             children: [
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge_label_on',
                     type: 'label:text',
                     text: 'on',
@@ -222,7 +222,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         rotate: false
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge_label_top',
                     type: 'label:text',
                     text: 'top',
@@ -232,7 +232,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         rotate: false
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge_label_bottom',
                     type: 'label:text',
                     text: 'bottom',
@@ -242,7 +242,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         rotate: false
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge_label_left',
                     type: 'label:text',
                     text: 'left',
@@ -252,7 +252,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         rotate: false
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge_label_right',
                     type: 'label:text',
                     text: 'right',
@@ -269,8 +269,9 @@ export class ModelProvider implements IStateAwareModelProvider {
             type: 'edge:straight',
             sourceId: node0.id,
             targetId: node2.id,
+            routerKind: 'manhattan',
             children: [
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge1_label_on',
                     type: 'label:text',
                     text: 'on',
@@ -280,7 +281,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         rotate: true
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge1_label_top',
                     type: 'label:text',
                     text: 'top',
@@ -289,7 +290,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         side: 'top',
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge1_label_bottom',
                     type: 'label:text',
                     text: 'bottom',
@@ -298,7 +299,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         side: 'bottom',
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge1_label_left',
                     type: 'label:text',
                     text: 'left',
@@ -307,7 +308,7 @@ export class ModelProvider implements IStateAwareModelProvider {
                         side: 'left'
                     }
                 },
-                <SLabelSchema> { 
+                <SLabelSchema> {
                     id: 'edge1_label_right',
                     type: 'label:text',
                     text: 'right',

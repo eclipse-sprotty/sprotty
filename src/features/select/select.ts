@@ -14,25 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, optional, injectable } from 'inversify';
+import { inject, injectable, optional } from 'inversify';
 import { VNode } from "snabbdom/vnode";
-import { isCtrlOrCmd } from "../../utils/browser";
-import { matchesKeystroke } from "../../utils/keyboard";
-import { toArray } from '../../utils/iterable';
-import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
-import { findParentByFeature } from "../../base/model/smodel-utils";
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext } from "../../base/commands/command";
-import { MouseListener } from "../../base/views/mouse-tool";
+import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
+import { findParentByFeature } from "../../base/model/smodel-utils";
+import { TYPES } from '../../base/types';
 import { KeyListener } from "../../base/views/key-tool";
+import { MouseListener } from "../../base/views/mouse-tool";
 import { setClass } from "../../base/views/vnode-utils";
+import { isCtrlOrCmd } from "../../utils/browser";
+import { toArray } from '../../utils/iterable';
+import { matchesKeystroke } from "../../utils/keyboard";
 import { ButtonHandlerRegistry } from '../button/button-handler';
 import { SButton } from '../button/model';
-import { SRoutingHandle } from '../edit/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
+import { SRoutingHandle } from '../routing/model';
+import { SRoutableElement } from '../routing/model';
 import { isSelectable } from "./model";
-import { isRoutable } from '../routing/model';
-import { TYPES } from '../../base/types';
 
 /**
  * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting
@@ -211,22 +211,22 @@ export class SelectMouseListener extends MouseListener {
                     if (!selectableTarget.selected) {
                         this.wasSelected = false;
                         result.push(new SelectAction([selectableTarget.id], deselect.map(e => e.id)));
-                        const routableDeselect = deselect.filter(e => isRoutable(e)).map(e => e.id);
-                        if (isRoutable(selectableTarget))
+                        const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
+                        if (selectableTarget instanceof SRoutableElement)
                             result.push(new SwitchEditModeAction([selectableTarget.id], routableDeselect));
                         else if (routableDeselect.length > 0)
                             result.push(new SwitchEditModeAction([], routableDeselect));
                     } else if (isCtrlOrCmd(event)) {
                         this.wasSelected = false;
                         result.push(new SelectAction([], [selectableTarget.id]));
-                        if (isRoutable(selectableTarget))
+                        if (selectableTarget instanceof SRoutableElement)
                             result.push(new SwitchEditModeAction([], [selectableTarget.id]));
                     } else {
                         this.wasSelected = true;
                     }
                 } else {
                     result.push(new SelectAction([], deselect.map(e => e.id)));
-                    const routableDeselect = deselect.filter(e => isRoutable(e)).map(e => e.id);
+                    const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
                     if (routableDeselect.length > 0)
                         result.push(new SwitchEditModeAction([], routableDeselect));
                 }

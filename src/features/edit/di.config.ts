@@ -16,10 +16,10 @@
 
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
-import { SwitchEditModeCommand, MoveRoutingHandleCommand } from "./edit-routing";
+import { SwitchEditModeCommand } from "./edit-routing";
 import { ReconnectCommand } from "./reconnect";
 import { configureModelElement } from "../../base/views/view";
-import { SDanglingAnchor } from "../../graph/sgraph";
+import { SDanglingAnchor } from "../../features/routing/model";
 import { EmptyGroupView } from "../../lib/svg-views";
 import { DeleteElementCommand } from "./delete";
 import { EditLabelMouseListener } from "./edit-label";
@@ -27,7 +27,6 @@ import { configureCommand } from "../../base/commands/command-registration";
 
 export const edgeEditModule = new ContainerModule((bind, _unbind, isBound)  => {
     configureCommand({ bind, isBound }, SwitchEditModeCommand);
-    configureCommand({ bind, isBound }, MoveRoutingHandleCommand);
     configureCommand({ bind, isBound }, ReconnectCommand);
     configureCommand({ bind, isBound }, DeleteElementCommand);
     configureModelElement({ bind, isBound }, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);

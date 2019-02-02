@@ -26,7 +26,7 @@ import { TYPES } from "../base/types";
 import { IVNodeDecorator } from '../base/views/vnode-decorators';
 import { CircularNodeView, RectangularNodeView } from "../lib/svg-views";
 import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
-import { RenderingContext, configureView } from "../base/views/view";
+import { RenderingContext, configureView, ViewRegistry } from "../base/views/view";
 import { ModelRendererFactory } from "../base/views/viewer";
 import { PolylineEdgeView, SGraphView } from './views';
 import { SModelElement, SParentElement } from "../base/model/smodel";
@@ -36,6 +36,8 @@ import defaultModule from "../base/di.config";
 import selectModule from "../features/select/di.config";
 import moveModule from "../features/move/di.config";
 import { SEdge, SGraph, SNode, SPortSchema, SEdgeSchema, SNodeSchema } from "./sgraph";
+import graphModule from './di.config';
+import routingModule from '../features/routing/di.config';
 
 const toHTML = require('snabbdom-to-html');
 
@@ -53,8 +55,9 @@ describe('graph views', () => {
     }
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule);
+    container.load(defaultModule, selectModule, moveModule, graphModule, routingModule);
     container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
+
     container.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
         type: 'node:circle',
         constr: CircularNode
@@ -68,6 +71,7 @@ describe('graph views', () => {
     const decorators = container.getAll<IVNodeDecorator>(TYPES.IVNodeDecorator);
     const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)(decorators);
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
 
     it('render an empty graph', () => {
         const schema = {
@@ -91,7 +95,8 @@ describe('graph views', () => {
 
     it('render a straight edge', () => {
         const graph = createModel();
-        const view = new PolylineEdgeView();
+
+        const view = viewRegistry.get('edge:straight');
         const vnode = view.render(graph.index.getById('edge0') as SEdge, context);
         expect(toHTML(vnode)).to.be.equal(
             '<g class="sprotty-edge"><path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" /></g>');
@@ -99,7 +104,7 @@ describe('graph views', () => {
 
     it('render a circle node', () => {
         const graph = createModel();
-        const view = new CircleNodeView();
+        const view = viewRegistry.get('node:circle');
         const vnode = view.render(graph.index.getById('node0') as SNode, context);
         expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
     });
@@ -126,7 +131,7 @@ describe('graph views', () => {
 
 describe('PolylineEdgeView', () => {
     const container = new Container();
-    container.load(defaultModule);
+    container.load(defaultModule, routingModule);
     container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
     container.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
         type: 'node',
@@ -136,6 +141,7 @@ describe('PolylineEdgeView', () => {
         type: 'port',
         constr: RectangularPort
     });
+    configureView(container, 'edge:straight', PolylineEdgeView);
 
     const factory = container.get<SGraphFactory>(TYPES.IModelFactory);
     const model = factory.createRoot({
@@ -183,9 +189,10 @@ describe('PolylineEdgeView', () => {
         ]
     });
 
-    const edgeView = new PolylineEdgeView();
+    const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
+    const edgeView = viewRegistry.get('edge:straight');
     const context = {
-        viewRegistry: container.get(TYPES.ViewRegistry),
+        viewRegistry,
         decorate: function(vnode: VNode, element: SModelElement): VNode { return vnode; },
         renderElement: function(element: SModelElement): VNode { return <g></g>; },
         renderChildren: function(element: SParentElement): VNode[] { return []; }

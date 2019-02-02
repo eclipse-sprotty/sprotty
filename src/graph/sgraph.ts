@@ -15,20 +15,19 @@
  ********************************************************************************/
 
 import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
-import { Alignable, alignFeature, boundsFeature, layoutableChildFeature, layoutContainerFeature, ModelLayoutOptions,
-    SShapeElement, SShapeElementSchema, BoundsAware } from '../features/bounds/model';
+import { Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    ModelLayoutOptions, SShapeElement, SShapeElementSchema } from '../features/bounds/model';
+import { edgeLayoutFeature } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
-import { editFeature, filterEditModeHandles } from '../features/edit/model';
+import { editFeature } from '../features/edit/model';
 import { Fadeable, fadeFeature } from '../features/fade/model';
 import { Hoverable, hoverFeedbackFeature, popupFeature } from '../features/hover/model';
 import { moveFeature } from '../features/move/model';
-import { Routable, SConnectableElement, connectableFeature } from '../features/routing/model';
+import { connectableFeature, SConnectableElement, SRoutableElement } from '../features/routing/model';
 import { Selectable, selectFeature } from '../features/select/model';
 import { ViewportRootElement } from '../features/viewport/viewport-root';
-import { Bounds, ORIGIN_POINT, Point, EMPTY_BOUNDS, combine } from '../utils/geometry';
+import { Bounds, ORIGIN_POINT, Point } from '../utils/geometry';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
-import { IEdgeRouter, LinearEdgeRouter, RoutedPoint } from '../features/routing/routing';
-import { edgeLayoutFeature } from '../features/edge-layout/model';
 
 /**
  * Serializable schema for graph-like models.
@@ -60,6 +59,7 @@ export interface SNodeSchema extends SShapeElementSchema {
     selected?: boolean
     hoverFeedback?: boolean
     opacity?: number
+    anchorKind?: string
 }
 
 /**
@@ -74,7 +74,7 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    canConnect(routable: Routable, role: string) {
+    canConnect(routable: SRoutableElement, role: string) {
         return this.children.find(c => c instanceof SPort) === undefined;
     }
 
@@ -92,6 +92,7 @@ export interface SPortSchema extends SShapeElementSchema {
     selected?: boolean
     hoverFeedback?: boolean
     opacity?: number
+    anchorKind?: string;
 }
 
 /**
@@ -114,6 +115,7 @@ export class SPort extends SConnectableElement implements Selectable, Fadeable, 
 export interface SEdgeSchema extends SModelElementSchema {
     sourceId: string
     targetId: string
+    routerKind?: string;
     routingPoints?: Point[]
     selected?: boolean
     hoverFeedback?: boolean
@@ -125,45 +127,10 @@ export interface SEdgeSchema extends SModelElementSchema {
  * each of which can be either a node or a port. The source and target elements are referenced via their
  * ids and can be resolved with the index stored in the root element.
  */
-export class SEdge extends SChildElement implements Fadeable, Selectable, Routable, Hoverable, BoundsAware {
-    sourceId: string;
-    targetId: string;
-    routingPoints: Point[] = [];
+export class SEdge extends SRoutableElement implements Fadeable, Selectable, Hoverable, BoundsAware {
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
-    sourceAnchorCorrection?: number;
-    targetAnchorCorrection?: number;
-    _router?: IEdgeRouter;
-
-    get source(): SConnectableElement | undefined {
-        return this.index.getById(this.sourceId) as SConnectableElement;
-    }
-
-    get target(): SConnectableElement | undefined {
-        return this.index.getById(this.targetId) as SConnectableElement;
-    }
-
-    get router() {
-        if (!this._router)
-            this._router = new LinearEdgeRouter();
-        return this._router;
-    }
-
-    route(): RoutedPoint[] {
-        const route = this.router.route(this);
-        return filterEditModeHandles(route, this);
-    }
-
-    get bounds(): Bounds {
-        // this should also work for splines, which have the convex hull property
-        return this.routingPoints.reduce<Bounds>((bounds, routingPoint) => combine(bounds, {
-            x: routingPoint.x,
-            y: routingPoint.y,
-            width: 0,
-            height: 0
-        }), EMPTY_BOUNDS);
-    }
 
     hasFeature(feature: symbol): boolean {
         return feature === fadeFeature || feature === selectFeature ||
@@ -314,11 +281,3 @@ export class SGraphIndex extends SModelIndex<SModelElement> {
     }
 }
 
-export class SDanglingAnchor extends SConnectableElement {
-    original?: SModelElement;
-    type = 'dangling-anchor';
-
-    hasFeature(feature: symbol) {
-        return feature === deletableFeature;
-    }
-}

@@ -15,18 +15,18 @@
  ********************************************************************************/
 
  /** @jsx svg */
+import { inject, injectable } from 'inversify';
 import { svg } from 'snabbdom-jsx';
-
 import { VNode } from "snabbdom/vnode";
-import { Point, centerOfLine, maxDistance } from '../utils/geometry';
-import { setAttr } from '../base/views/vnode-utils';
-import { RenderingContext, IView } from "../base/views/view";
 import { getSubType } from "../base/model/smodel-utils";
-import { SRoutingHandle } from '../features/edit/model';
+import { IView, RenderingContext } from "../base/views/view";
+import { setAttr } from '../base/views/vnode-utils';
+import { SRoutingHandle } from '../features/routing/model';
+import { SRoutableElement } from '../features/routing/model';
+import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
+import { Point } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
-import { RoutedPoint } from '../features/routing/routing';
-import { isRoutable } from '../features/routing/model';
-import { injectable } from 'inversify';
+
 
 /**
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.
@@ -47,8 +47,11 @@ export class SGraphView implements IView {
 @injectable()
 export class PolylineEdgeView implements IView {
 
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
     render(edge: Readonly<SEdge>, context: RenderingContext): VNode {
-        const route = edge.route();
+        const router = this.edgeRouterRegistry.get(edge.routerKind);
+        const route = router.route(edge);
         if (route.length === 0)
             return this.renderDanglingEdge("Cannot compute route", edge, context);
 
@@ -80,17 +83,24 @@ export class PolylineEdgeView implements IView {
 
 @injectable()
 export class SRoutingHandleView implements IView {
+
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
     minimalPointDistance: number = 10;
 
     render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
         if (args && args.route) {
-            const position = this.getPosition(handle, args.route);
-            if (position !== undefined) {
-                const node = <circle class-sprotty-routing-handle={true}
-                        class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
-                        cx={position.x} cy={position.y} r={this.getRadius()}/>;
-                setAttr(node, 'data-kind', handle.kind);
-                return node;
+            if (handle.parent instanceof SRoutableElement) {
+                const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
+                const theRoute = args.route === undefined ? router.route(handle.parent) : args.route;
+                const position = router.getHandlePosition(handle.parent, theRoute, handle);
+                if (position !== undefined) {
+                    const node = <circle class-sprotty-routing-handle={true}
+                            class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
+                            cx={position.x} cy={position.y} r={this.getRadius()}/>;
+                    setAttr(node, 'data-kind', handle.kind);
+                    return node;
+                }
             }
         }
         // Fallback: Create an empty group
@@ -99,58 +109,6 @@ export class SRoutingHandleView implements IView {
 
     getRadius(): number {
         return 7;
-    }
-
-    protected getPosition(handle: SRoutingHandle, route: RoutedPoint[]): Point | undefined {
-        switch (handle.kind) {
-            case 'line': return this.getLinePosition(handle, route);
-            case 'junction': return this.getJunctionPosition(handle, route);
-            case 'source': return route[0];
-            case 'target': return route[route.length - 1];
-        }
-    }
-
-    protected getJunctionPosition(handle: SRoutingHandle, route: RoutedPoint[]): Point | undefined {
-        return route.find(rp => rp.pointIndex === handle.pointIndex);
-    }
-
-    protected getLinePosition(handle: SRoutingHandle, route: RoutedPoint[]): Point | undefined {
-        const parent = handle.parent;
-        if (isRoutable(parent)) {
-            const getIndex = (rp: RoutedPoint) => {
-                if (rp.pointIndex !== undefined)
-                    return rp.pointIndex;
-                else if (rp.kind === 'target')
-                    return parent.routingPoints.length;
-                else
-                    return -1;
-            };
-            let rp1, rp2: RoutedPoint | undefined;
-            for (const rp of route) {
-                const i = getIndex(rp);
-                if (i <= handle.pointIndex && (rp1 === undefined || i > getIndex(rp1)))
-                    rp1 = rp;
-                if (i > handle.pointIndex && (rp2 === undefined || i < getIndex(rp2)))
-                    rp2 = rp;
-            }
-            if (rp1 !== undefined && rp2 !== undefined) {
-                // Skip this handle if its related line segment is not included in the route
-                if (getIndex(rp1) !== handle.pointIndex && handle.pointIndex >= 0) {
-                    const point = parent.routingPoints[handle.pointIndex];
-                    if (maxDistance(point, rp1) >= maxDistance(point, rp2))
-                        return undefined;
-                }
-                if (getIndex(rp2) !== handle.pointIndex + 1 && handle.pointIndex + 1 < parent.routingPoints.length) {
-                    const point = parent.routingPoints[handle.pointIndex + 1];
-                    if (maxDistance(point, rp1) < maxDistance(point, rp2))
-                        return undefined;
-                }
-                // Skip this handle if its related line segment is too short
-                if (maxDistance(rp1, rp2) >= this.minimalPointDistance)
-                    return centerOfLine(rp1, rp2);
-            }
-        }
-        return undefined;
     }
 }
 

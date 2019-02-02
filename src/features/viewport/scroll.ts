@@ -23,7 +23,7 @@ import { findParentByFeature } from "../../base/model/smodel-utils";
 import { ViewportAction } from "./viewport";
 import { isViewport, Viewport } from "./model";
 import { isMoveable } from "../move/model";
-import { SRoutingHandle } from "../edit/model";
+import { SRoutingHandle } from "../routing/model";
 
 export interface Scrollable extends SModelExtension {
     scroll: Point
