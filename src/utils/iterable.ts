@@ -23,6 +23,7 @@ export interface FluentIterable<T> extends Iterable<T> {
     filter(callback: (element: T) => boolean): FluentIterable<T>
     map<T2>(callback: (element: T) => T2): FluentIterable<T2>
     forEach(callback: (element: T, index: number) => void): void
+    indexOf(element: any): number
 }
 
 /**
@@ -60,6 +61,19 @@ export class FluentIterableImpl<S, T> implements FluentIterable<T> {
                 callback(result.value, index);
             index++;
         } while (!result.done);
+    }
+
+    indexOf(element: any): number {
+        const iterator = this[Symbol.iterator]();
+        let index = 0;
+        let result: IteratorResult<T>;
+        do {
+            result = iterator.next();
+            if (result.value === element)
+                return index;
+            index++;
+        } while (!result.done);
+        return -1;
     }
 }
 

@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { SChildElement, SModelElement, SModelElementSchema } from "./smodel";
-import { Point } from "../../utils/geometry";
+import { Point, Bounds } from "../../utils/geometry";
 
 /**
  * Model element types can include a colon to separate the basic type and a sub-type. This function
@@ -120,4 +120,19 @@ export function translatePoint(point: Point, source: SModelElement, target: SMod
         }
     }
     return point;
+}
+
+/**
+ * Translate some bounds from the coordinate system of the source element to the coordinate system
+ * of the target element.
+ */
+export function translateBounds(bounds: Bounds, source: SModelElement, target: SModelElement): Bounds {
+    const upperLeft = translatePoint(bounds, source, target);
+    const lowerRight = translatePoint({ x: bounds.x + bounds.width, y: bounds.y + bounds.height }, source, target);
+    return {
+        x: upperLeft.x,
+        y: upperLeft.y,
+        width: lowerRight.x - upperLeft.x,
+        height: lowerRight.y - upperLeft.y
+    };
 }

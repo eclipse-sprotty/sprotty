@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement, SChildElement } from "../../base/model/smodel";
 import { IVNodeDecorator } from "../../base/views/vnode-decorators";
@@ -22,10 +22,14 @@ import { isDecoration, Decoration } from "./model";
 import { setAttr } from "../../base/views/vnode-utils";
 import { Point, ORIGIN_POINT } from "../../utils/geometry";
 import { isSizeable } from "../bounds/model";
-import { isRoutable } from "../routing/model";
+import { SRoutableElement } from "../routing/model";
+import { EdgeRouterRegistry } from "../routing/routing";
 
 @injectable()
 export class DecorationPlacer implements IVNodeDecorator {
+
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (isDecoration(element)) {
             const position = this.getPosition(element);
@@ -36,8 +40,9 @@ export class DecorationPlacer implements IVNodeDecorator {
     }
 
     protected getPosition(element: SModelElement & Decoration): Point {
-        if (element instanceof SChildElement && isRoutable(element.parent)) {
-            const route = element.parent.route();
+        if (element instanceof SChildElement && element.parent instanceof SRoutableElement) {
+            const router = this.edgeRouterRegistry.get(element.parent.routerKind);
+            const route = router.route(element.parent);
             if (route.length > 1) {
                 const index = Math.floor(0.5  * (route.length - 1));
                 const offset = isSizeable(element)

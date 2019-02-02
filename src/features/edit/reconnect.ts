@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Routable, isRoutable } from "../routing/model";
-import { SModelElement } from "../../base/model/smodel";
+import { inject, injectable } from "inversify";
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
-import { injectable, inject } from "inversify";
 import { TYPES } from "../../base/types";
+import { SRoutableElement } from "../routing/model";
+import { EdgeMemento, EdgeRouterRegistry } from "../routing/routing";
 
 export class ReconnectAction implements Action {
     readonly kind =  ReconnectCommand.KIND;
@@ -33,58 +33,48 @@ export class ReconnectAction implements Action {
 export class ReconnectCommand extends Command {
     static KIND = 'reconnect';
 
-    routable?: Routable;
-    newSource?: SModelElement;
-    newTarget?: SModelElement;
-    oldSource?: SModelElement;
-    oldTarget?: SModelElement;
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
+    memento: EdgeMemento | undefined;
 
     constructor(@inject(TYPES.Action)readonly action: ReconnectAction) {
         super();
     }
 
     execute(context: CommandExecutionContext): CommandResult {
-        this.resolve(context);
-        this.doExecute();
+        this.doExecute(context);
         return context.root;
     }
 
-    private resolve(context: CommandExecutionContext) {
-        const routable = context.root.index.getById(this.action.routableId);
-        if (routable && isRoutable(routable)) {
-            this.routable = routable;
-            if (this.action.newSourceId) {
-                this.newSource = context.root.index.getById(this.action.newSourceId);
-                this.oldSource = routable.source;
-            }
-            if (this.action.newTargetId) {
-                this.newTarget = context.root.index.getById(this.action.newTargetId);
-                this.oldTarget = routable.target;
-            }
-        }
-    }
-
-    private doExecute() {
-        if (this.routable) {
-            if (this.newSource)
-                this.routable.sourceId = this.newSource.id;
-            if (this.newTarget)
-                this.routable.targetId = this.newTarget.id;
+    private doExecute(context: CommandExecutionContext) {
+        const index = context.root.index;
+        const edge = index.getById(this.action.routableId);
+        if (edge instanceof SRoutableElement) {
+            const router = this.edgeRouterRegistry.get(edge.routerKind);
+            const before = router.takeSnapshot(edge);
+            router.applyReconnect(edge, this.action.newSourceId, this.action.newTargetId);
+            const after = router.takeSnapshot(edge);
+            this.memento = {
+                edge: edge,
+                before,
+                after
+            };
         }
     }
 
     undo(context: CommandExecutionContext): CommandResult {
-        if (this.routable) {
-            if (this.oldSource)
-                this.routable.sourceId = this.oldSource.id;
-            if (this.oldTarget)
-                this.routable.targetId = this.oldTarget.id;
+        if (this.memento) {
+            const router = this.edgeRouterRegistry.get(this.memento.edge.routerKind);
+            router.applySnapshot(this.memento.edge, this.memento.before);
         }
         return context.root;
     }
 
     redo(context: CommandExecutionContext): CommandResult {
-        this.doExecute();
+        if (this.memento) {
+            const router = this.edgeRouterRegistry.get(this.memento.edge.routerKind);
+            router.applySnapshot(this.memento.edge, this.memento.after);
+        }
         return context.root;
     }
 }

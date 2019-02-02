@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement, SChildElement } from "../../base/model/smodel";
 import { IVNodeDecorator } from "../../base/views/vnode-decorators";
@@ -23,17 +23,22 @@ import { SEdge } from "../../graph/sgraph";
 import { EMPTY_BOUNDS, linear, Orientation, Point, toDegrees } from "../../utils/geometry";
 import { isAlignable, BoundsAware } from "../bounds/model";
 import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement } from "./model";
+import { EdgeRouterRegistry } from "../routing/routing";
 
 @injectable()
 export class EdgeLayoutDecorator implements IVNodeDecorator {
+
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (isEdgeLayoutable(element) && element.parent instanceof SEdge) {
             if (element.bounds !== EMPTY_BOUNDS) {
                 const placement = this.getEdgePlacement(element);
                 const edge = element.parent;
                 const position = Math.min(1, Math.max(0, placement.position));
-                const pointOnEdge = edge.router.pointAt(edge, position);
-                const derivativeOnEdge = edge.router.derivativeAt(edge, position);
+                const router = this.edgeRouterRegistry.get(edge.routerKind);
+                const pointOnEdge = router.pointAt(edge, position);
+                const derivativeOnEdge = router.derivativeAt(edge, position);
                 let transform = '';
                 if (pointOnEdge && derivativeOnEdge) {
                     transform += `translate(${pointOnEdge.x}, ${pointOnEdge.y})`;

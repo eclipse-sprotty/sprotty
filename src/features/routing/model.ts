@@ -14,36 +14,48 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement, SParentElement } from '../../base/model/smodel';
+import { SChildElement, SModelElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { translatePoint } from '../../base/model/smodel-utils';
-import { RoutedPoint } from './routing';
 import { SEdge, SGraphIndex } from '../../graph/sgraph';
-import { center, Point } from '../../utils/geometry';
+import { Point, Bounds, combine, EMPTY_BOUNDS } from '../../utils/geometry';
 import { FluentIterable } from '../../utils/iterable';
 import { SShapeElement } from '../bounds/model';
+import { deletableFeature } from '../edit/delete';
+import { Selectable, selectFeature } from '../select/model';
+import { Hoverable, hoverFeedbackFeature } from '../hover/model';
+import { moveFeature } from '../move/model';
 
-export interface Routable extends SModelExtension {
-    routingPoints: Point[];
-    readonly source?: SConnectableElement;
-    readonly target?: SConnectableElement;
-    sourceId?: string,
-    targetId?: string,
-    route(): RoutedPoint[],
-    sourceAnchorCorrection?: number,
-    targetAnchorCorrection?: number,
-    parent: SParentElement
-}
+export abstract class SRoutableElement extends SChildElement {
+    routerKind?: string;
+    routingPoints: Point[] = [];
+    sourceId: string;
+    targetId: string;
+    sourceAnchorCorrection?: number;
+    targetAnchorCorrection?: number;
 
-export function isRoutable<T extends SModelElement>(element: T): element is T & Routable {
-    return (element as any).routingPoints !== undefined
-        && typeof((element as any).route) === 'function';
+    get source(): SConnectableElement | undefined {
+        return this.index.getById(this.sourceId) as SConnectableElement;
+    }
+
+    get target(): SConnectableElement | undefined {
+        return this.index.getById(this.targetId) as SConnectableElement;
+    }
+
+    get bounds(): Bounds {
+        // this should also work for splines, which have the convex hull property
+        return this.routingPoints.reduce<Bounds>((bounds, routingPoint) => combine(bounds, {
+            x: routingPoint.x,
+            y: routingPoint.y,
+            width: 0,
+            height: 0
+        }), EMPTY_BOUNDS);
+    }
 }
 
 export const connectableFeature = Symbol('connectableFeature');
 
 export interface Connectable extends SModelExtension {
-    canConnect(routable: Routable, role: 'source' | 'target'): boolean;
+    canConnect(routable: SRoutableElement, role: 'source' | 'target'): boolean;
 }
 
 export function isConnectable<T extends SModelElement>(element: T): element is Connectable & T {
@@ -56,6 +68,10 @@ export function isConnectable<T extends SModelElement>(element: T): element is C
  * ports (`SPort`). A node represents a main entity, while a port is a connection point inside a node.
  */
 export abstract class SConnectableElement extends SShapeElement implements Connectable {
+
+    anchorKind?: string;
+
+    strokeWidth: number = 0;
 
     /**
      * The incoming edges of this connectable element. They are resolved by the index, which must
@@ -73,38 +89,44 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
         return (this.index as SGraphIndex).getOutgoingEdges(this);
     }
 
-    /**
-     * Compute an anchor position for routing an edge towards this element.
-     *
-     * The default implementation returns the element's center point. If edges should be connected
-     * differently, e.g. to some point on the boundary of the element's view, the according computation
-     * should be implemented in a subclass by overriding this method.
-     *
-     * @param referencePoint The point from which the edge is routed towards this element
-     * @param offset An optional offset value to be considered in the anchor computation;
-     *               positive values should shift the anchor away from this element, negative values
-     *               should shift the anchor more to the inside.
-     */
-    getAnchor(referencePoint: Point, offset?: number): Point {
-        return center(this.bounds);
-    }
-
-    /**
-     * Compute an anchor position for routing an edge towards this element and correct any mismatch
-     * of the coordinate systems.
-     *
-     * @param refPoint The point from which the edge is routed towards this element
-     * @param refContainer The parent element that defines the coordinate system for `refPoint`
-     * @param edge The edge for which the anchor is computed
-     * @param offset An optional offset value (see `getAnchor`)
-     */
-    getTranslatedAnchor(refPoint: Point, refContainer: SParentElement, edge: Routable, offset?: number): Point {
-        const translatedRefPoint = translatePoint(refPoint, refContainer, this.parent);
-        const anchor = this.getAnchor(translatedRefPoint, offset);
-        return translatePoint(anchor, this.parent, edge.parent);
-    }
-
-    canConnect(routable: Routable, role: string) {
+    canConnect(routable: SRoutableElement, role: 'source' | 'target') {
         return true;
+    }
+}
+
+export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%';
+
+export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {
+    /**
+     * 'junction' is a point where two line segments meet,
+     * 'line' is a volatile handle placed on a line segment,
+     * 'source' and 'target' are the respective anchors.
+     */
+    kind: RoutingHandleKind;
+    /** The actual routing point index (junction) or the previous point index (line). */
+    pointIndex: number;
+    /** Whether the routing point is being dragged. */
+    editMode: boolean = false;
+
+    hoverFeedback: boolean = false;
+    selected: boolean = false;
+    danglingAnchor?: SDanglingAnchor;
+
+    hasFeature(feature: symbol): boolean {
+        return feature === selectFeature || feature === moveFeature || feature === hoverFeedbackFeature;
+    }
+}
+
+export class SDanglingAnchor extends SConnectableElement {
+    original?: SModelElement;
+    type = 'dangling-anchor';
+
+    constructor() {
+        super();
+        this.size = { width: 0, height: 0 };
+    }
+
+    hasFeature(feature: symbol) {
+        return feature === deletableFeature;
     }
 }

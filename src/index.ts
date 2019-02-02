@@ -106,7 +106,13 @@ export * from "./features/move/move";
 export * from "./features/open/open";
 export * from "./features/open/model";
 
+export * from "./features/routing/anchor";
+export * from "./features/routing/linear-edge-router";
+export * from "./features/routing/manhattan-anchors";
+export * from "./features/routing/manhattan-edge-router";
 export * from "./features/routing/model";
+export * from "./features/routing/polyline-anchors";
+export * from "./features/routing/polyline-edge-router";
 export * from "./features/routing/routing";
 
 export * from "./features/select/model";
@@ -126,23 +132,26 @@ export * from "./features/viewport/zoom";
 
 import graphModule from "./graph/di.config";
 
-import moveModule from "./features/move/di.config";
 import boundsModule from "./features/bounds/di.config";
-import fadeModule from "./features/fade/di.config";
-import selectModule from "./features/select/di.config";
-import undoRedoModule from "./features/undo-redo/di.config";
-import viewportModule from "./features/viewport/di.config";
-import updateModule from "./features/update/di.config";
-import hoverModule from "./features/hover/di.config";
-import exportModule from "./features/export/di.config";
-import expandModule from "./features/expand/di.config";
-import openModule from "./features/open/di.config";
 import buttonModule from "./features/button/di.config";
 import decorationModule from "./features/decoration/di.config";
 import edgeLayoutModule from "./features/edge-layout/di.config";
+import expandModule from "./features/expand/di.config";
+import exportModule from "./features/export/di.config";
+import fadeModule from "./features/fade/di.config";
+import hoverModule from "./features/hover/di.config";
+import moveModule from "./features/move/di.config";
+import openModule from "./features/open/di.config";
+import routingModule from "./features/routing/di.config";
+import selectModule from "./features/select/di.config";
+import undoRedoModule from "./features/undo-redo/di.config";
+import updateModule from "./features/update/di.config";
+import viewportModule from "./features/viewport/di.config";
 
-export { graphModule, moveModule, boundsModule, fadeModule, selectModule, undoRedoModule, viewportModule, updateModule, hoverModule,
-    exportModule, expandModule, openModule, buttonModule, decorationModule, edgeLayoutModule };
+export { graphModule, boundsModule, buttonModule, decorationModule, edgeLayoutModule,
+    expandModule,  exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
+    selectModule, undoRedoModule, updateModule, viewportModule
+};
 
 // ------------------ Graph ------------------
 
@@ -174,7 +183,6 @@ export { modelSourceModule };
 
 // ------------------ Utilities ------------------
 
-export * from "./utils/anchors";
 export * from "./utils/browser";
 export * from "./utils/color";
 export * from "./utils/geometry";

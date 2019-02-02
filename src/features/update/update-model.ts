@@ -200,7 +200,6 @@ export class UpdateModelCommand extends Command {
                     animationData.moves = [];
                 animationData.moves.push({
                     element: right,
-                    elementId: right.id,
                     fromPosition: leftPos,
                     toPosition: rightPos
                 });
@@ -252,9 +251,9 @@ export class UpdateModelCommand extends Command {
         if (data.moves !== undefined && data.moves.length > 0) {
             const movesMap: Map<string, ResolvedElementMove> = new Map;
             for (const move of data.moves) {
-                movesMap.set(move.elementId, move);
+                movesMap.set(move.element.id, move);
             }
-            animations.push(new MoveAnimation(root, movesMap, new Map, context, false));
+            animations.push(new MoveAnimation(root, movesMap, context, false));
         }
         if (data.resizes !== undefined && data.resizes.length > 0) {
             const resizesMap: Map<string, ResolvedElementResize> = new Map;

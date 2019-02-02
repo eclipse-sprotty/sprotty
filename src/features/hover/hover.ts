@@ -21,7 +21,7 @@ import { TYPES } from "../../base/types";
 import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, PopupCommand } from "../../base/commands/command";
+import { CommandExecutionContext, PopupCommand, SystemCommand } from "../../base/commands/command";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
 import { KeyListener } from "../../base/views/key-tool";
 import { findParentByFeature, findParent } from "../../base/model/smodel-utils";
@@ -40,7 +40,7 @@ export class HoverFeedbackAction implements Action {
 }
 
 @injectable()
-export class HoverFeedbackCommand extends Command {
+export class HoverFeedbackCommand extends SystemCommand {
     static readonly KIND = 'hoverFeedback';
 
     constructor(@inject(TYPES.Action) public action: HoverFeedbackAction) {
@@ -129,9 +129,22 @@ export interface HoverState {
 }
 
 export abstract class AbstractHoverMouseListener extends MouseListener {
+
+    protected mouseIsDown: boolean;
+
     constructor(@inject(TYPES.ViewerOptions) protected options: ViewerOptions,
                 @inject(TYPES.HoverState) protected state: HoverState) {
         super();
+    }
+
+    mouseDown() {
+        this.mouseIsDown = true;
+        return [];
+    }
+
+    mouseUp() {
+        this.mouseIsDown = false;
+        return [];
     }
 
     protected stopMouseOutTimer(): void {
@@ -213,49 +226,51 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 
     mouseOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
-        const popupTarget = findParent(target, hasPopupFeature);
-
-        if (this.state.popupOpen && (popupTarget === undefined ||
-            this.state.previousPopupElement !== undefined && this.state.previousPopupElement.id !== popupTarget.id)) {
-            result.push(this.startMouseOutTimer());
-        } else {
-            this.stopMouseOverTimer();
-            this.stopMouseOutTimer();
+        if (!this.mouseIsDown) {
+            const popupTarget = findParent(target, hasPopupFeature);
+            if (this.state.popupOpen && (popupTarget === undefined ||
+                this.state.previousPopupElement !== undefined && this.state.previousPopupElement.id !== popupTarget.id)) {
+                result.push(this.startMouseOutTimer());
+            } else {
+                this.stopMouseOverTimer();
+                this.stopMouseOutTimer();
+            }
+            if (popupTarget !== undefined &&
+                (this.state.previousPopupElement === undefined || this.state.previousPopupElement.id !== popupTarget.id)) {
+                result.push(this.startMouseOverTimer(popupTarget, event));
+            }
+            const hoverTarget = findParentByFeature(target, isHoverable);
+            if (hoverTarget !== undefined)
+                result.push(new HoverFeedbackAction(hoverTarget.id, true));
         }
-        if (popupTarget !== undefined &&
-            (this.state.previousPopupElement === undefined || this.state.previousPopupElement.id !== popupTarget.id)) {
-            result.push(this.startMouseOverTimer(popupTarget, event));
-        }
-
-        const hoverTarget = findParentByFeature(target, isHoverable);
-        if (hoverTarget !== undefined)
-            result.push(new HoverFeedbackAction(hoverTarget.id, true));
-
         return result;
     }
 
     mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
-
-        const elementUnderMouse = document.elementFromPoint(event.x, event.y);
-        if (!this.isSprottyPopup(elementUnderMouse)) {
-            if (this.state.popupOpen) {
-                const popupTarget = findParent(target, hasPopupFeature);
-                if (this.state.previousPopupElement !== undefined && popupTarget !== undefined
-                    && this.state.previousPopupElement.id === popupTarget.id)
-                    result.push(this.startMouseOutTimer());
+        if (!this.mouseIsDown) {
+            const elementUnderMouse = document.elementFromPoint(event.x, event.y);
+            if (!this.isSprottyPopup(elementUnderMouse)) {
+                if (this.state.popupOpen) {
+                    const popupTarget = findParent(target, hasPopupFeature);
+                    if (this.state.previousPopupElement !== undefined && popupTarget !== undefined
+                        && this.state.previousPopupElement.id === popupTarget.id)
+                        result.push(this.startMouseOutTimer());
+                }
+                this.stopMouseOverTimer();
+                const hoverTarget = findParentByFeature(target, isHoverable);
+                if (hoverTarget !== undefined)
+                    result.push(new HoverFeedbackAction(hoverTarget.id, false));
             }
-            this.stopMouseOverTimer();
-            const hoverTarget = findParentByFeature(target, isHoverable);
-            if (hoverTarget !== undefined)
-                result.push(new HoverFeedbackAction(hoverTarget.id, false));
         }
         return result;
     }
 
-    protected isSprottyPopup(element: Element): boolean {
-        return element && (element.id === this.options.popupDiv
-            || (!!element.parentElement && this.isSprottyPopup(element.parentElement)));
+    protected isSprottyPopup(element: Element | null): boolean {
+        return element
+            ? (element.id === this.options.popupDiv
+                || (!!element.parentElement && this.isSprottyPopup(element.parentElement)))
+            : false;
     }
 
     mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {

@@ -16,26 +16,18 @@
 
 import { SModelRoot, SModelRootSchema, SChildElement, SModelElementSchema } from "../base/model/smodel";
 import { Point, Dimension, ORIGIN_POINT, EMPTY_DIMENSION, Bounds } from "../utils/geometry";
-import { computeCircleAnchor, computeRectangleAnchor, computeDiamondAnchor } from '../utils/anchors';
 import { BoundsAware, boundsFeature, Alignable, alignFeature } from "../features/bounds/model";
 import { Locateable, moveFeature } from "../features/move/model";
 import { Selectable, selectFeature } from "../features/select/model";
 import { SNode, SPort } from '../graph/sgraph';
+import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from "../features/routing/anchor";
 
 /**
  * A node that is represented by a circle.
  */
 export class CircularNode extends SNode {
-    strokeWidth: number = 0;
-
-    protected get radius(): number {
-        const d = Math.min(this.size.width, this.size.height);
-        return d > 0 ? d / 2 : 0;
-    }
-
-    getAnchor(refPoint: Point, offset: number = 0): Point {
-        const strokeCorrection = 0.5 * this.strokeWidth;
-        return computeCircleAnchor(this.position, this.radius, refPoint, offset + strokeCorrection);
+    get anchorKind() {
+        return ELLIPTIC_ANCHOR_KIND;
     }
 }
 
@@ -43,11 +35,8 @@ export class CircularNode extends SNode {
  * A node that is represented by a rectangle.
  */
 export class RectangularNode extends SNode {
-    strokeWidth: number = 0;
-
-    getAnchor(refPoint: Point, offset: number = 0): Point {
-        const strokeCorrection = 0.5 * this.strokeWidth;
-        return computeRectangleAnchor(this.bounds, refPoint, offset + strokeCorrection);
+    get anchorKind() {
+        return RECTANGULAR_ANCHOR_KIND;
     }
 }
 
@@ -55,29 +44,17 @@ export class RectangularNode extends SNode {
  * A node that is represented by a diamond.
  */
 export class DiamondNode extends SNode {
-    strokeWidth: number = 0;
-
-    getAnchor(refPoint: Point, offset: number = 0): Point {
-        const strokeCorrection = 0.5 * this.strokeWidth;
-        return computeDiamondAnchor(this.bounds, refPoint, offset + strokeCorrection);
+    get anchorKind() {
+        return DIAMOND_ANCHOR_KIND;
     }
 }
-
 
 /**
  * A port that is represented by a circle.
  */
 export class CircularPort extends SPort {
-    strokeWidth: number = 0;
-
-    protected get radius(): number {
-        const d = Math.min(this.size.width, this.size.height);
-        return d > 0 ? d / 2 : 0;
-    }
-
-    getAnchor(refPoint: Point, offset: number = 0): Point {
-        const strokeCorrection = 0.5 * this.strokeWidth;
-        return computeCircleAnchor(this.position, this.radius, refPoint, offset + strokeCorrection);
+    get anchorKind() {
+        return ELLIPTIC_ANCHOR_KIND;
     }
 }
 
@@ -85,11 +62,8 @@ export class CircularPort extends SPort {
  * A port that is represented by a rectangle.
  */
 export class RectangularPort extends SPort {
-    strokeWidth: number = 0;
-
-    getAnchor(refPoint: Point, offset: number = 0): Point {
-        const strokeCorrection = 0.5 * this.strokeWidth;
-        return computeRectangleAnchor(this.bounds, refPoint, offset + strokeCorrection);
+    get anchorKind() {
+        return RECTANGULAR_ANCHOR_KIND;
     }
 }
 

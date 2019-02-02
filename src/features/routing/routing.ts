@@ -14,17 +14,44 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
-import { center, maxDistance, Point, euclideanDistance, linear } from "../../utils/geometry";
-import { Routable } from "./model";
+import { Point } from "../../utils/geometry";
+import { SRoutableElement, SConnectableElement } from "./model";
+import { InstanceRegistry } from "../../utils/registry";
+import { PolylineEdgeRouter } from "./polyline-edge-router";
+import { injectable, multiInject } from "inversify";
+import { ResolvedHandleMove } from "../move/move";
+import { SRoutingHandle } from "../routing/model";
+import { TYPES } from "../../base/types";
 
 export interface RoutedPoint extends Point {
     kind: 'source' | 'target' | 'linear'
     pointIndex?: number
 }
 
+export interface EdgeSnapshot {
+    routingHandles: SRoutingHandle[]
+    routingPoints: Point[]
+    router: IEdgeRouter
+    source?: SConnectableElement
+    target?: SConnectableElement
+}
+
+export interface EdgeMemento {
+    edge: SRoutableElement
+    before: EdgeSnapshot
+    after: EdgeSnapshot
+}
+
 export interface IEdgeRouter {
-    route(edge: Routable): RoutedPoint[]
+
+    readonly kind: string;
+
+    /**
+     * Calculates the route of the given edge.
+     *
+     * @param edge
+     */
+    route(edge: SRoutableElement): RoutedPoint[]
 
     /**
      * Calculates a point on the edge
@@ -33,116 +60,76 @@ export interface IEdgeRouter {
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
-    pointAt(edge: Routable, t: number): Point | undefined
+    pointAt(edge: SRoutableElement, t: number): Point | undefined
 
     /**
-     * Calculates the derivative at a point on the edge
+     * Calculates the derivative at a point on the edge.
      *
      * @param edge
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
-    derivativeAt(edge: Routable, t: number): Point | undefined
+    derivativeAt(edge: SRoutableElement, t: number): Point | undefined
+
+    /**
+     * Retuns the position of the given handle based on the routing points of the edge.
+     *
+     * @param edge
+     * @param handle
+     */
+    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
+
+    /**
+     * Creates the routing handles for the given target.
+     *
+     * @param edge
+     */
+    createRoutingHandles(edge: SRoutableElement): void
+
+    /**
+     * Updates the routing points and handles of the given edge with regard to the given moves.
+     *
+     * @param edge
+     */
+    applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void
+
+    /**
+     * Updates the routing points and handles of the given edge with regard to the given moves.
+     *
+     * @param edge
+     */
+    applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string): void
+
+    /**
+     * Creates a snapshot of the given edge, storing all the data needed to restore it to
+     * its current state.
+     *
+     * @param edge
+     */
+    takeSnapshot(edge: SRoutableElement): EdgeSnapshot;
+
+    /**
+     * Applies a snapshot to the current edge.
+     *
+     * @param edge
+     */
+    applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
 }
 
-export interface LinearRouteOptions {
-    minimalPointDistance: number;
-}
 
 @injectable()
-export class LinearEdgeRouter implements IEdgeRouter {
-    route(edge: Routable, options: LinearRouteOptions = { minimalPointDistance: 2 }): RoutedPoint[] {
-        const source = edge.source;
-        const target = edge.target;
-        if (source === undefined || target === undefined) {
-            return [];
-        }
+export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
 
-        let sourceAnchor: Point;
-        let targetAnchor: Point;
-        const rpCount = edge.routingPoints !== undefined ? edge.routingPoints.length : 0;
-        if (rpCount >= 1) {
-            // Use the first routing point as start anchor reference
-            const p0 = edge.routingPoints[0];
-            sourceAnchor = source.getTranslatedAnchor(p0, edge.parent, edge, edge.sourceAnchorCorrection);
-            // Use the last routing point as end anchor reference
-            const pn = edge.routingPoints[rpCount - 1];
-            targetAnchor = target.getTranslatedAnchor(pn, edge.parent, edge, edge.targetAnchorCorrection);
-        } else {
-            // Use the target center as start anchor reference
-            const startRef = center(target.bounds);
-            sourceAnchor = source.getTranslatedAnchor(startRef, target.parent, edge, edge.sourceAnchorCorrection);
-            // Use the source center as end anchor reference
-            const endRef = center(source.bounds);
-            targetAnchor = target.getTranslatedAnchor(endRef, source.parent, edge, edge.targetAnchorCorrection);
-        }
-
-        const result: RoutedPoint[] = [];
-        result.push({ kind: 'source', x: sourceAnchor.x, y: sourceAnchor.y });
-        for (let i = 0; i < rpCount; i++) {
-            const p = edge.routingPoints[i];
-            if (i > 0 && i < rpCount - 1
-                || i === 0 && maxDistance(sourceAnchor, p) >= options.minimalPointDistance + (edge.sourceAnchorCorrection || 0)
-                || i === rpCount - 1 && maxDistance(p, targetAnchor) >= options.minimalPointDistance + (edge.targetAnchorCorrection || 0)) {
-                result.push({ kind: 'linear', x: p.x, y: p.y, pointIndex: i });
-            }
-        }
-        result.push({ kind: 'target', x: targetAnchor.x, y: targetAnchor.y});
-        return result;
+    constructor(@multiInject(TYPES.IEdgeRouter) edgeRouters: IEdgeRouter[]) {
+        super();
+        edgeRouters.forEach(router => this.register(router.kind, router));
     }
 
-    pointAt(edge: Routable, t: number): Point | undefined {
-        const segments = this.calculateSegment(edge, t);
-        if (!segments)
-            return undefined;
-        const { segmentStart, segmentEnd, lambda } = segments;
-        return linear(segmentStart, segmentEnd, lambda);
+    protected get defaultKind() {
+        return PolylineEdgeRouter.KIND;
     }
 
-    derivativeAt(edge: Routable, t: number): Point | undefined {
-        const segments = this.calculateSegment(edge, t);
-        if (!segments)
-            return undefined;
-        const { segmentStart, segmentEnd } = segments;
-        return {
-            x: segmentEnd.x - segmentStart.x,
-            y: segmentEnd.y - segmentStart.y
-        };
-    }
-
-    protected calculateSegment(edge: Routable, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number} | undefined {
-        if (t < 0 || t > 1)
-            return undefined;
-        const routedPoints = this.route(edge);
-        if (routedPoints.length < 2)
-            return undefined;
-        const segmentLengths: number[] = [];
-        let totalLength = 0;
-        for (let i = 0; i < routedPoints.length - 1; ++i) {
-            segmentLengths[i] = euclideanDistance(routedPoints[i], routedPoints[i + 1]);
-            totalLength += segmentLengths[i];
-        }
-        let currentLenght = 0;
-        const tAsLenght = t * totalLength;
-        for (let i = 0; i < routedPoints.length - 1; ++i) {
-            const newLength = currentLenght + segmentLengths[i];
-            // avoid division by (almost) zero
-            if (segmentLengths[i] > 1E-8) {
-                if (newLength >= tAsLenght) {
-                    const lambda = Math.max(0, (tAsLenght - currentLenght)) / segmentLengths[i];
-                    return {
-                        segmentStart: routedPoints[i],
-                        segmentEnd: routedPoints[i + 1],
-                        lambda
-                    };
-                }
-            }
-            currentLenght = newLength;
-        }
-        return {
-            segmentEnd: routedPoints.pop()!,
-            segmentStart: routedPoints.pop()!,
-            lambda: 1
-        };
+    get(kind: string | undefined): IEdgeRouter {
+        return super.get(kind || this.defaultKind);
     }
 }

@@ -212,7 +212,7 @@ describe('UpdateModelCommand', () => {
         expect(animation).to.be.an.instanceOf(MoveAnimation);
         const moves = (animation as MoveAnimation).elementMoves;
         const child1Move = moves.get('child1')!;
-        expect(child1Move.elementId).to.equal('child1');
+        expect(child1Move.element.id).to.equal('child1');
         expect(child1Move.fromPosition).to.deep.equal({ x: 100, y: 100 });
         expect(child1Move.toPosition).to.deep.equal({ x: 150, y: 200 });
     });
@@ -268,7 +268,7 @@ describe('UpdateModelCommand', () => {
         const moveAnimation = components[1] as MoveAnimation;
         expect(moveAnimation).to.be.an.instanceOf(MoveAnimation);
         const child1Move = moveAnimation.elementMoves.get('child1')!;
-        expect(child1Move.elementId).to.equal('child1');
+        expect(child1Move.element.id).to.equal('child1');
         expect(child1Move.fromPosition).to.deep.equal({ x: 100, y: 100 });
         expect(child1Move.toPosition).to.deep.equal({ x: 150, y: 200 });
     });
