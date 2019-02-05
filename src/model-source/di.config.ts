@@ -17,8 +17,6 @@
 import { ContainerModule } from "inversify";
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
-import { configureCommand } from "../base/commands/command-registration";
-import { UpdateModelCommand } from "../features/update/update-model";
 
 /**
  * This container module does NOT provide any binding for TYPES.ModelSource because that needs to be
@@ -33,7 +31,6 @@ const modelSourceModule = new ContainerModule((bind, _unbind, isBound) => {
             });
         };
     });
-    configureCommand({ bind, isBound }, UpdateModelCommand);
 });
 
 export default modelSourceModule;

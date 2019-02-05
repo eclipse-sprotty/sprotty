@@ -1,4 +1,3 @@
-
 /********************************************************************************
  * Copyright (c) 2019 TypeFox and others.
  *
@@ -54,6 +53,9 @@ export interface ICommandConstructor {
     new (a: Action, ...args: any[]): ICommand
 }
 
+/**
+ * Use this method in your DI configuration to register a new command to the diagram.
+ */
 export function configureCommand(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, constr: ICommandConstructor) {
     if (isInjectable(constr)) {
         if (!context.isBound(constr))
@@ -70,6 +72,6 @@ export function configureCommand(context: { bind: interfaces.Bind, isBound: inte
             };
         });
     } else {
-        throw Error(`Views should be @injectable ${constr.name}`);
+        throw Error(`Commands should be @injectable ${constr.name}`);
     }
 }

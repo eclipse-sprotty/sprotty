@@ -104,7 +104,7 @@ export function configureView(context: { bind: interfaces.Bind, isBound: interfa
             };
         });
     } else {
-            throw Error(`Commands should be @injectable ${constr.name}`);
+            throw Error(`Views should be @injectable ${constr.name}`);
     }
 }
 
