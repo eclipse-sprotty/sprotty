@@ -18,6 +18,8 @@ import { Routable, isRoutable } from "../routing/model";
 import { SModelElement } from "../../base/model/smodel";
 import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { injectable, inject } from "inversify";
+import { TYPES } from "../../base/types";
 
 export class ReconnectAction implements Action {
     readonly kind =  ReconnectCommand.KIND;
@@ -27,6 +29,7 @@ export class ReconnectAction implements Action {
                 readonly newTargetId?: string) {}
 }
 
+@injectable()
 export class ReconnectCommand extends Command {
     static KIND = 'reconnect';
 
@@ -36,7 +39,7 @@ export class ReconnectCommand extends Command {
     oldSource?: SModelElement;
     oldTarget?: SModelElement;
 
-    constructor(readonly action: ReconnectAction) {
+    constructor(@inject(TYPES.Action)readonly action: ReconnectAction) {
         super();
     }
 

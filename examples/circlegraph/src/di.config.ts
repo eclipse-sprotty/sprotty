@@ -18,7 +18,7 @@ import { Container, ContainerModule } from "inversify";
 import {
     defaultModule, TYPES, configureViewerOptions, SGraphFactory, SGraphView, PolylineEdgeView, ConsoleLogger,
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule, viewportModule,
-    LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge
+    LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge, updateModule
 } from "../../../src";
 import { CircleNodeView } from "./views";
 
@@ -43,6 +43,7 @@ export default (useWebsocket: boolean) => {
     });
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule, exportModule, circlegraphModule);
+    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule, exportModule,
+        updateModule, circlegraphModule);
     return container;
 };

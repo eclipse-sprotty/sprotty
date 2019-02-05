@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2019 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,22 +15,11 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../base/types";
-import { ModelSource } from "./model-source";
+import { configureCommand } from "../../base/commands/command-registration";
+import { UpdateModelCommand } from "./update-model";
 
-/**
- * This container module does NOT provide any binding for TYPES.ModelSource because that needs to be
- * done according to the needs of the application. You can choose between a local (LocalModelSource)
- * and a remote (e.g. WebSocketDiagramServer) implementation.
- */
-const modelSourceModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.ModelSourceProvider).toProvider<ModelSource>((context) => {
-        return () => {
-            return new Promise<ModelSource>((resolve) => {
-                resolve(context.container.get<ModelSource>(TYPES.ModelSource));
-            });
-        };
-    });
+const updateModule = new ContainerModule((bind, _unbind, isBound) => {
+    configureCommand({ bind, isBound }, UpdateModelCommand);
 });
 
-export default modelSourceModule;
+export default updateModule;

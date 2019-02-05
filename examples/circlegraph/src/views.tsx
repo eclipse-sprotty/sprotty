@@ -19,10 +19,12 @@ import { svg } from 'snabbdom-jsx';
 
 import { VNode } from "snabbdom/vnode";
 import { RenderingContext, SNode, IView } from "../../../src";
+import { injectable } from 'inversify';
 
 /**
  * A very simple example node consisting of a plain circle.
  */
+@injectable()
 export class CircleNodeView implements IView {
     render(node: SNode, context: RenderingContext): VNode {
         const radius = this.getRadius(node);

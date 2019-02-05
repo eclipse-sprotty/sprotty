@@ -60,7 +60,7 @@ export class ModelRenderer implements RenderingContext {
     }
 
     renderElement(element: Readonly<SModelElement>, args?: object): VNode {
-        const vNode = this.viewRegistry.get(element.type, undefined).render(element, this, args);
+        const vNode = this.viewRegistry.get(element.type).render(element, this, args);
         return this.decorate(vNode, element);
     }
 

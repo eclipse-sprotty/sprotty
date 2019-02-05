@@ -19,10 +19,11 @@ import { TYPES } from "../../base/types";
 import { SetBoundsCommand, RequestBoundsCommand } from "./bounds-manipulation";
 import { HiddenBoundsUpdater } from './hidden-bounds-updater';
 import { Layouter, LayoutRegistry } from "./layout";
+import { configureCommand } from "../../base/commands/command-registration";
 
-const boundsModule = new ContainerModule(bind => {
-    bind(TYPES.ICommand).toConstructor(SetBoundsCommand);
-    bind(TYPES.ICommand).toConstructor(RequestBoundsCommand);
+const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
+    configureCommand({ bind, isBound }, SetBoundsCommand);
+    configureCommand({ bind, isBound }, RequestBoundsCommand);
     bind(TYPES.HiddenVNodeDecorator).to(HiddenBoundsUpdater).inSingletonScope();
     bind(TYPES.Layouter).to(Layouter).inSingletonScope();
     bind(TYPES.LayoutRegistry).to(LayoutRegistry).inSingletonScope();

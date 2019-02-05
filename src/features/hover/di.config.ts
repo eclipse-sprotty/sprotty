@@ -21,12 +21,13 @@ import {
 } from "./hover";
 import { PopupPositionUpdater } from "./popup-position-updater";
 import { PopupActionHandlerInitializer } from "./initializer";
+import { configureCommand } from "../../base/commands/command-registration";
 
-const hoverModule = new ContainerModule(bind => {
+const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.PopupVNodeDecorator).to(PopupPositionUpdater).inSingletonScope();
     bind(TYPES.IActionHandlerInitializer).to(PopupActionHandlerInitializer);
-    bind(TYPES.ICommand).toConstructor(HoverFeedbackCommand);
-    bind(TYPES.ICommand).toConstructor(SetPopupModelCommand);
+    configureCommand({ bind, isBound }, HoverFeedbackCommand);
+    configureCommand({ bind, isBound }, SetPopupModelCommand);
     bind(TYPES.MouseListener).to(HoverMouseListener);
     bind(TYPES.PopupMouseListener).to(PopupHoverMouseListener);
     bind(TYPES.KeyListener).to(HoverKeyListener);

@@ -21,7 +21,9 @@ import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
 import { setClass } from "../base/views/vnode-utils";
 import { HtmlRoot } from "./model";
+import { injectable } from 'inversify';
 
+@injectable()
 export class HtmlRootView implements IView {
     render(model: HtmlRoot, context: RenderingContext): VNode {
         const root = <div>

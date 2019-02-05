@@ -26,10 +26,12 @@ import { SRoutingHandle } from '../features/edit/model';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
 import { RoutedPoint } from '../features/routing/routing';
 import { isRoutable } from '../features/routing/model';
+import { injectable } from 'inversify';
 
 /**
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.
  */
+@injectable()
 export class SGraphView implements IView {
 
     render(model: Readonly<SGraph>, context: RenderingContext): VNode {
@@ -42,6 +44,7 @@ export class SGraphView implements IView {
     }
 }
 
+@injectable()
 export class PolylineEdgeView implements IView {
 
     render(edge: Readonly<SEdge>, context: RenderingContext): VNode {
@@ -75,6 +78,7 @@ export class PolylineEdgeView implements IView {
     }
 }
 
+@injectable()
 export class SRoutingHandleView implements IView {
     minimalPointDistance: number = 10;
 
@@ -150,6 +154,7 @@ export class SRoutingHandleView implements IView {
     }
 }
 
+@injectable()
 export class SLabelView implements IView {
     render(label: Readonly<SLabel>, context: RenderingContext): VNode {
         const vnode = <text class-sprotty-label={true}>{label.text}</text>;
@@ -160,6 +165,7 @@ export class SLabelView implements IView {
     }
 }
 
+@injectable()
 export class SCompartmentView implements IView {
     render(model: Readonly<SCompartment>, context: RenderingContext): VNode {
         const translate = `translate(${model.bounds.x}, ${model.bounds.y})`;

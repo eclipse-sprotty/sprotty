@@ -14,27 +14,27 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject, optional } from "inversify";
-import { Bounds, Point } from "../utils/geometry";
-import { Deferred } from "../utils/async";
-import { ILogger } from "../utils/logging";
-import { TYPES } from "../base/types";
+import { saveAs } from 'file-saver';
+import { inject, injectable, optional } from "inversify";
 import { Action } from "../base/actions/action";
-import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
-import { findElement } from "../base/model/smodel-utils";
-import { ViewerOptions } from "../base/views/viewer-options";
+import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { RequestModelAction, SetModelAction } from "../base/features/set-model";
 import { SModelElementSchema, SModelIndex, SModelRootSchema } from "../base/model/smodel";
+import { findElement } from "../base/model/smodel-utils";
+import { TYPES } from "../base/types";
+import { ViewerOptions } from "../base/views/viewer-options";
 import { ComputedBoundsAction, RequestBoundsAction } from '../features/bounds/bounds-manipulation';
-import { Match, applyMatches } from "../features/update/model-matching";
-import { UpdateModelAction, UpdateModelCommand } from "../features/update/update-model";
-import { RequestPopupModelAction, SetPopupModelAction } from "../features/hover/hover";
-import { ModelSource } from "./model-source";
-import { ExportSvgAction } from '../features/export/svg-exporter';
-import { saveAs } from 'file-saver';
 import { CollapseExpandAction, CollapseExpandAllAction } from '../features/expand/expand';
+import { ExportSvgAction } from '../features/export/svg-exporter';
+import { RequestPopupModelAction, SetPopupModelAction } from "../features/hover/hover";
+import { applyMatches, Match } from "../features/update/model-matching";
+import { UpdateModelAction } from "../features/update/update-model";
+import { Deferred } from "../utils/async";
+import { Bounds, Point } from "../utils/geometry";
+import { ILogger } from "../utils/logging";
 import { DiagramState, ExpansionState } from './diagram-state';
+import { ModelSource } from "./model-source";
 
 /**
  * A model source that allows to set and modify the model through function calls.
@@ -88,9 +88,6 @@ export class LocalModelSource extends ModelSource {
 
     protected initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
-
-        // Register model manipulation commands
-        registry.registerCommand(UpdateModelCommand);
 
         // Register this model source
         registry.register(ComputedBoundsAction.KIND, this);

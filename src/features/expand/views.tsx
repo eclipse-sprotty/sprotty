@@ -22,7 +22,9 @@ import { IView, RenderingContext } from '../../base/views/view';
 import { isExpandable } from './model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { SButton } from '../button/model';
+import { injectable } from 'inversify';
 
+@injectable()
 export class ExpandButtonView implements IView {
     render(button: SButton, context: RenderingContext): VNode {
         const expandable = findParentByFeature(button, isExpandable);

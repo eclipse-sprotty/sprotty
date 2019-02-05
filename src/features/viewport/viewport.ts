@@ -19,6 +19,8 @@ import { Action } from "../../base/actions/action";
 import { MergeableCommand, ICommand, CommandExecutionContext } from "../../base/commands/command";
 import { Animation } from "../../base/animations/animation";
 import { isViewport, Viewport } from "./model";
+import { injectable, inject } from "inversify";
+import { TYPES } from "../../base/types";
 
 export class ViewportAction implements Action {
     kind = ViewportCommand.KIND;
@@ -29,6 +31,7 @@ export class ViewportAction implements Action {
     }
 }
 
+@injectable()
 export class ViewportCommand extends MergeableCommand {
     static readonly KIND = 'viewport';
 
@@ -36,7 +39,7 @@ export class ViewportCommand extends MergeableCommand {
     protected oldViewport: Viewport;
     protected newViewport: Viewport;
 
-    constructor(protected action: ViewportAction) {
+    constructor(@inject(TYPES.Action) protected action: ViewportAction) {
         super();
         this.newViewport = action.newViewport;
     }

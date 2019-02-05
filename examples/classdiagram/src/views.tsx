@@ -20,7 +20,9 @@ import { svg } from 'snabbdom-jsx';
 import { RenderingContext, RectangularNodeView, IView } from "../../../src";
 import { VNode } from "snabbdom/vnode";
 import { Icon, ClassNode } from './model';
+import { injectable } from 'inversify';
 
+@injectable()
 export class ClassNodeView extends RectangularNodeView {
     render(node: ClassNode, context: RenderingContext): VNode {
         return <g class-node={true}>
@@ -32,6 +34,7 @@ export class ClassNodeView extends RectangularNodeView {
     }
 }
 
+@injectable()
 export class IconView implements IView {
 
     render(element: Icon, context: RenderingContext): VNode {

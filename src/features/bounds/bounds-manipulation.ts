@@ -19,6 +19,8 @@ import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/sm
 import { Action } from "../../base/actions/action";
 import { CommandExecutionContext, HiddenCommand, SystemCommand } from "../../base/commands/command";
 import { BoundsAware, isBoundsAware, Alignable } from './model';
+import { injectable, inject } from "inversify";
+import { TYPES } from "../../base/types";
 
 /**
  * Sent from the model source (e.g. a DiagramServer) to the client to update the bounds of some
@@ -90,12 +92,13 @@ export interface ResolvedElementAndAlignment {
     newAlignment: Point
 }
 
+@injectable()
 export class SetBoundsCommand extends SystemCommand {
     static readonly KIND: string  = 'setBounds';
 
     protected bounds: ResolvedElementAndBounds[] = [];
 
-    constructor(protected action: SetBoundsAction) {
+    constructor(@inject(TYPES.Action) protected action: SetBoundsAction) {
         super();
     }
 
@@ -130,10 +133,11 @@ export class SetBoundsCommand extends SystemCommand {
     }
 }
 
+@injectable()
 export class RequestBoundsCommand extends HiddenCommand {
     static readonly KIND: string  = 'requestBounds';
 
-    constructor(protected action: RequestBoundsAction) {
+    constructor(@inject(TYPES.Action) protected action: RequestBoundsAction) {
         super();
     }
 

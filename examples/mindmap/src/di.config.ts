@@ -20,7 +20,7 @@ import {
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
     viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule,
     expandModule, fadeModule, buttonModule, SGraphFactory, PreRenderedElement, SNode, SLabel,
-    HtmlRoot, configureModelElement
+    HtmlRoot, configureModelElement, configureCommand, updateModule
 } from "../../../src";
 import { MindmapNodeView, PopupButtonView } from "./views";
 import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
@@ -39,7 +39,7 @@ export default (useWebsocket: boolean, containerId: string) => {
         rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider).inSingletonScope();
         bind(TYPES.PopupMouseListener).to(PopupButtonMouseListener);
-        bind(TYPES.ICommand).toConstructor(AddElementCommand);
+        configureCommand(container, AddElementCommand);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(container, 'mindmap', Mindmap, SGraphView);
         configureModelElement(container, 'node', SNode, MindmapNodeView);
@@ -57,6 +57,6 @@ export default (useWebsocket: boolean, containerId: string) => {
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        mindmapModule);
+        updateModule, mindmapModule);
     return container;
 };

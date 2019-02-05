@@ -14,10 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Action } from "../actions/action";
+import { CommandExecutionContext, Command } from "../commands/command";
 import { SModelRoot, SModelRootSchema } from "../model/smodel";
-import { Command, CommandExecutionContext } from "../commands/command";
+import { TYPES } from "../types";
 import { InitializeCanvasBoundsCommand } from './initialize-canvas';
 
 /**
@@ -50,7 +51,7 @@ export class SetModelCommand extends Command {
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(public action: SetModelAction) {
+    constructor(@inject(TYPES.Action) public action: SetModelAction) {
         super();
     }
 

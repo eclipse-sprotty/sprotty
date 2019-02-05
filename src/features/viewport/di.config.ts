@@ -20,11 +20,12 @@ import { CenterCommand, CenterKeyboardListener, FitToScreenCommand } from "./cen
 import { ViewportCommand } from "./viewport";
 import { ScrollMouseListener } from "./scroll";
 import { ZoomMouseListener } from "./zoom";
+import { configureCommand } from "../../base/commands/command-registration";
 
-const viewportModule = new ContainerModule(bind => {
-    bind(TYPES.ICommand).toConstructor(CenterCommand);
-    bind(TYPES.ICommand).toConstructor(FitToScreenCommand);
-    bind(TYPES.ICommand).toConstructor(ViewportCommand);
+const viewportModule = new ContainerModule((bind , _unbind, isBound) => {
+    configureCommand({ bind, isBound }, CenterCommand);
+    configureCommand({ bind, isBound }, FitToScreenCommand);
+    configureCommand({ bind, isBound }, ViewportCommand);
     bind(TYPES.KeyListener).to(CenterKeyboardListener);
     bind(TYPES.MouseListener).to(ScrollMouseListener);
     bind(TYPES.MouseListener).to(ZoomMouseListener);

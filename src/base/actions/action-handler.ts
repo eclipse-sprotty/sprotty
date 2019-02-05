@@ -17,7 +17,7 @@
 import { injectable, multiInject, optional } from "inversify";
 import { TYPES } from "../types";
 import { MultiInstanceRegistry } from "../../utils/registry";
-import { CommandActionHandler, ICommand, ICommandFactory } from "../commands/command";
+import { ICommand } from "../commands/command";
 import { Action } from "./action";
 
 /**
@@ -47,10 +47,6 @@ export class ActionHandlerRegistry extends MultiInstanceRegistry<IActionHandler>
         initializers.forEach(
             initializer => this.initializeActionHandler(initializer)
         );
-    }
-
-    registerCommand(commandType: ICommandFactory): void {
-        this.register(commandType.KIND, new CommandActionHandler(commandType));
     }
 
     initializeActionHandler(initializer: IActionHandlerInitializer): void {
