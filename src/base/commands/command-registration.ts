@@ -48,15 +48,15 @@ export interface CommandRegistration {
     factory: (a: Action) => ICommand
 }
 
-export interface ICommandConstructor {
+export interface ICommandConstructor<T extends Action> {
     KIND: string
-    new (a: Action, ...args: any[]): ICommand
+    new (a: T, ...args: any[]): ICommand
 }
 
 /**
  * Use this method in your DI configuration to register a new command to the diagram.
  */
-export function configureCommand(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, constr: ICommandConstructor) {
+export function configureCommand<T extends Action>(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, constr: ICommandConstructor<T>) {
     if (isInjectable(constr)) {
         if (!context.isBound(constr))
             context.bind(constr).toSelf();
