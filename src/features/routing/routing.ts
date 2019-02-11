@@ -23,11 +23,24 @@ import { ResolvedHandleMove } from "../move/move";
 import { SRoutingHandle } from "../routing/model";
 import { TYPES } from "../../base/types";
 
+/**
+ * A point describing the shape of an edge.
+ *
+ * The <code>RoutedPoints</code> of an edge are derived from the <code>routingPoints</code>
+ * which plain <code>Points</code> stored in the SModel by the <code>IEdgeRouter</code>.
+ * As opposed to the originals, the also contain the source and target anchor points.
+ * The router may also add or remove points in order to satisfy the constraints
+ * the constraints of the routing algorithm or in order to to filter out points which are
+ * obsolete, e.g. to close to each other.
+ */
 export interface RoutedPoint extends Point {
     kind: 'source' | 'target' | 'linear'
     pointIndex?: number
 }
 
+/**
+ * Stores the state of an edge at a specific time.
+ */
 export interface EdgeSnapshot {
     routingHandles: SRoutingHandle[]
     routingPoints: Point[]
@@ -42,21 +55,22 @@ export interface EdgeMemento {
     after: EdgeSnapshot
 }
 
+/**
+ * Encapsulates the logic of how the actual shape of an edge is derived from its routing points,
+ * and how the user can modify it.
+ */
 export interface IEdgeRouter {
 
     readonly kind: string;
 
     /**
      * Calculates the route of the given edge.
-     *
-     * @param edge
      */
     route(edge: SRoutableElement): RoutedPoint[]
 
     /**
      * Calculates a point on the edge
      *
-     * @param edge
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
@@ -65,7 +79,6 @@ export interface IEdgeRouter {
     /**
      * Calculates the derivative at a point on the edge.
      *
-     * @param edge
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
@@ -73,45 +86,32 @@ export interface IEdgeRouter {
 
     /**
      * Retuns the position of the given handle based on the routing points of the edge.
-     *
-     * @param edge
-     * @param handle
      */
     getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
 
     /**
      * Creates the routing handles for the given target.
-     *
-     * @param edge
      */
     createRoutingHandles(edge: SRoutableElement): void
 
     /**
      * Updates the routing points and handles of the given edge with regard to the given moves.
-     *
-     * @param edge
      */
     applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void
 
     /**
      * Updates the routing points and handles of the given edge with regard to the given moves.
-     *
-     * @param edge
      */
     applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string): void
 
     /**
      * Creates a snapshot of the given edge, storing all the data needed to restore it to
      * its current state.
-     *
-     * @param edge
      */
     takeSnapshot(edge: SRoutableElement): EdgeSnapshot;
 
     /**
      * Applies a snapshot to the current edge.
-     *
-     * @param edge
      */
     applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
 }
