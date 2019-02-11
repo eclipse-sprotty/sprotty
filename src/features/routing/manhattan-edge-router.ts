@@ -18,7 +18,7 @@ import { translatePoint } from "../../base/model/smodel-utils";
 import { almostEquals, center, includes, linear, Point } from "../../utils/geometry";
 import { ResolvedHandleMove } from "../move/move";
 import { DefaultAnchors, LinearEdgeRouter, LinearRouteOptions, Side } from "./linear-edge-router";
-import { SRoutableElement, SDanglingAnchor, RoutingHandleKind, SRoutingHandle } from "./model";
+import { SRoutableElement, RoutingHandleKind, SRoutingHandle } from "./model";
 import { RoutedPoint } from "./routing";
 
 export interface ManhattanRouterOptions extends LinearRouteOptions {
@@ -158,31 +158,11 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
         };
     }
 
-    protected cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean) {
+    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
-        // use default routing points when rerouting edges
-        if (routingPoints.length === 0 || edge.source instanceof SDanglingAnchor || edge.target instanceof SDanglingAnchor) {
-            const options = this.getOptions(edge);
-            const corners = this.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
-            routingPoints.splice(0, routingPoints.length, ...corners);
-            if (updateHandles) {
-                let maxPointIndex = -2;
-                edge.children.forEach(child => {
-                    if (child instanceof SRoutingHandle) {
-                        if (child.kind === 'target')
-                            child.pointIndex = routingPoints.length;
-                        else if (child.kind === 'line' && child.pointIndex >= routingPoints.length)
-                            edge.remove(child);
-                        else
-                            maxPointIndex = Math.max(child.pointIndex, maxPointIndex);
-                    }
-                });
-                for (let i = maxPointIndex; i < routingPoints.length - 1; ++i)
-                    this.addHandle(edge, 'manhattan-50%', 'volatile-routing-point', i);
-                return;
-            }
-        }
+        if (this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors))
+            return;
         // delete leading RPs inside the bounds of the source
         for (let i = 0; i < routingPoints.length; ++i)
             if (includes(sourceAnchors.bounds, routingPoints[i])) {

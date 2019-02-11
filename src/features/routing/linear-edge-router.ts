@@ -244,10 +244,14 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
 
     protected abstract applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void;
 
-    protected cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean) {
+    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
-        // use default routing points when rerouting edges
+        this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors);
+    }
+
+    protected resetRoutingPointsOnReconnect(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean,
+        sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors): boolean {
         if (routingPoints.length === 0 || edge.source instanceof SDanglingAnchor || edge.target instanceof SDanglingAnchor) {
             const options = this.getOptions(edge);
             const corners = this.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
@@ -266,9 +270,10 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
                 });
                 for (let i = maxPointIndex; i < routingPoints.length - 1; ++i)
                     this.addHandle(edge, 'manhattan-50%', 'volatile-routing-point', i);
-                return;
             }
+            return true;
         }
+        return false;
     }
 
     applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string) {

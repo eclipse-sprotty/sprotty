@@ -173,8 +173,8 @@ export class MoveCommand extends MergeableCommand {
                     // move the entire edge when both source and target are moved
                     edge.routingPoints = edge.routingPoints.map(rp => add(rp, delta));
                 } else {
-                    // add/remove RPs according to the new positions
-                    router.applyHandleMoves(edge, []);
+                    // add/remove RPs according to the new source/target positions
+                    router.cleanupRoutingPoints(edge, edge.routingPoints, false);
                 }
                 const after = router.takeSnapshot(edge);
                 this.edgeMementi.push({ edge, before, after });
