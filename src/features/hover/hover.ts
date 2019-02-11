@@ -276,14 +276,16 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
     mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
 
-        if (this.state.previousPopupElement !== undefined && this.closeOnMouseMove(this.state.previousPopupElement, event)) {
-            result.push(this.startMouseOutTimer());
-        }
+        if (!this.mouseIsDown) {
+            if (this.state.previousPopupElement !== undefined && this.closeOnMouseMove(this.state.previousPopupElement, event)) {
+                result.push(this.startMouseOutTimer());
+            }
 
-        const popupTarget = findParent(target, hasPopupFeature);
-        if (popupTarget !== undefined && (this.state.previousPopupElement === undefined
-            || this.state.previousPopupElement.id !== popupTarget.id)) {
-            result.push(this.startMouseOverTimer(popupTarget, event));
+            const popupTarget = findParent(target, hasPopupFeature);
+            if (popupTarget !== undefined && (this.state.previousPopupElement === undefined
+                || this.state.previousPopupElement.id !== popupTarget.id)) {
+                result.push(this.startMouseOverTimer(popupTarget, event));
+            }
         }
 
         return result;
