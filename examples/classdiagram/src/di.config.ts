@@ -18,14 +18,14 @@ import { Container, ContainerModule } from "inversify";
 import {
     defaultModule, TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, PolylineEdgeView,
     ConsoleLogger, LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
-    viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule, expandModule,
+    viewportModule, hoverModule, HtmlRootView, PreRenderedView, exportModule, expandModule,
     fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
     HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
     edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
-import { ModelProvider } from './model-provider';
+import { ClassDiagramModelSource } from './model-source';
 import { Icon, ClassNode } from "./model";
 
 export default (useWebsocket: boolean, containerId: string) => {
@@ -35,11 +35,10 @@ export default (useWebsocket: boolean, containerId: string) => {
         if (useWebsocket)
             bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();
         else
-            bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
+            bind(TYPES.ModelSource).to(ClassDiagramModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider);
-        bind(TYPES.StateAwareModelProvider).to(ModelProvider);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:class', ClassNode, ClassNodeView);

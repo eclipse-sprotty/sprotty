@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { ContainerModule, interfaces } from "inversify";
-import { SModelStorage } from './model/smodel-storage';
 import { TYPES } from "./types";
 import { CanvasBoundsInitializer, InitializeCanvasBoundsCommand } from './features/initialize-canvas';
 import { LogLevel, NullLogger } from "../utils/logging";
@@ -126,7 +125,6 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, InitializeCanvasBoundsCommand);
     bind(CanvasBoundsInitializer).toSelf().inSingletonScope();
     bind(TYPES.IVNodeDecorator).toService(CanvasBoundsInitializer);
-    bind(TYPES.SModelStorage).to(SModelStorage).inSingletonScope();
 
     // Model commands ---------------------------------------------
     configureCommand({ bind, isBound }, SetModelCommand);

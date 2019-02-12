@@ -14,14 +14,145 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from 'inversify';
-import { DiagramState, SModelRootSchema, SGraphSchema, IStateAwareModelProvider, SEdgeSchema, SLabelSchema } from "../../../src";
+import { injectable, optional, inject } from 'inversify';
+import { Action, ActionHandlerRegistry, CollapseExpandAction, CollapseExpandAllAction, LocalModelSource,
+    SCompartmentSchema, SEdgeSchema, SGraphSchema, SLabelSchema, SModelElementSchema, SModelIndex,
+    SModelRootSchema,
+    IActionDispatcher,
+    ViewerOptions,
+    ILogger,
+    IPopupModelProvider,
+    IModelLayoutEngine,
+    TYPES} from "../../../src";
 
 @injectable()
-export class ModelProvider implements IStateAwareModelProvider {
+export class ClassDiagramModelSource extends LocalModelSource {
 
-    getModel(state?: DiagramState, currentRoot?: SModelRootSchema): SModelRootSchema {
-        // Initialize model
+    expansionState: {[key: string]: boolean};
+
+    constructor(@inject(TYPES.IActionDispatcher) actionDispatcher: IActionDispatcher,
+                @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
+                @inject(TYPES.ViewerOptions) viewerOptions: ViewerOptions,
+                @inject(TYPES.ILogger) protected readonly logger: ILogger,
+                @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider,
+                @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine) {
+        super(actionDispatcher, actionHandlerRegistry, viewerOptions, logger, popupModelProvider, layoutEngine);
+        this.currentRoot = this.initializeModel();
+    }
+
+    protected initialize(registry: ActionHandlerRegistry): void {
+        super.initialize(registry);
+        registry.register(CollapseExpandAction.KIND, this);
+        registry.register(CollapseExpandAllAction.KIND, this);
+    }
+
+    handle(action: Action) {
+        switch (action.kind) {
+            case CollapseExpandAction.KIND:
+                this.handleCollapseExpandAction(action as CollapseExpandAction);
+                break;
+            case CollapseExpandAllAction.KIND:
+                this.handleCollapseExpandAllAction(action as CollapseExpandAllAction);
+                break;
+            default: super.handle(action);
+        }
+    }
+
+    protected handleCollapseExpandAction(action: CollapseExpandAction): void {
+        action.expandIds.forEach(id => this.expansionState[id] = true );
+        action.collapseIds.forEach(id => this.expansionState[id] = false );
+        this.applyExpansionState();
+        this.updateModel();
+    }
+
+    protected handleCollapseExpandAllAction(action: CollapseExpandAllAction): void {
+        // tslint:disable-next-line:forin
+        for (const id in this.expansionState)
+            this.expansionState[id] === action.expand;
+        this.applyExpansionState();
+        this.updateModel();
+    }
+
+    protected applyExpansionState() {
+        const index = new SModelIndex();
+        index.add(this.currentRoot);
+        // tslint:disable-next-line:forin
+        for (const id in this.expansionState) {
+            const element = index.getById(id);
+            if (element && element.children) {
+                const expanded = this.expansionState[id];
+                (element as any).expanded = expanded;
+                element.children = element.children.filter(child => child.type !== 'comp:comp');
+                if (expanded)
+                    this.addExpandedChildren(element);
+            }
+        }
+    }
+
+    protected addExpandedChildren(element: SModelElementSchema) {
+        if (!element.children)
+            return;
+        switch (element.id) {
+            case 'node0':
+                element.children.push(<SCompartmentSchema> {
+                    id: 'node0_attrs',
+                    type: 'comp:comp',
+                    layout: 'vbox',
+                    children: [
+                        <SLabelSchema> {
+                            id: 'node0_op2',
+                            type: 'label:text',
+                            text: 'name: string'
+                        }
+                    ],
+                });
+                element.children.push(<SModelElementSchema> {
+                    id: 'node0_ops',
+                    type: 'comp:comp',
+                    layout: 'vbox',
+                    children: [
+                        <SLabelSchema> {
+                            id: 'node0_op0',
+                            type: 'label:text',
+                            text: '+ foo(): integer'
+                        }, {
+                            id: 'node0_op1',
+                            type: 'label:text',
+                            text: '# bar(x: string): void'
+                        }
+                    ],
+                });
+                break;
+            case 'node1':
+                element.children.push(<SCompartmentSchema> {
+                    id: 'node1_attrs',
+                    type: 'comp:comp',
+                    layout: 'vbox',
+                    children: [
+                        <SLabelSchema> {
+                            id: 'node1_op2',
+                            type: 'label:text',
+                            text: 'name: string'
+                        }
+                    ],
+                });
+                element.children.push(<SCompartmentSchema> {
+                    id: 'node1_ops',
+                    type: 'comp:comp',
+                    layout: 'vbox',
+                    children: [
+                        <SLabelSchema> {
+                            id: 'node1_op0',
+                            type: 'label:text',
+                            text: '+ foo(): Foo'
+                        }
+                    ]
+                });
+                break;
+        }
+    }
+
+    initializeModel(): SModelRootSchema {
         const node0 = {
             id: 'node0',
             type: 'node:class',
@@ -65,37 +196,6 @@ export class ModelProvider implements IStateAwareModelProvider {
                 }
             ]
         };
-        if (state !== undefined && state.expansionState.expandedElementIds.indexOf('node0') !== -1) {
-            node0.expanded = true;
-            node0.children.push({
-                id: 'node0_attrs',
-                type: 'comp:comp',
-                layout: 'vbox',
-                children: [
-                    {
-                        id: 'node0_op2',
-                        type: 'label:text',
-                        text: 'name: string'
-                    }
-                ],
-            });
-            node0.children.push({
-                id: 'node0_ops',
-                type: 'comp:comp',
-                layout: 'vbox',
-                children: [
-                    {
-                        id: 'node0_op0',
-                        type: 'label:text',
-                        text: '+ foo(): integer'
-                    }, {
-                        id: 'node0_op1',
-                        type: 'label:text',
-                        text: '# bar(x: string): void'
-                    }
-                ],
-            });
-        }
         const node1 = {
             id: 'node1',
             type: 'node:class',
@@ -137,34 +237,6 @@ export class ModelProvider implements IStateAwareModelProvider {
                 }
             ]
         };
-        if (state !== undefined && state.expansionState.expandedElementIds.indexOf('node1') !== -1) {
-            node1.expanded = true;
-            node1.children.push({
-                id: 'node1_attrs',
-                type: 'comp:comp',
-                layout: 'vbox',
-                children: [
-                    {
-                        id: 'node1_op2',
-                        type: 'label:text',
-                        text: 'name: string'
-                    }
-                ],
-            });
-            node1.children.push({
-                id: 'node1_ops',
-                type: 'comp:comp',
-                layout: 'vbox',
-                children: [
-                    {
-                        id: 'node1_op0',
-                        type: 'label:text',
-                        text: '+ foo(): Foo'
-                    }
-
-                ]
-            });
-        }
         const node2 = {
             id: 'node2',
             type: 'node:class',
@@ -331,6 +403,11 @@ export class ModelProvider implements IStateAwareModelProvider {
                 paddingTop: 7,
                 paddingBottom: 7
             }
+        };
+        this.expansionState = {
+            node0: false,
+            node1: false,
+            node2: false
         };
         return graph;
     }

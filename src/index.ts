@@ -34,7 +34,6 @@ export * from './base/features/set-model';
 
 export * from './base/model/smodel-extension';
 export * from './base/model/smodel-factory';
-export * from './base/model/smodel-storage';
 export * from './base/model/smodel-utils';
 export * from './base/model/smodel';
 
@@ -171,7 +170,6 @@ export * from "./lib/svg-views";
 // ------------------ Model Source ------------------
 
 export * from "./model-source/diagram-server";
-export * from "./model-source/diagram-state";
 export * from "./model-source/local-model-source";
 export * from "./model-source/logging";
 export * from "./model-source/model-source";
