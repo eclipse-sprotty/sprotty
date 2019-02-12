@@ -25,7 +25,6 @@ import { findElement } from "../base/model/smodel-utils";
 import { TYPES } from "../base/types";
 import { ViewerOptions } from "../base/views/viewer-options";
 import { ComputedBoundsAction, RequestBoundsAction } from '../features/bounds/bounds-manipulation';
-import { CollapseExpandAction, CollapseExpandAllAction } from '../features/expand/expand';
 import { ExportSvgAction } from '../features/export/svg-exporter';
 import { RequestPopupModelAction, SetPopupModelAction } from "../features/hover/hover";
 import { applyMatches, Match } from "../features/update/model-matching";
@@ -33,8 +32,8 @@ import { UpdateModelAction } from "../features/update/update-model";
 import { Deferred } from "../utils/async";
 import { Bounds, Point } from "../utils/geometry";
 import { ILogger } from "../utils/logging";
-import { DiagramState, ExpansionState } from './diagram-state';
 import { ModelSource } from "./model-source";
+import { EMPTY_ROOT } from '../base/model/smodel-factory';
 
 /**
  * A model source that allows to set and modify the model through function calls.
@@ -44,14 +43,7 @@ import { ModelSource } from "./model-source";
 @injectable()
 export class LocalModelSource extends ModelSource {
 
-    protected currentRoot: SModelRootSchema = {
-        type: 'NONE',
-        id: 'ROOT'
-    };
-
-    protected diagramState: DiagramState = {
-        expansionState: new ExpansionState(this.currentRoot)
-    };
+    protected currentRoot: SModelRootSchema = EMPTY_ROOT;
 
     /**
      * The `type` property of the model root is used to determine whether a model update
@@ -79,7 +71,6 @@ export class LocalModelSource extends ModelSource {
                 @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
                 @inject(TYPES.ViewerOptions) viewerOptions: ViewerOptions,
                 @inject(TYPES.ILogger) protected readonly logger: ILogger,
-                @inject(TYPES.StateAwareModelProvider)@optional() protected modelProvider?: IStateAwareModelProvider,
                 @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider,
                 @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine
             ) {
@@ -92,8 +83,6 @@ export class LocalModelSource extends ModelSource {
         // Register this model source
         registry.register(ComputedBoundsAction.KIND, this);
         registry.register(RequestPopupModelAction.KIND, this);
-        registry.register(CollapseExpandAction.KIND, this);
-        registry.register(CollapseExpandAllAction.KIND, this);
     }
 
     /**
@@ -101,9 +90,6 @@ export class LocalModelSource extends ModelSource {
      */
     setModel(newRoot: SModelRootSchema): Promise<void> {
         this.currentRoot = newRoot;
-        this.diagramState = {
-            expansionState: new ExpansionState(newRoot)
-        };
         return this.submitModel(newRoot, false);
     }
 
@@ -250,18 +236,10 @@ export class LocalModelSource extends ModelSource {
             case ExportSvgAction.KIND:
                 this.handleExportSvgAction(action as ExportSvgAction);
                 break;
-            case CollapseExpandAction.KIND:
-                this.handleCollapseExpandAction(action as CollapseExpandAction);
-                break;
-            case CollapseExpandAllAction.KIND:
-                this.handleCollapseExpandAllAction(action as CollapseExpandAllAction);
-                break;
         }
     }
 
     protected handleRequestModel(action: RequestModelAction): void {
-        if (this.modelProvider)
-            this.currentRoot = this.modelProvider.getModel(this.diagramState, this.currentRoot);
         this.submitModel(this.currentRoot, false);
     }
 
@@ -310,26 +288,6 @@ export class LocalModelSource extends ModelSource {
         const blob = new Blob([action.svg], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "diagram.svg");
     }
-
-    protected handleCollapseExpandAction(action: CollapseExpandAction): void {
-        if (this.modelProvider !== undefined) {
-            this.diagramState.expansionState.apply(action);
-            const expandedModel = this.modelProvider.getModel(this.diagramState, this.currentRoot);
-            this.updateModel(expandedModel);
-        }
-    }
-
-    protected handleCollapseExpandAllAction(action: CollapseExpandAllAction): void {
-        if (this.modelProvider !== undefined) {
-            if (action.expand) {
-                // Expanding all elements locally is currently not supported
-            } else {
-                this.diagramState.expansionState.collapseAll();
-            }
-            const expandedModel = this.modelProvider.getModel(this.diagramState, this.currentRoot);
-            this.updateModel(expandedModel);
-        }
-    }
 }
 
 /**
@@ -340,10 +298,6 @@ export type PopupModelFactory = (request: RequestPopupModelAction, element?: SMo
 
 export interface IPopupModelProvider {
     getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined;
-}
-
-export interface IStateAwareModelProvider  {
-    getModel(diagramState: DiagramState, currentRoot?: SModelRootSchema): SModelRootSchema;
 }
 
 export interface IModelLayoutEngine {

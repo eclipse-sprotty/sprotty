@@ -19,7 +19,6 @@ import { TYPES } from "../base/types";
 import { Bounds, Point } from "../utils/geometry";
 import { ILogger } from "../utils/logging";
 import { SModelRootSchema, SModelIndex, SModelElementSchema } from "../base/model/smodel";
-import { SModelStorage } from "../base/model/smodel-storage";
 import { Action } from "../base/actions/action";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
@@ -81,7 +80,6 @@ export abstract class DiagramServer extends ModelSource {
     constructor(@inject(TYPES.IActionDispatcher) actionDispatcher: IActionDispatcher,
                 @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
                 @inject(TYPES.ViewerOptions) viewerOptions: ViewerOptions,
-                @inject(TYPES.SModelStorage) protected storage: SModelStorage,
                 @inject(TYPES.ILogger) protected logger: ILogger) {
         super(actionDispatcher, actionHandlerRegistry, viewerOptions);
         this.clientId = this.viewerOptions.baseDiv;
@@ -161,7 +159,6 @@ export abstract class DiagramServer extends ModelSource {
                 if (action.kind === SetModelCommand.KIND || action.kind === UpdateModelCommand.KIND) {
                     this.lastSubmittedModelType = newRoot.type;
                 }
-                this.storage.store(this.currentRoot);
             }
         }
     }

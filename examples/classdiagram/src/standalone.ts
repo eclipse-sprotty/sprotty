@@ -14,16 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource } from "../../../src";
 import createContainer from "./di.config";
-import { ModelProvider } from './model-provider';
+import { TYPES, LocalModelSource } from "../../../src";
 
 export default function runClassDiagram() {
     const container = createContainer(false, 'sprotty');
-
-    // Run
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    const modelProvider = container.get<ModelProvider>(TYPES.StateAwareModelProvider);
-    const graph = modelProvider.getModel();
-    modelSource.setModel(graph);
+    modelSource.updateModel();
 }
