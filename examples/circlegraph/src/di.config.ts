@@ -19,7 +19,7 @@ import {
     defaultModule, TYPES, configureViewerOptions, SGraphView, PolylineEdgeView, ConsoleLogger,
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule, viewportModule,
     LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge, updateModule,
-    graphModule, routingModule
+    graphModule, routingModule, modelSourceModule
 } from "../../../src";
 import { CircleNodeView } from "./views";
 
@@ -44,6 +44,6 @@ export default (useWebsocket: boolean) => {
 
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule,
-        exportModule, updateModule, graphModule, routingModule, circlegraphModule);
+        exportModule, updateModule, graphModule, routingModule, modelSourceModule, circlegraphModule);
     return container;
 };

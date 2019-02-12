@@ -23,6 +23,7 @@ import { RequestModelAction } from "../base/features/set-model";
 import { TYPES } from "../base/types";
 import { ViewerOptions } from "../base/views/viewer-options";
 import { ExportSvgAction } from '../features/export/svg-exporter';
+import { SModelRootSchema } from "../base/model/smodel";
 
 /**
  * A model source is serving the model to the event cycle. It represents
@@ -58,4 +59,15 @@ export abstract class ModelSource implements IActionHandler {
     }
 
     abstract handle(action: Action): ICommand | Action | void;
+
+    /**
+     * Commit changes from the internal SModel back to the currentModel.
+     *
+     * Does not have any side effects such as triggering layout or bounds computation,
+     * as the internal model is already current. See <code>CommitModelAction</code>
+     * for details.
+     * @param newRoot the new model.
+     * @return the previous model.
+     */
+    abstract commitModel(newRoot: SModelRootSchema): SModelRootSchema;
 }

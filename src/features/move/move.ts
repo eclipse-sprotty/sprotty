@@ -37,6 +37,7 @@ import { isSelectable } from "../select/model";
 import { SelectAction, SelectAllAction } from "../select/select";
 import { isViewport } from "../viewport/model";
 import { isLocateable, isMoveable, Locateable } from './model';
+import { CommitModelAction } from "../../model-source/commit-model";
 
 export class MoveAction implements Action {
     kind = MoveCommand.KIND;
@@ -497,6 +498,7 @@ export class MoveMouseListener extends MouseListener {
                 result.push(new DeleteElementAction(deleteIds));
             }
         }
+        result.push(new CommitModelAction());
         this.hasDragged = false;
         this.lastDragPosition = undefined;
         return result;

@@ -107,6 +107,12 @@ export class LocalModelSource extends ModelSource {
         return this.submitModel(newRoot, false);
     }
 
+    commitModel(newRoot: SModelRootSchema): SModelRootSchema {
+        const previousRoot = this.currentRoot;
+        this.currentRoot = newRoot;
+        return previousRoot;
+    }
+
     /**
      * Apply an incremental update to the model with an animation showing the transition to
      * the new state. If `newRoot` is undefined, the current root is submitted; in that case
