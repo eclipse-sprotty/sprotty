@@ -219,4 +219,10 @@ export abstract class DiagramServer extends ModelSource {
     protected handleServerStateAction(action: ServerStatusAction): boolean {
         return false;
     }
+
+    commitModel(newRoot: SModelRootSchema): SModelRootSchema {
+        const previousRoot = this.currentRoot;
+        this.currentRoot = newRoot;
+        return previousRoot;
+    }
 }

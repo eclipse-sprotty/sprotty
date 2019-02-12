@@ -20,7 +20,7 @@ import {
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
     viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule,
     expandModule, fadeModule, buttonModule, PreRenderedElement, SNode, SLabel, HtmlRoot,
-    configureModelElement, configureCommand, graphModule, updateModule, routingModule
+    configureModelElement, configureCommand, graphModule, updateModule, routingModule, modelSourceModule
 } from "../../../src";
 import { MindmapNodeView, PopupButtonView } from "./views";
 import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
@@ -56,6 +56,6 @@ export default (useWebsocket: boolean, containerId: string) => {
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        updateModule, graphModule, routingModule, mindmapModule);
+        updateModule, graphModule, routingModule, modelSourceModule, mindmapModule);
     return container;
 };

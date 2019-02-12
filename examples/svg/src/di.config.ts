@@ -18,7 +18,8 @@ import { Container, ContainerModule } from "inversify";
 import {
     defaultModule, TYPES, ConsoleLogger, LogLevel, boundsModule, moveModule, selectModule,
     undoRedoModule, viewportModule, hoverModule, LocalModelSource, PreRenderedView, SvgViewportView,
-    exportModule, ViewportRootElement, ShapedPreRenderedElement, configureModelElement
+    exportModule, ViewportRootElement, ShapedPreRenderedElement, configureModelElement,
+    modelSourceModule
 } from "../../../src";
 
 export default () => {
@@ -35,6 +36,6 @@ export default () => {
 
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule,
-        hoverModule, exportModule, svgModule);
+        hoverModule, exportModule, modelSourceModule, svgModule);
     return container;
 };
