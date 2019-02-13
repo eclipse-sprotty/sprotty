@@ -137,12 +137,12 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
         super();
     }
 
-    mouseDown() {
+    mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.mouseIsDown = true;
         return [];
     }
 
-    mouseUp() {
+    mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.mouseIsDown = false;
         return [];
     }
