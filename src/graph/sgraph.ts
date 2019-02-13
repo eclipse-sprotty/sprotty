@@ -17,7 +17,7 @@
 import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
 import { Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
     ModelLayoutOptions, SShapeElement, SShapeElementSchema } from '../features/bounds/model';
-import { edgeLayoutFeature } from '../features/edge-layout/model';
+import { edgeLayoutFeature, EdgePlacement } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
 import { editFeature } from '../features/edit/model';
 import { Fadeable, fadeFeature } from '../features/fade/model';
@@ -155,6 +155,7 @@ export class SLabel extends SShapeElement implements Selectable, Alignable, Fade
     selected: boolean = false;
     alignment: Point = ORIGIN_POINT;
     opacity = 1;
+    edgePlacement?: EdgePlacement;
 
     hasFeature(feature: symbol) {
         return feature === boundsFeature || feature === alignFeature || feature === fadeFeature || feature === layoutableChildFeature || feature === edgeLayoutFeature;
