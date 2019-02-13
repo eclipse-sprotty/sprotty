@@ -117,7 +117,7 @@ export class MouseTool implements IVNodeDecorator {
         this.handleEvent('wheel', model, event);
     }
 
-    doubleClick(model: SModelRoot, event: WheelEvent) {
+    doubleClick(model: SModelRoot, event: MouseEvent) {
         this.handleEvent('doubleClick', model, event);
     }
 
@@ -190,7 +190,7 @@ export class MouseListener {
         return [];
     }
 
-    doubleClick(target: SModelElement, event: WheelEvent): (Action | Promise<Action>)[] {
+    doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
@@ -198,4 +198,3 @@ export class MouseListener {
         return vnode;
     }
 }
-
