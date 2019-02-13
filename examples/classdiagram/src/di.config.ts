@@ -21,7 +21,8 @@ import {
     viewportModule, hoverModule, HtmlRootView, PreRenderedView, exportModule, expandModule,
     fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
     HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
-    edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule
+    edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule, commandPaletteModule,
+    RevealNamedElementActionProvider
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
@@ -30,6 +31,7 @@ import { Icon, ClassNode } from "./model";
 
 export default (useWebsocket: boolean, containerId: string) => {
     require("../../../css/sprotty.css");
+    require("../../../css/command-palette.css");
     require("../css/diagram.css");
     const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         if (useWebsocket)
@@ -39,6 +41,7 @@ export default (useWebsocket: boolean, containerId: string) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider);
+        bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:class', ClassNode, ClassNodeView);
@@ -64,6 +67,6 @@ export default (useWebsocket: boolean, containerId: string) => {
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
         updateModule, graphModule, routingModule, edgeEditModule, edgeLayoutModule,
-        modelSourceModule, classDiagramModule);
+        modelSourceModule, commandPaletteModule, classDiagramModule);
     return container;
 };

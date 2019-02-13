@@ -16,14 +16,15 @@
 
 import {
     SShapeElement, Expandable, boundsFeature, expandFeature, fadeFeature, layoutContainerFeature,
-    layoutableChildFeature, RectangularNode
+    layoutableChildFeature, RectangularNode, Nameable, nameFeature
 } from "../../../src";
 
-export class ClassNode extends RectangularNode implements Expandable {
+export class ClassNode extends RectangularNode implements Expandable, Nameable {
     expanded: boolean = false;
+    name: string = '';
 
     hasFeature(feature: symbol) {
-        return feature === expandFeature || super.hasFeature(feature);
+        return feature === expandFeature || feature === nameFeature || super.hasFeature(feature);
     }
 }
 
