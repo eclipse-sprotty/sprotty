@@ -40,6 +40,9 @@ export * from './base/model/smodel';
 export * from './base/tool-manager/tool-manager';
 export * from './base/tool-manager/tool';
 
+export * from './base/ui-extensions/ui-extension-registry';
+export * from './base/ui-extensions/ui-extension';
+
 export * from './base/views/key-tool';
 export * from './base/views/mouse-tool';
 export * from './base/views/thunk-view';
@@ -147,8 +150,9 @@ import undoRedoModule from "./features/undo-redo/di.config";
 import updateModule from "./features/update/di.config";
 import viewportModule from "./features/viewport/di.config";
 
-export { graphModule, boundsModule, buttonModule, decorationModule, edgeLayoutModule,
-    expandModule,  exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
+export {
+    graphModule, boundsModule, buttonModule, decorationModule, edgeLayoutModule,
+    expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
     selectModule, undoRedoModule, updateModule, viewportModule
 };
 
