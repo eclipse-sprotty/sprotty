@@ -103,5 +103,7 @@
     "lib",
     "css",
     "src"
-  ]
+  ],
+  "main": "lib/index",
+  "types": "lib/index"
 }
