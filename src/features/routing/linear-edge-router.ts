@@ -19,7 +19,7 @@ import { SModelElement, SParentElement } from "../../base/model/smodel";
 import { translateBounds, translatePoint } from "../../base/model/smodel-utils";
 import { Bounds, euclideanDistance, linear, Point } from "../../utils/geometry";
 import { ResolvedHandleMove } from "../move/move";
-import { RoutingHandleKind, SDanglingAnchor, SRoutingHandle } from "../routing/model";
+import { RoutingHandleKind, SDanglingAnchor, SRoutingHandle, edgeInProgressID, edgeInProgressTargetHandleID } from "../routing/model";
 import { AnchorComputerRegistry, IAnchorComputer } from "./anchor";
 import { SConnectableElement, SRoutableElement } from "./model";
 import { EdgeSnapshot, IEdgeRouter, RoutedPoint } from "./routing";
@@ -148,6 +148,8 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
         handle.kind = kind;
         handle.pointIndex = routingPointIndex;
         handle.type = type;
+        if (kind === 'target' && edge.id === edgeInProgressID)
+            handle.id = edgeInProgressTargetHandleID;
         edge.add(handle);
         return handle;
     }
