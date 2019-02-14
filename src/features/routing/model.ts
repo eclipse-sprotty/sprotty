@@ -130,3 +130,6 @@ export class SDanglingAnchor extends SConnectableElement {
         return feature === deletableFeature;
     }
 }
+
+export const edgeInProgressID = 'edge-in-progress';
+export const edgeInProgressTargetHandleID = edgeInProgressID + '-target-anchor';
