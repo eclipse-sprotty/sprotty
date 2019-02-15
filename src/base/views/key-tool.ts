@@ -26,8 +26,9 @@ import { on } from "./vnode-utils";
 @injectable()
 export class KeyTool implements IVNodeDecorator {
 
-    constructor(@inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher,
-                @multiInject(TYPES.KeyListener)@optional() protected keyListeners: KeyListener[] = []) {}
+    @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
+
+    constructor(@multiInject(TYPES.KeyListener)@optional() protected keyListeners: KeyListener[] = []) {}
 
     register(keyListener: KeyListener) {
         this.keyListeners.push(keyListener);

@@ -48,9 +48,7 @@ export class PopupModelProvider implements IPopupModelProvider {
 @injectable()
 export class PopupButtonMouseListener extends MouseListener {
 
-    constructor(@inject(TYPES.ModelSource) protected modelSource: LocalModelSource) {
-        super();
-    }
+    @inject(TYPES.ModelSource) protected modelSource: LocalModelSource;
 
     mouseDown(target: SModelElement, event: MouseEvent): Action[] {
         let actions: Action[] = [

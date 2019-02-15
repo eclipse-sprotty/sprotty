@@ -17,13 +17,11 @@
 import { saveAs } from 'file-saver';
 import { inject, injectable, optional } from "inversify";
 import { Action } from "../base/actions/action";
-import { IActionDispatcher } from "../base/actions/action-dispatcher";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { RequestModelAction, SetModelAction } from "../base/features/set-model";
 import { SModelElementSchema, SModelIndex, SModelRootSchema } from "../base/model/smodel";
 import { findElement } from "../base/model/smodel-utils";
 import { TYPES } from "../base/types";
-import { ViewerOptions } from "../base/views/viewer-options";
 import { ComputedBoundsAction, RequestBoundsAction } from '../features/bounds/bounds-manipulation';
 import { ExportSvgAction } from '../features/export/svg-exporter';
 import { RequestPopupModelAction, SetPopupModelAction } from "../features/hover/hover";
@@ -42,6 +40,10 @@ import { EMPTY_ROOT } from '../base/model/smodel-factory';
  */
 @injectable()
 export class LocalModelSource extends ModelSource {
+
+    @inject(TYPES.ILogger) protected readonly logger: ILogger;
+    @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider;
+    @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine;
 
     protected currentRoot: SModelRootSchema = EMPTY_ROOT;
 
@@ -67,17 +69,7 @@ export class LocalModelSource extends ModelSource {
         this.setModel(root);
     }
 
-    constructor(@inject(TYPES.IActionDispatcher) actionDispatcher: IActionDispatcher,
-                @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
-                @inject(TYPES.ViewerOptions) viewerOptions: ViewerOptions,
-                @inject(TYPES.ILogger) protected readonly logger: ILogger,
-                @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider,
-                @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine
-            ) {
-        super(actionDispatcher, actionHandlerRegistry, viewerOptions);
-    }
-
-    protected initialize(registry: ActionHandlerRegistry): void {
+    initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
         // Register this model source

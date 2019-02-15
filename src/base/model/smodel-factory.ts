@@ -40,8 +40,7 @@ export interface IModelFactory {
 @injectable()
 export class SModelFactory implements IModelFactory {
 
-    constructor(@inject(TYPES.SModelRegistry) protected readonly registry: SModelRegistry) {
-    }
+    @inject(TYPES.SModelRegistry) protected readonly registry: SModelRegistry;
 
     createElement(schema: SModelElementSchema | SModelElement, parent?: SParentElement): SChildElement {
         let child: SChildElement;

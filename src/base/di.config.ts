@@ -45,7 +45,14 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
 
     // Registries ---------------------------------------------
     bind(TYPES.SModelRegistry).to(SModelRegistry).inSingletonScope();
-    bind(TYPES.ActionHandlerRegistry).to(ActionHandlerRegistry).inSingletonScope();
+    bind(ActionHandlerRegistry).toSelf().inSingletonScope();
+    bind(TYPES.ActionHandlerRegistryProvider).toProvider<ActionHandlerRegistry>((context) => {
+        return () => {
+            return new Promise<ActionHandlerRegistry>((resolve) => {
+                resolve(context.container.get<ActionHandlerRegistry>(ActionHandlerRegistry));
+            });
+        };
+    });
     bind(TYPES.ViewRegistry).to(ViewRegistry).inSingletonScope();
 
     // Model Creation ---------------------------------------------

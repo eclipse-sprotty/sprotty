@@ -182,9 +182,7 @@ export class SelectAllCommand extends Command {
 
 export class SelectMouseListener extends MouseListener {
 
-    constructor(@inject(ButtonHandlerRegistry)@optional() protected buttonHandlerRegistry: ButtonHandlerRegistry) {
-        super();
-    }
+    @inject(ButtonHandlerRegistry)@optional() protected buttonHandlerRegistry: ButtonHandlerRegistry;
 
     wasSelected = false;
     hasDragged = false;

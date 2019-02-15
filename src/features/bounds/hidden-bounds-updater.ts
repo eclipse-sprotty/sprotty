@@ -48,9 +48,8 @@ export class BoundsData {
 @injectable()
 export class HiddenBoundsUpdater implements IVNodeDecorator {
 
-    constructor(@inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher,
-                @inject(TYPES.Layouter) protected layouter: Layouter) {
-    }
+    @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
+    @inject(TYPES.Layouter) protected layouter: Layouter;
 
     private readonly element2boundsData: Map<SModelElement, BoundsData> = new Map;
 

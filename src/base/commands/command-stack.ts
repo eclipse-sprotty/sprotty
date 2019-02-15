@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
+import { inject, injectable, postConstruct } from "inversify";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
 import { EMPTY_ROOT, IModelFactory } from "../model/smodel-factory";
@@ -101,6 +101,12 @@ export type CommandStackProvider = () => Promise<ICommandStack>;
 @injectable()
 export class CommandStack implements ICommandStack {
 
+    @inject(TYPES.IModelFactory) protected modelFactory: IModelFactory;
+    @inject(TYPES.IViewerProvider) protected viewerProvider: IViewerProvider;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer;
+    @inject(TYPES.CommandStackOptions) protected options: CommandStackOptions;
+
     protected currentPromise: Promise<CommandStackState>;
 
     protected viewer?: IViewer;
@@ -122,13 +128,10 @@ export class CommandStack implements ICommandStack {
      */
     protected offStack: SystemCommand[] = [];
 
-    constructor(@inject(TYPES.IModelFactory) protected modelFactory: IModelFactory,
-                @inject(TYPES.IViewerProvider) protected viewerProvider: IViewerProvider,
-                @inject(TYPES.ILogger) protected logger: ILogger,
-                @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer,
-                @inject(TYPES.CommandStackOptions) protected options: CommandStackOptions) {
+    @postConstruct()
+    protected initialize() {
         this.currentPromise = Promise.resolve({
-            root: modelFactory.createRoot(EMPTY_ROOT),
+            root: this.modelFactory.createRoot(EMPTY_ROOT),
             hiddenRoot: undefined,
             popupRoot: undefined,
             rootChanged: false,

@@ -28,9 +28,8 @@ import { IViewer } from "./viewer";
  */
 @injectable()
 export class ViewerCache implements IViewer {
-    constructor(@inject(TYPES.IViewer) @named('delegate') protected delegate: IViewer,
-                @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer) {
-    }
+    @inject(TYPES.IViewer) @named('delegate') protected delegate: IViewer;
+    @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer;
 
     cachedModelRoot: SModelRoot | undefined;
     cachedHiddenModelRoot: SModelRoot | undefined;

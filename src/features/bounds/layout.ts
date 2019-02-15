@@ -38,8 +38,8 @@ export class LayoutRegistry extends InstanceRegistry<ILayout> {
 @injectable()
 export class Layouter {
 
-    constructor(@inject(TYPES.LayoutRegistry) protected layoutRegistry: LayoutRegistry,
-                @inject(TYPES.ILogger) protected logger: ILogger) {}
+    @inject(TYPES.LayoutRegistry) protected layoutRegistry: LayoutRegistry;
+    @inject(TYPES.ILogger) protected logger: ILogger;
 
     layout(element2boundsData: Map<SModelElement​​ , BoundsData>) {
         new StatefulLayouter(element2boundsData, this.layoutRegistry, this.logger).layout();

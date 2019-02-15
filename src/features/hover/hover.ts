@@ -132,10 +132,8 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
 
     protected mouseIsDown: boolean;
 
-    constructor(@inject(TYPES.ViewerOptions) protected options: ViewerOptions,
-                @inject(TYPES.HoverState) protected state: HoverState) {
-        super();
-    }
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.HoverState) protected state: HoverState;
 
     mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.mouseIsDown = true;
