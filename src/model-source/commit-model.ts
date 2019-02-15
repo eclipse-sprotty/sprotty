@@ -19,7 +19,7 @@ import { Command, CommandExecutionContext, CommandResult } from "../base/command
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
 import { SModelRootSchema } from "../base/model/smodel";
-import { IModelFactory } from "../base/model/smodel-factory";
+import { Action } from "../base/actions/action";
 
 /**
  * Commit the current SModel back to the model source.
@@ -29,15 +29,14 @@ import { IModelFactory } from "../base/model/smodel-factory";
  * commands finishes, it fires a CommitModelAction to write the final changes back to
  * the model source.
  */
-export class CommitModelAction {
-    kind = CommitModelCommand.KIND;
+export class CommitModelAction implements Action {
+    readonly kind = CommitModelCommand.KIND;
 }
 
 @injectable()
 export class CommitModelCommand extends Command {
-    static KIND = 'commitModel';
+    static readonly KIND = 'commitModel';
 
-    @inject(TYPES.IModelFactory) modelFactory: IModelFactory;
     @inject(TYPES.ModelSource) modelSource: ModelSource;
 
     originalModel: SModelRootSchema;
@@ -48,7 +47,7 @@ export class CommitModelCommand extends Command {
     }
 
     execute(context: CommandExecutionContext): CommandResult {
-        this.newModel = this.modelFactory.createSchema(context.root);
+        this.newModel = context.modelFactory.createSchema(context.root);
         this.originalModel = this.modelSource.commitModel(this.newModel);
         return context.root;
     }

@@ -63,9 +63,11 @@ export abstract class ModelSource implements IActionHandler {
     /**
      * Commit changes from the internal SModel back to the currentModel.
      *
-     * Does not have any side effects such as triggering layout or bounds computation,
-     * as the internal model is already current. See <code>CommitModelAction</code>
-     * for details.
+     * This method is meant to be called only by CommitModelCommand and other commands
+     * that need to feed the current internal model back to the model source. It does
+     * not have any side effects such as triggering layout or bounds computation, as the
+     * internal model is already current. See `CommitModelAction` for details.
+     *
      * @param newRoot the new model.
      * @return the previous model.
      */
