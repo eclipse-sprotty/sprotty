@@ -82,6 +82,21 @@ export type ModelRendererFactory = (decorators: IVNodeDecorator[]) => ModelRende
 @injectable()
 export class Viewer implements IViewer {
 
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(TYPES.IActionDispatcher) protected actiondispatcher: IActionDispatcher;
+
+    constructor(
+        @inject(TYPES.ModelRendererFactory) protected readonly modelRendererFactory: ModelRendererFactory,
+        @multiInject(TYPES.IVNodeDecorator) @optional() decorators: IVNodeDecorator[],
+        @multiInject(TYPES.HiddenVNodeDecorator) @optional() hiddenDecorators: IVNodeDecorator[],
+        @multiInject(TYPES.PopupVNodeDecorator) @optional() popupDecorators: IVNodeDecorator[]) {
+        this.patcher = this.createPatcher();
+        this.renderer = this.modelRendererFactory(decorators);
+        this.hiddenRenderer = this.modelRendererFactory(hiddenDecorators);
+        this.popupRenderer = this.modelRendererFactory(popupDecorators);
+    }
+
     protected renderer: ModelRenderer;
     protected hiddenRenderer: ModelRenderer;
     protected popupRenderer: ModelRenderer;
@@ -91,19 +106,6 @@ export class Viewer implements IViewer {
     protected lastVDOM: VNode;
     protected lastHiddenVDOM: VNode;
     protected lastPopupVDOM: VNode;
-
-    constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
-                @multiInject(TYPES.IVNodeDecorator) @optional() protected decorators: IVNodeDecorator[],
-                @multiInject(TYPES.HiddenVNodeDecorator) @optional() protected hiddenDecorators: IVNodeDecorator[],
-                @multiInject(TYPES.PopupVNodeDecorator) @optional() protected popupDecorators: IVNodeDecorator[],
-                @inject(TYPES.ViewerOptions) protected options: ViewerOptions,
-                @inject(TYPES.ILogger) protected logger: ILogger,
-                @inject(TYPES.IActionDispatcher) protected actiondispatcher: IActionDispatcher) {
-        this.patcher = this.createPatcher();
-        this.renderer = modelRendererFactory(decorators);
-        this.hiddenRenderer = modelRendererFactory(hiddenDecorators);
-        this.popupRenderer = modelRendererFactory(popupDecorators);
-    }
 
     protected createModules(): Module[] {
         return [

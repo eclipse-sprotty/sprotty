@@ -24,9 +24,7 @@ import { SModelElement } from "../../base/model/smodel";
 @injectable()
 export class PopupPositionUpdater implements IVNodeDecorator {
 
-    constructor(@inject(TYPES.ViewerOptions) protected options: ViewerOptions) {
-
-    }
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         return vnode;

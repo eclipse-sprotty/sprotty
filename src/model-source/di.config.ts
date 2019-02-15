@@ -34,6 +34,7 @@ const modelSourceModule = new ContainerModule((bind, _unbind, isBound) => {
         };
     });
     configureCommand({bind, isBound}, CommitModelCommand);
+    bind(TYPES.IActionHandlerInitializer).toService(TYPES.ModelSource);
 });
 
 export default modelSourceModule;

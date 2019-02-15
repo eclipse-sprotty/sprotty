@@ -26,9 +26,8 @@ import { getAttrs } from "./vnode-utils";
 @injectable()
 export class IdDecorator implements IVNodeDecorator {
 
-    constructor(@inject(TYPES.ILogger) protected logger: ILogger,
-                @inject(TYPES.DOMHelper) protected domHelper: DOMHelper) {
-    }
+    @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         const attrs = getAttrs(vnode);

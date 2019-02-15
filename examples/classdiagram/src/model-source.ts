@@ -14,33 +14,22 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, optional, inject } from 'inversify';
+import { injectable } from 'inversify';
 import { Action, ActionHandlerRegistry, CollapseExpandAction, CollapseExpandAllAction, LocalModelSource,
     SCompartmentSchema, SEdgeSchema, SGraphSchema, SLabelSchema, SModelElementSchema, SModelIndex,
-    SModelRootSchema,
-    IActionDispatcher,
-    ViewerOptions,
-    ILogger,
-    IPopupModelProvider,
-    IModelLayoutEngine,
-    TYPES} from "../../../src";
+    SModelRootSchema } from "../../../src";
 
 @injectable()
 export class ClassDiagramModelSource extends LocalModelSource {
 
     expansionState: {[key: string]: boolean};
 
-    constructor(@inject(TYPES.IActionDispatcher) actionDispatcher: IActionDispatcher,
-                @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
-                @inject(TYPES.ViewerOptions) viewerOptions: ViewerOptions,
-                @inject(TYPES.ILogger) protected readonly logger: ILogger,
-                @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider,
-                @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine) {
-        super(actionDispatcher, actionHandlerRegistry, viewerOptions, logger, popupModelProvider, layoutEngine);
+    constructor() {
+        super();
         this.currentRoot = this.initializeModel();
     }
 
-    protected initialize(registry: ActionHandlerRegistry): void {
+    initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
         registry.register(CollapseExpandAction.KIND, this);
         registry.register(CollapseExpandAllAction.KIND, this);

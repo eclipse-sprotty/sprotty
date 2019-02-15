@@ -34,7 +34,7 @@ export class CanvasBoundsInitializer implements IVNodeDecorator {
 
     protected rootAndVnode: [SModelRoot, VNode] | undefined;
 
-    constructor(@inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher) {}
+    @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (element instanceof SModelRoot && !isValidDimension(element.canvasBounds)) {

@@ -22,9 +22,7 @@ import { SModelElement } from "../model/smodel";
 @injectable()
 export class DOMHelper {
 
-    constructor(@inject(TYPES.ViewerOptions) private viewerOptions: ViewerOptions) {
-
-    }
+    @inject(TYPES.ViewerOptions) private viewerOptions: ViewerOptions;
 
     private getPrefix() {
         const prefix = this.viewerOptions !== undefined && this.viewerOptions.baseDiv !== undefined ?

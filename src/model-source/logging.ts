@@ -37,8 +37,9 @@ export class LoggingAction implements Action {
  */
 @injectable()
 export class ForwardingLogger implements ILogger {
-    constructor(@inject(TYPES.ModelSourceProvider) protected modelSourceProvider: () => Promise<ModelSource>,
-                @inject(TYPES.LogLevel) public logLevel: LogLevel) {}
+
+    @inject(TYPES.ModelSourceProvider) protected modelSourceProvider: () => Promise<ModelSource>;
+    @inject(TYPES.LogLevel) public logLevel: LogLevel;
 
     error(thisArg: any, message: string, ...params: any[]): void {
         if (this.logLevel >= LogLevel.error)

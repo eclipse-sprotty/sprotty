@@ -24,7 +24,7 @@ import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
 import { Command, CommandExecutionContext, CommandResult, ICommand } from '../commands/command';
 import { ICommandStack } from "../commands/command-stack";
-import { IActionDispatcher } from "./action-dispatcher";
+import { ActionDispatcher } from "./action-dispatcher";
 import { Action } from "./action";
 import defaultModule from "../di.config";
 import { SetModelAction } from '../features/set-model';
@@ -82,12 +82,13 @@ describe('ActionDispatcher', () => {
         container.load(defaultModule);
         container.rebind(TYPES.ICommandStack).toConstantValue(mockCommandStack);
 
-        const actionDispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
+        const actionDispatcher = container.get<ActionDispatcher>(TYPES.IActionDispatcher);
         return { actionDispatcher, state };
     }
 
-    it('should execute/undo/redo', () => {
+    it('should execute/undo/redo', async () => {
         const { actionDispatcher, state } = setup();
+        await actionDispatcher.initialize();
 
         // an initial SetModelAction is fired automatically
         expect(state.execCount).to.be.equal(1);
@@ -95,29 +96,30 @@ describe('ActionDispatcher', () => {
         expect(state.redoCount).to.be.equal(0);
 
         // actions are postponed until InitializeCanvasBoundsAction comes in
+        // no await here, as it is blocking
         actionDispatcher.dispatch(new UndoAction);
         expect(state.execCount).to.be.equal(1);
         expect(state.undoCount).to.be.equal(0);
         expect(state.redoCount).to.be.equal(0);
 
-        actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+        await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
         // postponed actions are fired as well
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(0);
 
-        actionDispatcher.dispatch(new RedoAction);
+        await actionDispatcher.dispatch(new RedoAction);
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(1);
 
-        actionDispatcher.dispatch({ kind: 'unknown' }).catch(() => {});
+        await actionDispatcher.dispatch({ kind: 'unknown' }).catch(() => {});
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(1);
 
         // MockAction is not registered by default
-        actionDispatcher.dispatch(new MockAction()).catch(() => {});
+        await actionDispatcher.dispatch(new MockAction()).catch(() => {});
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(1);

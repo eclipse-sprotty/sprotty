@@ -14,25 +14,23 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { saveAs } from 'file-saver';
 import { inject, injectable } from "inversify";
-import { TYPES } from "../base/types";
-import { Bounds, Point } from "../utils/geometry";
-import { ILogger } from "../utils/logging";
-import { SModelRootSchema, SModelIndex, SModelElementSchema } from "../base/model/smodel";
 import { Action } from "../base/actions/action";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
-import { IActionDispatcher } from "../base/actions/action-dispatcher";
 import { ICommand } from "../base/commands/command";
-import { ViewerOptions } from "../base/views/viewer-options";
-import { SetModelCommand, SetModelAction } from "../base/features/set-model";
-import { UpdateModelCommand, UpdateModelAction } from "../features/update/update-model";
+import { SetModelAction, SetModelCommand } from "../base/features/set-model";
+import { SModelElementSchema, SModelIndex, SModelRootSchema } from "../base/model/smodel";
+import { TYPES } from "../base/types";
 import { ComputedBoundsAction, RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
-import { RequestPopupModelAction } from "../features/hover/hover";
-import { ModelSource } from "./model-source";
+import { CollapseExpandAction, CollapseExpandAllAction } from '../features/expand/expand';
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { saveAs } from 'file-saver';
-import { CollapseExpandAction, CollapseExpandAllAction } from '../features/expand/expand';
-import { OpenAction } from '../features/open/open';
+import { RequestPopupModelAction } from "../features/hover/hover";
+import { OpenAction } from '../features/open/open';
+import { UpdateModelAction, UpdateModelCommand } from "../features/update/update-model";
+import { Bounds, Point } from "../utils/geometry";
+import { ILogger } from "../utils/logging";
+import { ModelSource } from "./model-source";
 
 /**
  * Wrapper for actions when transferring them between client and server via a DiagramServer.
@@ -68,6 +66,8 @@ const receivedFromServerProperty = '__receivedFromServer';
 @injectable()
 export abstract class DiagramServer extends ModelSource {
 
+    @inject(TYPES.ILogger) protected logger: ILogger;
+
     clientId: string;
 
     protected currentRoot: SModelRootSchema = {
@@ -77,15 +77,7 @@ export abstract class DiagramServer extends ModelSource {
 
     protected lastSubmittedModelType: string;
 
-    constructor(@inject(TYPES.IActionDispatcher) actionDispatcher: IActionDispatcher,
-                @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
-                @inject(TYPES.ViewerOptions) viewerOptions: ViewerOptions,
-                @inject(TYPES.ILogger) protected logger: ILogger) {
-        super(actionDispatcher, actionHandlerRegistry, viewerOptions);
-        this.clientId = this.viewerOptions.baseDiv;
-    }
-
-    protected initialize(registry: ActionHandlerRegistry): void {
+    initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
         // Register this model source
@@ -96,6 +88,8 @@ export abstract class DiagramServer extends ModelSource {
         registry.register(CollapseExpandAllAction.KIND, this);
         registry.register(OpenAction.KIND, this);
         registry.register(ServerStatusAction.KIND, this);
+
+        this.clientId = this.viewerOptions.baseDiv;
     }
 
     handle(action: Action): void | ICommand {

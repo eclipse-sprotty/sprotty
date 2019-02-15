@@ -20,7 +20,7 @@ import { ILogger } from "../../utils/logging";
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { ICommandStack } from "../commands/command-stack";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { SetModelAction, SetModelCommand } from '../features/set-model';
+import { SetModelAction } from '../features/set-model';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
 import { Action, isAction } from "./action";
 import { ActionHandlerRegistry } from "./action-handler";
@@ -37,17 +37,25 @@ export interface IActionDispatcher {
 @injectable()
 export class ActionDispatcher implements IActionDispatcher {
 
+    @inject(TYPES.ActionHandlerRegistryProvider) protected actionHandlerRegistryProvider: () => Promise<ActionHandlerRegistry>;
+    @inject(TYPES.ICommandStack) protected commandStack: ICommandStack;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer;
+
+    protected actionHandlerRegistry: ActionHandlerRegistry;
+
     protected blockUntil?: (action: Action) => boolean;
     protected postponedActions: PostponedAction[] = [];
+    protected initialized: Promise<void> | undefined;
 
-    constructor(@inject(TYPES.ActionHandlerRegistry) protected actionHandlerRegistry: ActionHandlerRegistry,
-                @inject(TYPES.ICommandStack) protected commandStack: ICommandStack,
-                @inject(TYPES.ILogger) protected logger: ILogger,
-                @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer) {
-        this.postponedActions = [];
-        const initialCommand = new SetModelCommand(new SetModelAction(EMPTY_ROOT));
-        this.blockUntil = initialCommand.blockUntil;
-        this.commandStack.execute(initialCommand);
+    initialize(): Promise<void> {
+        if (!this.initialized) {
+            this.initialized = this.actionHandlerRegistryProvider().then(registry => {
+                this.actionHandlerRegistry = registry;
+                this.handleAction(new SetModelAction(EMPTY_ROOT));
+            });
+        }
+        return this.initialized;
     }
 
     dispatchAll(actions: Action[]): Promise<void> {
@@ -55,15 +63,17 @@ export class ActionDispatcher implements IActionDispatcher {
     }
 
     dispatch(action: Action): Promise<void> {
-        if (this.blockUntil !== undefined) {
-            return this.handleBlocked(action, this.blockUntil);
-        } else if (action.kind === UndoAction.KIND) {
-            return this.commandStack.undo().then(() => {});
-        } else if (action.kind === RedoAction.KIND) {
-            return this.commandStack.redo().then(() => {});
-        } else {
-            return this.handleAction(action);
-        }
+        return this.initialize().then(() => {
+            if (this.blockUntil !== undefined) {
+                return this.handleBlocked(action, this.blockUntil);
+            } else if (action.kind === UndoAction.KIND) {
+                return this.commandStack.undo().then(() => {});
+            } else if (action.kind === RedoAction.KIND) {
+                return this.commandStack.redo().then(() => {});
+            } else {
+                return this.handleAction(action);
+            }
+        });
     }
 
     protected handleAction(action: Action): Promise<void> {

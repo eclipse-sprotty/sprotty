@@ -77,8 +77,7 @@ export class ExportSvgDecorator implements IVNodeDecorator {
 
     root: SModelRoot;
 
-    constructor(@inject(TYPES.SvgExporter) protected svgExporter: SvgExporter) {
-    }
+    @inject(TYPES.SvgExporter) protected svgExporter: SvgExporter;
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (element instanceof SModelRoot)

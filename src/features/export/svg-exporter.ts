@@ -34,10 +34,9 @@ export class ExportSvgAction implements Action {
 @injectable()
 export class SvgExporter {
 
-    constructor(@inject(TYPES.ViewerOptions) protected options: ViewerOptions,
-                @inject(TYPES.IActionDispatcher) protected actionDispatcher: ActionDispatcher,
-                @inject(TYPES.ILogger) protected log: ILogger) {
-    }
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.IActionDispatcher) protected actionDispatcher: ActionDispatcher;
+    @inject(TYPES.ILogger) protected log: ILogger;
 
     export(root: SModelRoot): void {
         if (typeof document !== 'undefined') {

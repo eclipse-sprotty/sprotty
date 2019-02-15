@@ -17,7 +17,7 @@
 import { inject, injectable } from "inversify";
 import { Action } from "../base/actions/action";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
-import { ActionHandlerRegistry, IActionHandler } from "../base/actions/action-handler";
+import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../base/actions/action-handler";
 import { ICommand } from "../base/commands/command";
 import { RequestModelAction } from "../base/features/set-model";
 import { TYPES } from "../base/types";
@@ -44,15 +44,12 @@ import { SModelRootSchema } from "../base/model/smodel";
  * the client.</li>
  */
 @injectable()
-export abstract class ModelSource implements IActionHandler {
+export abstract class ModelSource implements IActionHandler, IActionHandlerInitializer {
 
-    constructor(@inject(TYPES.IActionDispatcher) readonly actionDispatcher: IActionDispatcher,
-                @inject(TYPES.ActionHandlerRegistry) actionHandlerRegistry: ActionHandlerRegistry,
-                @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions) {
-        this.initialize(actionHandlerRegistry);
-    }
+    @inject(TYPES.IActionDispatcher) readonly actionDispatcher: IActionDispatcher;
+    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
 
-    protected initialize(registry: ActionHandlerRegistry): void {
+    initialize(registry: ActionHandlerRegistry): void {
         // Register this model source
         registry.register(RequestModelAction.KIND, this);
         registry.register(ExportSvgAction.KIND, this);
