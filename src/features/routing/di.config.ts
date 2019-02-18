@@ -18,7 +18,7 @@ import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
 import { ManhattanEdgeRouter } from "./manhattan-edge-router";
 import { PolylineEdgeRouter } from "./polyline-edge-router";
-import { ManhattanRectangularAnchor } from "./manhattan-anchors";
+import { ManhattanRectangularAnchor, ManhattanEllipticAnchor, ManhattanDiamondAnchor } from "./manhattan-anchors";
 import { RectangleAnchor, EllipseAnchor, DiamondAnchor } from "./polyline-anchors";
 import { AnchorComputerRegistry } from "./anchor";
 import { EdgeRouterRegistry } from "./routing";
@@ -30,7 +30,9 @@ const routingModule = new ContainerModule(bind => {
 
     bind(ManhattanEdgeRouter).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRouter).toService(ManhattanEdgeRouter);
+    bind(TYPES.IAnchorComputer).to(ManhattanEllipticAnchor).inSingletonScope();
     bind(TYPES.IAnchorComputer).to(ManhattanRectangularAnchor).inSingletonScope();
+    bind(TYPES.IAnchorComputer).to(ManhattanDiamondAnchor).inSingletonScope();
 
     bind(PolylineEdgeRouter).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRouter).toService(PolylineEdgeRouter);
