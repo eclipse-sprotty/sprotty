@@ -169,6 +169,7 @@ export * from "./lib/svg-views";
 
 // ------------------ Model Source ------------------
 
+export * from "./model-source/commit-model";
 export * from "./model-source/diagram-server";
 export * from "./model-source/local-model-source";
 export * from "./model-source/logging";
