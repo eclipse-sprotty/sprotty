@@ -27,7 +27,7 @@ export class OpenAction {
 }
 
 export class OpenMouseListener extends MouseListener {
-    doubleClick(target: SModelElement, event: WheelEvent): (Action | Promise<Action>)[] {
+    doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const openableTarget = findParentByFeature(target, isOpenable);
         if (openableTarget !== undefined) {
             return [ new OpenAction(openableTarget.id) ];
