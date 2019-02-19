@@ -42,12 +42,18 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
 
     getActions(context: CommandExecutionContext): Promise<LabeledAction[]> {
         const actionLists = this.actionProvider.map(provider => provider.getActions(context));
-        return Promise.all(actionLists).then(p => p.reduce((acc, promise) => acc.concat(promise)));
+        return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise): acc));
     }
 }
 
 export class LabeledAction {
     constructor(readonly label: string, readonly actions: Action[]) { }
+}
+
+export function isLabeledAction(element: any): element is LabeledAction {
+    return element !== undefined
+        && (<LabeledAction>element).label !== undefined
+        && (<LabeledAction>element).actions !== undefined;
 }
 
 @injectable()

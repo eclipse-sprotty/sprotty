@@ -31,7 +31,7 @@ import { ILogger } from "../../utils/logging";
 import { isBoundsAware } from "../bounds/model";
 import { isSelectable } from "../select/model";
 import { isViewport } from "../viewport/model";
-import { ICommandPaletteActionProviderRegistry, LabeledAction } from "./action-providers";
+import { ICommandPaletteActionProviderRegistry, LabeledAction, isLabeledAction } from "./action-providers";
 
 
 // import of function autocomplete(...) doesn't work
@@ -51,6 +51,9 @@ export class CommandPalette extends AbstractUIExtension {
 
     protected inputElement: HTMLInputElement;
     protected autoCompleteResult: AutocompleteResult;
+
+    protected paletteContext?: CommandExecutionContext;
+    protected contextActions?: LabeledAction[];
 
     constructor(
         @inject(TYPES.ViewerOptions) protected options: ViewerOptions,
@@ -106,10 +109,18 @@ export class CommandPalette extends AbstractUIExtension {
             className: "command-palette-suggestions",
             minLength: -1,
             fetch: (text: string, update: (items: LabeledAction[]) => void) => {
-                this.actionProvider()
-                    .then(provider => provider.getActions(context))
-                    .then(actions => update(this.filterActions(text, actions)))
-                    .catch((reason) => this.logger.error(this, "Failed to obtain actions from command palette action providers", reason));
+                if (this.paletteContext === context && this.contextActions) {
+                    update(this.filterActions(text, this.contextActions));
+                } else {
+                    this.paletteContext = context;
+                    this.actionProvider()
+                        .then(provider => provider.getActions(context))
+                        .then(actions => {
+                            this.contextActions = actions;
+                            update(this.filterActions(text, actions));
+                        })
+                        .catch((reason) => this.logger.error(this, "Failed to obtain actions from command palette action providers", reason));
+                }
             },
             onSelect: (item: LabeledAction) => {
                 this.executeAction(item);
@@ -134,6 +145,8 @@ export class CommandPalette extends AbstractUIExtension {
 
     hide() {
         super.hide();
+        this.paletteContext = undefined;
+        this.contextActions = undefined;
         if (this.autoCompleteResult) {
             this.autoCompleteResult.destroy();
         }
@@ -147,7 +160,7 @@ export class CommandPalette extends AbstractUIExtension {
 }
 
 function toActionArray(input: LabeledAction | Action[] | Action): Action[] {
-    if (input instanceof LabeledAction) {
+    if (isLabeledAction(input)) {
         return input.actions;
     } else if (isAction(input)) {
         return [input];
