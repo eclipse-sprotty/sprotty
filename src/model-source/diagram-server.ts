@@ -92,7 +92,7 @@ export abstract class DiagramServer extends ModelSource {
         this.clientId = this.viewerOptions.baseDiv;
     }
 
-    handle(action: Action): void | ICommand {
+    handle(action: Action): void | ICommand | Action {
         const forwardToServer = this.handleLocally(action);
         if (forwardToServer) {
             const message: ActionMessage = {
