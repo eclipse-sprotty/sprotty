@@ -80,6 +80,16 @@ export interface ElementAndAlignment {
     newAlignment: Point
 }
 
+/**
+ * Request a layout of the diagram or the selected elements only.
+ */
+export class LayoutAction implements Action {
+    static readonly KIND = 'layout';
+    readonly kind = LayoutAction.KIND;
+
+    elementIds: string[];
+}
+
 export interface ResolvedElementAndBounds {
     element: SModelElement & BoundsAware
     oldBounds: Bounds
