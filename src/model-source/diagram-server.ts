@@ -211,7 +211,7 @@ export abstract class DiagramServer extends ModelSource {
         return false;
     }
 
-    commitModel(newRoot: SModelRootSchema): SModelRootSchema {
+    commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema {
         const previousRoot = this.currentRoot;
         this.currentRoot = newRoot;
         return previousRoot;

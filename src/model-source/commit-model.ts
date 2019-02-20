@@ -18,7 +18,7 @@ import { injectable, inject } from "inversify";
 import { Command, CommandExecutionContext, CommandResult } from "../base/commands/command";
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
-import { SModelRootSchema } from "../base/model/smodel";
+import { SModelRootSchema, SModelRoot } from "../base/model/smodel";
 import { Action } from "../base/actions/action";
 
 /**
@@ -48,17 +48,29 @@ export class CommitModelCommand extends Command {
 
     execute(context: CommandExecutionContext): CommandResult {
         this.newModel = context.modelFactory.createSchema(context.root);
-        this.originalModel = this.modelSource.commitModel(this.newModel);
-        return context.root;
+        return this.doCommit(this.newModel, context.root, true);
+    }
+
+    protected doCommit(model: SModelRootSchema, result: SModelRoot, doSetOriginal: boolean): CommandResult {
+        const commitResult = this.modelSource.commitModel(model);
+        if (commitResult instanceof Promise) {
+            return commitResult.then(originalModel => {
+                if (doSetOriginal)
+                    this.originalModel = originalModel;
+                return result;
+            });
+        } else {
+            if (doSetOriginal)
+                this.originalModel = commitResult;
+            return result;
+        }
     }
 
     undo(context: CommandExecutionContext): CommandResult {
-        this.modelSource.commitModel(this.originalModel);
-        return context.root;
+        return this.doCommit(this.originalModel, context.root, false);
     }
 
     redo(context: CommandExecutionContext): CommandResult {
-        this.modelSource.commitModel(this.newModel);
-        return context.root;
+        return this.doCommit(this.newModel, context.root, false);
     }
 }
