@@ -68,5 +68,5 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
      * @param newRoot the new model.
      * @return the previous model.
      */
-    abstract commitModel(newRoot: SModelRootSchema): SModelRootSchema;
+    abstract commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema;
 }
