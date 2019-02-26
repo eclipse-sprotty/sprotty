@@ -334,7 +334,7 @@ export class CommandStack implements ICommandStack {
                     return;
             }
             this.offStack.push(command);
-            return
+            return;
         }
         if (this.isPushToUndoStack(command)) {
             this.offStack.forEach(c => this.undoStack.push(c));
