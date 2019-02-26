@@ -496,7 +496,8 @@ export class MoveMouseListener extends MouseListener {
                 result.push(new DeleteElementAction(deleteIds));
             }
         }
-        result.push(new CommitModelAction());
+        if (this.hasDragged)
+            result.push(new CommitModelAction());
         this.hasDragged = false;
         this.lastDragPosition = undefined;
         return result;

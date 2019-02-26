@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { translatePoint } from "../../base/model/smodel-utils";
-import { almostEquals, center, includes, linear, Point } from "../../utils/geometry";
+import { almostEquals, center, includes, linear, Point, manhattanDistance } from "../../utils/geometry";
 import { ResolvedHandleMove } from "../move/move";
 import { DefaultAnchors, LinearEdgeRouter, LinearRouteOptions, Side } from "./linear-edge-router";
 import { SRoutableElement, RoutingHandleKind, SRoutingHandle } from "./model";
@@ -35,7 +35,7 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
     protected getOptions(edge: SRoutableElement): ManhattanRouterOptions {
         return {
             standardDistance: 20,
-            minimalPointDistance: 2,
+            minimalPointDistance: 3,
             selfEdgeOffset: 0.25
         };
     }
@@ -115,33 +115,45 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
     protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]) {
         const route = this.route(edge);
         const routingPoints = edge.routingPoints;
+        const minimalPointDistance = this.getOptions(edge).minimalPointDistance;
         moves.forEach(move => {
             const handle = move.handle;
             const index = handle.pointIndex;
+            const correctedX = this.correctX(routingPoints, index, move.toPosition.x, minimalPointDistance);
+            const correctedY = this.correctY(routingPoints, index, move.toPosition.y, minimalPointDistance);
             switch (handle.kind) {
                 case 'manhattan-50%':
                     if (index < 0) {
                         if (almostEquals(route[0].x, route[1].x))
-                            this.alignX(routingPoints, 0, move.toPosition.x);
+                            this.alignX(routingPoints, 0, correctedX);
                         else
-                            this.alignY(routingPoints, 0, move.toPosition.y);
+                            this.alignY(routingPoints, 0, correctedY);
                     } else if (index < routingPoints.length - 1) {
                         if (almostEquals(routingPoints[index].x, routingPoints[index + 1].x)) {
-                            this.alignX(routingPoints, index, move.toPosition.x);
-                            this.alignX(routingPoints, index + 1, move.toPosition.x);
+                            this.alignX(routingPoints, index, correctedX);
+                            this.alignX(routingPoints, index + 1, correctedX);
                         } else {
-                            this.alignY(routingPoints, index, move.toPosition.y);
-                            this.alignY(routingPoints, index + 1, move.toPosition.y);
+                            this.alignY(routingPoints, index, correctedY);
+                            this.alignY(routingPoints, index + 1, correctedY);
                         }
                     } else {
                         if (almostEquals(route[route.length - 2].x, route[route.length - 1].x))
-                            this.alignX(routingPoints, routingPoints.length - 1, move.toPosition.x);
+                            this.alignX(routingPoints, routingPoints.length - 1, correctedX);
                         else
-                            this.alignY(routingPoints, routingPoints.length - 1, move.toPosition.y);
+                            this.alignY(routingPoints, routingPoints.length - 1, correctedY);
                     }
                     break;
             }
         });
+    }
+
+    protected correctX(routingPoints: Point[], index: number, x: number, minimalPointDistance: number) {
+        if (index > 0 && Math.abs(x - routingPoints[index - 1].x) < minimalPointDistance)
+            return routingPoints[index - 1].x;
+        else if (index < routingPoints.length - 2 && Math.abs(x - routingPoints[index + 2].x) < minimalPointDistance)
+            return routingPoints[index + 2].x;
+        else
+            return x;
     }
 
     protected alignX(routingPoints: Point[], index: number, x: number) {
@@ -149,6 +161,15 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             x,
             y: routingPoints[index].y
         };
+    }
+
+    protected correctY(routingPoints: Point[], index: number, y: number, minimalPointDistance: number) {
+        if (index > 0 && Math.abs(y - routingPoints[index - 1].y) < minimalPointDistance)
+            return routingPoints[index - 1].y;
+        else if (index < routingPoints.length - 2 && Math.abs(y - routingPoints[index + 2].y) < minimalPointDistance)
+            return routingPoints[index + 2].y;
+        else
+            return y;
     }
 
     protected alignY(routingPoints: Point[], index: number, y: number) {
@@ -194,6 +215,15 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
                 }
             } else {
                 break;
+        }
+        if (!updateHandles) {
+            const options = this.getOptions(edge);
+            for (let i = routingPoints.length - 2; i >= 0; --i) {
+                if (manhattanDistance(routingPoints[i], routingPoints[i + 1]) < options.minimalPointDistance) {
+                    routingPoints.splice(i, 2);
+                    --i;
+                }
+            }
         }
         this.addAdditionalCorner(edge, routingPoints, sourceAnchors, updateHandles);
         this.addAdditionalCorner(edge, routingPoints, targetAnchors, updateHandles);
