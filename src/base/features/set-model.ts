@@ -16,7 +16,7 @@
 
 import { inject, injectable } from "inversify";
 import { Action } from "../actions/action";
-import { CommandExecutionContext, Command } from "../commands/command";
+import { CommandExecutionContext, ResetCommand } from "../commands/command";
 import { SModelRoot, SModelRootSchema } from "../model/smodel";
 import { TYPES } from "../types";
 import { InitializeCanvasBoundsCommand } from './initialize-canvas';
@@ -45,7 +45,7 @@ export class SetModelAction implements Action {
 }
 
 @injectable()
-export class SetModelCommand extends Command {
+export class SetModelCommand extends ResetCommand {
     static readonly KIND = 'setModel';
 
     oldRoot: SModelRoot;

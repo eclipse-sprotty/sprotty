@@ -23,7 +23,7 @@ import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer, IViewerProvider } from "../views/viewer";
 import { CommandStackOptions } from './command-stack-options';
 import {
-    HiddenCommand, ICommand, CommandExecutionContext, CommandResult, SystemCommand, MergeableCommand, PopupCommand
+    HiddenCommand, ICommand, CommandExecutionContext, CommandResult, SystemCommand, MergeableCommand, PopupCommand, ResetCommand
 } from './command';
 
 /**
@@ -126,7 +126,7 @@ export class CommandStack implements ICommandStack {
      * On undo, all commands form this stack are undone as well as
      * system ommands should be transparent to the user.
      */
-    protected offStack: SystemCommand[] = [];
+    protected offStack: ICommand[] = [];
 
     @postConstruct()
     protected initialize() {
@@ -165,8 +165,9 @@ export class CommandStack implements ICommandStack {
     undo(): Promise<SModelRoot> {
         this.undoOffStackSystemCommands();
         this.undoPreceedingSystemCommands();
-        const command = this.undoStack.pop();
-        if (command !== undefined) {
+        const command = this.undoStack[this.undoStack.length - 1];
+        if (command !== undefined && !this.isBlockUndo(command)) {
+            this.undoStack.pop();
             this.logger.log(this, 'Undoing', command);
             this.handleCommand(command, command.undo, (c: ICommand, context: CommandExecutionContext) => {
                 this.redoStack.push(c);
@@ -319,11 +320,23 @@ export class CommandStack implements ICommandStack {
      * Mergable commands are merged if possible.
      */
     protected mergeOrPush(command: ICommand, context: CommandExecutionContext): void {
-        if (command instanceof HiddenCommand)
+        if (this.isBlockUndo(command)) {
+            this.undoStack = [];
+            this.redoStack = [];
+            this.offStack = [];
+            this.pushToUndoStack(command);
             return;
-        if (command instanceof SystemCommand && this.redoStack.length > 0) {
+        }
+        if (this.isPushToOffStack(command) && this.redoStack.length > 0) {
+            if (this.offStack.length > 0) {
+                const lastCommand = this.offStack[this.offStack.length - 1];
+                if (lastCommand instanceof MergeableCommand && lastCommand.merge(command, context))
+                    return;
+            }
             this.offStack.push(command);
-        } else {
+            return
+        }
+        if (this.isPushToUndoStack(command)) {
             this.offStack.forEach(c => this.undoStack.push(c));
             this.offStack = [];
             this.redoStack = [];
@@ -355,7 +368,7 @@ export class CommandStack implements ICommandStack {
      */
     protected undoPreceedingSystemCommands(): void {
         let command = this.undoStack[this.undoStack.length - 1];
-        while (command !== undefined && command instanceof SystemCommand) {
+        while (command !== undefined && this.isPushToOffStack(command)) {
             this.undoStack.pop();
             this.logger.log(this, 'Undoing', command);
             this.handleCommand(command, command.undo, (c: ICommand, context: CommandExecutionContext) => {
@@ -372,7 +385,7 @@ export class CommandStack implements ICommandStack {
      */
     protected redoFollowingSystemCommands(): void {
         let command = this.redoStack[this.redoStack.length - 1];
-        while (command !== undefined && command instanceof SystemCommand) {
+        while (command !== undefined && this.isPushToOffStack(command)) {
             this.redoStack.pop();
             this.logger.log(this, 'Redoing ', command);
             this.handleCommand(command, command.redo, (c: ICommand, context: CommandExecutionContext) => {
@@ -394,6 +407,18 @@ export class CommandStack implements ICommandStack {
             logger: this.logger,
             syncer: this.syncer
         };
+    }
+
+    protected isPushToOffStack(command: ICommand): boolean {
+        return command instanceof SystemCommand;
+    }
+
+    protected isPushToUndoStack(command: ICommand): boolean {
+        return !(command instanceof HiddenCommand);
+    }
+
+    protected isBlockUndo(command: ICommand): boolean {
+        return command instanceof ResetCommand;
     }
 }
 

@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { Command, CommandExecutionContext, CommandResult } from "../base/commands/command";
+import { inject, injectable } from "inversify";
+import { Action } from "../base/actions/action";
+import { CommandExecutionContext, CommandResult, SystemCommand } from "../base/commands/command";
+import { SModelRoot, SModelRootSchema } from "../base/model/smodel";
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
-import { SModelRootSchema, SModelRoot } from "../base/model/smodel";
-import { Action } from "../base/actions/action";
 
 /**
  * Commit the current SModel back to the model source.
@@ -34,7 +34,7 @@ export class CommitModelAction implements Action {
 }
 
 @injectable()
-export class CommitModelCommand extends Command {
+export class CommitModelCommand extends SystemCommand {
     static readonly KIND = 'commitModel';
 
     @inject(TYPES.ModelSource) modelSource: ModelSource;

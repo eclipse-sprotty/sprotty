@@ -157,6 +157,15 @@ export abstract class SystemCommand extends Command {
 }
 
 /**
+ * A reset command deletes all undo/redo stacks and cannot be undone. 
+ * 
+ * It marks a point of no return.
+ */
+@injectable()
+export abstract class ResetCommand extends Command {
+}
+
+/**
  * The data that is passed into the execution methods of a command to give it
  * access to the context.
  */
