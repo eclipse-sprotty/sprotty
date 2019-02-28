@@ -31,6 +31,9 @@ export class ManhattanRectangularAnchor implements IAnchorComputer {
 
     getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number): Point {
         const b = connectable.bounds;
+        if(b.width <= 0 || b.height <= 0) {
+            return b;  
+        }
         const bounds: Bounds = {
             x: b.x - offset,
             y: b.y - offset,
@@ -66,6 +69,9 @@ export class ManhattanDiamondAnchor implements IAnchorComputer {
 
     getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
         const b = connectable.bounds;
+        if(b.width <= 0 || b.height <= 0) {
+            return b;  
+        }
         const bounds = {
             x: b.x - offset,
             y: b.y - offset,
@@ -123,6 +129,9 @@ export class ManhattanEllipticAnchor implements IAnchorComputer {
 
     getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
         const b = connectable.bounds;
+        if(b.width <= 0 || b.height <= 0) {
+            return b;  
+        }
         const bounds = {
             x: b.x - offset,
             y: b.y - offset,
