@@ -145,14 +145,14 @@ export class ManhattanEllipticAnchor implements IAnchorComputer {
         if (refPoint.x >= bounds.x && bounds.x + bounds.width >= refPoint.x) {
             x += refRelative.x;
             const dy = 0.5 * bounds.height * Math.sqrt(1 - (refRelative.x * refRelative.x) / (0.25 * bounds.width * bounds.width));
-            if (refPoint.y < c.y)
+            if (refRelative.y < 0)
                 y -= dy;
             else
                 y += dy;
         } else if (refPoint.y >= bounds.y && bounds.y + bounds.height >= refPoint.y) {
             y += refRelative.y;
             const dx = 0.5 * bounds.width * Math.sqrt(1 - (refRelative.y * refRelative.y) / (0.25 * bounds.height * bounds.height));
-            if (refPoint.y < c.y)
+            if (refRelative.x < 0)
                 x -= dx;
             else
                 x += dx;
