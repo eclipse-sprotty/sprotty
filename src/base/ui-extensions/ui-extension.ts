@@ -15,7 +15,7 @@
  ********************************************************************************/
 import { inject, injectable } from "inversify";
 import { ILogger } from "../../utils/logging";
-import { CommandExecutionContext } from "../commands/command";
+import { SModelRoot } from "../model/smodel";
 import { TYPES } from "../types";
 import { ViewerOptions } from "../views/viewer-options";
 
@@ -24,7 +24,7 @@ import { ViewerOptions } from "../views/viewer-options";
  */
 export interface IUIExtension {
     readonly id: string;
-    show(context: CommandExecutionContext): void;
+    show(root: Readonly<SModelRoot>): void;
     hide(): void;
 }
 
@@ -33,22 +33,20 @@ export interface IUIExtension {
  */
 @injectable()
 export abstract class AbstractUIExtension implements IUIExtension {
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.ILogger) protected logger: ILogger;
 
     abstract readonly id: string;
     abstract readonly containerClass: string;
     protected containerElement: HTMLElement;
     protected activeElement: Element | null;
 
-    constructor(
-        @inject(TYPES.ViewerOptions) protected options: ViewerOptions,
-        @inject(TYPES.ILogger) protected logger: ILogger) { }
-
-    show(context: CommandExecutionContext): void {
+    show(root: Readonly<SModelRoot>): void {
         this.activeElement = document.activeElement;
         if (!this.containerElement) {
             if (!this.initialize()) return;
         }
-        this.updateBeforeBecomingVisible(this.containerElement, context);
+        this.onBeforeShow(this.containerElement, root);
         this.setContainerVisible(true);
     }
 
@@ -72,7 +70,7 @@ export abstract class AbstractUIExtension implements IUIExtension {
             return false;
         }
         this.containerElement = this.getOrCreateContainer(baseDiv.id);
-        this.initializeUIExtension(this.containerElement);
+        this.initializeContents(this.containerElement);
         if (baseDiv) {
             baseDiv.insertBefore(this.containerElement, baseDiv.firstChild);
         }
@@ -105,9 +103,9 @@ export abstract class AbstractUIExtension implements IUIExtension {
      * Updates the `containerElement` under the given `context` before it becomes visible.
      *
      * Subclasses may override this method to, for instance, modfying the position of the
-     * `containerElement`, add or remove elements, etc. depending on the specified `context`.
+     * `containerElement`, add or remove elements, etc. depending on the specified `root`.
      */
-    protected updateBeforeBecomingVisible(containerElement: HTMLElement, context: CommandExecutionContext): void {
+    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>): void {
         // default: do nothing
     }
 
@@ -116,5 +114,5 @@ export abstract class AbstractUIExtension implements IUIExtension {
      *
      * Subclasses must implement this method to initialize the UI elements of this UI extension inside the specified `containerElement`.
      */
-    protected abstract initializeUIExtension(containerElement: HTMLElement): void;
+    protected abstract initializeContents(containerElement: HTMLElement): void;
 }

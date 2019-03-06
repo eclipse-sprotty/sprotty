@@ -26,10 +26,10 @@ export function isNameable(element: SModelElement): element is SModelElement & N
     return element.hasFeature(nameFeature);
 }
 
-export function name(element: SModelElement): string {
+export function name(element: SModelElement): string|undefined {
     if (isNameable(element)) {
         return element.name;
     } else {
-        return 'unnamed';
+        return undefined;
     }
 }

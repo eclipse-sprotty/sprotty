@@ -15,7 +15,7 @@
  ********************************************************************************/
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
-import { CommandPaletteActionProviderRegistry, ICommandPaletteActionProvider } from "./action-providers";
+import { CommandPaletteActionProviderRegistry } from "./action-providers";
 import { CommandPalette, CommandPaletteKeyListener } from "./command-palette";
 
 const commandPaletteModule = new ContainerModule((bind) => {
@@ -23,13 +23,7 @@ const commandPaletteModule = new ContainerModule((bind) => {
     bind(TYPES.IUIExtension).toService(CommandPalette);
     bind(TYPES.KeyListener).to(CommandPaletteKeyListener);
     bind(CommandPaletteActionProviderRegistry).toSelf().inSingletonScope();
-    bind(TYPES.ICommandPaletteActionProviderRegistry).toProvider<ICommandPaletteActionProvider>((context) => {
-        return () => {
-            return new Promise<ICommandPaletteActionProvider>((resolve) => {
-                resolve(context.container.get<ICommandPaletteActionProvider>(CommandPaletteActionProviderRegistry));
-            });
-        };
-    });
+    bind(TYPES.ICommandPaletteActionProviderRegistry).toService(CommandPaletteActionProviderRegistry);
 });
 
 export default commandPaletteModule;

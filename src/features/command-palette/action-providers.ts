@@ -15,34 +15,27 @@
  ********************************************************************************/
 import { inject, injectable, multiInject, optional } from "inversify";
 import { Action } from "../../base/actions/action";
-import { CommandExecutionContext } from "../../base/commands/command";
 import { SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { toArray } from "../../utils/iterable";
 import { ILogger } from "../../utils/logging";
 import { isNameable, name } from "../nameable/model";
-import { CenterAction } from "../viewport/center-fit";
 import { SelectAction } from "../select/select";
+import { CenterAction } from "../viewport/center-fit";
 
 export interface ICommandPaletteActionProvider {
-    getActions(context: CommandExecutionContext): Promise<LabeledAction[]>;
+    getActions(root: Readonly<SModelRoot>): Promise<LabeledAction[]>;
 }
-
-export type ICommandPaletteActionProviderRegistry = () => Promise<ICommandPaletteActionProvider>;
 
 @injectable()
 export class CommandPaletteActionProviderRegistry implements ICommandPaletteActionProvider {
-    public actionProvider: ICommandPaletteActionProvider[] = [];
 
-    constructor(@multiInject(TYPES.ICommandPaletteActionProvider) @optional() protected registeredActionProviders: ICommandPaletteActionProvider[] = []) {
-        for (const registeredProvider of registeredActionProviders) {
-            this.actionProvider.push(registeredProvider);
-        }
+    constructor(@multiInject(TYPES.ICommandPaletteActionProvider) @optional() protected actionProviders: ICommandPaletteActionProvider[] = []) {
     }
 
-    getActions(context: CommandExecutionContext): Promise<LabeledAction[]> {
-        const actionLists = this.actionProvider.map(provider => provider.getActions(context));
-        return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise): acc));
+    getActions(root: Readonly<SModelRoot>) {
+        const actionLists = this.actionProviders.map(provider => provider.getActions(root));
+        return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc));
     }
 }
 
@@ -61,8 +54,8 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
 
     constructor(@inject(TYPES.ILogger) protected logger: ILogger) { }
 
-    getActions(context: CommandExecutionContext): Promise<LabeledAction[]> {
-        return Promise.resolve(this.createSelectActions(context.root));
+    getActions(root: Readonly<SModelRoot>) {
+        return Promise.resolve(this.createSelectActions(root));
     }
 
     createSelectActions(modelRoot: SModelRoot): LabeledAction[] {

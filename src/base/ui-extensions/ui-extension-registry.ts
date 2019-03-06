@@ -16,28 +16,9 @@
 import { inject, injectable, multiInject, optional } from "inversify";
 import { InstanceRegistry } from "../../utils/registry";
 import { Action } from "../actions/action";
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler";
-import { CommandExecutionContext, CommandResult, ICommand, SystemCommand } from "../commands/command";
+import { CommandExecutionContext, CommandResult, SystemCommand } from "../commands/command";
 import { TYPES } from "../types";
 import { IUIExtension } from "./ui-extension";
-
-/**
- * Action requesting to show the UI extension with the specified `id`.
- */
-export class ShowUIExtensionAction implements Action {
-    static KIND = "showUIExtension";
-    readonly kind = ShowUIExtensionAction.KIND;
-    constructor(public readonly extensionId: string) { }
-}
-
-/**
- * Action requesting to hide the UI extension with the specified `id`.
- */
-export class HideUIExtensionAction implements Action {
-    static KIND = "hideUIExtension";
-    readonly kind = HideUIExtensionAction.KIND;
-    constructor(public readonly extensionId: string) { }
-}
 
 /**
  * The registry maintaining UI extensions registered via `TYPES.IUIExtension`.
@@ -51,57 +32,28 @@ export class UIExtensionRegistry extends InstanceRegistry<IUIExtension>  {
 }
 
 /**
- * Initalizer and handler for actions related to UI extensions.
+ * Action to set the visibility state of the UI extension with the specified `id`.
  */
-@injectable()
-export class UIExtensionActionHandlerInitializer implements IActionHandlerInitializer, IActionHandler {
-
-    @inject(TYPES.UIExtensionRegistry) protected readonly registry: UIExtensionRegistry;
-
-    initialize(registry: ActionHandlerRegistry): void {
-        registry.register(ShowUIExtensionAction.KIND, this);
-        registry.register(HideUIExtensionAction.KIND, this);
-    }
-
-    handle(action: Action): void | ICommand | Action {
-        if (action instanceof ShowUIExtensionAction) {
-            return new UIExtensionActionCommand((context) => {
-                this.withExtension(action.extensionId, (extension) => {
-                    extension.show(context);
-                });
-            });
-        } else if (action instanceof HideUIExtensionAction) {
-            return new UIExtensionActionCommand((context) => {
-                this.withExtension(action.extensionId, (extension) => {
-                    extension.hide();
-                });
-            });
-        }
-    }
-
-    protected withExtension(extensionId: string, func: (extension: IUIExtension) => void) {
-        const extension = this.registry.get(extensionId);
-        if (extension) {
-            func(extension);
-        }
-    }
+export class SetUIExtensionVisibilityAction implements Action {
+    readonly kind = SetUIExtensionVisibilityCommand.KIND;
+    constructor(public readonly extensionId: string, public readonly visible: boolean) { }
 }
 
-/**
- * A system command that doesn't change the model but just performs a specified `effect`.
- */
 @injectable()
-export class UIExtensionActionCommand extends SystemCommand {
+export class SetUIExtensionVisibilityCommand extends SystemCommand {
+    static KIND = "setUIExtensionVisibility";
+    @inject(TYPES.UIExtensionRegistry) protected readonly registry: UIExtensionRegistry;
 
-    constructor(readonly effect: (context: CommandExecutionContext) => void) {
+    constructor(@inject(TYPES.Action) public action: SetUIExtensionVisibilityAction) {
         super();
     }
-
     execute(context: CommandExecutionContext): CommandResult {
-        this.effect(context);
+        const extension = this.registry.get(this.action.extensionId);
+        if (extension) {
+            this.action.visible ? extension.show(context.root) : extension.hide();
+        }
         return context.root;
     }
-
     undo(context: CommandExecutionContext): CommandResult {
         return context.root;
     }

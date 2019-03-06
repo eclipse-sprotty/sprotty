@@ -17,21 +17,18 @@ import { AutocompleteResult, AutocompleteSettings } from "autocompleter";
 import { inject, injectable } from "inversify";
 import { Action, isAction } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { SModelElement } from "../../base/model/smodel";
+import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { findParentByFeature } from "../../base/model/smodel-utils";
 import { TYPES } from "../../base/types";
 import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
-import { HideUIExtensionAction, ShowUIExtensionAction } from "../../base/ui-extensions/ui-extension-registry";
+import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry";
 import { KeyListener } from "../../base/views/key-tool";
-import { ViewerOptions } from "../../base/views/viewer-options";
 import { toArray } from "../../utils/iterable";
 import { matchesKeystroke } from "../../utils/keyboard";
-import { ILogger } from "../../utils/logging";
 import { isBoundsAware } from "../bounds/model";
 import { isSelectable } from "../select/model";
 import { isViewport } from "../viewport/model";
-import { ICommandPaletteActionProviderRegistry, LabeledAction, isLabeledAction } from "./action-providers";
+import { CommandPaletteActionProviderRegistry, isLabeledAction, LabeledAction } from "./action-providers";
 
 
 // import of function autocomplete(...) doesn't work
@@ -42,37 +39,30 @@ const configureAutocomplete: (settings: AutocompleteSettings<LabeledAction>) => 
 @injectable()
 export class CommandPalette extends AbstractUIExtension {
     static readonly ID = "command-palette";
-    readonly id = CommandPalette.ID;
 
+    readonly id = CommandPalette.ID;
     readonly containerClass = "command-palette";
-    readonly xOffset = 20;
+    readonly xOffset = 40;
     readonly yOffset = 30;
     readonly defaultWidth = 400;
-
     protected inputElement: HTMLInputElement;
     protected autoCompleteResult: AutocompleteResult;
-
-    protected paletteContext?: CommandExecutionContext;
     protected contextActions?: LabeledAction[];
 
-    constructor(
-        @inject(TYPES.ViewerOptions) protected options: ViewerOptions,
-        @inject(TYPES.IActionDispatcherProvider) protected actionDispatcherProvider: IActionDispatcherProvider,
-        @inject(TYPES.ICommandPaletteActionProviderRegistry) protected actionProvider: ICommandPaletteActionProviderRegistry,
-        @inject(TYPES.ILogger) protected logger: ILogger) {
-        super(options, logger);
-    }
+    @inject(TYPES.IActionDispatcherProvider) protected actionDispatcherProvider: IActionDispatcherProvider;
+    @inject(TYPES.ICommandPaletteActionProviderRegistry) protected actionProviderRegistry: CommandPaletteActionProviderRegistry;
 
-    show(context: CommandExecutionContext) {
-        super.show(context);
+    show(root: Readonly<SModelRoot>) {
+        super.show(root);
+        this.contextActions = undefined;
         if (this.inputElement.value) {
             this.inputElement.setSelectionRange(0, this.inputElement.value.length);
         }
-        this.autoCompleteResult = configureAutocomplete(this.autocompleteSettings(context));
+        this.autoCompleteResult = configureAutocomplete(this.autocompleteSettings(root));
         this.inputElement.focus();
     }
 
-    protected initializeUIExtension(containerElement: HTMLElement) {
+    protected initializeContents(containerElement: HTMLElement) {
         containerElement.style.position = "absolute";
         this.inputElement = document.createElement('input');
         this.inputElement.style.width = '100%';
@@ -80,19 +70,19 @@ export class CommandPalette extends AbstractUIExtension {
         this.inputElement.onblur = () => window.setTimeout(() => this.hide(), 200);
     }
 
-    protected updateBeforeBecomingVisible(containerElement: HTMLElement, context: CommandExecutionContext) {
+    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>) {
         let x = this.xOffset;
         let y = this.yOffset;
-        const selectedElements = toArray(context.root.index.all().filter(e => isSelectable(e) && e.selected));
+        const selectedElements = toArray(root.index.all().filter(e => isSelectable(e) && e.selected));
         if (selectedElements.length === 1) {
             const firstElement = selectedElements[0];
             if (isBoundsAware(firstElement)) {
                 const viewport = findParentByFeature(firstElement, isViewport);
                 if (viewport) {
-                    x += (firstElement.bounds.x - viewport.scroll.x) * viewport.zoom;
+                    x += (firstElement.bounds.x + firstElement.bounds.width - viewport.scroll.x) * viewport.zoom;
                     y += (firstElement.bounds.y - viewport.scroll.y) * viewport.zoom;
                 } else {
-                    x += firstElement.bounds.x;
+                    x += firstElement.bounds.x + firstElement.bounds.width;
                     y += firstElement.bounds.y;
                 }
             }
@@ -102,23 +92,20 @@ export class CommandPalette extends AbstractUIExtension {
         containerElement.style.width = `${this.defaultWidth}px`;
     }
 
-    private autocompleteSettings(context: CommandExecutionContext): AutocompleteSettings<LabeledAction> {
+    private autocompleteSettings(root: Readonly<SModelRoot>): AutocompleteSettings<LabeledAction> {
         return {
             input: this.inputElement,
             emptyMsg: "No commands available",
             className: "command-palette-suggestions",
             minLength: -1,
             fetch: (text: string, update: (items: LabeledAction[]) => void) => {
-                if (this.paletteContext === context && this.contextActions) {
+                if (this.contextActions) {
                     update(this.filterActions(text, this.contextActions));
                 } else {
-                    this.paletteContext = context;
-                    this.actionProvider()
-                        .then(provider => provider.getActions(context))
-                        .then(actions => {
-                            this.contextActions = actions;
-                            update(this.filterActions(text, actions));
-                        })
+                    this.actionProviderRegistry.getActions(root).then(actions => {
+                        this.contextActions = actions;
+                        update(this.filterActions(text, actions));
+                    })
                         .catch((reason) => this.logger.error(this, "Failed to obtain actions from command palette action providers", reason));
                 }
             },
@@ -145,8 +132,6 @@ export class CommandPalette extends AbstractUIExtension {
 
     hide() {
         super.hide();
-        this.paletteContext = undefined;
-        this.contextActions = undefined;
         if (this.autoCompleteResult) {
             this.autoCompleteResult.destroy();
         }
@@ -171,9 +156,9 @@ function toActionArray(input: LabeledAction | Action[] | Action): Action[] {
 export class CommandPaletteKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new HideUIExtensionAction(CommandPalette.ID)];
+            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, false)];
         } else if (matchesKeystroke(event, 'Space', 'ctrl')) {
-            return [new ShowUIExtensionAction(CommandPalette.ID)];
+            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, true)];
         }
         return [];
     }
