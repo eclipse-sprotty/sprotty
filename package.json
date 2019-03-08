@@ -18,29 +18,24 @@
   },
   "contributors": [
     {
-      "name": "Jan Köhnlein",
-      "email": "jan.koehnlein@typefox.io",
-      "url": "http://typefox.io"
-    },
-    {
-      "name": "Miro Spönemann",
-      "email": "miro.spoenemann@typefox.io",
-      "url": "http://typefox.io"
-    },
-    {
-      "name": "Jan Bicker",
-      "email": "jan.bicker@typefox.io",
-      "url": "http://typefox.io"
-    },
-    {
       "name": "Marc Dumais",
       "email": "marc.dumais@ericsson.com",
       "url": "https://www.ericsson.com/"
     },
     {
-      "name": "Patrick Pollo Guilbert",
-      "email": "patrick.pollo.guilbert@ericsson.com",
-      "url": "https://www.ericsson.com/"
+      "name": "Jan Köhnlein",
+      "email": "jan.koehnlein@typefox.io",
+      "url": "http://typefox.io"
+    },
+    {
+      "name": "Philip Langer",
+      "email": "planger@eclipsesource.com",
+      "url": "https://www.eclipsesource.com"
+    },
+    {
+      "name": "Miro Spönemann",
+      "email": "miro.spoenemann@typefox.io",
+      "url": "http://typefox.io"
     }
   ],
   "repository": {
