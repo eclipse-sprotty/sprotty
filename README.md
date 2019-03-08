@@ -5,10 +5,10 @@
 
 This is the client part of _Sprotty_, a next-generation, open-source diagramming framework built with web technologies. 
 
-<img src="images/screenshot0.png" width="23%" align="left">
-<img src="images/screenshot1.png" width="23%" align="left">
-<img src="images/screenshot2.png" width="23%" align="left">
-<img src="images/screenshot3.png" width="23%"> 
+<img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot0.png" width="23%" align="left">
+<img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot1.png" width="23%" align="left">
+<img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot2.png" width="23%" align="left">
+<img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot3.png" width="23%"> 
 
   
 Some selected features:
