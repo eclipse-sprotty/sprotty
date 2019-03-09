@@ -206,15 +206,15 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             } else {
                 break;
         }
-        if(routingPoints.length >=2) {
+        if (routingPoints.length >= 2) {
             const options = this.getOptions(edge);
             for (let i = routingPoints.length - 2; i >= 0; --i) {
                 if (manhattanDistance(routingPoints[i], routingPoints[i + 1]) < options.minimalPointDistance) {
                     routingPoints.splice(i, 2);
                     --i;
                     if (updateHandles) {
-                        this.removeHandle(edge, i - 1)
-                        this.removeHandle(edge, i)
+                        this.removeHandle(edge, i - 1);
+                        this.removeHandle(edge, i);
                     }
                 }
             }
@@ -247,11 +247,9 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             isHorizontal = index === 0
             ? almostEquals(routingPoints[0].x, routingPoints[1].x)
             : almostEquals(routingPoints[routingPoints.length - 1].x, routingPoints[routingPoints.length - 2].x);
-            console.log("1: " + isHorizontal)
         } else {
             const nearestSide = otherAnchors.getNearestSide(refPoint);
             isHorizontal = nearestSide === Side.TOP || nearestSide === Side.BOTTOM;
-            console.log("2: " + isHorizontal)
         }
         if (isHorizontal) {
             if (refPoint.y < currentAnchors.get(Side.TOP).y || refPoint.y > currentAnchors.get(Side.BOTTOM).y) {

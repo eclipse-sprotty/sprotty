@@ -177,7 +177,7 @@ export class MoveCommand extends MergeableCommand {
                     edge.routingPoints = edge.routingPoints.map(rp => add(rp, delta));
                 } else {
                     // add/remove RPs according to the new source/target positions
-                    const updateHandles = isSelectable(edge) && edge.selected
+                    const updateHandles = isSelectable(edge) && edge.selected;
                     router.cleanupRoutingPoints(edge, edge.routingPoints, updateHandles, this.action.finished);
                 }
                 const after = router.takeSnapshot(edge);
@@ -401,7 +401,7 @@ export class MoveMouseListener extends MouseListener {
             this.mouseUp(target, event);
         else if (this.lastDragPosition) {
             this.hasDragged = true;
-            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, false)
+            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, false);
             if (moveAction)
                 result.push(moveAction);
             this.lastDragPosition = { x: event.pageX, y: event.pageY };
@@ -446,7 +446,7 @@ export class MoveMouseListener extends MouseListener {
             });
         if (elementMoves.length > 0)
             return new MoveAction(elementMoves, false, isFinished);
-        else 
+        else
             return undefined;
     }
 
@@ -472,7 +472,7 @@ export class MoveMouseListener extends MouseListener {
         const result: Action[] = [];
         let hasReconnected = false;
         if (this.lastDragPosition) {
-            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, true)
+            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, true);
             if (moveAction)
                 result.push(moveAction);
             target.root.index.all()

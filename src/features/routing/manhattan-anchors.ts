@@ -40,8 +40,6 @@ export class ManhattanRectangularAnchor implements IAnchorComputer {
             width: b.width + 2 * offset,
             height: b.height + 2 * offset
         };
-        if (!refPoint)
-            console.log('Oh my');
         if (refPoint.x >= bounds.x && bounds.x + bounds.width >= refPoint.x) {
             if (refPoint.y < bounds.y + 0.5 * bounds.height)
             return { x: refPoint.x, y: bounds.y };
