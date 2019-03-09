@@ -25,25 +25,26 @@ import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { IVNodeDecorator } from "../../base/views/vnode-decorators";
 import { setAttr } from "../../base/views/vnode-utils";
-import { add, linear, Point, subtract, center } from '../../utils/geometry';
+import { CommitModelAction } from "../../model-source/commit-model";
+import { add, center, linear, Point, subtract } from '../../utils/geometry';
 import { findChildrenAtPosition, isAlignable } from "../bounds/model";
 import { isCreatingOnDrag } from "../edit/create-on-drag";
 import { DeleteElementAction } from "../edit/delete";
 import { SwitchEditModeAction } from "../edit/edit-routing";
 import { ReconnectAction, ReconnectCommand } from "../edit/reconnect";
-import { isConnectable, SRoutableElement, SRoutingHandle, edgeInProgressID, edgeInProgressTargetHandleID } from "../routing/model";
-import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from "../routing/routing";
+import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElement, SRoutingHandle } from "../routing/model";
+import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot } from "../routing/routing";
 import { isSelectable } from "../select/model";
 import { SelectAction, SelectAllAction } from "../select/select";
 import { isViewport } from "../viewport/model";
 import { isLocateable, isMoveable, Locateable } from './model';
-import { CommitModelAction } from "../../model-source/commit-model";
 
 export class MoveAction implements Action {
     kind = MoveCommand.KIND;
 
     constructor(public readonly moves: ElementMove[],
-                public readonly animate: boolean = true) {
+                public readonly animate: boolean = true,
+                public readonly finished: boolean = false) {
     }
 }
 
@@ -156,6 +157,7 @@ export class MoveCommand extends MergeableCommand {
         this.resolvedMoves.forEach(res => {
             res.element.position = res.toPosition;
         });
+        // reset edges to state before
         edge2move.forEach((moves, edge) => {
             const router = this.edgeRouterRegistry!.get(edge.routerKind);
             const before = router.takeSnapshot(edge);
@@ -173,9 +175,10 @@ export class MoveCommand extends MergeableCommand {
                     && this.resolvedMoves.get(edge.target.id)) {
                     // move the entire edge when both source and target are moved
                     edge.routingPoints = edge.routingPoints.map(rp => add(rp, delta));
-                // } else {
-                //     // add/remove RPs according to the new source/target positions
-                //     router.cleanupRoutingPoints(edge, edge.routingPoints, false);
+                } else {
+                    // add/remove RPs according to the new source/target positions
+                    const updateHandles = isSelectable(edge) && edge.selected
+                    router.cleanupRoutingPoints(edge, edge.routingPoints, updateHandles, this.action.finished);
                 }
                 const after = router.takeSnapshot(edge);
                 this.edgeMementi.push({ edge, before, after });
@@ -397,46 +400,54 @@ export class MoveMouseListener extends MouseListener {
         if (event.buttons === 0)
             this.mouseUp(target, event);
         else if (this.lastDragPosition) {
-            const viewport = findParentByFeature(target, isViewport);
             this.hasDragged = true;
-            const zoom = viewport ? viewport.zoom : 1;
-            const dx = (event.pageX - this.lastDragPosition.x) / zoom;
-            const dy = (event.pageY - this.lastDragPosition.y) / zoom;
-            const elementMoves: ElementMove[] = [];
-            target.root.index.all()
-                .filter(element => isSelectable(element) && element.selected)
-                .forEach(element => {
-                    if (isMoveable(element)) {
-                        elementMoves.push({
-                            elementId: element.id,
-                            fromPosition: {
-                                x: element.position.x,
-                                y: element.position.y
-                            },
-                            toPosition: {
-                                x: element.position.x + dx,
-                                y: element.position.y + dy
-                            }
-                        });
-                    } else if (element instanceof SRoutingHandle) {
-                        const point = this.getHandlePosition(element);
-                        if (point !== undefined) {
-                            elementMoves.push({
-                                elementId: element.id,
-                                fromPosition: point,
-                                toPosition: {
-                                    x: point.x + dx,
-                                    y: point.y + dy
-                                }
-                            });
-                        }
-                    }
-                });
+            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, false)
+            if (moveAction)
+                result.push(moveAction);
             this.lastDragPosition = { x: event.pageX, y: event.pageY };
-            if (elementMoves.length > 0)
-                result.push(new MoveAction(elementMoves, false));
         }
         return result;
+    }
+
+    protected getElementMoves(target: SModelElement, event: MouseEvent, lastDragPosition: Point, isFinished: boolean): MoveAction | undefined {
+        const viewport = findParentByFeature(target, isViewport);
+        const zoom = viewport ? viewport.zoom : 1;
+        const dx = (event.pageX - lastDragPosition.x) / zoom;
+        const dy = (event.pageY - lastDragPosition.y) / zoom;
+        const elementMoves: ElementMove[] = [];
+        target.root.index.all()
+            .filter(element => isSelectable(element) && element.selected)
+            .forEach(element => {
+                if (isMoveable(element)) {
+                    elementMoves.push({
+                        elementId: element.id,
+                        fromPosition: {
+                            x: element.position.x,
+                            y: element.position.y
+                        },
+                        toPosition: {
+                            x: element.position.x + dx,
+                            y: element.position.y + dy
+                        }
+                    });
+                } else if (element instanceof SRoutingHandle) {
+                    const point = this.getHandlePosition(element);
+                    if (point !== undefined) {
+                        elementMoves.push({
+                            elementId: element.id,
+                            fromPosition: point,
+                            toPosition: {
+                                x: point.x + dx,
+                                y: point.y + dy
+                            }
+                        });
+                    }
+                }
+            });
+        if (elementMoves.length > 0)
+            return new MoveAction(elementMoves, false, isFinished);
+        else 
+            return undefined;
     }
 
     protected getHandlePosition(handle: SRoutingHandle): Point | undefined {
@@ -461,6 +472,9 @@ export class MoveMouseListener extends MouseListener {
         const result: Action[] = [];
         let hasReconnected = false;
         if (this.lastDragPosition) {
+            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, true)
+            if (moveAction)
+                result.push(moveAction);
             target.root.index.all()
                 .forEach(element => {
                     if (element instanceof SRoutingHandle) {

@@ -241,12 +241,12 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
         });
         if (remainingMoves.length > 0)
             this.applyInnerHandleMoves(edge, remainingMoves);
-        this.cleanupRoutingPoints(edge, edge.routingPoints, true);
+        this.cleanupRoutingPoints(edge, edge.routingPoints, true, true);
     }
 
     protected abstract applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void;
 
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean) {
+    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
         this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors);
@@ -300,7 +300,7 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
             edge.index.add(edge);
             if (this.getSelfEdgeIndex(edge) > -1) {
                 edge.routingPoints = [];
-                this.cleanupRoutingPoints(edge, edge.routingPoints, true);
+                this.cleanupRoutingPoints(edge, edge.routingPoints, true, true);
             }
         }
     }

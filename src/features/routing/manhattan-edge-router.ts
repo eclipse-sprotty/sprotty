@@ -64,7 +64,7 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, 'target');
         if (edge.routingPoints.length > 0) {
             const routingPointsCopy = edge.routingPoints.slice();
-            this.cleanupRoutingPoints(edge, routingPointsCopy, false);
+            this.cleanupRoutingPoints(edge, routingPointsCopy, false, true);
             if (routingPointsCopy.length > 0)
                 return routingPointsCopy.map((routingPoint, index) => {
                     return <RoutedPoint> { kind: 'linear', pointIndex: index, ...routingPoint};
@@ -157,10 +157,11 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
     }
 
     protected alignX(routingPoints: Point[], index: number, x: number) {
-        routingPoints[index] = {
-            x,
-            y: routingPoints[index].y
-        };
+        if (index >= 0 && index < routingPoints.length)
+            routingPoints[index] = {
+                x,
+                y: routingPoints[index].y
+            };
     }
 
     protected correctY(routingPoints: Point[], index: number, y: number, minimalPointDistance: number) {
@@ -173,13 +174,14 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
     }
 
     protected alignY(routingPoints: Point[], index: number, y: number) {
-        routingPoints[index] = {
-            x: routingPoints[index].x,
-            y
-        };
+        if (index >= 0 && index < routingPoints.length)
+            routingPoints[index] = {
+                x: routingPoints[index].x,
+                y
+            };
     }
 
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean) {
+    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
         if (this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors))
@@ -189,14 +191,7 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             if (includes(sourceAnchors.bounds, routingPoints[i])) {
                 routingPoints.splice(0, 1);
                 if (updateHandles) {
-                    edge.children.forEach(child => {
-                        if (child instanceof SRoutingHandle) {
-                            if (child.pointIndex >= i)
-                                --child.pointIndex;
-                            else if (child.pointIndex === i - 1)
-                                edge.remove(child);
-                        }
-                    });
+                    this.removeHandle(edge, -1);
                 }
             } else {
                 break;
@@ -206,47 +201,61 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             if (includes(targetAnchors.bounds, routingPoints[i])) {
                 routingPoints.splice(i, 1);
                 if (updateHandles) {
-                    edge.children.forEach(child => {
-                        if (child instanceof SRoutingHandle) {
-                            if (child.pointIndex === i)
-                                edge.remove(child);
-                        }
-                    });
+                    this.removeHandle(edge, i);
                 }
             } else {
                 break;
         }
-        if (!updateHandles) {
+        if(routingPoints.length >=2) {
             const options = this.getOptions(edge);
             for (let i = routingPoints.length - 2; i >= 0; --i) {
                 if (manhattanDistance(routingPoints[i], routingPoints[i + 1]) < options.minimalPointDistance) {
                     routingPoints.splice(i, 2);
                     --i;
+                    if (updateHandles) {
+                        this.removeHandle(edge, i - 1)
+                        this.removeHandle(edge, i)
+                    }
                 }
             }
         }
-        this.addAdditionalCorner(edge, routingPoints, sourceAnchors, updateHandles);
-        this.addAdditionalCorner(edge, routingPoints, targetAnchors, updateHandles);
+        if (addRoutingPoints) {
+            this.addAdditionalCorner(edge, routingPoints, sourceAnchors, targetAnchors, updateHandles);
+            this.addAdditionalCorner(edge, routingPoints, targetAnchors, sourceAnchors, updateHandles);
+        }
     }
 
-    protected addAdditionalCorner(edge: SRoutableElement, routingPoints: Point[], defaultAnchors: DefaultAnchors, updateHandles: boolean) {
+    protected removeHandle(edge: SRoutableElement, pointIndex: number) {
+        edge.children.forEach(child => {
+            if (child instanceof SRoutingHandle) {
+                if (child.pointIndex > pointIndex)
+                    --child.pointIndex;
+                else if (child.pointIndex === pointIndex)
+                    edge.remove(child);
+            }
+        });
+    }
+
+    protected addAdditionalCorner(edge: SRoutableElement, routingPoints: Point[], currentAnchors: DefaultAnchors, otherAnchors: DefaultAnchors, updateHandles: boolean) {
         if (routingPoints.length === 0)
             return;
-        const refPoint = defaultAnchors.kind === 'source' ? routingPoints[0] : routingPoints[routingPoints.length - 1];
-        const index = defaultAnchors.kind === 'source' ? 0 : routingPoints.length;
-        const shiftIndex = index - (defaultAnchors.kind === 'source' ? 1 : 0);
+        const refPoint = currentAnchors.kind === 'source' ? routingPoints[0] : routingPoints[routingPoints.length - 1];
+        const index = currentAnchors.kind === 'source' ? 0 : routingPoints.length;
+        const shiftIndex = index - (currentAnchors.kind === 'source' ? 1 : 0);
         let isHorizontal: boolean;
         if (routingPoints.length > 1) {
             isHorizontal = index === 0
             ? almostEquals(routingPoints[0].x, routingPoints[1].x)
             : almostEquals(routingPoints[routingPoints.length - 1].x, routingPoints[routingPoints.length - 2].x);
+            console.log("1: " + isHorizontal)
         } else {
-            const nearestSide = defaultAnchors.getNearestSide(refPoint);
-            isHorizontal = nearestSide === Side.LEFT || nearestSide === Side.RIGHT;
+            const nearestSide = otherAnchors.getNearestSide(refPoint);
+            isHorizontal = nearestSide === Side.TOP || nearestSide === Side.BOTTOM;
+            console.log("2: " + isHorizontal)
         }
         if (isHorizontal) {
-            if (refPoint.y < defaultAnchors.get(Side.TOP).y || refPoint.y > defaultAnchors.get(Side.BOTTOM).y) {
-                const newPoint = { x: defaultAnchors.get(Side.TOP).x, y: refPoint.y };
+            if (refPoint.y < currentAnchors.get(Side.TOP).y || refPoint.y > currentAnchors.get(Side.BOTTOM).y) {
+                const newPoint = { x: currentAnchors.get(Side.TOP).x, y: refPoint.y };
                 routingPoints.splice(index, 0, newPoint);
                 if (updateHandles) {
                     edge.children.forEach(child => {
@@ -257,8 +266,8 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
                 }
             }
         } else {
-            if (refPoint.x < defaultAnchors.get(Side.LEFT).x || refPoint.x > defaultAnchors.get(Side.RIGHT).x) {
-                const newPoint = { x: refPoint.x, y: defaultAnchors.get(Side.LEFT).y };
+            if (refPoint.x < currentAnchors.get(Side.LEFT).x || refPoint.x > currentAnchors.get(Side.RIGHT).x) {
+                const newPoint = { x: refPoint.x, y: currentAnchors.get(Side.LEFT).y };
                 routingPoints.splice(index, 0, newPoint);
                 if (updateHandles) {
                     edge.children.forEach(child => {

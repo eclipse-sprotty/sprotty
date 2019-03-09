@@ -107,7 +107,7 @@ export interface IEdgeRouter {
     /**
      * Remove/add points in order to keep routing constraints consistent, or reset RPs on reconnect.
      */
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean): void;
+    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean): void;
 
     /**
      * Creates a snapshot of the given edge, storing all the data needed to restore it to

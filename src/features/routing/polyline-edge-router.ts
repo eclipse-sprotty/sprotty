@@ -61,7 +61,7 @@ export class PolylineEdgeRouter extends LinearEdgeRouter {
         const routingPoints = edge.routingPoints.length > 0
             ? edge.routingPoints
             : [];
-        this.cleanupRoutingPoints(edge, routingPoints, false);
+        this.cleanupRoutingPoints(edge, routingPoints, false, false);
         const rpCount = routingPoints !== undefined ? routingPoints.length : 0;
         if (rpCount === 0) {
             // Use the target center as start anchor reference
