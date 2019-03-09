@@ -84,7 +84,7 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             this.addHandle(edge, 'source', 'routing-point', -2);
             for (let i = 0; i < routedPoints.length - 1; ++i)
                 this.addHandle(edge, 'manhattan-50%', 'volatile-routing-point', i - 1);
-            this.addHandle(edge, 'target', 'routing-point', routedPoints.length - 1);
+            this.addHandle(edge, 'target', 'routing-point', routedPoints.length - 2);
         }
     }
 
@@ -226,14 +226,16 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
     }
 
     protected removeHandle(edge: SRoutableElement, pointIndex: number) {
+        const toBeRemoved: SRoutingHandle[] = [];
         edge.children.forEach(child => {
             if (child instanceof SRoutingHandle) {
                 if (child.pointIndex > pointIndex)
                     --child.pointIndex;
                 else if (child.pointIndex === pointIndex)
-                    edge.remove(child);
+                    toBeRemoved.push(child);
             }
         });
+        toBeRemoved.forEach(child => edge.remove(child));
     }
 
     protected addAdditionalCorner(edge: SRoutableElement, routingPoints: Point[], currentAnchors: DefaultAnchors, otherAnchors: DefaultAnchors, updateHandles: boolean) {
