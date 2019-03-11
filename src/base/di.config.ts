@@ -37,6 +37,7 @@ import { configureCommand, CommandActionHandlerInitializer } from "./commands/c
 import { CssClassDecorator } from "./views/css-class-decorator";
 import { ToolManager, DefaultToolsEnablingKeyListener, ToolManagerActionHandlerInitializer } from "./tool-manager/tool-manager";
 import { SetModelCommand } from "./features/set-model";
+import { DefaultDiagramLocker } from "./actions/diagram-locker";
 
 const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // Logging ---------------------------------------------
@@ -67,6 +68,7 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
             });
         };
     });
+    bind(TYPES.IDiagramLocker).to(DefaultDiagramLocker).inSingletonScope();
 
     // Action handler
     bind(TYPES.IActionHandlerInitializer).to(CommandActionHandlerInitializer);
