@@ -24,6 +24,7 @@ import { SetModelAction } from '../features/set-model';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
 import { Action, isAction } from "./action";
 import { ActionHandlerRegistry } from "./action-handler";
+import { IDiagramLocker } from "./diagram-locker";
 
 export interface IActionDispatcher {
     dispatch(action: Action): Promise<void>
@@ -41,6 +42,7 @@ export class ActionDispatcher implements IActionDispatcher {
     @inject(TYPES.ICommandStack) protected commandStack: ICommandStack;
     @inject(TYPES.ILogger) protected logger: ILogger;
     @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer;
+    @inject(TYPES.IDiagramLocker) protected diagramLocker: IDiagramLocker;
 
     protected actionHandlerRegistry: ActionHandlerRegistry;
 
@@ -66,13 +68,16 @@ export class ActionDispatcher implements IActionDispatcher {
         return this.initialize().then(() => {
             if (this.blockUntil !== undefined) {
                 return this.handleBlocked(action, this.blockUntil);
-            } else if (action.kind === UndoAction.KIND) {
-                return this.commandStack.undo().then(() => {});
-            } else if (action.kind === RedoAction.KIND) {
-                return this.commandStack.redo().then(() => {});
-            } else {
-                return this.handleAction(action);
+            } else if (this.diagramLocker.isAllowed(action)) {
+                if (action.kind === UndoAction.KIND) {
+                    return this.commandStack.undo().then(() => {});
+                } else if (action.kind === RedoAction.KIND) {
+                    return this.commandStack.redo().then(() => {});
+                } else {
+                    return this.handleAction(action);
+                }
             }
+            return undefined;
         });
     }
 

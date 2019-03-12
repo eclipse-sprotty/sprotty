@@ -19,6 +19,7 @@
 export * from './base/actions/action';
 export * from './base/actions/action-dispatcher';
 export * from './base/actions/action-handler';
+export * from './base/actions/diagram-locker';
 
 export * from './base/animations/animation-frame-syncer';
 export * from './base/animations/animation';

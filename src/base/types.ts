@@ -27,6 +27,7 @@ export const TYPES = {
     CommandRegistration: Symbol('CommandRegistration'),
     ICommandStack: Symbol('ICommandStack'),
     ICommandStackProvider: Symbol('ICommandStackProvider'),
+    IDiagramLocker: Symbol('IDiagramLocker'),
     DOMHelper: Symbol('DOMHelper'),
     IEdgeRouter: Symbol('IEdgeRouter'),
     HiddenVNodeDecorator: Symbol('HiddenVNodeDecorator'),
