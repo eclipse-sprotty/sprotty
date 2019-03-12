@@ -102,7 +102,7 @@ export abstract class AbstractUIExtension implements IUIExtension {
     /**
      * Updates the `containerElement` under the given `context` before it becomes visible.
      *
-     * Subclasses may override this method to, for instance, modfying the position of the
+     * Subclasses may override this method to, for instance, modifying the position of the
      * `containerElement`, add or remove elements, etc. depending on the specified `root`.
      */
     protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>): void {
