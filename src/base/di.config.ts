@@ -37,6 +37,7 @@ import { configureCommand, CommandActionHandlerInitializer } from "./commands/c
 import { CssClassDecorator } from "./views/css-class-decorator";
 import { ToolManager, DefaultToolsEnablingKeyListener, ToolManagerActionHandlerInitializer } from "./tool-manager/tool-manager";
 import { SetModelCommand } from "./features/set-model";
+import { UIExtensionRegistry, SetUIExtensionVisibilityCommand } from "./ui-extensions/ui-extension-registry";
 import { DefaultDiagramLocker } from "./actions/diagram-locker";
 
 const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
@@ -142,6 +143,10 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.IToolManager).to(ToolManager).inSingletonScope();
     bind(TYPES.KeyListener).to(DefaultToolsEnablingKeyListener);
     bind(TYPES.IActionHandlerInitializer).to(ToolManagerActionHandlerInitializer);
+
+    // UIExtension registry initialization ------------------------------------
+    bind(TYPES.UIExtensionRegistry).to(UIExtensionRegistry).inSingletonScope();
+    configureCommand({ bind, isBound }, SetUIExtensionVisibilityCommand);
 });
 
 export default defaultContainerModule;

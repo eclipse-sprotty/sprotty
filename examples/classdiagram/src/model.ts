@@ -16,14 +16,25 @@
 
 import {
     SShapeElement, Expandable, boundsFeature, expandFeature, fadeFeature, layoutContainerFeature,
-    layoutableChildFeature, RectangularNode
+    layoutableChildFeature, RectangularNode, Nameable, nameFeature, SLabel
 } from "../../../src";
 
-export class ClassNode extends RectangularNode implements Expandable {
+export class ClassNode extends RectangularNode implements Expandable, Nameable {
     expanded: boolean = false;
 
+    get name() {
+        const headerComp = this.children.find(element => element.type === 'comp:header');
+        if (headerComp) {
+            const label = headerComp.children.find(element => element.type === 'label:heading');
+            if (label && label instanceof SLabel) {
+                return label.text;
+            }
+        }
+        return this.id;
+    }
+
     hasFeature(feature: symbol) {
-        return feature === expandFeature || super.hasFeature(feature);
+        return feature === expandFeature || feature === nameFeature || super.hasFeature(feature);
     }
 }
 

@@ -55,5 +55,9 @@ export const TYPES = {
     ViewRegistration: Symbol('ViewRegistration'),
     ViewRegistry: Symbol('ViewRegistry'),
     IVNodeDecorator: Symbol('IVNodeDecorator'),
-    IToolManager: Symbol('IToolManager')
+    IToolManager: Symbol('IToolManager'),
+    IUIExtension: Symbol('IUIExtension'),
+    UIExtensionRegistry: Symbol('UIExtensionRegistry'),
+    ICommandPaletteActionProviderRegistry: Symbol('ICommandPaletteActionProviderRegistry'),
+    ICommandPaletteActionProvider: Symbol('ICommandPaletteActionProvider')
 };

@@ -41,6 +41,9 @@ export * from './base/model/smodel';
 export * from './base/tool-manager/tool-manager';
 export * from './base/tool-manager/tool';
 
+export * from './base/ui-extensions/ui-extension-registry';
+export * from './base/ui-extensions/ui-extension';
+
 export * from './base/views/key-tool';
 export * from './base/views/mouse-tool';
 export * from './base/views/thunk-view';
@@ -68,6 +71,9 @@ export * from "./features/bounds/stack-layout";
 
 export * from "./features/button/button-handler";
 export * from "./features/button/model";
+
+export * from "./features/command-palette/action-providers";
+export * from "./features/command-palette/command-palette";
 
 export * from "./features/edge-layout/di.config";
 export * from "./features/edge-layout/edge-layout";
@@ -103,6 +109,8 @@ export * from "./features/decoration/decoration-placer";
 export * from "./features/move/model";
 export * from "./features/move/move";
 
+export * from "./features/nameable/model";
+
 export * from "./features/open/open";
 export * from "./features/open/model";
 
@@ -134,6 +142,7 @@ import graphModule from "./graph/di.config";
 
 import boundsModule from "./features/bounds/di.config";
 import buttonModule from "./features/button/di.config";
+import commandPaletteModule from "./features/command-palette/di.config";
 import decorationModule from "./features/decoration/di.config";
 import edgeLayoutModule from "./features/edge-layout/di.config";
 import expandModule from "./features/expand/di.config";
@@ -148,8 +157,9 @@ import undoRedoModule from "./features/undo-redo/di.config";
 import updateModule from "./features/update/di.config";
 import viewportModule from "./features/viewport/di.config";
 
-export { graphModule, boundsModule, buttonModule, decorationModule, edgeLayoutModule,
-    expandModule,  exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
+export {
+    graphModule, boundsModule, buttonModule, commandPaletteModule, decorationModule, edgeLayoutModule,
+    expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
     selectModule, undoRedoModule, updateModule, viewportModule
 };
 
