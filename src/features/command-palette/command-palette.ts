@@ -64,10 +64,15 @@ export class CommandPalette extends AbstractUIExtension {
 
     protected initializeContents(containerElement: HTMLElement) {
         containerElement.style.position = "absolute";
+        containerElement.appendChild(this.inputElement);
         this.inputElement = document.createElement('input');
         this.inputElement.style.width = '100%';
-        containerElement.appendChild(this.inputElement);
+        this.inputElement.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
         this.inputElement.onblur = () => window.setTimeout(() => this.hide(), 200);
+    }
+
+    protected hideIfEscapeEvent(event: KeyboardEvent): any {
+        if (matchesKeystroke(event, 'Escape')) { this.hide(); }
     }
 
     protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>) {
