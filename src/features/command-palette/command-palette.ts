@@ -55,7 +55,8 @@ export class CommandPalette extends AbstractUIExtension {
     show(root: Readonly<SModelRoot>) {
         super.show(root);
         this.contextActions = undefined;
-        if (this.inputElement.value) {
+
+        if (this.inputElement!.value) {
             this.inputElement.setSelectionRange(0, this.inputElement.value.length);
         }
         this.autoCompleteResult = configureAutocomplete(this.autocompleteSettings(root));
@@ -64,11 +65,11 @@ export class CommandPalette extends AbstractUIExtension {
 
     protected initializeContents(containerElement: HTMLElement) {
         containerElement.style.position = "absolute";
-        containerElement.appendChild(this.inputElement);
         this.inputElement = document.createElement('input');
         this.inputElement.style.width = '100%';
         this.inputElement.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
         this.inputElement.onblur = () => window.setTimeout(() => this.hide(), 200);
+        containerElement.appendChild(this.inputElement);
     }
 
     protected hideIfEscapeEvent(event: KeyboardEvent): any {
