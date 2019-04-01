@@ -63,6 +63,7 @@ export { defaultModule };
 // ------------------ Features ------------------
 
 export * from "./features/bounds/bounds-manipulation";
+export * from "./features/bounds/hidden-bounds-updater";
 export * from "./features/bounds/layout";
 export * from "./features/bounds/model";
 export * from "./features/bounds/vbox-layout";
