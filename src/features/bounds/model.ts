@@ -14,10 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, EMPTY_BOUNDS, EMPTY_DIMENSION, Dimension, isBounds, ORIGIN_POINT, Point, includes } from "../../utils/geometry";
-import { SModelElement, SModelElementSchema, SParentElement, SChildElement, SModelRoot } from "../../base/model/smodel";
+import { SChildElement, SModelElement, SModelElementSchema, SModelRoot, SParentElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from '../../base/model/smodel-utils';
+import { DOMHelper } from "../../base/views/dom-helper";
+import { ViewerOptions } from "../../base/views/viewer-options";
+import { Bounds, Dimension, EMPTY_BOUNDS, EMPTY_DIMENSION, includes, isBounds, ORIGIN_POINT, Point } from "../../utils/geometry";
 import { Locateable } from '../move/model';
 
 export const boundsFeature = Symbol('boundsFeature');
@@ -39,7 +41,7 @@ export interface LayoutContainer extends LayoutableChild {
     layout: string
 }
 
-export type ModelLayoutOptions = {[key: string]: string | number | boolean};
+export type ModelLayoutOptions = { [key: string]: string | number | boolean };
 
 export interface LayoutableChild extends SModelExtension, BoundsAware {
     layoutOptions?: ModelLayoutOptions
@@ -94,6 +96,43 @@ export function getAbsoluteBounds(element: SModelElement): Bounds {
     } else {
         return EMPTY_BOUNDS;
     }
+}
+
+/**
+ * Returns the "client-absolute" bounds of the specified `element`.
+ *
+ * The client-absolute bounds are relative to the entire browser page.
+ *
+ * @param element The element to get the bounds for.
+ * @param domHelper The dom helper to obtain the SVG element's id.
+ * @param viewerOptions The viewer options to obtain sprotty's container div id.
+ */
+export function getAbsoluteClientBounds(element: SModelElement, domHelper: DOMHelper, viewerOptions: ViewerOptions): Bounds {
+    let x = 0;
+    let y = 0;
+    let width = 0;
+    let height = 0;
+
+    const svgElementId = domHelper.createUniqueDOMElementId(element);
+    const svgElement = document.getElementById(svgElementId);
+    if (svgElement) {
+        const rect = svgElement.getBoundingClientRect();
+        x = rect.left + window.scrollX;
+        y = rect.top + window.scrollY;
+        width = rect.width;
+        height = rect.height;
+    }
+
+    let container = document.getElementById(viewerOptions.baseDiv);
+    if (container) {
+        while (container.offsetParent instanceof HTMLElement
+            && (container = <HTMLElement>container.offsetParent)) {
+            x -= container.offsetLeft;
+            y -= container.offsetTop;
+        }
+    }
+
+    return { x, y, width, height };
 }
 
 export function findChildrenAtPosition(parent: SParentElement, point: Point): SModelElement[] {

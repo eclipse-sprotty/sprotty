@@ -18,17 +18,17 @@ import { inject, injectable } from "inversify";
 import { Action, isAction } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
-import { findParentByFeature } from "../../base/model/smodel-utils";
 import { TYPES } from "../../base/types";
 import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
 import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry";
+import { DOMHelper } from "../../base/views/dom-helper";
 import { KeyListener } from "../../base/views/key-tool";
+import { ViewerOptions } from "../../base/views/viewer-options";
 import { toArray } from "../../utils/iterable";
 import { matchesKeystroke } from "../../utils/keyboard";
-import { isBoundsAware } from "../bounds/model";
-import { isSelectable } from "../select/model";
-import { isViewport } from "../viewport/model";
+import { getAbsoluteClientBounds } from "../bounds/model";
 import { CommandPaletteActionProviderRegistry, isLabeledAction, LabeledAction } from "./action-providers";
+import { isSelectable } from "../select/model";
 
 
 // import of function autocomplete(...) doesn't work
@@ -42,8 +42,8 @@ export class CommandPalette extends AbstractUIExtension {
 
     readonly id = CommandPalette.ID;
     readonly containerClass = "command-palette";
-    readonly xOffset = 40;
-    readonly yOffset = 30;
+    readonly xOffset = 20;
+    readonly yOffset = 20;
     readonly defaultWidth = 400;
     protected inputElement: HTMLInputElement;
     protected autoCompleteResult: AutocompleteResult;
@@ -51,6 +51,8 @@ export class CommandPalette extends AbstractUIExtension {
 
     @inject(TYPES.IActionDispatcherProvider) protected actionDispatcherProvider: IActionDispatcherProvider;
     @inject(TYPES.ICommandPaletteActionProviderRegistry) protected actionProviderRegistry: CommandPaletteActionProviderRegistry;
+    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
+    @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
     show(root: Readonly<SModelRoot>) {
         super.show(root);
@@ -81,17 +83,13 @@ export class CommandPalette extends AbstractUIExtension {
         let y = this.yOffset;
         const selectedElements = toArray(root.index.all().filter(e => isSelectable(e) && e.selected));
         if (selectedElements.length === 1) {
-            const firstElement = selectedElements[0];
-            if (isBoundsAware(firstElement)) {
-                const viewport = findParentByFeature(firstElement, isViewport);
-                if (viewport) {
-                    x += (firstElement.bounds.x + firstElement.bounds.width - viewport.scroll.x) * viewport.zoom;
-                    y += (firstElement.bounds.y - viewport.scroll.y) * viewport.zoom;
-                } else {
-                    x += firstElement.bounds.x + firstElement.bounds.width;
-                    y += firstElement.bounds.y;
-                }
-            }
+            const bounds = getAbsoluteClientBounds(selectedElements[0], this.domHelper, this.viewerOptions);
+            x += bounds.x + bounds.width;
+            y += bounds.y;
+        } else {
+            const bounds = getAbsoluteClientBounds(root, this.domHelper, this.viewerOptions);
+            x += bounds.x;
+            y += bounds.y;
         }
         containerElement.style.left = `${x}px`;
         containerElement.style.top = `${y}px`;
