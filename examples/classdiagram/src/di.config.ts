@@ -22,16 +22,17 @@ import {
     fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
     HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
     edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule, commandPaletteModule,
-    RevealNamedElementActionProvider, CenterGridSnapper
+    RevealNamedElementActionProvider, CenterGridSnapper, labelEditModule, labelEditUiModule
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
 import { ClassDiagramModelSource } from './model-source';
-import { Icon, ClassNode } from "./model";
+import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
 
 export default (useWebsocket: boolean, containerId: string) => {
     require("../../../css/sprotty.css");
     require("../../../css/command-palette.css");
+    require("../../../css/edit-label.css");
     require("../css/diagram.css");
     const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         if (useWebsocket)
@@ -46,8 +47,8 @@ export default (useWebsocket: boolean, containerId: string) => {
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:class', ClassNode, ClassNodeView);
-        configureModelElement(context, 'label:heading', SLabel, SLabelView);
-        configureModelElement(context, 'label:text', SLabel, SLabelView);
+        configureModelElement(context, 'label:heading', ClassLabel, SLabelView);
+        configureModelElement(context, 'label:text', PropertyLabel, SLabelView);
         configureModelElement(context, 'comp:comp', SCompartment, SCompartmentView);
         configureModelElement(context, 'comp:header', SCompartment, SCompartmentView);
         configureModelElement(context, 'icon', Icon, IconView);
@@ -67,7 +68,7 @@ export default (useWebsocket: boolean, containerId: string) => {
     const container = new Container();
     container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
         viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        updateModule, graphModule, routingModule, edgeEditModule, edgeLayoutModule,
-        modelSourceModule, commandPaletteModule, classDiagramModule);
+        updateModule, graphModule, routingModule, edgeEditModule, edgeLayoutModule, labelEditModule,
+        labelEditUiModule, modelSourceModule, commandPaletteModule, classDiagramModule);
     return container;
 };

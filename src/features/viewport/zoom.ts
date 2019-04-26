@@ -30,6 +30,15 @@ export function isZoomable(element: SModelElement | Zoomable): element is Zoomab
     return 'zoom' in element;
 }
 
+export function getZoom(label: SModelElement) {
+    let zoom = 1;
+    const viewport = findParentByFeature(label, isViewport);
+    if (viewport) {
+        zoom = viewport.zoom;
+    }
+    return zoom;
+}
+
 export class ZoomMouseListener extends MouseListener {
 
     wheel(target: SModelElement, event: WheelEvent): Action[] {

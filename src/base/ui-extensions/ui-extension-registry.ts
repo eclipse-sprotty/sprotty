@@ -36,7 +36,7 @@ export class UIExtensionRegistry extends InstanceRegistry<IUIExtension>  {
  */
 export class SetUIExtensionVisibilityAction implements Action {
     readonly kind = SetUIExtensionVisibilityCommand.KIND;
-    constructor(public readonly extensionId: string, public readonly visible: boolean) { }
+    constructor(public readonly extensionId: string, public readonly visible: boolean, public readonly contextElementsId: string[] = []) { }
 }
 
 @injectable()
@@ -47,17 +47,18 @@ export class SetUIExtensionVisibilityCommand extends SystemCommand {
     constructor(@inject(TYPES.Action) public action: SetUIExtensionVisibilityAction) {
         super();
     }
+
     execute(context: CommandExecutionContext): CommandResult {
         const extension = this.registry.get(this.action.extensionId);
         if (extension) {
-            this.action.visible ? extension.show(context.root) : extension.hide();
+            this.action.visible ? extension.show(context.root, ...this.action.contextElementsId) : extension.hide();
         }
         return context.root;
     }
+
     undo(context: CommandExecutionContext): CommandResult {
         return context.root;
     }
-
     redo(context: CommandExecutionContext): CommandResult {
         return context.root;
     }

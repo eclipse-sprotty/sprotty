@@ -27,8 +27,8 @@ import { ViewerOptions } from "../../base/views/viewer-options";
 import { toArray } from "../../utils/iterable";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
-import { CommandPaletteActionProviderRegistry, isLabeledAction, LabeledAction } from "./action-providers";
 import { isSelectable } from "../select/model";
+import { CommandPaletteActionProviderRegistry, isLabeledAction, LabeledAction } from "./action-providers";
 
 
 // import of function autocomplete(...) doesn't work
@@ -54,8 +54,8 @@ export class CommandPalette extends AbstractUIExtension {
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
-    show(root: Readonly<SModelRoot>) {
-        super.show(root);
+    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+        super.show(root, ...contextElementIds);
         this.contextActions = undefined;
 
         if (this.inputElement!.value) {
@@ -78,7 +78,7 @@ export class CommandPalette extends AbstractUIExtension {
         if (matchesKeystroke(event, 'Escape')) { this.hide(); }
     }
 
-    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>) {
+    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...selectedElementIds: string[]) {
         let x = this.xOffset;
         let y = this.yOffset;
         const selectedElements = toArray(root.index.all().filter(e => isSelectable(e) && e.selected));
@@ -106,11 +106,13 @@ export class CommandPalette extends AbstractUIExtension {
                 if (this.contextActions) {
                     update(this.filterActions(text, this.contextActions));
                 } else {
-                    this.actionProviderRegistry.getActions(root).then(actions => {
-                        this.contextActions = actions;
-                        update(this.filterActions(text, actions));
-                    })
-                        .catch((reason) => this.logger.error(this, "Failed to obtain actions from command palette action providers", reason));
+                    this.actionProviderRegistry.getActions(root)
+                        .then(actions => {
+                            this.contextActions = actions;
+                            update(this.filterActions(text, actions));
+                        })
+                        .catch((reason) =>
+                            this.logger.error(this, "Failed to obtain actions from command palette action providers", reason));
                 }
             },
             onSelect: (item: LabeledAction) => {
@@ -160,9 +162,10 @@ function toActionArray(input: LabeledAction | Action[] | Action): Action[] {
 export class CommandPaletteKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, false)];
+            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, false, [])];
         } else if (matchesKeystroke(event, 'Space', 'ctrl')) {
-            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, true)];
+            const selectedElements = toArray(element.index.all().filter(e => isSelectable(e) && e.selected).map(e => e.id));
+            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, true, selectedElements)];
         }
         return [];
     }
