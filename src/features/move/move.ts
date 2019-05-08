@@ -38,6 +38,7 @@ import { isSelectable } from "../select/model";
 import { SelectAction, SelectAllAction } from "../select/select";
 import { isViewport } from "../viewport/model";
 import { isLocateable, isMoveable, Locateable } from './model';
+import { ISnapper } from "./snap";
 
 export class MoveAction implements Action {
     kind = MoveCommand.KIND;
@@ -366,9 +367,11 @@ export class MorphEdgesAnimation extends Animation {
 export class MoveMouseListener extends MouseListener {
 
     @inject(EdgeRouterRegistry)@optional() edgeRouterRegistry?: EdgeRouterRegistry;
+    @inject(TYPES.ISnapper)@optional() snapper?: ISnapper;
 
     hasDragged = false;
-    lastDragPosition: Point | undefined;
+    startDragPosition: Point | undefined;
+    elementId2startPos = new Map<string, Point>();
 
     mouseDown(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
@@ -376,9 +379,9 @@ export class MoveMouseListener extends MouseListener {
             const moveable = findParentByFeature(target, isMoveable);
             const isRoutingHandle = target instanceof SRoutingHandle;
             if (moveable !== undefined || isRoutingHandle || isCreatingOnDrag(target)) {
-                this.lastDragPosition = { x: event.pageX, y: event.pageY };
+                this.startDragPosition = { x: event.pageX, y: event.pageY };
             } else {
-                this.lastDragPosition = undefined;
+                this.startDragPosition = undefined;
             }
             this.hasDragged = false;
             if (isCreatingOnDrag(target)) {
@@ -399,25 +402,49 @@ export class MoveMouseListener extends MouseListener {
         const result: Action[] = [];
         if (event.buttons === 0)
             this.mouseUp(target, event);
-        else if (this.lastDragPosition) {
+        else if (this.startDragPosition) {
+            if (this.elementId2startPos.size === 0) {
+                this.collectStartPositions(target.root);
+            }
             this.hasDragged = true;
-            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, false);
+            const moveAction = this.getElementMoves(target, event, false);
             if (moveAction)
                 result.push(moveAction);
-            this.lastDragPosition = { x: event.pageX, y: event.pageY };
         }
         return result;
     }
 
-    protected getElementMoves(target: SModelElement, event: MouseEvent, lastDragPosition: Point, isFinished: boolean): MoveAction | undefined {
-        const viewport = findParentByFeature(target, isViewport);
-        const zoom = viewport ? viewport.zoom : 1;
-        const dx = (event.pageX - lastDragPosition.x) / zoom;
-        const dy = (event.pageY - lastDragPosition.y) / zoom;
-        const elementMoves: ElementMove[] = [];
-        target.root.index.all()
+    protected collectStartPositions(root: SModelRoot) {
+        root.index.all()
             .filter(element => isSelectable(element) && element.selected)
             .forEach(element => {
+                if (isMoveable(element))
+                    this.elementId2startPos.set(element.id, element.position);
+                else if (element instanceof SRoutingHandle) {
+                    const position = this.getHandlePosition(element);
+                    if (position)
+                        this.elementId2startPos.set(element.id, position);
+                }
+            });
+    }
+
+    protected getElementMoves(target: SModelElement, event: MouseEvent, isFinished: boolean): MoveAction | undefined {
+        if (!this.startDragPosition)
+            return undefined;
+        const elementMoves: ElementMove[] = [];
+        const viewport = findParentByFeature(target, isViewport);
+        const zoom = viewport ? viewport.zoom : 1;
+        const delta = {
+            x: (event.pageX - this.startDragPosition.x) / zoom,
+            y: (event.pageY - this.startDragPosition.y) / zoom
+        };
+        this.elementId2startPos.forEach((startPosition, elementId) => {
+            const element = target.root.index.getById(elementId);
+            if (element) {
+                const toPosition = this.snap({
+                    x: startPosition.x + delta.x,
+                    y: startPosition.y + delta.y
+                }, element, !event.shiftKey);
                 if (isMoveable(element)) {
                     elementMoves.push({
                         elementId: element.id,
@@ -425,10 +452,7 @@ export class MoveMouseListener extends MouseListener {
                             x: element.position.x,
                             y: element.position.y
                         },
-                        toPosition: {
-                            x: element.position.x + dx,
-                            y: element.position.y + dy
-                        }
+                        toPosition
                     });
                 } else if (element instanceof SRoutingHandle) {
                     const point = this.getHandlePosition(element);
@@ -436,18 +460,23 @@ export class MoveMouseListener extends MouseListener {
                         elementMoves.push({
                             elementId: element.id,
                             fromPosition: point,
-                            toPosition: {
-                                x: point.x + dx,
-                                y: point.y + dy
-                            }
+                            toPosition
                         });
                     }
                 }
-            });
+            }
+        });
         if (elementMoves.length > 0)
             return new MoveAction(elementMoves, false, isFinished);
         else
             return undefined;
+    }
+
+    protected snap(position: Point, element: SModelElement, isSnap: boolean): Point {
+        if (isSnap && this.snapper)
+            return this.snapper.snap(position, element);
+        else
+            return position;
     }
 
     protected getHandlePosition(handle: SRoutingHandle): Point | undefined {
@@ -471,8 +500,8 @@ export class MoveMouseListener extends MouseListener {
     mouseUp(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
         let hasReconnected = false;
-        if (this.lastDragPosition) {
-            const moveAction = this.getElementMoves(target, event, this.lastDragPosition, true);
+        if (this.startDragPosition) {
+            const moveAction = this.getElementMoves(target, event, true);
             if (moveAction)
                 result.push(moveAction);
             target.root.index.all()
@@ -513,7 +542,8 @@ export class MoveMouseListener extends MouseListener {
         if (this.hasDragged)
             result.push(new CommitModelAction());
         this.hasDragged = false;
-        this.lastDragPosition = undefined;
+        this.startDragPosition = undefined;
+        this.elementId2startPos.clear();
         return result;
     }
 

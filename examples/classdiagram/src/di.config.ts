@@ -22,7 +22,7 @@ import {
     fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
     HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
     edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule, commandPaletteModule,
-    RevealNamedElementActionProvider
+    RevealNamedElementActionProvider, CenterGridSnapper
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
@@ -42,6 +42,7 @@ export default (useWebsocket: boolean, containerId: string) => {
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider);
         bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);
+        bind(TYPES.ISnapper).to(CenterGridSnapper);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:class', ClassNode, ClassNodeView);
