@@ -109,6 +109,7 @@ export * from "./features/decoration/decoration-placer";
 
 export * from "./features/move/model";
 export * from "./features/move/move";
+export * from "./features/move/snap";
 
 export * from "./features/nameable/model";
 

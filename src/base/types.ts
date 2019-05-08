@@ -48,6 +48,7 @@ export const TYPES = {
     PopupVNodeDecorator: Symbol('PopupVNodeDecorator'),
     SModelElementRegistration: Symbol('SModelElementRegistration'),
     SModelRegistry: Symbol('SModelRegistry'),
+    ISnapper: Symbol('ISnapper'),
     SvgExporter: Symbol('SvgExporter'),
     IViewer: Symbol('IViewer'),
     ViewerOptions: Symbol('ViewerOptions'),
