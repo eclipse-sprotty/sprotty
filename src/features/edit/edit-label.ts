@@ -99,6 +99,17 @@ export class ApplyLabelEditCommand extends Command {
 
 }
 
+export interface IEditLabelValidator {
+    validate(value: string, label: EditableLabel & SModelElement): Promise<EditLabelValidationResult>;
+}
+
+export interface EditLabelValidationResult {
+    readonly severity: Severity;
+    readonly message?: string;
+}
+
+export type Severity = 'ok' | 'warning' | 'error';
+
 export class EditLabelMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const editableLabel = getEditableLabel(target);

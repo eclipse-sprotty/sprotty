@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { inject, injectable } from "inversify";
+import { inject, injectable, optional } from "inversify";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
 import { CommandExecutionContext, CommandResult, SystemCommand } from "../../base/commands/command";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
@@ -24,7 +24,7 @@ import { DOMHelper } from "../../base/views/dom-helper";
 import { ViewerOptions } from "../../base/views/viewer-options";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
-import { ApplyLabelEditAction, EditableLabel, EditLabelAction, isEditableLabel } from "./edit-label";
+import { ApplyLabelEditAction, EditableLabel, EditLabelAction, isEditableLabel, IEditLabelValidator, EditLabelValidationResult } from "./edit-label";
 import { getZoom } from "../viewport/zoom";
 
 /** Shows a UI extension for editing a label on emitted `EditLabelAction`s. */
@@ -65,19 +65,23 @@ export class EditLabelUI extends AbstractUIExtension {
     @inject(TYPES.IActionDispatcherProvider) public actionDispatcherProvider: IActionDispatcherProvider;
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
+    @inject(TYPES.IEditLabelValidator) @optional() public labelValidator: IEditLabelValidator;
 
     protected inputElement: HTMLInputElement;
     protected label?: EditableLabel & SModelElement;
     protected labelElement: HTMLElement | null;
+    protected validationTimeout?: number = undefined;
+    protected isActive: boolean = false;
 
     protected get labelId() { return this.label ? this.label.id : 'unknown'; }
 
     protected initializeContents(containerElement: HTMLElement): void {
-        containerElement.style.position = "absolute";
+        containerElement.style.position = 'absolute';
         this.inputElement = document.createElement('input');
         this.inputElement.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
-        this.inputElement.onblur = () => window.setTimeout(() => this.hide(), 200);
+        this.inputElement.onblur = () => window.setTimeout(() => this.applyLabelEdit(), 200);
         this.inputElement.addEventListener('keydown', (event) => this.applyLabelEditIfEnterEvent(event));
+        this.inputElement.onkeyup = (event) => this.performLabelValidation(event, this.inputElement.value);
         containerElement.appendChild(this.inputElement);
     }
 
@@ -87,12 +91,55 @@ export class EditLabelUI extends AbstractUIExtension {
 
     protected applyLabelEditIfEnterEvent(event: KeyboardEvent): any {
         if (matchesKeystroke(event, 'Enter')) {
-            this.actionDispatcherProvider()
-                .then(actionDispatcher =>
-                    actionDispatcher.dispatch(new ApplyLabelEditAction(this.labelId, this.inputElement.value)))
-                .catch((reason) =>
-                    this.logger.error(this, 'No action dispatcher available to execute apply label edit action', reason));
-            this.hide();
+            this.applyLabelEdit();
+        }
+    }
+
+    private applyLabelEdit() {
+        if (!this.isActive) {
+            return;
+        }
+        this.actionDispatcherProvider()
+            .then(actionDispatcher => actionDispatcher.dispatch(new ApplyLabelEditAction(this.labelId, this.inputElement.value)))
+            .catch((reason) => this.logger.error(this, 'No action dispatcher available to execute apply label edit action', reason));
+        this.hide();
+    }
+
+    protected performLabelValidation(event: KeyboardEvent, value: string) {
+        if (this.validationTimeout) {
+            window.clearTimeout(this.validationTimeout);
+        }
+        this.validationTimeout = window.setTimeout(() => this.validateLabel(value), 200);
+    }
+
+    protected validateLabel(value: string) {
+        if (this.labelValidator && this.label) {
+            this.labelValidator.validate(value, this.label)
+                .then(result => this.showValidationResult(result))
+                .catch((reason) => this.logger.error(this, 'Error validating edited label', reason));
+        }
+    }
+
+    protected showValidationResult(result: EditLabelValidationResult) {
+        this.clearValidationResult();
+        if (result.message) {
+            this.containerElement.setAttribute('data-balloon', result.message);
+            this.containerElement.setAttribute('data-balloon-pos', 'up-left');
+            this.containerElement.setAttribute('data-balloon-visible', 'true');
+        }
+        switch (result.severity) {
+            case 'ok': this.containerElement.classList.add('validation-ok'); break;
+            case 'warning': this.containerElement.classList.add('validation-warning'); break;
+            case 'error': this.containerElement.classList.add('validation-error'); break;
+        }
+    }
+
+    protected clearValidationResult() {
+        if (this.containerElement) {
+            this.containerElement.removeAttribute('data-balloon');
+            this.containerElement.removeAttribute('data-balloon-pos');
+            this.containerElement.removeAttribute('data-balloon-visible');
+            this.containerElement.classList.remove('validation-ok', 'validation-warning', 'validation-error');
         }
     }
 
@@ -101,11 +148,14 @@ export class EditLabelUI extends AbstractUIExtension {
             return;
         }
         super.show(root, ...contextElementIds);
+        this.isActive = true;
         this.inputElement.focus();
     }
 
     hide(): void {
         super.hide();
+        this.clearValidationResult();
+        this.isActive = false;
         if (this.labelElement) {
             this.labelElement.style.visibility = 'visible';
         }

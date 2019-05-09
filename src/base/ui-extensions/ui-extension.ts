@@ -87,9 +87,9 @@ export abstract class AbstractUIExtension implements IUIExtension {
         return container;
     }
 
-    protected setContainerVisible(value: boolean) {
+    protected setContainerVisible(visible: boolean) {
         if (this.containerElement) {
-            if (value) {
+            if (visible) {
                 this.containerElement.style.visibility = 'visible';
                 this.containerElement.style.opacity = '1';
             } else {

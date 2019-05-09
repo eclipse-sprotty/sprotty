@@ -25,3 +25,17 @@
     outline: none;
     outline-offset: 0px;
 }
+
+.label-edit {
+    border-left: 1px dotted gray;
+}
+
+.label-edit.validation-warning {
+    color: orange;
+    border-left: 1px dotted orange;
+}
+
+.label-edit.validation-error {
+    color: red;
+    border-left: 1px dotted red;
+}
