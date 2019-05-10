@@ -85,6 +85,7 @@ export * from "./features/edit/create-on-drag";
 export * from "./features/edit/di.config";
 export * from "./features/edit/delete";
 export * from "./features/edit/edit-label";
+export * from "./features/edit/edit-label-ui";
 export * from "./features/edit/edit-routing";
 export * from "./features/edit/model";
 export * from "./features/edit/reconnect";
