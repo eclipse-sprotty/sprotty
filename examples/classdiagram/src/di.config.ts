@@ -27,7 +27,7 @@ import {
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
 import { ClassDiagramModelSource } from './model-source';
-import { ClassDiagramLabelValidator } from './label-validator';
+import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
 import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
 
 export default (useWebsocket: boolean, containerId: string) => {
@@ -46,6 +46,7 @@ export default (useWebsocket: boolean, containerId: string) => {
         bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);
         bind(TYPES.ISnapper).to(CenterGridSnapper);
         bind(TYPES.IEditLabelValidator).to(ClassDiagramLabelValidator);
+        bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:class', ClassNode, ClassNodeView);

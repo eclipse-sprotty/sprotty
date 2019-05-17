@@ -61,5 +61,6 @@ export const TYPES = {
     UIExtensionRegistry: Symbol('UIExtensionRegistry'),
     ICommandPaletteActionProviderRegistry: Symbol('ICommandPaletteActionProviderRegistry'),
     ICommandPaletteActionProvider: Symbol('ICommandPaletteActionProvider'),
-    IEditLabelValidator: Symbol('IEditLabelValidator')
+    IEditLabelValidator: Symbol('IEditLabelValidator'),
+    IEditLabelValidationDecorator: Symbol('IEditLabelValidationDecorator')
 };

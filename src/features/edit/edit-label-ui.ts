@@ -48,6 +48,11 @@ export class EditLabelActionHandlerInitializer implements IActionHandlerInitiali
     }
 }
 
+export interface IEditLabelValidationDecorator {
+    decorate(input: HTMLInputElement, validationResult: EditLabelValidationResult): void;
+    dispose(input: HTMLInputElement): void;
+}
+
 @injectable()
 export class EditLabelUI extends AbstractUIExtension {
     static readonly ID = "editLabelUi";
@@ -62,6 +67,7 @@ export class EditLabelUI extends AbstractUIExtension {
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
     @inject(TYPES.IEditLabelValidator) @optional() public labelValidator: IEditLabelValidator;
+    @inject(TYPES.IEditLabelValidationDecorator) @optional() public validationDecorator: IEditLabelValidationDecorator;
 
     protected inputElement: HTMLInputElement;
     protected label?: EditableLabel & SModelElement;
@@ -134,24 +140,14 @@ export class EditLabelUI extends AbstractUIExtension {
 
     protected showValidationResult(result: EditLabelValidationResult) {
         this.clearValidationResult();
-        if (result.message) {
-            this.containerElement.setAttribute('data-balloon', result.message);
-            this.containerElement.setAttribute('data-balloon-pos', 'up-left');
-            this.containerElement.setAttribute('data-balloon-visible', 'true');
-        }
-        switch (result.severity) {
-            case 'ok': this.containerElement.classList.add('validation-ok'); break;
-            case 'warning': this.containerElement.classList.add('validation-warning'); break;
-            case 'error': this.containerElement.classList.add('validation-error'); break;
+        if (this.validationDecorator) {
+            this.validationDecorator.decorate(this.inputElement, result);
         }
     }
 
     protected clearValidationResult() {
-        if (this.containerElement) {
-            this.containerElement.removeAttribute('data-balloon');
-            this.containerElement.removeAttribute('data-balloon-pos');
-            this.containerElement.removeAttribute('data-balloon-visible');
-            this.containerElement.classList.remove('validation-ok', 'validation-warning', 'validation-error');
+        if (this.validationDecorator) {
+            this.validationDecorator.dispose(this.inputElement);
         }
     }
 
