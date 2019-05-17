@@ -22,7 +22,7 @@ import { SDanglingAnchor } from "../../features/routing/model";
 import { EmptyGroupView } from "../../lib/svg-views";
 import { DeleteElementCommand } from "./delete";
 import { EditLabelMouseListener, ApplyLabelEditCommand, EditLabelKeyListener } from "./edit-label";
-import { EditLabelCommand, EditLabelUI } from "./edit-label-ui";
+import { EditLabelUI, EditLabelActionHandlerInitializer } from "./edit-label-ui";
 import { SwitchEditModeCommand } from "./edit-routing";
 import { ReconnectCommand } from "./reconnect";
 
@@ -40,8 +40,7 @@ export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
 });
 
 export const labelEditUiModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    bind(TYPES.IActionHandlerInitializer).to(EditLabelActionHandlerInitializer);
     bind(EditLabelUI).toSelf().inSingletonScope();
     bind(TYPES.IUIExtension).toService(EditLabelUI);
-    configureCommand({ bind, isBound }, EditLabelCommand);
 });
-

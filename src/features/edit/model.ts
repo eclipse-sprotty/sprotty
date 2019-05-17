@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2019 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@
 
 import { SModelElement } from '../../base/model/smodel';
 import { SRoutableElement } from '../routing/model';
+import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const editFeature = Symbol('editFeature');
 
@@ -23,3 +24,22 @@ export function canEditRouting(element: SModelElement): element is SRoutableElem
     return element instanceof SRoutableElement && element.hasFeature(editFeature);
 }
 
+export const editLabelFeature = Symbol('editLabelFeature');
+
+export interface EditableLabel extends SModelExtension {
+    text: string;
+}
+
+export function isEditableLabel<T extends SModelElement>(element: T): element is T & EditableLabel {
+    return 'text' in element && element.hasFeature(editLabelFeature);
+}
+
+export const withEditLabelFeature = Symbol('withEditLabelFeature');
+
+export interface WithEditableLabel extends SModelExtension {
+    readonly editableLabel?: EditableLabel & SModelElement;
+}
+
+export function isWithEditableLabel<T extends SModelElement>(element: T): element is T & WithEditableLabel {
+    return 'editableLabel' in element && element.hasFeature(withEditLabelFeature);
+}

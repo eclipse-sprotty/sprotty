@@ -18,20 +18,20 @@ import { injectable } from "inversify";
 
 @injectable()
 export class ClassDiagramLabelValidator implements IEditLabelValidator {
-    validate(value: string, label: EditableLabel & SModelElement): Promise<EditLabelValidationResult> {
+    async validate(value: string, label: EditableLabel & SModelElement): Promise<EditLabelValidationResult> {
         if (value.length < 1) {
-            return Promise.resolve({
+            return {
                 severity: <Severity>'error',
                 message: 'Name must not be empty'
-            });
+            };
         } else if (value.indexOf('!') !== -1) {
-            return Promise.resolve({
+            return {
                 severity: <Severity>'warning',
                 message: 'Name should not contain exclamation marks'
-            });
+            };
         }
-        return Promise.resolve({
+        return {
             severity: <Severity>'ok', message: undefined
-        });
+        };
     }
 }

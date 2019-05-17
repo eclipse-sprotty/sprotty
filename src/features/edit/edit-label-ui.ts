@@ -14,8 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable, optional } from "inversify";
+import { Action } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
-import { CommandExecutionContext, CommandResult, SystemCommand } from "../../base/commands/command";
+import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../../base/actions/action-handler";
+import { ICommand } from "../../base/commands/command";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
@@ -24,31 +26,25 @@ import { DOMHelper } from "../../base/views/dom-helper";
 import { ViewerOptions } from "../../base/views/viewer-options";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
-import { ApplyLabelEditAction, EditableLabel, EditLabelAction, isEditableLabel, IEditLabelValidator, EditLabelValidationResult } from "./edit-label";
 import { getZoom } from "../viewport/zoom";
+import { ApplyLabelEditAction, EditLabelAction, EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity } from "./edit-label";
+import { EditableLabel, isEditableLabel } from "./model";
+import { CommitModelAction } from "../../model-source/commit-model";
 
 /** Shows a UI extension for editing a label on emitted `EditLabelAction`s. */
 @injectable()
-export class EditLabelCommand extends SystemCommand {
-    static KIND: string = EditLabelAction.KIND;
+export class EditLabelActionHandlerInitializer implements IActionHandlerInitializer, IActionHandler {
+
     @inject(TYPES.IActionDispatcherProvider) public actionDispatcherProvider: IActionDispatcherProvider;
 
-    constructor(@inject(TYPES.Action) public action: EditLabelAction) {
-        super();
+    initialize(registry: ActionHandlerRegistry): void {
+        registry.register(EditLabelAction.KIND, this);
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
-        this.actionDispatcherProvider().then(dispatcher =>
-            dispatcher.dispatch(new SetUIExtensionVisibilityAction(EditLabelUI.ID, true, [this.action.labelId])));
-        return context.root;
-    }
-
-    undo(context: CommandExecutionContext): CommandResult {
-        return context.root;
-    }
-
-    redo(context: CommandExecutionContext): CommandResult {
-        return context.root;
+    handle(action: Action): void | Action | ICommand {
+        if (isEditLabelAction(action)) {
+            return new SetUIExtensionVisibilityAction(EditLabelUI.ID, true, [action.labelId]);
+        }
     }
 }
 
@@ -72,6 +68,8 @@ export class EditLabelUI extends AbstractUIExtension {
     protected labelElement: HTMLElement | null;
     protected validationTimeout?: number = undefined;
     protected isActive: boolean = false;
+    protected blockApplyEditOnInvalidInput = true;
+    protected isCurrentLabelValid: boolean = true;
 
     protected get labelId() { return this.label ? this.label.id : 'unknown'; }
 
@@ -95,12 +93,19 @@ export class EditLabelUI extends AbstractUIExtension {
         }
     }
 
-    private applyLabelEdit() {
+    protected async applyLabelEdit() {
         if (!this.isActive) {
             return;
         }
+        if (this.blockApplyEditOnInvalidInput) {
+            const result = await this.validateLabel(this.inputElement.value);
+            if ('error' === result.severity) {
+                this.inputElement.focus();
+                return;
+            }
+        }
         this.actionDispatcherProvider()
-            .then(actionDispatcher => actionDispatcher.dispatch(new ApplyLabelEditAction(this.labelId, this.inputElement.value)))
+            .then((actionDispatcher) => actionDispatcher.dispatchAll([new ApplyLabelEditAction(this.labelId, this.inputElement.value), new CommitModelAction()]))
             .catch((reason) => this.logger.error(this, 'No action dispatcher available to execute apply label edit action', reason));
         this.hide();
     }
@@ -112,12 +117,19 @@ export class EditLabelUI extends AbstractUIExtension {
         this.validationTimeout = window.setTimeout(() => this.validateLabel(value), 200);
     }
 
-    protected validateLabel(value: string) {
+    protected async validateLabel(value: string): Promise<EditLabelValidationResult> {
         if (this.labelValidator && this.label) {
-            this.labelValidator.validate(value, this.label)
-                .then(result => this.showValidationResult(result))
-                .catch((reason) => this.logger.error(this, 'Error validating edited label', reason));
+            try {
+                const result = await this.labelValidator.validate(value, this.label);
+                this.isCurrentLabelValid = 'error' !== result.severity;
+                this.showValidationResult(result);
+                return result;
+            } catch (reason) {
+                this.logger.error(this, 'Error validating edited label', reason);
+            }
         }
+        this.isCurrentLabelValid = true;
+        return { severity: <Severity>'ok', message: undefined };
     }
 
     protected showValidationResult(result: EditLabelValidationResult) {

@@ -15,41 +15,25 @@
  ********************************************************************************/
 
 import { inject } from "inversify";
-import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Action, isAction } from "../../base/actions/action";
+import { CommandExecutionContext, CommandResult, Command } from "../../base/commands/command";
 import { SModelElement } from "../../base/model/smodel";
-import { SModelExtension } from "../../base/model/smodel-extension";
 import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { KeyListener } from "../../base/views/key-tool";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { isSelectable } from "../select/model";
 import { toArray } from "../../utils/iterable";
-
-export const editLabelFeature = Symbol('editLabelFeature');
-
-export interface EditableLabel extends SModelExtension {
-    text: string;
-}
-
-export function isEditableLabel<T extends SModelElement>(element: T): element is T & EditableLabel {
-    return 'text' in element && element.hasFeature(editLabelFeature);
-}
-
-export const withEditLabelFeature = Symbol('withEditLabelFeature');
-
-export interface WithEditableLabel extends SModelExtension {
-    readonly editableLabel?: EditableLabel & SModelElement;
-}
-
-export function isWithEditableLabel<T extends SModelElement>(element: T): element is T & WithEditableLabel {
-    return 'editableLabel' in element && element.hasFeature(withEditLabelFeature);
-}
+import { EditableLabel, isEditableLabel, isWithEditableLabel } from "./model";
 
 export class EditLabelAction implements Action {
     static KIND = 'EditLabel';
     kind = EditLabelAction.KIND;
     constructor(readonly labelId: string) { }
+}
+
+export function isEditLabelAction(element?: any): element is EditLabelAction {
+    return isAction(element) && element.kind === EditLabelAction.KIND && 'labelId' in element;
 }
 
 export class ApplyLabelEditAction implements Action {
