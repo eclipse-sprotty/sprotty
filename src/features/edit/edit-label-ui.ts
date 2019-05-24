@@ -24,12 +24,12 @@ import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
 import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry";
 import { DOMHelper } from "../../base/views/dom-helper";
 import { ViewerOptions } from "../../base/views/viewer-options";
+import { CommitModelAction } from "../../model-source/commit-model";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
 import { getZoom } from "../viewport/zoom";
 import { ApplyLabelEditAction, EditLabelAction, EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity } from "./edit-label";
 import { EditableLabel, isEditableLabel } from "./model";
-import { CommitModelAction } from "../../model-source/commit-model";
 
 /** Shows a UI extension for editing a label on emitted `EditLabelAction`s. */
 @injectable()
@@ -76,26 +76,38 @@ export class EditLabelUI extends AbstractUIExtension {
     protected isActive: boolean = false;
     protected blockApplyEditOnInvalidInput = true;
     protected isCurrentLabelValid: boolean = true;
+    protected previousLabelContent?: string;
 
     protected get labelId() { return this.label ? this.label.id : 'unknown'; }
 
-    protected initializeContents(containerElement: HTMLElement): void {
+    protected initializeContents(containerElement: HTMLElement) {
         containerElement.style.position = 'absolute';
         this.inputElement = document.createElement('input');
-        this.inputElement.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
+        this.inputElement.onkeydown = (event) => this.handleKeyDown(event);
+        this.inputElement.onkeyup = (event) => this.validateLabelIfContentChange(event, this.inputElement.value);
         this.inputElement.onblur = () => window.setTimeout(() => this.applyLabelEdit(), 200);
-        this.inputElement.addEventListener('keydown', (event) => this.applyLabelEditIfEnterEvent(event));
-        this.inputElement.onkeyup = (event) => this.performLabelValidation(event, this.inputElement.value);
         containerElement.appendChild(this.inputElement);
     }
 
-    protected hideIfEscapeEvent(event: KeyboardEvent): any {
+    protected handleKeyDown(event: KeyboardEvent) {
+        this.hideIfEscapeEvent(event);
+        this.applyLabelEditIfEnterEvent(event);
+    }
+
+    protected hideIfEscapeEvent(event: KeyboardEvent) {
         if (matchesKeystroke(event, 'Escape')) { this.hide(); }
     }
 
-    protected applyLabelEditIfEnterEvent(event: KeyboardEvent): any {
+    protected applyLabelEditIfEnterEvent(event: KeyboardEvent) {
         if (matchesKeystroke(event, 'Enter')) {
             this.applyLabelEdit();
+        }
+    }
+
+    protected validateLabelIfContentChange(event: KeyboardEvent, value: string) {
+        if (this.previousLabelContent === undefined || this.previousLabelContent !== value) {
+            this.previousLabelContent = value;
+            this.performLabelValidation(event, this.inputElement.value);
         }
     }
 
@@ -152,7 +164,7 @@ export class EditLabelUI extends AbstractUIExtension {
     }
 
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
-        if (!hasEditableLabel(contextElementIds, root)) {
+        if (!hasEditableLabel(contextElementIds, root) || this.isActive) {
             return;
         }
         super.show(root, ...contextElementIds);
@@ -164,6 +176,8 @@ export class EditLabelUI extends AbstractUIExtension {
         super.hide();
         this.clearValidationResult();
         this.isActive = false;
+        this.isCurrentLabelValid = true;
+        this.previousLabelContent = undefined;
         if (this.labelElement) {
             this.labelElement.style.visibility = 'visible';
         }
@@ -171,6 +185,7 @@ export class EditLabelUI extends AbstractUIExtension {
 
     protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         this.label = getEditableLabels(contextElementIds, root)[0];
+        this.previousLabelContent = this.label.text;
         this.setPosition(containerElement);
         this.applyTextContents();
         this.applyFontStyling();
