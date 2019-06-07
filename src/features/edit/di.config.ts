@@ -15,23 +15,32 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
+import { configureCommand } from "../../base/commands/command-registration";
 import { TYPES } from "../../base/types";
-import { SwitchEditModeCommand } from "./edit-routing";
-import { ReconnectCommand } from "./reconnect";
 import { configureModelElement } from "../../base/views/view";
 import { SDanglingAnchor } from "../../features/routing/model";
 import { EmptyGroupView } from "../../lib/svg-views";
 import { DeleteElementCommand } from "./delete";
-import { EditLabelMouseListener } from "./edit-label";
-import { configureCommand } from "../../base/commands/command-registration";
+import { EditLabelMouseListener, ApplyLabelEditCommand, EditLabelKeyListener } from "./edit-label";
+import { EditLabelUI, EditLabelActionHandlerInitializer } from "./edit-label-ui";
+import { SwitchEditModeCommand } from "./edit-routing";
+import { ReconnectCommand } from "./reconnect";
 
-export const edgeEditModule = new ContainerModule((bind, _unbind, isBound)  => {
+export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SwitchEditModeCommand);
     configureCommand({ bind, isBound }, ReconnectCommand);
     configureCommand({ bind, isBound }, DeleteElementCommand);
     configureModelElement({ bind, isBound }, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);
 });
 
-export const labelEditModule = new ContainerModule(bind => {
+export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.MouseListener).to(EditLabelMouseListener);
+    bind(TYPES.KeyListener).to(EditLabelKeyListener);
+    configureCommand({ bind, isBound }, ApplyLabelEditCommand);
+});
+
+export const labelEditUiModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    bind(TYPES.IActionHandlerInitializer).to(EditLabelActionHandlerInitializer);
+    bind(EditLabelUI).toSelf().inSingletonScope();
+    bind(TYPES.IUIExtension).toService(EditLabelUI);
 });

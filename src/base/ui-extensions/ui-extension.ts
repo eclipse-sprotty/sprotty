@@ -24,7 +24,7 @@ import { ViewerOptions } from "../views/viewer-options";
  */
 export interface IUIExtension {
     readonly id: string;
-    show(root: Readonly<SModelRoot>): void;
+    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void;
     hide(): void;
 }
 
@@ -41,12 +41,12 @@ export abstract class AbstractUIExtension implements IUIExtension {
     protected containerElement: HTMLElement;
     protected activeElement: Element | null;
 
-    show(root: Readonly<SModelRoot>): void {
+    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void {
         this.activeElement = document.activeElement;
         if (!this.containerElement) {
             if (!this.initialize()) return;
         }
-        this.onBeforeShow(this.containerElement, root);
+        this.onBeforeShow(this.containerElement, root, ...contextElementIds);
         this.setContainerVisible(true);
     }
 
@@ -87,9 +87,9 @@ export abstract class AbstractUIExtension implements IUIExtension {
         return container;
     }
 
-    protected setContainerVisible(value: boolean) {
+    protected setContainerVisible(visible: boolean) {
         if (this.containerElement) {
-            if (value) {
+            if (visible) {
                 this.containerElement.style.visibility = 'visible';
                 this.containerElement.style.opacity = '1';
             } else {
@@ -103,9 +103,10 @@ export abstract class AbstractUIExtension implements IUIExtension {
      * Updates the `containerElement` under the given `context` before it becomes visible.
      *
      * Subclasses may override this method to, for instance, modifying the position of the
-     * `containerElement`, add or remove elements, etc. depending on the specified `root`.
+     * `containerElement`, add or remove elements, etc. depending on the specified `root`
+     * or `contextElementIds`.
      */
-    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>): void {
+    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...contextElementIds: string[]): void {
         // default: do nothing
     }
 

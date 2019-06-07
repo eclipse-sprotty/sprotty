@@ -35,6 +35,12 @@ export class ClassDiagramModelSource extends LocalModelSource {
         registry.register(CollapseExpandAllAction.KIND, this);
     }
 
+    commitModel(newRoot: SModelRootSchema) {
+        const previousModel = super.commitModel(newRoot);
+        this.updateModel();
+        return previousModel;
+    }
+
     handle(action: Action) {
         switch (action.kind) {
             case CollapseExpandAction.KIND:

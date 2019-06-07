@@ -16,27 +16,43 @@
 
 import {
     SShapeElement, Expandable, boundsFeature, expandFeature, fadeFeature, layoutContainerFeature,
-    layoutableChildFeature, RectangularNode, Nameable, nameFeature, SLabel
+    layoutableChildFeature, RectangularNode, Nameable, nameFeature, SLabel, EditableLabel, editLabelFeature,
+    WithEditableLabel, isEditableLabel, withEditLabelFeature
 } from "../../../src";
 
-export class ClassNode extends RectangularNode implements Expandable, Nameable {
+export class ClassNode extends RectangularNode implements Expandable, Nameable, WithEditableLabel {
     expanded: boolean = false;
 
-    get name() {
+    get editableLabel() {
         const headerComp = this.children.find(element => element.type === 'comp:header');
         if (headerComp) {
             const label = headerComp.children.find(element => element.type === 'label:heading');
-            if (label && label instanceof SLabel) {
-                return label.text;
+            if (label && isEditableLabel(label)) {
+                return label;
             }
+        }
+        return undefined;
+    }
+
+    get name() {
+        if (this.editableLabel) {
+            return this.editableLabel.text;
         }
         return this.id;
     }
 
     hasFeature(feature: symbol) {
-        return feature === expandFeature || feature === nameFeature || super.hasFeature(feature);
+        return feature === expandFeature || feature === nameFeature || feature === withEditLabelFeature || super.hasFeature(feature);
     }
 }
+
+export class EditableSLabel extends SLabel implements EditableLabel {
+    hasFeature(feature: symbol) {
+        return feature === editLabelFeature || super.hasFeature(feature);
+    }
+}
+export class ClassLabel extends EditableSLabel { }
+export class PropertyLabel extends EditableSLabel { }
 
 export class Icon extends SShapeElement {
     size = {

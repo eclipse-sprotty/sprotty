@@ -14,32 +14,115 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from "../../base/actions/action";
+import { inject } from "inversify";
+import { Action, isAction } from "../../base/actions/action";
+import { CommandExecutionContext, CommandResult, Command } from "../../base/commands/command";
 import { SModelElement } from "../../base/model/smodel";
+import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
-import { SLabel } from "../../graph/sgraph";
-import { SModelExtension } from "../../base/model/smodel-extension";
-
-export const editLabelFeature = Symbol('editLabelFeature');
-
-export interface EditableLabel extends SModelExtension {
-}
-
-export function isEditableLabel<T extends SModelElement>(element: T): element is T & EditableLabel {
-    return element instanceof SLabel && element.hasFeature(editLabelFeature);
-}
+import { KeyListener } from "../../base/views/key-tool";
+import { matchesKeystroke } from "../../utils/keyboard";
+import { isSelectable } from "../select/model";
+import { toArray } from "../../utils/iterable";
+import { EditableLabel, isEditableLabel, isWithEditableLabel } from "./model";
 
 export class EditLabelAction implements Action {
     static KIND = 'EditLabel';
     kind = EditLabelAction.KIND;
-    constructor(readonly labelId: string) {}
+    constructor(readonly labelId: string) { }
 }
+
+export function isEditLabelAction(element?: any): element is EditLabelAction {
+    return isAction(element) && element.kind === EditLabelAction.KIND && 'labelId' in element;
+}
+
+export class ApplyLabelEditAction implements Action {
+    static KIND = 'ApplyLabelEdit';
+    kind = ApplyLabelEditAction.KIND;
+    constructor(readonly labelId: string, readonly text: string) { }
+}
+
+export class ResolvedLabelEdit {
+    label: EditableLabel;
+    oldLabel: string;
+    newLabel: string;
+}
+
+export class ApplyLabelEditCommand extends Command {
+    static KIND = ApplyLabelEditAction.KIND;
+
+    resolvedLabelEdit: ResolvedLabelEdit;
+
+    constructor(@inject(TYPES.Action) public action: ApplyLabelEditAction) {
+        super();
+    }
+
+    execute(context: CommandExecutionContext): CommandResult {
+        const index = context.root.index;
+        const label = index.getById(this.action.labelId);
+        if (label && isEditableLabel(label)) {
+            this.resolvedLabelEdit = { label, oldLabel: label.text, newLabel: this.action.text };
+            label.text = this.action.text;
+        }
+        return context.root;
+    }
+
+    undo(context: CommandExecutionContext): CommandResult {
+        if (this.resolvedLabelEdit) {
+            this.resolvedLabelEdit.label.text = this.resolvedLabelEdit.oldLabel;
+        }
+        return context.root;
+    }
+
+    redo(context: CommandExecutionContext): CommandResult {
+        if (this.resolvedLabelEdit) {
+            this.resolvedLabelEdit.label.text = this.resolvedLabelEdit.newLabel;
+        }
+        return context.root;
+    }
+
+}
+
+export interface IEditLabelValidator {
+    validate(value: string, label: EditableLabel & SModelElement): Promise<EditLabelValidationResult>;
+}
+
+export interface EditLabelValidationResult {
+    readonly severity: Severity;
+    readonly message?: string;
+}
+
+export type Severity = 'ok' | 'warning' | 'error';
 
 export class EditLabelMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
-        if (target instanceof SLabel && isEditableLabel(target)) {
-            return [new EditLabelAction(target.id)];
+        const editableLabel = getEditableLabel(target);
+        if (editableLabel) {
+            return [new EditLabelAction(editableLabel.id)];
         }
         return [];
     }
+}
+
+export class EditLabelKeyListener extends KeyListener {
+    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+        if (matchesKeystroke(event, 'F2')) {
+            const editableLabels = toArray(element.index.all()
+                .filter(e => isSelectable(e) && e.selected)).map(getEditableLabel)
+                .filter((e): e is EditableLabel & SModelElement => e !== undefined);
+            if (editableLabels.length === 1) {
+                return [new EditLabelAction(editableLabels[0].id)];
+            }
+        }
+        return [];
+    }
+}
+
+export function getEditableLabel(element: SModelElement): EditableLabel & SModelElement | undefined {
+    if (isEditableLabel(element)) {
+        return element;
+    } else if (isWithEditableLabel(element) && element.editableLabel) {
+        return element.editableLabel;
+    }
+    return undefined;
 }
