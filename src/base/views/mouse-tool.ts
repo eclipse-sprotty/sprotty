@@ -16,13 +16,16 @@
 
 import { inject, injectable, multiInject, optional } from "inversify";
 import { VNode } from "snabbdom/vnode";
-import { TYPES } from "../types";
+import { Action, isAction } from "../actions/action";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../model/smodel";
-import { Action, isAction } from "../actions/action";
+import { TYPES } from "../types";
+import { DOMHelper } from "./dom-helper";
 import { IVNodeDecorator } from "./vnode-decorators";
 import { on } from "./vnode-utils";
-import { DOMHelper } from "./dom-helper";
+import { findParentByFeature } from "../model/smodel-utils";
+import { isViewport } from "../../features/viewport/model";
+import { Point } from "../../utils/geometry";
 
 @injectable()
 export class MouseTool implements IVNodeDecorator {
@@ -195,5 +198,26 @@ export class MouseListener {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         return vnode;
+    }
+}
+
+@injectable()
+export class MousePositionTracker extends MouseListener {
+
+    protected lastPosition: Point | undefined;
+
+    mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        const viewport = findParentByFeature(target, isViewport);
+        if (viewport) {
+            this.lastPosition = {
+                x: viewport.scroll.x + (event.offsetX / viewport.zoom),
+                y: viewport.scroll.y + (event.offsetY / viewport.zoom)
+            };
+        }
+        return [];
+    }
+
+    get lastPositionOnDiagram(): Point | undefined {
+        return this.lastPosition;
     }
 }

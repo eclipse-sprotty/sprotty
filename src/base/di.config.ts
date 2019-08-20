@@ -26,7 +26,7 @@ import { SModelFactory, SModelRegistry } from './model/smodel-factory';
 import { AnimationFrameSyncer } from "./animations/animation-frame-syncer";
 import { IViewer, Viewer, ModelRenderer } from "./views/viewer";
 import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options";
-import { MouseTool, PopupMouseTool } from "./views/mouse-tool";
+import { MouseTool, PopupMouseTool, MousePositionTracker } from "./views/mouse-tool";
 import { KeyTool } from "./views/key-tool";
 import { FocusFixDecorator, IVNodeDecorator } from "./views/vnode-decorators";
 import { ViewRegistry } from "./views/view";
@@ -147,6 +147,10 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // UIExtension registry initialization ------------------------------------
     bind(TYPES.UIExtensionRegistry).to(UIExtensionRegistry).inSingletonScope();
     configureCommand({ bind, isBound }, SetUIExtensionVisibilityCommand);
+
+    // Tracker for last known mouse position on diagram ------------------------
+    bind(MousePositionTracker).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(MousePositionTracker);
 });
 
 export default defaultContainerModule;

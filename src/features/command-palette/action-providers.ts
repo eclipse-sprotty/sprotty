@@ -22,9 +22,10 @@ import { ILogger } from "../../utils/logging";
 import { isNameable, name } from "../nameable/model";
 import { SelectAction } from "../select/select";
 import { CenterAction } from "../viewport/center-fit";
+import { Point } from "../../utils/geometry";
 
 export interface ICommandPaletteActionProvider {
-    getActions(root: Readonly<SModelRoot>): Promise<LabeledAction[]>;
+    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point): Promise<LabeledAction[]>;
 }
 
 @injectable()
@@ -33,8 +34,8 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
     constructor(@multiInject(TYPES.ICommandPaletteActionProvider) @optional() protected actionProviders: ICommandPaletteActionProvider[] = []) {
     }
 
-    getActions(root: Readonly<SModelRoot>) {
-        const actionLists = this.actionProviders.map(provider => provider.getActions(root));
+    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point) {
+        const actionLists = this.actionProviders.map(provider => provider.getActions(root, text, lastMousePosition));
         return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc));
     }
 }
@@ -54,7 +55,7 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
 
     constructor(@inject(TYPES.ILogger) protected logger: ILogger) { }
 
-    getActions(root: Readonly<SModelRoot>) {
+    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point) {
         return Promise.resolve(this.createSelectActions(root));
     }
 

@@ -31,6 +31,10 @@
     font: inherit;
 }
 
+.command-palette-suggestions em {
+    font-weight: bold;
+}
+
 .command-palette-suggestions > div {
     padding: 0 4px;
 }

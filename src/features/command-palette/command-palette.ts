@@ -29,6 +29,7 @@ import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
 import { isSelectable } from "../select/model";
 import { CommandPaletteActionProviderRegistry, isLabeledAction, LabeledAction } from "./action-providers";
+import { MousePositionTracker } from "../../base/views/mouse-tool";
 
 
 // import of function autocomplete(...) doesn't work
@@ -42,9 +43,11 @@ export class CommandPalette extends AbstractUIExtension {
 
     readonly id = CommandPalette.ID;
     readonly containerClass = "command-palette";
+    readonly actionsLoadingClass = "autocomplete-loading";
     readonly xOffset = 20;
     readonly yOffset = 20;
     readonly defaultWidth = 400;
+    readonly debounceWaitMs = 200;
     protected inputElement: HTMLInputElement;
     protected autoCompleteResult: AutocompleteResult;
     protected contextActions?: LabeledAction[];
@@ -53,6 +56,7 @@ export class CommandPalette extends AbstractUIExtension {
     @inject(TYPES.ICommandPaletteActionProviderRegistry) protected actionProviderRegistry: CommandPaletteActionProviderRegistry;
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
+    @inject(MousePositionTracker) protected mousePositionTracker: MousePositionTracker;
 
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         super.show(root, ...contextElementIds);
@@ -101,24 +105,16 @@ export class CommandPalette extends AbstractUIExtension {
             input: this.inputElement,
             emptyMsg: "No commands available",
             className: "command-palette-suggestions",
+            debounceWaitMs: this.debounceWaitMs,
             minLength: -1,
-            fetch: (text: string, update: (items: LabeledAction[]) => void) => {
-                if (this.contextActions) {
-                    update(this.filterActions(text, this.contextActions));
-                } else {
-                    this.actionProviderRegistry.getActions(root)
-                        .then(actions => {
-                            this.contextActions = actions;
-                            update(this.filterActions(text, actions));
-                        })
-                        .catch((reason) =>
-                            this.logger.error(this, "Failed to obtain actions from command palette action providers", reason));
-                }
-            },
+            fetch: (text: string, update: (items: LabeledAction[]) => void) =>
+                this.updateAutoCompleteActions(update, text, root),
             onSelect: (item: LabeledAction) => {
                 this.executeAction(item);
                 this.hide();
             },
+            render: (item: LabeledAction, currentValue: string): HTMLDivElement | undefined =>
+                this.renderLabeledActionSuggestion(item, currentValue),
             customize: (input: HTMLInputElement, inputRect: ClientRect | DOMRect, container: HTMLDivElement, maxHeight: number) => {
                 // move container into our command palette container as this is already positioned correctly
                 if (this.containerElement) {
@@ -126,6 +122,33 @@ export class CommandPalette extends AbstractUIExtension {
                 }
             }
         };
+    }
+
+    protected updateAutoCompleteActions(update: (items: LabeledAction[]) => void, text: string, root: Readonly<SModelRoot>) {
+        this.inputElement.classList.add(this.actionsLoadingClass);
+        if (this.contextActions) {
+            update(this.filterActions(text, this.contextActions));
+            this.inputElement.classList.remove(this.actionsLoadingClass);
+        } else {
+            this.actionProviderRegistry.getActions(root, text, this.mousePositionTracker.lastPositionOnDiagram)
+                .then(actions => {
+                    this.contextActions = actions;
+                    update(this.filterActions(text, actions));
+                    this.inputElement.classList.remove(this.actionsLoadingClass);
+                })
+                .catch((reason) => {
+                    this.logger.error(this, "Failed to obtain actions from command palette action providers", reason);
+                    this.inputElement.classList.remove(this.actionsLoadingClass);
+                });
+        }
+    }
+
+    protected renderLabeledActionSuggestion(item: LabeledAction, value: string) {
+        const itemElement = document.createElement("div");
+        const wordMatcher = value.split(" ").join("|");
+        const regex = new RegExp(wordMatcher, "gi");
+        itemElement.innerHTML = item.label.replace(regex, (match) => "<em>" + match + "</em>");
+        return itemElement;
     }
 
     protected filterActions(filterText: string, actions: LabeledAction[]): LabeledAction[] {
