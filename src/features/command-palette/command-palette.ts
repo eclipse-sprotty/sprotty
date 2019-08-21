@@ -147,8 +147,15 @@ export class CommandPalette extends AbstractUIExtension {
         const itemElement = document.createElement("div");
         const wordMatcher = value.split(" ").join("|");
         const regex = new RegExp(wordMatcher, "gi");
-        itemElement.innerHTML = item.label.replace(regex, (match) => "<em>" + match + "</em>");
+        if (item.icon) {
+            this.renderIcon(itemElement, item.icon);
+        }
+        itemElement.innerHTML += item.label.replace(regex, (match) => "<em>" + match + "</em>");
         return itemElement;
+    }
+
+    protected renderIcon(itemElement: HTMLDivElement, icon: string) {
+        itemElement.innerHTML += `<span class="icon fa ${icon}"></span>`;
     }
 
     protected filterActions(filterText: string, actions: LabeledAction[]): LabeledAction[] {

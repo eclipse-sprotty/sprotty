@@ -41,7 +41,7 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
 }
 
 export class LabeledAction {
-    constructor(readonly label: string, readonly actions: Action[]) { }
+    constructor(readonly label: string, readonly actions: Action[], readonly icon?: string) { }
 }
 
 export function isLabeledAction(element: any): element is LabeledAction {
@@ -62,6 +62,6 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
     createSelectActions(modelRoot: SModelRoot): LabeledAction[] {
         const nameables = toArray(modelRoot.index.all().filter(element => isNameable(element)));
         return nameables.map(nameable => new LabeledAction(`Reveal ${name(nameable)}`,
-            [new SelectAction([nameable.id]), new CenterAction([nameable.id])]));
+            [new SelectAction([nameable.id]), new CenterAction([nameable.id])], 'fa-eye'));
     }
 }
