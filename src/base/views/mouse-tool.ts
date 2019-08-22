@@ -23,8 +23,6 @@ import { TYPES } from "../types";
 import { DOMHelper } from "./dom-helper";
 import { IVNodeDecorator } from "./vnode-decorators";
 import { on } from "./vnode-utils";
-import { findParentByFeature } from "../model/smodel-utils";
-import { isViewport } from "../../features/viewport/model";
 import { Point } from "../../utils/geometry";
 
 @injectable()
@@ -33,7 +31,7 @@ export class MouseTool implements IVNodeDecorator {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
-    constructor(@multiInject(TYPES.MouseListener)@optional() protected mouseListeners: MouseListener[] = []) {}
+    constructor(@multiInject(TYPES.MouseListener) @optional() protected mouseListeners: MouseListener[] = []) { }
 
     register(mouseListener: MouseListener) {
         this.mouseListeners.push(mouseListener);
@@ -45,7 +43,7 @@ export class MouseTool implements IVNodeDecorator {
             this.mouseListeners.splice(index, 1);
     }
 
-    protected getTargetElement(model: SModelRoot, event: MouseEvent): SModelElement |undefined {
+    protected getTargetElement(model: SModelRoot, event: MouseEvent): SModelElement | undefined {
         let target = event.target as Element;
         const index = model.index;
         while (target) {
@@ -152,7 +150,7 @@ export class MouseTool implements IVNodeDecorator {
 
 @injectable()
 export class PopupMouseTool extends MouseTool {
-    constructor(@multiInject(TYPES.PopupMouseListener)@optional() protected mouseListeners: MouseListener[] = []) {
+    constructor(@multiInject(TYPES.PopupMouseListener) @optional() protected mouseListeners: MouseListener[] = []) {
         super(mouseListeners);
     }
 }
@@ -207,16 +205,14 @@ export class MousePositionTracker extends MouseListener {
     protected lastPosition: Point | undefined;
 
     mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
-        const viewport = findParentByFeature(target, isViewport);
-        if (viewport) {
-            this.lastPosition = {
-                x: viewport.scroll.x + (event.offsetX / viewport.zoom),
-                y: viewport.scroll.y + (event.offsetY / viewport.zoom)
-            };
-        }
+        this.lastPosition = target.root.parentToLocal({ x: event.offsetX, y: event.offsetY });
         return [];
     }
 
+    /**
+     * Returns the last tracked mouse cursor position relative to the diagram root or `undefined`
+     * if no mouse cursor position was ever tracked yet.
+     */
     get lastPositionOnDiagram(): Point | undefined {
         return this.lastPosition;
     }
