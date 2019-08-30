@@ -18,9 +18,10 @@ import "reflect-metadata";
 import "mocha";
 import { expect } from "chai";
 import { Container, injectable } from "inversify";
+import { Deferred } from "../utils/async";
 import { TYPES } from "../base/types";
 import { SModelRootSchema } from "../base/model/smodel";
-import { Action } from "../base/actions/action";
+import { Action, RequestAction, ResponseAction, isResponseAction } from "../base/actions/action";
 import { SetModelAction } from "../base/features/set-model";
 import { ViewerOptions, overrideViewerOptions } from "../base/views/viewer-options";
 import { ComputedBoundsAction, RequestBoundsAction } from "../features/bounds/bounds-manipulation";
@@ -34,6 +35,7 @@ describe('LocalModelSource', () => {
     @injectable()
     class MockActionDispatcher implements IActionDispatcher {
         readonly actions: Action[] = [];
+        readonly requests: { requestId: string, deferred: Deferred<ResponseAction> }[] = [];
 
         dispatchAll(actions: Action[]): Promise<void> {
             for (const action of actions) {
@@ -43,8 +45,26 @@ describe('LocalModelSource', () => {
         }
 
         dispatch(action: Action): Promise<void> {
+            if (isResponseAction(action)) {
+                const request = this.requests.find(r => r.requestId === action.responseId);
+                if (request !== undefined) {
+                    request.deferred.resolve(action);
+                    return Promise.resolve();
+                }
+                return Promise.reject(`No matching request for response ${action}`);
+            }
             this.actions.push(action);
             return Promise.resolve();
+        }
+
+        request<Req extends RequestAction<Res>, Res extends ResponseAction>(action: Req): Promise<Res> {
+            if (!action.requestId) {
+                return Promise.reject(new Error('Request without requestId'));
+            }
+            const deferred = new Deferred<Res>();
+            this.requests.push({ requestId: action.requestId, deferred });
+            this.dispatch(action);
+            return deferred.promise;
         }
     }
 
@@ -88,7 +108,7 @@ describe('LocalModelSource', () => {
         expect(action1.newRoot).to.equal(root2);
     });
 
-    it('requests bounds in dynamic mode', () => {
+    it('requests bounds in dynamic mode', async () => {
         const container = setup({ needsClientLayout: true });
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
@@ -103,13 +123,14 @@ describe('LocalModelSource', () => {
                 }
             ]
         };
-        modelSource.setModel(root1);
-        modelSource.handle(new ComputedBoundsAction([
+        const promise1 = modelSource.setModel(root1);
+        expect(dispatcher.requests).to.have.lengthOf(1);
+        dispatcher.dispatch(new ComputedBoundsAction([
             {
                 elementId: 'child1',
                 newBounds: { x: 10, y: 10, width: 20, height: 20 }
             }
-        ]));
+        ], undefined, undefined, dispatcher.requests[0].requestId));
         const root2: SModelRootSchema = {
             type: 'root',
             id: 'root',
@@ -120,13 +141,17 @@ describe('LocalModelSource', () => {
                 }
             ]
         };
-        modelSource.updateModel(root2);
-        modelSource.handle(new ComputedBoundsAction([
+        await promise1;
+
+        const promise2 = modelSource.updateModel(root2);
+        expect(dispatcher.requests).to.have.lengthOf(2);
+        dispatcher.dispatch(new ComputedBoundsAction([
             {
                 elementId: 'bar',
                 newBounds: { x: 10, y: 10, width: 20, height: 20 }
             }
-        ]));
+        ], undefined, undefined, dispatcher.requests[1].requestId));
+        await promise2;
 
         expect(dispatcher.actions).to.have.lengthOf(4);
         const action0 = dispatcher.actions[0] as RequestBoundsAction;
@@ -257,9 +282,10 @@ describe('LocalModelSource', () => {
             children: [{ type: 'node', id: 'child1' }]
         };
         const promise1 = modelSource.setModel(root1);
-        modelSource.handle(new ComputedBoundsAction([
+        expect(dispatcher.requests).to.have.lengthOf(1);
+        dispatcher.dispatch(new ComputedBoundsAction([
             { elementId: 'child1', newBounds: { x: 10, y: 10, width: 20, height: 20 } }
-        ]));
+        ], undefined, undefined, dispatcher.requests[0].requestId));
         await promise1;
 
         const root2: SModelRootSchema = {
@@ -268,9 +294,10 @@ describe('LocalModelSource', () => {
             children: [{ type: 'node', id: 'bar' }]
         };
         const promise2 = modelSource.updateModel(root2);
-        modelSource.handle(new ComputedBoundsAction([
+        expect(dispatcher.requests).to.have.lengthOf(2);
+        dispatcher.dispatch(new ComputedBoundsAction([
             { elementId: 'bar', newBounds: { x: 10, y: 10, width: 20, height: 20 } }
-        ]));
+        ], undefined, undefined, dispatcher.requests[1].requestId));
         await promise2;
 
         expect(dispatcher.actions).to.have.lengthOf(4);

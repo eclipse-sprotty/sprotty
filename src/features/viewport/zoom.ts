@@ -19,7 +19,7 @@ import { MouseListener } from "../../base/views/mouse-tool";
 import { Action } from "../../base/actions/action";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from "../../base/model/smodel-utils";
-import { ViewportAction } from "./viewport";
+import { SetViewportAction } from "./viewport";
 import { isViewport, Viewport } from "./model";
 
 export interface Zoomable extends SModelExtension {
@@ -53,7 +53,7 @@ export class ZoomMouseListener extends MouseListener {
                 },
                 zoom: viewport.zoom * newZoom
             };
-            return [new ViewportAction(viewport.id, newViewport, false)];
+            return [new SetViewportAction(viewport.id, newViewport, false)];
         }
         return [];
     }

@@ -14,16 +14,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { ORIGIN_POINT, Bounds } from "../../utils/geometry";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
-import { Action } from "../../base/actions/action";
-import { MergeableCommand, ICommand, CommandExecutionContext } from "../../base/commands/command";
+import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
+import { MergeableCommand, ICommand, CommandExecutionContext, CommandResult } from "../../base/commands/command";
 import { Animation } from "../../base/animations/animation";
 import { isViewport, Viewport } from "./model";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../base/types";
+import { ModelRequestCommand } from "../../base/commands/request-command";
 
-export class ViewportAction implements Action {
-    kind = ViewportCommand.KIND;
+export class SetViewportAction implements Action {
+    static readonly KIND = 'viewport';
+    kind = SetViewportAction.KIND;
 
     constructor(public readonly elementId: string,
                 public readonly newViewport: Viewport,
@@ -31,20 +34,41 @@ export class ViewportAction implements Action {
     }
 }
 
+export class GetViewportAction implements RequestAction<ViewportResult> {
+    static readonly KIND = 'getViewport';
+    kind = GetViewportAction.KIND;
+
+    constructor(public readonly requestId: string = '') {}
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(): RequestAction<ViewportResult> {
+        return new GetViewportAction(generateRequestId());
+    }
+}
+
+export class ViewportResult implements ResponseAction {
+    static readonly KIND = 'viewportResult';
+    kind = ViewportResult.KIND;
+
+    constructor(public readonly viewport: Viewport,
+                public readonly canvasBounds: Bounds,
+                public readonly responseId: string) {}
+}
+
 @injectable()
-export class ViewportCommand extends MergeableCommand {
-    static readonly KIND = 'viewport';
+export class SetViewportCommand extends MergeableCommand {
+    static readonly KIND = SetViewportAction.KIND;
 
     protected element: SModelElement & Viewport;
     protected oldViewport: Viewport;
     protected newViewport: Viewport;
 
-    constructor(@inject(TYPES.Action) protected action: ViewportAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetViewportAction) {
         super();
         this.newViewport = action.newViewport;
     }
 
-    execute( context: CommandExecutionContext) {
+    execute(context: CommandExecutionContext): CommandResult {
         const model = context.root;
         const element = model.index.getById(this.action.elementId);
         if (element && isViewport(element)) {
@@ -63,20 +87,39 @@ export class ViewportCommand extends MergeableCommand {
         return model;
     }
 
-    undo(context: CommandExecutionContext) {
+    undo(context: CommandExecutionContext): CommandResult {
         return new ViewportAnimation(this.element, this.newViewport, this.oldViewport, context).start();
     }
 
-    redo(context: CommandExecutionContext) {
+    redo(context: CommandExecutionContext): CommandResult {
         return new ViewportAnimation(this.element, this.oldViewport, this.newViewport, context).start();
     }
 
-    merge(command: ICommand, context: CommandExecutionContext) {
-        if (!this.action.animate && command instanceof ViewportCommand && this.element === command.element) {
+    merge(command: ICommand, context: CommandExecutionContext): boolean {
+        if (!this.action.animate && command instanceof SetViewportCommand && this.element === command.element) {
             this.newViewport = command.newViewport;
             return true;
         }
         return false;
+    }
+}
+
+export class GetViewportCommand extends ModelRequestCommand {
+    static readonly KIND = GetViewportAction.KIND;
+
+    constructor(@inject(TYPES.Action) protected readonly action: GetViewportAction) {
+        super();
+    }
+
+    protected retrieveResult(context: CommandExecutionContext): ResponseAction {
+        const elem = context.root;
+        let viewport: Viewport;
+        if (isViewport(elem)) {
+            viewport = { scroll: elem.scroll, zoom: elem.zoom };
+        } else {
+            viewport = { scroll: ORIGIN_POINT, zoom: 1 };
+        }
+        return new ViewportResult(viewport, elem.canvasBounds, this.action.requestId);
     }
 }
 

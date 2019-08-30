@@ -17,16 +17,15 @@
 import { Bounds, Point, isBounds, isValidDimension } from "../../utils/geometry";
 import { SModelRoot, SModelIndex, SModelElement } from '../../base/model/smodel';
 import { Viewport, viewportFeature } from "./model";
-import { Exportable, exportFeature } from "../export/model";
+import { exportFeature } from "../export/model";
 
 /**
  * Model root element that defines a viewport, so it transforms the coordinate system with
  * a `scroll` translation and a `zoom` scaling.
  */
-export class ViewportRootElement extends SModelRoot implements Viewport, Exportable {
+export class ViewportRootElement extends SModelRoot implements Viewport {
     scroll: Point = { x: 0, y: 0 };
     zoom: number = 1;
-    export: boolean = false;
 
     constructor(index?: SModelIndex<SModelElement>) {
         super(index);

@@ -18,7 +18,7 @@ import { Bounds, center, combine, isValidDimension } from "../../utils/geometry"
 import { matchesKeystroke } from "../../utils/keyboard";
 import { SChildElement } from '../../base/model/smodel';
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { KeyListener } from "../../base/views/key-tool";
 import { isBoundsAware } from "../bounds/model";
@@ -35,7 +35,8 @@ import { TYPES } from "../../base/types";
  * viewport change programmatically.
  */
 export class CenterAction implements Action {
-    readonly kind = CenterCommand.KIND;
+    static readonly KIND = 'center';
+    readonly kind = CenterAction.KIND;
 
     constructor(public readonly elementIds: string[],
                 public readonly animate: boolean = true) {
@@ -49,7 +50,8 @@ export class CenterAction implements Action {
  * to perform such a viewport change programmatically.
  */
 export class FitToScreenAction implements Action {
-    readonly kind = FitToScreenCommand.KIND;
+    static readonly KIND = 'fit';
+    readonly kind = FitToScreenAction.KIND;
 
     constructor(public readonly elementIds: string[],
                 public readonly padding?: number,
@@ -117,12 +119,12 @@ export abstract class BoundsAwareViewportCommand extends Command {
 
     protected abstract getElementIds(): string[];
 
-    execute(context: CommandExecutionContext) {
+    execute(context: CommandExecutionContext): CommandResult {
         this.initialize(context.root);
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext) {
+    undo(context: CommandExecutionContext): CommandResult {
         const model = context.root;
         if (isViewport(model) && this.newViewport !== undefined && !this.equal(this.newViewport, this.oldViewport)) {
             if (this.animate)
@@ -135,7 +137,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
         return model;
     }
 
-    redo(context: CommandExecutionContext) {
+    redo(context: CommandExecutionContext): CommandResult {
         const model = context.root;
         if (isViewport(model) && this.newViewport !== undefined && !this.equal(this.newViewport, this.oldViewport)) {
             if (this.animate) {
@@ -154,7 +156,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
 }
 
 export class CenterCommand extends BoundsAwareViewportCommand {
-    static readonly KIND = 'center';
+    static readonly KIND = CenterAction.KIND;
 
     constructor(@inject(TYPES.Action) protected action: CenterAction) {
         super(action.animate);
@@ -180,9 +182,9 @@ export class CenterCommand extends BoundsAwareViewportCommand {
 }
 
 export class FitToScreenCommand extends BoundsAwareViewportCommand {
-    static readonly KIND = 'fit';
+    static readonly KIND = FitToScreenAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected action: FitToScreenAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: FitToScreenAction) {
         super(action.animate);
     }
 

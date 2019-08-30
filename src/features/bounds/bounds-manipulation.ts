@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { Bounds, Point } from "../../utils/geometry";
-import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
-import { Action } from "../../base/actions/action";
-import { CommandExecutionContext, HiddenCommand, SystemCommand } from "../../base/commands/command";
+import { SModelElement, SModelRootSchema } from "../../base/model/smodel";
+import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
+import { CommandExecutionContext, HiddenCommand, SystemCommand, DetailedCommandResult, CommandResult } from "../../base/commands/command";
 import { BoundsAware, isBoundsAware, Alignable } from './model';
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../base/types";
@@ -27,7 +27,8 @@ import { TYPES } from "../../base/types";
  * (or all) model elements.
  */
 export class SetBoundsAction implements Action {
-    readonly kind = SetBoundsCommand.KIND;
+    static readonly KIND: string  = 'setBounds';
+    readonly kind = SetBoundsAction.KIND;
 
     constructor(public readonly bounds: ElementAndBounds[]) {
     }
@@ -39,10 +40,16 @@ export class SetBoundsAction implements Action {
  * This hidden rendering round-trip is necessary if the client is responsible for parts of the layout
  * (see `needsClientLayout` viewer option).
  */
-export class RequestBoundsAction implements Action {
-    readonly kind = RequestBoundsCommand.KIND;
+export class RequestBoundsAction implements RequestAction<ComputedBoundsAction> {
+    static readonly KIND: string  = 'requestBounds';
+    readonly kind = RequestBoundsAction.KIND;
 
-    constructor(public readonly newRoot: SModelRootSchema) {
+    constructor(public readonly newRoot: SModelRootSchema,
+                public readonly requestId: string = '') {}
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(newRoot: SModelRootSchema): RequestAction<ComputedBoundsAction> {
+        return new RequestBoundsAction(newRoot, generateRequestId());
     }
 }
 
@@ -53,15 +60,14 @@ export class RequestBoundsAction implements Action {
  * received with this action. Otherwise there is no need to send the computed bounds to the server,
  * so they can be processed locally by the client.
  */
-export class ComputedBoundsAction implements Action {
+export class ComputedBoundsAction implements ResponseAction {
     static readonly KIND = 'computedBounds';
-
     readonly kind = ComputedBoundsAction.KIND;
 
     constructor(public readonly bounds: ElementAndBounds[],
                 public readonly revision?: number,
-                public readonly alignments?: ElementAndAlignment[]) {
-    }
+                public readonly alignments?: ElementAndAlignment[],
+                public readonly responseId = '') {}
 }
 
 /**
@@ -104,15 +110,15 @@ export interface ResolvedElementAndAlignment {
 
 @injectable()
 export class SetBoundsCommand extends SystemCommand {
-    static readonly KIND: string  = 'setBounds';
+    static readonly KIND: string  = SetBoundsAction.KIND;
 
     protected bounds: ResolvedElementAndBounds[] = [];
 
-    constructor(@inject(TYPES.Action) protected action: SetBoundsAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetBoundsAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext) {
+    execute(context: CommandExecutionContext): CommandResult {
         this.action.bounds.forEach(
             b => {
                 const element = context.root.index.getById(b.elementId);
@@ -128,14 +134,14 @@ export class SetBoundsCommand extends SystemCommand {
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext) {
+    undo(context: CommandExecutionContext): CommandResult {
         this.bounds.forEach(
             b => b.element.bounds = b.oldBounds
         );
         return context.root;
     }
 
-    redo(context: CommandExecutionContext) {
+    redo(context: CommandExecutionContext): CommandResult {
         this.bounds.forEach(
             b => b.element.bounds = b.newBounds
         );
@@ -145,14 +151,18 @@ export class SetBoundsCommand extends SystemCommand {
 
 @injectable()
 export class RequestBoundsCommand extends HiddenCommand {
-    static readonly KIND: string  = 'requestBounds';
+    static readonly KIND: string  = RequestBoundsAction.KIND;
 
     constructor(@inject(TYPES.Action) protected action: RequestBoundsAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
-        return context.modelFactory.createRoot(this.action.newRoot);
+    execute(context: CommandExecutionContext): DetailedCommandResult {
+        return {
+            model: context.modelFactory.createRoot(this.action.newRoot),
+            isChanged: true,
+            cause: this.action
+        };
     }
 
     get blockUntil(): (action: Action) => boolean {

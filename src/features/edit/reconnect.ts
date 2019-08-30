@@ -22,7 +22,8 @@ import { SRoutableElement } from "../routing/model";
 import { EdgeMemento, EdgeRouterRegistry } from "../routing/routing";
 
 export class ReconnectAction implements Action {
-    readonly kind =  ReconnectCommand.KIND;
+    static readonly KIND = 'reconnect';
+    readonly kind =  ReconnectAction.KIND;
 
     constructor(readonly routableId: string,
                 readonly newSourceId?: string,
@@ -31,13 +32,13 @@ export class ReconnectAction implements Action {
 
 @injectable()
 export class ReconnectCommand extends Command {
-    static KIND = 'reconnect';
+    static readonly KIND = ReconnectAction.KIND;
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
     memento: EdgeMemento | undefined;
 
-    constructor(@inject(TYPES.Action)readonly action: ReconnectAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ReconnectAction) {
         super();
     }
 

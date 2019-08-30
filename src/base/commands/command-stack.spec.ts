@@ -20,7 +20,7 @@ import { expect } from "chai";
 import { Container, injectable } from "inversify";
 import { TYPES } from "../types";
 import defaultModule from "../di.config";
-import { IViewer } from "../views/viewer";
+import { IViewerProvider } from "../views/viewer";
 import {
     Command, HiddenCommand, SystemCommand, CommandExecutionContext, CommandResult, MergeableCommand, PopupCommand
 } from './command';
@@ -139,21 +139,27 @@ describe('CommandStack', () => {
     let hiddenViewerUpdates: number = 0;
     let popupUpdates: number = 0;
 
-    const mockViewer: IViewer = {
-        update() {
-            ++viewerUpdates;
+    const mockViewerProvider: IViewerProvider = {
+        modelViewer: {
+            update() {
+                ++viewerUpdates;
+            }
         },
-        updateHidden() {
-            ++hiddenViewerUpdates;
+        hiddenModelViewer: {
+            update() {
+                ++hiddenViewerUpdates;
+            }
         },
-        updatePopup() {
-            ++popupUpdates;
+        popupModelViewer: {
+            update() {
+                ++popupUpdates;
+            }
         }
     };
 
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IViewer).toConstantValue(mockViewer);
+    container.rebind(TYPES.IViewerProvider).toConstantValue(mockViewerProvider);
 
     const commandStack = container.get<ICommandStack>(TYPES.ICommandStack);
 

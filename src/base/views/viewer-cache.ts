@@ -14,9 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, named } from "inversify";
+import { inject, injectable } from "inversify";
 import { SModelRoot } from "../model/smodel";
 import { TYPES } from "../types";
+import { Action } from "../actions/action";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer } from "./viewer";
 
@@ -28,55 +29,31 @@ import { IViewer } from "./viewer";
  */
 @injectable()
 export class ViewerCache implements IViewer {
-    @inject(TYPES.IViewer) @named('delegate') protected delegate: IViewer;
+
+    @inject(TYPES.IViewer) protected delegate: IViewer;
     @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer;
 
-    cachedModelRoot: SModelRoot | undefined;
-    cachedHiddenModelRoot: SModelRoot | undefined;
-    cachedPopup: SModelRoot | undefined;
+    protected cachedModel?: SModelRoot;
 
-    protected isCacheEmpty(): boolean {
-        return this.cachedModelRoot === undefined && this.cachedHiddenModelRoot === undefined &&
-            this.cachedPopup === undefined;
-    }
-
-    updatePopup(model: SModelRoot): void {
-        const isCacheEmpty = this.isCacheEmpty();
-        this.cachedPopup = model;
-        if (isCacheEmpty)
-            this.scheduleUpdate();
-    }
-
-    update(model: SModelRoot): void {
-        const isCacheEmpty = this.isCacheEmpty();
-        this.cachedModelRoot = model;
-        if (isCacheEmpty)
-            this.scheduleUpdate();
-    }
-
-    updateHidden(hiddenModel: SModelRoot): void {
-        const isCacheEmpty = this.isCacheEmpty();
-        this.cachedHiddenModelRoot = hiddenModel;
-        if (isCacheEmpty)
-            this.scheduleUpdate();
+    update(model: SModelRoot, cause?: Action): void {
+        if (cause !== undefined) {
+            // Forward the update immediately in order to pass the cause action
+            this.delegate.update(model, cause);
+            this.cachedModel = undefined;
+        } else {
+            const isCacheEmpty = this.cachedModel === undefined;
+            this.cachedModel = model;
+            if (isCacheEmpty) {
+                this.scheduleUpdate();
+            }
+        }
     }
 
     protected scheduleUpdate() {
         this.syncer.onEndOfNextFrame(() => {
-            if (this.cachedHiddenModelRoot) {
-                const nextHiddenModelRoot = this.cachedHiddenModelRoot;
-                this.delegate.updateHidden(nextHiddenModelRoot);
-                this.cachedHiddenModelRoot = undefined;
-            }
-            if (this.cachedModelRoot) {
-                const nextModelRoot = this.cachedModelRoot;
-                this.delegate.update(nextModelRoot);
-                this.cachedModelRoot = undefined;
-            }
-            if (this.cachedPopup) {
-                const nextModelRoot = this.cachedPopup;
-                this.delegate.updatePopup(nextModelRoot);
-                this.cachedPopup = undefined;
+            if (this.cachedModel) {
+                this.delegate.update(this.cachedModel);
+                this.cachedModel = undefined;
             }
         });
     }

@@ -18,7 +18,7 @@ import { inject, injectable, optional } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { Action } from "../../base/actions/action";
 import { Animation, CompoundAnimation } from "../../base/animations/animation";
-import { CommandExecutionContext, ICommand, MergeableCommand } from "../../base/commands/command";
+import { CommandExecutionContext, ICommand, MergeableCommand, CommandResult } from "../../base/commands/command";
 import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smodel';
 import { findParentByFeature, translatePoint } from "../../base/model/smodel-utils";
 import { TYPES } from "../../base/types";
@@ -73,14 +73,14 @@ export class MoveCommand extends MergeableCommand {
 
     @inject(EdgeRouterRegistry)@optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
-    resolvedMoves: Map<string, ResolvedElementMove> = new Map;
-    edgeMementi: EdgeMemento[] = [];
+    protected resolvedMoves: Map<string, ResolvedElementMove> = new Map;
+    protected edgeMementi: EdgeMemento[] = [];
 
-    constructor(@inject(TYPES.Action) protected action: MoveAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: MoveAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext) {
+    execute(context: CommandExecutionContext): CommandResult {
         const index = context.root.index;
         const edge2handleMoves = new Map<SRoutableElement, ResolvedHandleMove[]>();
         const attachedEdgeShifts = new Map<SRoutableElement, Point>();
@@ -197,14 +197,14 @@ export class MoveCommand extends MergeableCommand {
         });
     }
 
-    undo(context: CommandExecutionContext) {
+    undo(context: CommandExecutionContext): Promise<SModelRoot> {
         return new CompoundAnimation(context.root, context, [
             new MoveAnimation(context.root, this.resolvedMoves, context, true),
             new MorphEdgesAnimation(context.root, this.edgeMementi, context, true)
         ]).start();
     }
 
-    redo(context: CommandExecutionContext) {
+    redo(context: CommandExecutionContext): Promise<SModelRoot> {
         return new CompoundAnimation(context.root, context, [
             new MoveAnimation(context.root, this.resolvedMoves, context, false),
             new MorphEdgesAnimation(context.root, this.edgeMementi, context, false)

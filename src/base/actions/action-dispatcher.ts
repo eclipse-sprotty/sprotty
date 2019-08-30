@@ -17,18 +17,20 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
+import { Deferred } from "../../utils/async";
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { ICommandStack } from "../commands/command-stack";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { SetModelAction } from '../features/set-model';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
-import { Action, isAction } from "./action";
+import { Action, isAction, RequestAction, ResponseAction, isResponseAction } from './action';
 import { ActionHandlerRegistry } from "./action-handler";
 import { IDiagramLocker } from "./diagram-locker";
 
 export interface IActionDispatcher {
     dispatch(action: Action): Promise<void>
     dispatchAll(actions: Action[]): Promise<void>
+    request<Res extends ResponseAction>(action: RequestAction<Res>): Promise<Res>
 }
 
 /**
@@ -46,9 +48,10 @@ export class ActionDispatcher implements IActionDispatcher {
 
     protected actionHandlerRegistry: ActionHandlerRegistry;
 
+    protected initialized: Promise<void> | undefined;
     protected blockUntil?: (action: Action) => boolean;
     protected postponedActions: PostponedAction[] = [];
-    protected initialized: Promise<void> | undefined;
+    protected readonly requests: Map<string, Deferred<ResponseAction>> = new Map();
 
     initialize(): Promise<void> {
         if (!this.initialized) {
@@ -60,46 +63,81 @@ export class ActionDispatcher implements IActionDispatcher {
         return this.initialized;
     }
 
-    dispatchAll(actions: Action[]): Promise<void> {
-        return Promise.all(actions.map(action => this.dispatch(action))) as Promise<any>;
-    }
-
+    /**
+     * Dispatch an action by querying all handlers that are registered for its kind.
+     * The returned promise is resolved when all handler results (commands or actions)
+     * have been processed.
+     */
     dispatch(action: Action): Promise<void> {
         return this.initialize().then(() => {
             if (this.blockUntil !== undefined) {
                 return this.handleBlocked(action, this.blockUntil);
             } else if (this.diagramLocker.isAllowed(action)) {
-                if (action.kind === UndoAction.KIND) {
-                    return this.commandStack.undo().then(() => {});
-                } else if (action.kind === RedoAction.KIND) {
-                    return this.commandStack.redo().then(() => {});
-                } else {
-                    return this.handleAction(action);
-                }
+                return this.handleAction(action);
             }
             return undefined;
         });
     }
 
+    /**
+     * Calls `dispatch` on every action in the given array. The returned promise
+     * is resolved when the promises of all `dispatch` calls have been resolved.
+     */
+    dispatchAll(actions: Action[]): Promise<void> {
+        return Promise.all(actions.map(action => this.dispatch(action))) as Promise<any>;
+    }
+
+    /**
+     * Dispatch a request. The returned promise is resolved when a response with matching
+     * identifier is dispatched. That response is _not_ passed to the registered action
+     * handlers. Instead, it is the responsibility of the caller of this method to handle
+     * the response properly. For example, it can be sent to the registered handlers by
+     * passing it again to the `dispatch` method.
+     */
+    request<Res extends ResponseAction>(action: RequestAction<Res>): Promise<Res> {
+        if (!action.requestId) {
+            return Promise.reject(new Error('Request without requestId'));
+        }
+        const deferred = new Deferred<Res>();
+        this.requests.set(action.requestId, deferred);
+        this.dispatch(action);
+        return deferred.promise;
+    }
+
     protected handleAction(action: Action): Promise<void> {
-        this.logger.log(this, 'handle', action);
-        const handlers = this.actionHandlerRegistry.get(action.kind);
-        if (handlers.length > 0) {
-            const promises: Promise<any>[] = [];
-            for (const handler of handlers) {
-                const result = handler.handle(action);
-                if (isAction(result)) {
-                    promises.push(this.dispatch(result));
-                } else if (result !== undefined) {
-                    promises.push(this.commandStack.execute(result));
-                    this.blockUntil = result.blockUntil;
-                }
+        if (action.kind === UndoAction.KIND) {
+            return this.commandStack.undo().then(() => {});
+        }
+        if (action.kind === RedoAction.KIND) {
+            return this.commandStack.redo().then(() => {});
+        }
+        if (isResponseAction(action)) {
+            const deferred = this.requests.get(action.responseId);
+            if (deferred !== undefined) {
+                this.requests.delete(action.responseId);
+                deferred.resolve(action);
+                return Promise.resolve();
             }
-            return Promise.all(promises) as Promise<any>;
-        } else {
+            this.logger.log(this, 'No matching request for response', action);
+        }
+
+        const handlers = this.actionHandlerRegistry.get(action.kind);
+        if (handlers.length === 0) {
             this.logger.warn(this, 'Missing handler for action', action);
             return Promise.reject(`Missing handler for action '${action.kind}'`);
         }
+        this.logger.log(this, 'Handle', action);
+        const promises: Promise<any>[] = [];
+        for (const handler of handlers) {
+            const result = handler.handle(action);
+            if (isAction(result)) {
+                promises.push(this.dispatch(result));
+            } else if (result !== undefined) {
+                promises.push(this.commandStack.execute(result));
+                this.blockUntil = result.blockUntil;
+            }
+        }
+        return Promise.all(promises) as Promise<any>;
     }
 
     protected handleBlocked(action: Action, predicate: (action: Action) => boolean): Promise<void> {

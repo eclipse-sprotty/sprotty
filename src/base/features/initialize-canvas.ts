@@ -22,7 +22,7 @@ import { Action } from '../actions/action';
 import { IActionDispatcher } from '../actions/action-dispatcher';
 import { IVNodeDecorator } from "../views/vnode-decorators";
 import { SModelElement, SModelRoot } from "../model/smodel";
-import { SystemCommand, CommandExecutionContext } from '../commands/command';
+import { SystemCommand, CommandExecutionContext, CommandResult } from '../commands/command';
 
 /**
  * Grabs the bounds from the root element in page coordinates and fires a
@@ -73,7 +73,8 @@ export class CanvasBoundsInitializer implements IVNodeDecorator {
 }
 
 export class InitializeCanvasBoundsAction implements Action {
-    readonly kind = InitializeCanvasBoundsCommand.KIND;
+    static readonly KIND: string  = 'initializeCanvasBounds';
+    readonly kind = InitializeCanvasBoundsAction.KIND;
 
     constructor(public readonly newCanvasBounds: Bounds) {
     }
@@ -81,25 +82,25 @@ export class InitializeCanvasBoundsAction implements Action {
 
 @injectable()
 export class InitializeCanvasBoundsCommand extends SystemCommand {
-    static readonly KIND: string  = 'initializeCanvasBounds';
+    static readonly KIND: string = InitializeCanvasBoundsAction.KIND;
 
     private newCanvasBounds: Bounds;
 
-    constructor(@inject(TYPES.Action) protected action: InitializeCanvasBoundsAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: InitializeCanvasBoundsAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext) {
+    execute(context: CommandExecutionContext): CommandResult {
         this.newCanvasBounds = this.action.newCanvasBounds;
         context.root.canvasBounds = this.newCanvasBounds;
         return context.root;
     }
 
-    undo(context: CommandExecutionContext) {
+    undo(context: CommandExecutionContext): CommandResult {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext) {
+    redo(context: CommandExecutionContext): CommandResult {
         return context.root;
     }
 }

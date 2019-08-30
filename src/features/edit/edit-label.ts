@@ -37,8 +37,9 @@ export function isEditLabelAction(element?: any): element is EditLabelAction {
 }
 
 export class ApplyLabelEditAction implements Action {
-    static KIND = 'ApplyLabelEdit';
+    static readonly KIND = 'applyLabelEdit';
     kind = ApplyLabelEditAction.KIND;
+
     constructor(readonly labelId: string, readonly text: string) { }
 }
 
@@ -49,11 +50,11 @@ export class ResolvedLabelEdit {
 }
 
 export class ApplyLabelEditCommand extends Command {
-    static KIND = ApplyLabelEditAction.KIND;
+    static readonly KIND = ApplyLabelEditAction.KIND;
 
-    resolvedLabelEdit: ResolvedLabelEdit;
+    protected resolvedLabelEdit: ResolvedLabelEdit;
 
-    constructor(@inject(TYPES.Action) public action: ApplyLabelEditAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ApplyLabelEditAction) {
         super();
     }
 

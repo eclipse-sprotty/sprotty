@@ -21,7 +21,7 @@ import { ICommand } from "../../base/commands/command";
 import { SetPopupModelAction, SetPopupModelCommand } from "./hover";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
 import { CenterCommand, FitToScreenCommand } from "../viewport/center-fit";
-import { ViewportCommand } from "../viewport/viewport";
+import { SetViewportCommand } from "../viewport/viewport";
 import { MoveCommand } from "../move/move";
 
 class ClosePopupActionHandler implements IActionHandler {
@@ -42,7 +42,7 @@ export class PopupActionHandlerInitializer implements IActionHandlerInitializer 
         const closePopupActionHandler = new ClosePopupActionHandler();
         registry.register(FitToScreenCommand.KIND, closePopupActionHandler);
         registry.register(CenterCommand.KIND, closePopupActionHandler);
-        registry.register(ViewportCommand.KIND, closePopupActionHandler);
+        registry.register(SetViewportCommand.KIND, closePopupActionHandler);
         registry.register(SetPopupModelCommand.KIND, closePopupActionHandler);
         registry.register(MoveCommand.KIND, closePopupActionHandler);
     }

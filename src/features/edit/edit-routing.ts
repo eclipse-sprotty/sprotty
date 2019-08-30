@@ -25,7 +25,8 @@ import { EdgeRouterRegistry } from "../routing/routing";
 import { canEditRouting } from './model';
 
 export class SwitchEditModeAction implements Action {
-    kind = SwitchEditModeCommand.KIND;
+    static readonly KIND: string = "switchEditMode";
+    kind = SwitchEditModeAction.KIND;
 
     constructor(public readonly elementsToActivate: string[] = [],
                 public readonly elementsToDeactivate: string[] = []) {
@@ -34,20 +35,19 @@ export class SwitchEditModeAction implements Action {
 
 @injectable()
 export class SwitchEditModeCommand extends Command {
+    static readonly KIND: string = SwitchEditModeAction.KIND;
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
-
-    static KIND: string = "switchEditMode";
 
     protected elementsToActivate: SModelElement[] = [];
     protected elementsToDeactivate: SModelElement[] = [];
     protected handlesToRemove: { handle: SRoutingHandle, parent: SRoutableElement, point?: Point }[] = [];
 
-    constructor(@inject(TYPES.Action) public action: SwitchEditModeAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SwitchEditModeAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): CommandResult {
         const index = context.root.index;
         this.action.elementsToActivate.forEach(id => {
             const element = index.getById(id);

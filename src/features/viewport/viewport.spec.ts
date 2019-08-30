@@ -24,7 +24,7 @@ import { ConsoleLogger } from '../../utils/logging';
 import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
 import { CommandExecutionContext } from '../../base/commands/command';
 import { SGraphFactory } from '../../graph/sgraph-factory';
-import { ViewportAction, ViewportCommand } from './viewport';
+import { SetViewportAction, SetViewportCommand } from './viewport';
 import { Viewport } from './model';
 import { ViewportRootElement } from './viewport-root';
 import defaultModule from "../../base/di.config";
@@ -43,8 +43,8 @@ describe('BoundsAwareViewportCommand', () => {
 
     const newViewportData: Viewport = { scroll: { x: 100, y: 100 }, zoom: 10 };
 
-    const viewportAction = new ViewportAction(viewport.id, newViewportData, false);
-    const cmd = new ViewportCommand(viewportAction);
+    const viewportAction = new SetViewportAction(viewport.id, newViewportData, false);
+    const cmd = new SetViewportCommand(viewportAction);
 
     const context: CommandExecutionContext = {
         root: viewport,

@@ -36,7 +36,8 @@ import { TYPES } from "../../base/types";
  * this behaves the same as a SetModelAction. The transition from the old model to the new one can be animated.
  */
 export class UpdateModelAction implements Action {
-    readonly kind = UpdateModelCommand.KIND;
+    static readonly KIND = 'updateModel';
+    readonly kind = UpdateModelAction.KIND;
 
     public readonly newRoot?: SModelRootSchema;
     public readonly matches?: Match[];
@@ -58,12 +59,12 @@ export interface UpdateAnimationData {
 
 @injectable()
 export class UpdateModelCommand extends Command {
-    static readonly KIND = 'updateModel';
+    static readonly KIND = UpdateModelAction.KIND;
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(@inject(TYPES.Action) public action: UpdateModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: UpdateModelAction) {
         super();
     }
 

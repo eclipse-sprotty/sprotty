@@ -31,7 +31,8 @@ export function isDeletable<T extends SModelElement>(element: T): element is T &
 }
 
 export class DeleteElementAction implements Action {
-    kind = DeleteElementCommand.KIND;
+    static readonly KIND = 'delete';
+    kind = DeleteElementAction.KIND;
 
     constructor(readonly elementIds: string[]) {}
 }
@@ -43,11 +44,11 @@ export class ResolvedDelete {
 
 @injectable()
 export class DeleteElementCommand extends Command {
-    static readonly KIND = 'delete';
+    static readonly KIND = DeleteElementAction.KIND;
 
     resolvedDeletes: ResolvedDelete[] = [];
 
-    constructor(@inject(TYPES.Action) readonly action: DeleteElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: DeleteElementAction) {
         super();
     }
 

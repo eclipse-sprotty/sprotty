@@ -52,14 +52,22 @@ export interface ICommand {
 }
 
 /**
- * Commands return the changed model or a Promise for it. The latter
- * serves animating commands to render some intermediate states before
+ * Commands return the changed model or a Promise for it. Promises
+ * serve animating commands to render some intermediate states before
  * finishing. The CommandStack is in charge of chaining these promises,
  * such that they run sequentially only one at a time. Due to that
  * chaining, it is essential that a command does not make any assumption
  * on the state of the model before execute() is called.
  */
-export type CommandResult = SModelRoot | Promise<SModelRoot>;
+export type CommandResult = SModelRoot | Promise<SModelRoot> | DetailedCommandResult;
+
+/**
+ * The `DetailedCommandResult` allows to specify whether the model has changed
+ * and the original action that caused the command to be executed. In case such
+ * an action is given, it is passed to the viewer in order to link any
+ * subsequent response action to the original request.
+ */
+export type DetailedCommandResult = { model: SModelRoot, isChanged: boolean, cause?: Action };
 
 /**
  * Base class for all commands.
@@ -125,7 +133,7 @@ export abstract class MergeableCommand extends Command {
  */
 @injectable()
 export abstract class HiddenCommand extends Command {
-    abstract execute(context: CommandExecutionContext): SModelRoot;
+    abstract execute(context: CommandExecutionContext): SModelRoot | DetailedCommandResult;
 
     undo(context: CommandExecutionContext): CommandResult {
         context.logger.error(this, 'Cannot undo a hidden command');
@@ -170,23 +178,21 @@ export abstract class ResetCommand extends Command {
  * access to the context.
  */
 export interface CommandExecutionContext {
-    /** the current sprotty model */
+    /** The current Sprotty model */
     root: SModelRoot
 
-    /**
-     * used ot turn sprotty schema elements (e.g. from the action)
-     * into model elements*/
+    /** Used to turn sprotty schema elements (e.g. from the action) into model elements */
     modelFactory: IModelFactory
 
-    /** allows to give some feedback to the console */
+    /** Allows to give some feedback to the console */
     logger: ILogger
 
     /** Used for anmiations to trigger the rendering of a new frame */
     modelChanged: IViewer
 
-    /** duration of an anmiation */
+    /** Duration of an anmiation */
     duration: number
 
-    /** provides the ticks for animations */
+    /** Provides the ticks for animations */
     syncer: AnimationFrameSyncer
 }

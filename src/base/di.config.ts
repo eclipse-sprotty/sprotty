@@ -24,7 +24,7 @@ import { CommandStack, ICommandStack } from "./commands/command-stack";
 import { CommandStackOptions } from "./commands/command-stack-options";
 import { SModelFactory, SModelRegistry } from './model/smodel-factory';
 import { AnimationFrameSyncer } from "./animations/animation-frame-syncer";
-import { IViewer, Viewer, ModelRenderer } from "./views/viewer";
+import { IViewer, ModelViewer, HiddenModelViewer, PopupModelViewer, ModelRenderer, PatcherProvider } from "./views/viewer";
 import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options";
 import { MouseTool, PopupMouseTool, MousePositionTracker } from "./views/mouse-tool";
 import { KeyTool } from "./views/key-tool";
@@ -89,20 +89,37 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     });
 
     // Viewer ---------------------------------------------
-    bind(Viewer).toSelf().inSingletonScope();
-    bind(TYPES.IViewer).toDynamicValue(context =>
-        context.container.get(Viewer)).inSingletonScope().whenTargetNamed('delegate');
-    bind(ViewerCache).toSelf().inSingletonScope();
-    bind(TYPES.IViewer).toDynamicValue(context =>
-        context.container.get(ViewerCache)).inSingletonScope().whenTargetIsDefault();
-    bind(TYPES.IViewerProvider).toProvider<IViewer>((context) => {
-        return () => {
-            return new Promise<IViewer>((resolve) => {
-                resolve(context.container.get<IViewer>(TYPES.IViewer));
-            });
+    bind(ModelViewer).toSelf().inSingletonScope();
+    bind(HiddenModelViewer).toSelf().inSingletonScope();
+    bind(PopupModelViewer).toSelf().inSingletonScope();
+    bind(TYPES.ModelViewer).toDynamicValue(context => {
+        const container = context.container.createChild();
+        container.bind(TYPES.IViewer).toService(ModelViewer);
+        container.bind(ViewerCache).toSelf();
+        return container.get(ViewerCache);
+    }).inSingletonScope();
+    bind(TYPES.PopupModelViewer).toDynamicValue(context => {
+        const container = context.container.createChild();
+        container.bind(TYPES.IViewer).toService(PopupModelViewer);
+        container.bind(ViewerCache).toSelf();
+        return container.get(ViewerCache);
+    }).inSingletonScope();
+    bind(TYPES.HiddenModelViewer).toService(HiddenModelViewer);
+    bind(TYPES.IViewerProvider).toDynamicValue(context => {
+        return {
+            get modelViewer() {
+                return context.container.get<IViewer>(TYPES.ModelViewer);
+            },
+            get hiddenModelViewer() {
+                return context.container.get<IViewer>(TYPES.HiddenModelViewer);
+            },
+            get popupModelViewer() {
+                return context.container.get<IViewer>(TYPES.PopupModelViewer);
+            }
         };
     });
     bind<ViewerOptions>(TYPES.ViewerOptions).toConstantValue(defaultViewerOptions());
+    bind(TYPES.PatcherProvider).to(PatcherProvider).inSingletonScope();
     bind(TYPES.DOMHelper).to(DOMHelper).inSingletonScope();
     bind(TYPES.ModelRendererFactory).toFactory<ModelRenderer>((context: interfaces.Context) => {
         return (decorators: IVNodeDecorator[]) => {

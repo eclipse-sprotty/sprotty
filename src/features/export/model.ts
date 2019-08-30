@@ -15,14 +15,9 @@
  ********************************************************************************/
 
 import { SModelElement } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const exportFeature = Symbol('exportFeature');
 
-export interface Exportable extends SModelExtension {
-    export: boolean
-}
-
-export function isExportable(element: SModelElement): element is SModelElement & Exportable {
-     return element.hasFeature(exportFeature) && (element as any)['export'] !== undefined;
+export function isExportable(element: SModelElement): boolean {
+     return element.hasFeature(exportFeature);
 }

@@ -16,8 +16,9 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from "snabbdom/vnode";
-import { Action } from "../../base/actions/action";
+import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
 import { Command, CommandExecutionContext } from "../../base/commands/command";
+import { ModelRequestCommand } from '../../base/commands/request-command';
 import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { findParentByFeature } from "../../base/model/smodel-utils";
 import { TYPES } from '../../base/types';
@@ -41,7 +42,8 @@ import { isSelectable } from "./model";
  * Furthermore, the server can send such an action to the client in order to change the selection programmatically.
  */
 export class SelectAction implements Action {
-    kind = SelectCommand.KIND;
+    static readonly KIND = 'elementSelected';
+    kind = SelectAction.KIND;
 
     constructor(public readonly selectedElementsIDs: string[] = [],
                 public readonly deselectedElementsIDs: string[] = []) {
@@ -52,13 +54,34 @@ export class SelectAction implements Action {
  * Programmatic action for selecting or deselecting all elements.
  */
 export class SelectAllAction implements Action {
-    kind = SelectAllCommand.KIND;
+    static readonly KIND = 'allSelected';
+    kind = SelectAllAction.KIND;
 
     /**
      * If `select` is true, all elements are selected, othewise they are deselected.
      */
     constructor(public readonly select: boolean = true) {
     }
+}
+
+export class GetSelectionAction implements RequestAction<SelectionResult> {
+    static readonly KIND = 'getSelection';
+    kind = GetSelectionAction.KIND;
+
+    constructor(public readonly requestId: string = '') {}
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(): RequestAction<SelectionResult> {
+        return new GetSelectionAction(generateRequestId());
+    }
+}
+
+export class SelectionResult implements ResponseAction {
+    static readonly KIND = 'selectionResult';
+    kind = SelectionResult.KIND;
+
+    constructor(public readonly selectedElementsIDs: string[] = [],
+                public readonly responseId: string) {}
 }
 
 export type ElementSelection = {
@@ -139,11 +162,11 @@ export class SelectCommand extends Command {
 
 @injectable()
 export class SelectAllCommand extends Command {
-    static readonly KIND = 'allSelected';
+    static readonly KIND = SelectAllAction.KIND;
 
     protected previousSelection: Record<string, boolean> = {};
 
-    constructor(@inject(TYPES.Action) public action: SelectAllAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SelectAllAction) {
         super();
     }
 
@@ -257,6 +280,25 @@ export class SelectMouseListener extends MouseListener {
             setClass(vnode, 'selected', selectableTarget.selected);
         return vnode;
     }
+}
+
+@injectable()
+export class GetSelectionCommand extends ModelRequestCommand {
+    static readonly KIND = GetSelectionAction.KIND;
+
+    protected previousSelection: Record<string, boolean> = {};
+
+    constructor(@inject(TYPES.Action) protected readonly action: GetSelectionAction) {
+        super();
+    }
+
+    protected retrieveResult(context: CommandExecutionContext): ResponseAction {
+        const selection = context.root.index.all()
+                .filter(e => isSelectable(e) && e.selected)
+                .map(e => e.id);
+        return new SelectionResult(toArray(selection), this.action.requestId);
+    }
+
 }
 
 export class SelectKeyboardListener extends KeyListener {

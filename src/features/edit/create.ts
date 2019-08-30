@@ -21,19 +21,20 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../base/types";
 
 export class CreateElementAction implements Action {
-    readonly kind = CreateElementCommand.KIND;
+    static readonly KIND = "createElement";
+    readonly kind = CreateElementAction.KIND;
 
     constructor(readonly containerId: string, readonly elementSchema: SModelElementSchema) {}
 }
 
 @injectable()
 export class CreateElementCommand extends Command {
-    static readonly KIND = "createElement";
+    static readonly KIND = CreateElementAction.KIND;
 
     container: SParentElement;
     newElement: SChildElement;
 
-    constructor(@inject(TYPES.Action) readonly action: CreateElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: CreateElementAction) {
         super();
     }
 

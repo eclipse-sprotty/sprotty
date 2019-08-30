@@ -42,7 +42,7 @@ export class CommitModelCommand extends SystemCommand {
     originalModel: SModelRootSchema;
     newModel: SModelRootSchema;
 
-    constructor(@inject(TYPES.Action) action: CommitModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: CommitModelAction) {
         super();
     }
 
