@@ -19,11 +19,13 @@ import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
 import { EMPTY_ROOT, IModelFactory } from "../model/smodel-factory";
 import { SModelRoot } from "../model/smodel";
+import { Action } from "../actions/action";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer, IViewerProvider } from "../views/viewer";
 import { CommandStackOptions } from './command-stack-options';
 import {
-    HiddenCommand, ICommand, CommandExecutionContext, CommandResult, SystemCommand, MergeableCommand, PopupCommand, ResetCommand
+    HiddenCommand, ICommand, CommandExecutionContext, CommandReturn, SystemCommand,
+    MergeableCommand, PopupCommand, ResetCommand, CommandResult
 } from './command';
 
 /**
@@ -109,7 +111,9 @@ export class CommandStack implements ICommandStack {
 
     protected currentPromise: Promise<CommandStackState>;
 
-    protected viewer?: IViewer;
+    protected modelViewer?: IViewer;
+    protected hiddenModelViewer?: IViewer;
+    protected popupModelViewer?: IViewer;
 
     protected undoStack: ICommand[] = [];
     protected redoStack: ICommand[] = [];
@@ -131,18 +135,24 @@ export class CommandStack implements ICommandStack {
     @postConstruct()
     protected initialize() {
         this.currentPromise = Promise.resolve({
-            root: this.modelFactory.createRoot(EMPTY_ROOT),
-            hiddenRoot: undefined,
-            popupRoot: undefined,
-            rootChanged: false,
-            hiddenRootChanged: false,
-            popupChanged: false
+            main: {
+                model: this.modelFactory.createRoot(EMPTY_ROOT),
+                modelChanged: false,
+            },
+            hidden: {
+                model: this.modelFactory.createRoot(EMPTY_ROOT),
+                modelChanged: false,
+            },
+            popup: {
+                model: this.modelFactory.createRoot(EMPTY_ROOT),
+                modelChanged: false,
+            }
         });
     }
 
     protected get currentModel(): Promise<SModelRoot> {
         return this.currentPromise.then(
-            state => state.root
+            state => state.main.model
         );
     }
 
@@ -194,58 +204,53 @@ export class CommandStack implements ICommandStack {
      * given operation on the given command.
      *
      * @param beforeResolve a function that is called directly before
-     * resolving the Promise to return the new model. Usually puts the
-     * command on the appropriate stack.
+     *      resolving the Promise to return the new model. Usually puts the
+     *      command on the appropriate stack.
      */
     protected handleCommand(command: ICommand,
-                            operation: (context: CommandExecutionContext) => CommandResult,
+                            operation: (context: CommandExecutionContext) => CommandReturn,
                             beforeResolve: (command: ICommand, context: CommandExecutionContext) => void) {
         this.currentPromise = this.currentPromise.then(state =>
-            new Promise((resolve: (result: CommandStackState) => void, reject: (reason?: any) => void) => {
-                const context = this.createContext(state.root);
+            new Promise<CommandStackState>(resolve => {
+                let target: 'main' | 'hidden' | 'popup';
+                if (command instanceof HiddenCommand)
+                    target = 'hidden';
+                else if (command instanceof PopupCommand)
+                    target = 'popup';
+                else
+                    target = 'main';
+                const context = this.createContext(state[target].model);
 
-                let newResult: CommandResult;
+                let commandResult: CommandReturn;
                 try {
-                    newResult = operation.call(command, context);
+                    commandResult = operation.call(command, context);
                 } catch (error) {
                     this.logger.error(this, "Failed to execute command:", error);
-                    newResult = state.root;
+                    commandResult = state[target].model;
                 }
 
-                if (command instanceof HiddenCommand) {
-                    resolve({
-                        ...state, ...{
-                            hiddenRoot: newResult as SModelRoot,
-                            hiddenRootChanged: true
-                        }
-                    });
-                } else if (command instanceof PopupCommand) {
-                    resolve({
-                        ...state, ...{
-                            popupRoot: newResult as SModelRoot,
-                            popupChanged: true
-                        }
-                    });
-                } else if (newResult instanceof Promise) {
-                    newResult.then(
-                        (newModel: SModelRoot) => {
+                const newState = copyState(state);
+                if (commandResult instanceof Promise) {
+                    commandResult.then(newModel => {
+                        if (target === 'main')
                             beforeResolve.call(this, command, context);
-                            resolve({
-                                ...state, ...{
-                                    root: newModel,
-                                    rootChanged: true
-                                }
-                            });
-                        }
-                    );
-                } else {
-                    beforeResolve.call(this, command, context);
-                    resolve({
-                        ...state, ...{
-                            root: newResult,
-                            rootChanged: true
-                        }
+                        newState[target] = { model: newModel, modelChanged: true };
+                        resolve(newState);
                     });
+                } else if (commandResult instanceof SModelRoot) {
+                    if (target === 'main')
+                        beforeResolve.call(this, command, context);
+                    newState[target] = { model: commandResult, modelChanged: true };
+                    resolve(newState);
+                } else {
+                    if (target === 'main')
+                        beforeResolve.call(this, command, context);
+                    newState[target] = {
+                        model: commandResult.model,
+                        modelChanged: state[target].modelChanged || commandResult.modelChanged,
+                        cause: commandResult.cause
+                    };
+                    resolve(newState);
                 }
             })
         );
@@ -262,50 +267,56 @@ export class CommandStack implements ICommandStack {
      * and returns a Promise for the new model.
      */
     protected thenUpdate(): Promise<SModelRoot> {
-        this.currentPromise = this.currentPromise.then(async state => {
-            if (state.hiddenRootChanged && state.hiddenRoot !== undefined)
-                await this.updateHidden(state.hiddenRoot);
-            if (state.rootChanged)
-                await this.update(state.root);
-            if (state.popupChanged && state.popupRoot !== undefined)
-                await this.updatePopup(state.popupRoot);
-            return {
-                root: state.root,
-                hiddenRoot: undefined,
-                popupRoot: undefined,
-                rootChanged: false,
-                hiddenRootChanged: false,
-                popupChanged: false
-            };
+        this.currentPromise = this.currentPromise.then(state => {
+            const newState = copyState(state);
+            if (state.hidden.modelChanged) {
+                this.updateHidden(state.hidden.model, state.hidden.cause);
+                newState.hidden.modelChanged = false;
+                newState.hidden.cause = undefined;
+            }
+            if (state.main.modelChanged) {
+                this.update(state.main.model, state.main.cause);
+                newState.main.modelChanged = false;
+                newState.main.cause = undefined;
+            }
+            if (state.popup.modelChanged) {
+                this.updatePopup(state.popup.model, state.popup.cause);
+                newState.popup.modelChanged = false;
+                newState.popup.cause = undefined;
+            }
+            return newState;
         });
         return this.currentModel;
     }
 
     /**
-     * Notify the <code>Viewer</code> that the model has changed.
+     * Notify the `ModelViewer` that the model has changed.
      */
-    async update(model: SModelRoot): Promise<void> {
-        if (this.viewer === undefined)
-            this.viewer = await this.viewerProvider();
-        this.viewer.update(model);
+    update(model: SModelRoot, cause?: Action): void {
+        if (this.modelViewer === undefined) {
+            this.modelViewer = this.viewerProvider.modelViewer;
+        }
+        this.modelViewer.update(model, cause);
     }
 
     /**
-     * Notify the <code>Viewer</code> that the hidden model has changed.
+     * Notify the `HiddenModelViewer` that the hidden model has changed.
      */
-    async updateHidden(model: SModelRoot): Promise<void> {
-        if (this.viewer === undefined)
-            this.viewer = await this.viewerProvider();
-        this.viewer.updateHidden(model);
+    updateHidden(model: SModelRoot, cause?: Action): void {
+        if (this.hiddenModelViewer === undefined) {
+            this.hiddenModelViewer = this.viewerProvider.hiddenModelViewer;
+        }
+        this.hiddenModelViewer.update(model, cause);
     }
 
     /**
-     * Notify the <code>Viewer</code> that the model has changed.
+     * Notify the `PopupModelViewer` that the popup model has changed.
      */
-    async updatePopup(model: SModelRoot): Promise<void> {
-        if (this.viewer === undefined)
-            this.viewer = await this.viewerProvider();
-        this.viewer.updatePopup(model);
+    updatePopup(model: SModelRoot, cause?: Action): void {
+        if (this.popupModelViewer === undefined) {
+            this.popupModelViewer = this.viewerProvider.popupModelViewer;
+        }
+        this.popupModelViewer.update(model, cause);
     }
 
     /**
@@ -423,15 +434,18 @@ export class CommandStack implements ICommandStack {
 }
 
 /**
- * Internal type to pass the results between the <code>Promises</code> in the
- * <code>ICommandStack</code>.
+ * Internal type to pass the results between the promises in the `CommandStack`.
  */
 export interface CommandStackState {
-    root: SModelRoot
-    hiddenRoot: SModelRoot | undefined
-    popupRoot: SModelRoot | undefined
-    rootChanged: boolean
-    hiddenRootChanged: boolean
-    popupChanged: boolean
+    main: CommandResult,
+    hidden: CommandResult,
+    popup: CommandResult
 }
 
+function copyState(state: CommandStackState): CommandStackState {
+    return {
+        main: {...state.main},
+        hidden: {...state.hidden},
+        popup: {...state.popup}
+    };
+}

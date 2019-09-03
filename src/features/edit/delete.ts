@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { Action } from "../../base/actions/action";
 import { SModelElement, SParentElement, SChildElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
@@ -31,7 +31,8 @@ export function isDeletable<T extends SModelElement>(element: T): element is T &
 }
 
 export class DeleteElementAction implements Action {
-    kind = DeleteElementCommand.KIND;
+    static readonly KIND = 'delete';
+    kind = DeleteElementAction.KIND;
 
     constructor(readonly elementIds: string[]) {}
 }
@@ -43,15 +44,15 @@ export class ResolvedDelete {
 
 @injectable()
 export class DeleteElementCommand extends Command {
-    static readonly KIND = 'delete';
+    static readonly KIND = DeleteElementAction.KIND;
 
     resolvedDeletes: ResolvedDelete[] = [];
 
-    constructor(@inject(TYPES.Action) readonly action: DeleteElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: DeleteElementAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         for (const id of this.action.elementIds) {
             const element = index.getById(id);
@@ -63,13 +64,13 @@ export class DeleteElementCommand extends Command {
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         for (const resolvedDelete of this.resolvedDeletes)
             resolvedDelete.parent.add(resolvedDelete.child);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         for (const resolvedDelete of this.resolvedDeletes)
             resolvedDelete.parent.remove(resolvedDelete.child);
         return context.root;

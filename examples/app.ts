@@ -16,7 +16,7 @@
 
 import "reflect-metadata";
 
-import runStandalone from "./circlegraph/src/standalone";
+import runCircleGraph from "./circlegraph/src/standalone";
 import runClassDiagram from "./classdiagram/src/standalone";
 import runMindmap from "./mindmap/src/standalone";
 import runSvgPreRendered from "./svg/src/standalone";
@@ -26,7 +26,7 @@ const appDiv = document.getElementById('sprotty-app')
 if(appDiv) {
     const appMode = appDiv.getAttribute('data-app');
     if (appMode === 'circlegraph')
-        runStandalone();
+        runCircleGraph();
     else if (appMode === 'class-diagram')
         runClassDiagram();
     else if (appMode === 'mindmap')

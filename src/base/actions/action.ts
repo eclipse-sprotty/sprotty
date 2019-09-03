@@ -26,3 +26,39 @@ export interface Action {
 export function isAction(object?: any): object is Action {
     return object !== undefined && object.hasOwnProperty('kind') && typeof(object['kind']) === 'string';
 }
+
+/**
+ * A request action is tied to the expectation of receiving a corresponding response action.
+ * The `requestId` property is used to match the received response with the original request.
+ */
+export interface RequestAction<Res extends ResponseAction> extends Action {
+    readonly requestId: string
+}
+
+export function isRequestAction(object?: any): object is RequestAction<ResponseAction> {
+    return isAction(object) && object.hasOwnProperty('requestId')
+            && typeof((object as any)['requestId']) === 'string';
+}
+
+let nextRequestId = 1;
+/**
+ * Generate a unique `requestId` for a request action.
+ */
+export function generateRequestId(): string {
+    return (nextRequestId++).toString();
+}
+
+/**
+ * A response action is sent to respond to a request action. The `responseId` must match
+ * the `requestId` of the preceding request. In case the `responseId` is empty or undefined,
+ * the action is handled as standalone, i.e. it was fired without a preceding request.
+ */
+export interface ResponseAction extends Action {
+    readonly responseId: string
+}
+
+export function isResponseAction(object?: any): object is ResponseAction {
+    return isAction(object) && object.hasOwnProperty('responseId')
+            && typeof((object as any)['responseId']) === 'string'
+            && (object as any)['responseId'] !== '';
+}

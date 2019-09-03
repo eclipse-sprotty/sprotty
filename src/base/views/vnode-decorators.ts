@@ -17,6 +17,7 @@
 import { injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement } from "../model/smodel";
+import { Action } from "../actions/action";
 import { setAttr } from "./vnode-utils";
 
 /**
@@ -25,8 +26,7 @@ import { setAttr } from "./vnode-utils";
  */
 export interface IVNodeDecorator {
     decorate(vnode: VNode, element: SModelElement): VNode
-
-    postUpdate(): void
+    postUpdate(cause?: Action): void
 }
 
 @injectable()

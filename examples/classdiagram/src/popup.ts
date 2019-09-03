@@ -14,16 +14,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import {
-    SModelElementSchema, SModelRootSchema, RequestPopupModelAction, PreRenderedElementSchema, IPopupModelProvider
+    TYPES, IModelFactory, SModelElementSchema, SModelRootSchema, RequestPopupModelAction,
+    PreRenderedElementSchema, IPopupModelProvider
 } from "../../../src";
+import { ClassNode } from "./model";
 
 @injectable()
 export class PopupModelProvider implements IPopupModelProvider {
 
+    @inject(TYPES.IModelFactory) modelFactory: IModelFactory;
+
     getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined {
         if (element !== undefined && element.type === 'node:class') {
+            const node = this.modelFactory.createElement(element) as ClassNode;
             return {
                 type: 'html',
                 id: 'popup',
@@ -31,7 +36,7 @@ export class PopupModelProvider implements IPopupModelProvider {
                     <PreRenderedElementSchema> {
                         type: 'pre-rendered',
                         id: 'popup-title',
-                        code: `<div class="sprotty-popup-title">Class ${element.id === 'node0' ? 'Foo' : 'Bar'}</div>`
+                        code: `<div class="sprotty-popup-title">Class ${node.name}</div>`
                     },
                     <PreRenderedElementSchema> {
                         type: 'pre-rendered',

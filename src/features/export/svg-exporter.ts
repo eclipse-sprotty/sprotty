@@ -16,7 +16,7 @@
 
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { isBoundsAware } from '../bounds/model';
-import { Action } from '../../base/actions/action';
+import { ResponseAction, RequestAction } from '../../base/actions/action';
 import { ActionDispatcher } from '../../base/actions/action-dispatcher';
 import { TYPES } from '../../base/types';
 import { SModelRoot } from '../../base/model/smodel';
@@ -24,11 +24,12 @@ import { Bounds, combine, EMPTY_BOUNDS } from '../../utils/geometry';
 import { ILogger } from '../../utils/logging';
 import { injectable, inject } from "inversify";
 
-export class ExportSvgAction implements Action {
+export class ExportSvgAction implements ResponseAction {
     static KIND = 'exportSvg';
     kind = ExportSvgAction.KIND;
 
-    constructor(public readonly svg: string) {}
+    constructor(public readonly svg: string,
+                public readonly responseId: string = '') {}
 }
 
 @injectable()
@@ -38,13 +39,13 @@ export class SvgExporter {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: ActionDispatcher;
     @inject(TYPES.ILogger) protected log: ILogger;
 
-    export(root: SModelRoot): void {
+    export(root: SModelRoot, request?: RequestAction<ExportSvgAction>): void {
         if (typeof document !== 'undefined') {
             const div = document.getElementById(this.options.hiddenDiv);
             if (div !== null && div.firstElementChild && div.firstElementChild.tagName === 'svg') {
                 const svgElement = div.firstElementChild as SVGSVGElement;
                 const svg = this.createSvg(svgElement, root);
-                this.actionDispatcher.dispatch(new ExportSvgAction(svg));
+                this.actionDispatcher.dispatch(new ExportSvgAction(svg, request ? request.requestId : ''));
             }
         }
     }

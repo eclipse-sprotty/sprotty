@@ -16,7 +16,7 @@
 
 import { inject, injectable } from "inversify";
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { TYPES } from "../../base/types";
 import { Point } from "../../utils/geometry";
@@ -25,7 +25,8 @@ import { EdgeRouterRegistry } from "../routing/routing";
 import { canEditRouting } from './model';
 
 export class SwitchEditModeAction implements Action {
-    kind = SwitchEditModeCommand.KIND;
+    static readonly KIND: string = "switchEditMode";
+    kind = SwitchEditModeAction.KIND;
 
     constructor(public readonly elementsToActivate: string[] = [],
                 public readonly elementsToDeactivate: string[] = []) {
@@ -34,20 +35,19 @@ export class SwitchEditModeAction implements Action {
 
 @injectable()
 export class SwitchEditModeCommand extends Command {
+    static readonly KIND: string = SwitchEditModeAction.KIND;
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
-
-    static KIND: string = "switchEditMode";
 
     protected elementsToActivate: SModelElement[] = [];
     protected elementsToDeactivate: SModelElement[] = [];
     protected handlesToRemove: { handle: SRoutingHandle, parent: SRoutableElement, point?: Point }[] = [];
 
-    constructor(@inject(TYPES.Action) public action: SwitchEditModeAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SwitchEditModeAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         this.action.elementsToActivate.forEach(id => {
             const element = index.getById(id);
@@ -110,7 +110,7 @@ export class SwitchEditModeCommand extends Command {
         return false;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         this.handlesToRemove.forEach(entry => {
             if (entry.point !== undefined)
                 entry.parent.routingPoints.splice(entry.handle.pointIndex, 0, entry.point);
@@ -131,7 +131,7 @@ export class SwitchEditModeCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.doExecute(context);
     }
 }

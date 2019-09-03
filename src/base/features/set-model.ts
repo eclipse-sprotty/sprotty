@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "../actions/action";
+import { Action, RequestAction, ResponseAction, generateRequestId } from "../actions/action";
 import { CommandExecutionContext, ResetCommand } from "../commands/command";
 import { SModelRoot, SModelRootSchema } from "../model/smodel";
 import { TYPES } from "../types";
@@ -26,32 +26,38 @@ import { InitializeCanvasBoundsCommand } from './initialize-canvas';
  * is the first message that is sent to the source, so it is also used to initiate the communication.
  * The response is a SetModelAction or an UpdateModelAction.
  */
-export class RequestModelAction implements Action {
+export class RequestModelAction implements RequestAction<SetModelAction> {
     static readonly KIND = 'requestModel';
     readonly kind = RequestModelAction.KIND;
 
-    constructor(public readonly options?: { [key: string]: string }) {
+    constructor(public readonly options?: { [key: string]: string },
+                public readonly requestId = '') {}
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(options?: { [key: string]: string }): RequestAction<SetModelAction> {
+        return new RequestModelAction(options, generateRequestId());
     }
 }
 
 /**
  * Sent from the model source to the client in order to set the model. If a model is already present, it is replaced.
  */
-export class SetModelAction implements Action {
-    readonly kind = SetModelCommand.KIND;
+export class SetModelAction implements ResponseAction {
+    static readonly KIND = 'setModel';
+    readonly kind = SetModelAction.KIND;
 
-    constructor(public readonly newRoot: SModelRootSchema) {
-    }
+    constructor(public readonly newRoot: SModelRootSchema,
+                public readonly responseId = '') {}
 }
 
 @injectable()
 export class SetModelCommand extends ResetCommand {
-    static readonly KIND = 'setModel';
+    static readonly KIND = SetModelAction.KIND;
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(@inject(TYPES.Action) public action: SetModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetModelAction) {
         super();
     }
 

@@ -20,9 +20,9 @@ import { expect } from "chai";
 import { Container, injectable } from "inversify";
 import { TYPES } from "../types";
 import defaultModule from "../di.config";
-import { IViewer } from "../views/viewer";
+import { IViewerProvider } from "../views/viewer";
 import {
-    Command, HiddenCommand, SystemCommand, CommandExecutionContext, CommandResult, MergeableCommand, PopupCommand
+    Command, HiddenCommand, SystemCommand, CommandExecutionContext, CommandReturn, MergeableCommand, PopupCommand
 } from './command';
 import { ICommandStack } from "./command-stack";
 
@@ -34,17 +34,17 @@ class TestCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         operations.push('exec ' + this.name);
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         operations.push('undo ' + this.name);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         operations.push('redo ' + this.name);
         return context.root;
     }
@@ -56,17 +56,17 @@ class TestSystemCommand extends SystemCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         operations.push('exec ' + this.name);
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         operations.push('undo ' + this.name);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         operations.push('redo ' + this.name);
         return context.root;
     }
@@ -77,17 +77,17 @@ class TestMergeableCommand extends MergeableCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         operations.push('exec ' + this.name);
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         operations.push('undo ' + this.name);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         operations.push('redo ' + this.name);
         return context.root;
     }
@@ -117,17 +117,17 @@ class TestPopupCommand extends PopupCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         operations.push('exec ' + this.name);
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         operations.push('undo ' + this.name);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         operations.push('redo ' + this.name);
         return context.root;
     }
@@ -139,21 +139,27 @@ describe('CommandStack', () => {
     let hiddenViewerUpdates: number = 0;
     let popupUpdates: number = 0;
 
-    const mockViewer: IViewer = {
-        update() {
-            ++viewerUpdates;
+    const mockViewerProvider: IViewerProvider = {
+        modelViewer: {
+            update() {
+                ++viewerUpdates;
+            }
         },
-        updateHidden() {
-            ++hiddenViewerUpdates;
+        hiddenModelViewer: {
+            update() {
+                ++hiddenViewerUpdates;
+            }
         },
-        updatePopup() {
-            ++popupUpdates;
+        popupModelViewer: {
+            update() {
+                ++popupUpdates;
+            }
         }
     };
 
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IViewer).toConstantValue(mockViewer);
+    container.rebind(TYPES.IViewerProvider).toConstantValue(mockViewerProvider);
 
     const commandStack = container.get<ICommandStack>(TYPES.ICommandStack);
 

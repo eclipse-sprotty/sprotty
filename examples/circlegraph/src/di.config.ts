@@ -19,9 +19,18 @@ import {
     defaultModule, TYPES, configureViewerOptions, SGraphView, PolylineEdgeView, ConsoleLogger,
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule, viewportModule,
     LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge, updateModule,
-    graphModule, routingModule, modelSourceModule
+    graphModule, routingModule, modelSourceModule, selectFeature
 } from "../../../src";
 import { CircleNodeView } from "./views";
+
+class CustomEdge extends SEdge {
+    hasFeature(feature: symbol): boolean {
+        if (feature === selectFeature)
+            return false;
+        else
+            return super.hasFeature(feature);
+    }
+}
 
 export default (useWebsocket: boolean) => {
     require("../../../css/sprotty.css");
@@ -36,7 +45,7 @@ export default (useWebsocket: boolean) => {
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
-        configureModelElement(context, 'edge:straight', SEdge, PolylineEdgeView);
+        configureModelElement(context, 'edge:straight', CustomEdge, PolylineEdgeView);
         configureViewerOptions(context, {
             needsClientLayout: false
         });

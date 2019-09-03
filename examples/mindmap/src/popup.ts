@@ -18,7 +18,7 @@ import { inject, injectable } from "inversify";
 import {
     TYPES, SModelElementSchema, SModelRootSchema, RequestPopupModelAction, MouseListener,
     SModelElement, Action, LocalModelSource, SNodeSchema, SetPopupModelAction, EMPTY_ROOT,
-    Point, Command, CommandExecutionContext, CommandResult, SChildElement, FadeAnimation,
+    Point, Command, CommandExecutionContext, CommandReturn, SChildElement, FadeAnimation,
     isFadeable, isLocateable, isBoundsAware, subtract, IPopupModelProvider
 } from "../../../src";
 import { PopupButtonSchema, PopupButton } from "./model";
@@ -108,7 +108,7 @@ export class AddElementCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const newElement = context.modelFactory.createElement(this.action.newElement);
         context.root.add(newElement);
         this.initialize(newElement);
@@ -130,7 +130,7 @@ export class AddElementCommand extends Command {
         }
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         const element = context.root.index.getById(this.action.newElement.id);
         if (element instanceof SChildElement) {
             element.parent.remove(element);
@@ -138,7 +138,7 @@ export class AddElementCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.execute(context);
     }
 }

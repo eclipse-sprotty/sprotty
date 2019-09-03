@@ -16,79 +16,115 @@
 
 import {
     TYPES, IActionDispatcher, SModelElementSchema, SEdgeSchema, SNodeSchema, SGraphSchema, SGraphFactory,
-    ElementMove, MoveAction, LocalModelSource
+    ElementMove, MoveAction, LocalModelSource, Bounds, SelectAction, Point
 } from "../../../src";
 import createContainer from "./di.config";
 
-export default function runStandalone() {
-    const container = createContainer(false);
+const NODE_SIZE = 60;
 
-    // Initialize gmodel
-    const node0 = { id: 'node0', type: 'node:circle', position: { x: 100, y: 100 }, size: { width: 80, height: 80 } };
-    const graph: SGraphSchema = { id: 'graph', type: 'graph', children: [node0] };
-
+export default async function runCircleGraph() {
     let count = 2;
-    function addNode(): SModelElementSchema[] {
+    function addNode(bounds: Bounds): SModelElementSchema[] {
         const newNode: SNodeSchema = {
             id: 'node' + count,
             type: 'node:circle',
             position: {
-                x: Math.random() * 1024,
-                y: Math.random() * 768
+                x: bounds.x + Math.random() * (bounds.width - NODE_SIZE),
+                y: bounds.y + Math.random() * (bounds.height - NODE_SIZE)
             },
             size: {
-                width: 80,
-                height: 80
+                width: NODE_SIZE,
+                height: NODE_SIZE
             }
         };
         const newEdge: SEdgeSchema = {
             id: 'edge' + count,
             type: 'edge:straight',
             sourceId: 'node0',
-            targetId: 'node' + count++
+            targetId: 'node' + count
         };
+        count++;
         return [newNode, newEdge];
     }
 
-    for (let i = 0; i < 200; ++i) {
-        const newElements = addNode();
-        for (const e of newElements) {
-            graph.children.splice(0, 0, e);
-        }
-    }
-
-    // Run
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    modelSource.setModel(graph);
-
-    // Button features
-    document.getElementById('addNode')!.addEventListener('click', () => {
-        const newElements = addNode();
-        modelSource.addElements(newElements);
+    function focusGraph(): void {
         const graphElement = document.getElementById('graph');
         if (graphElement !== null && typeof graphElement.focus === 'function')
             graphElement.focus();
-    });
+    }
 
+    function getVisibleBounds({ canvasBounds, scroll, zoom }: { canvasBounds: Bounds; scroll: Point; zoom: number; }): Bounds {
+        return {
+            ...scroll,
+            width: canvasBounds.width / zoom,
+            height: canvasBounds.height / zoom
+        }
+    }
+
+    const container = createContainer(false);
     const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
     const factory = container.get<SGraphFactory>(TYPES.IModelFactory);
-    document.getElementById('scrambleNodes')!.addEventListener('click', function (e) {
+    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
+
+    // Initialize model
+    const node0 = { id: 'node0', type: 'node:circle', position: { x: 100, y: 100 }, size: { width: NODE_SIZE, height: NODE_SIZE } };
+    const graph: SGraphSchema = { id: 'graph', type: 'graph', children: [node0] };
+
+    const initialViewport = await modelSource.getViewport()
+    for (let i = 0; i < 200; ++i) {
+        const newElements = addNode(getVisibleBounds(initialViewport));
+        graph.children.push(...newElements);
+    }
+
+    // Run
+    modelSource.setModel(graph);
+
+    // Button features
+    document.getElementById('addNode')!.addEventListener('click', async () => {
+        const viewport = await modelSource.getViewport()
+        const newElements = addNode(getVisibleBounds(viewport));
+        modelSource.addElements(newElements);
+        dispatcher.dispatch(new SelectAction(newElements.map(e => e.id)));
+        focusGraph();
+    });
+
+    document.getElementById('scrambleAll')!.addEventListener('click', async () => {
+        const viewport = await modelSource.getViewport()
+        const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         graph.children.forEach(shape => {
             if (factory.isNodeSchema(shape)) {
                 nodeMoves.push({
                     elementId: shape.id,
                     toPosition: {
-                        x: Math.random() * 1024,
-                        y: Math.random() * 768
+                        x: bounds.x + Math.random() * (bounds.width - NODE_SIZE),
+                        y: bounds.y + Math.random() * (bounds.height - NODE_SIZE)
                     }
                 });
             }
         });
         dispatcher.dispatch(new MoveAction(nodeMoves, true));
-        const graphElement = document.getElementById('graph');
-        if (graphElement !== null && typeof graphElement.focus === 'function')
-            graphElement.focus();
+        focusGraph();
+    });
+
+    document.getElementById('scrambleSelection')!.addEventListener('click', async () => {
+        const selection = await modelSource.getSelection();
+        const viewport = await modelSource.getViewport()
+        const bounds = getVisibleBounds(viewport);
+        const nodeMoves: ElementMove[] = [];
+        selection.forEach(shape => {
+            if (factory.isNodeSchema(shape)) {
+                nodeMoves.push({
+                    elementId: shape.id,
+                    toPosition: {
+                        x: bounds.x + Math.random() * (bounds.width - NODE_SIZE),
+                        y: bounds.y + Math.random() * (bounds.height - NODE_SIZE)
+                    }
+                });
+            }
+        });
+        dispatcher.dispatch(new MoveAction(nodeMoves, true));
+        focusGraph();
     });
 
 }

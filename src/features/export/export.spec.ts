@@ -21,10 +21,9 @@ import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
 import { ConsoleLogger } from "../../utils/logging";
 import { CommandExecutionContext } from "../../base/commands/command";
-import { SModelRoot } from "../../base/model/smodel";
 import { SGraphFactory } from "../../graph/sgraph-factory";
 import { SNode, SNodeSchema, SGraph } from "../../graph/sgraph";
-import { ExportSvgCommand } from './export';
+import { ExportSvgCommand, RequestExportSvgAction } from './export';
 import defaultModule from "../../base/di.config";
 
 describe('ExportSvgCommand', () => {
@@ -48,7 +47,7 @@ describe('ExportSvgCommand', () => {
 
     const myNode = model.children[0] as SNode;
 
-    const cmd = new ExportSvgCommand();
+    const cmd = new ExportSvgCommand(new RequestExportSvgAction());
 
     const context: CommandExecutionContext = {
         root: model,
@@ -61,14 +60,14 @@ describe('ExportSvgCommand', () => {
 
     it('execute() clears selection', () => {
         myNode.selected = true;
-        const newModel = cmd.execute(context) as SModelRoot;
+        const newModel = cmd.execute(context).model;
         expect(newModel.children[0]).instanceof(SNode);
         expect((newModel.children[0] as SNode).selected).to.equal(false);
     });
 
     it('execute() removes hover feedback', () => {
         myNode.hoverFeedback = true;
-        const newModel = cmd.execute(context) as SModelRoot;
+        const newModel = cmd.execute(context).model;
         expect(newModel.children[0]).instanceof(SNode);
         expect((newModel.children[0] as SNode).hoverFeedback).to.equal(false);
     });
@@ -76,7 +75,7 @@ describe('ExportSvgCommand', () => {
     it('execute() resets viewport', () => {
         model.zoom = 17;
         model.scroll = { x: 12, y: 12};
-        const newModel = cmd.execute(context) as SModelRoot;
+        const newModel = cmd.execute(context).model;
         expect(newModel).instanceof(SGraph);
         expect((newModel as SGraph).zoom).to.equal(1);
         expect((newModel as SGraph).scroll.x).to.equal(0);

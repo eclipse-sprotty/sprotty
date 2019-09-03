@@ -15,29 +15,30 @@
  ********************************************************************************/
 
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SParentElement, SChildElement, SModelElementSchema } from "../../base/model/smodel";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../base/types";
 
 export class CreateElementAction implements Action {
-    readonly kind = CreateElementCommand.KIND;
+    static readonly KIND = "createElement";
+    readonly kind = CreateElementAction.KIND;
 
     constructor(readonly containerId: string, readonly elementSchema: SModelElementSchema) {}
 }
 
 @injectable()
 export class CreateElementCommand extends Command {
-    static readonly KIND = "createElement";
+    static readonly KIND = CreateElementAction.KIND;
 
     container: SParentElement;
     newElement: SChildElement;
 
-    constructor(@inject(TYPES.Action) readonly action: CreateElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: CreateElementAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const container = context.root.index.getById(this.action.containerId);
         if (container instanceof SParentElement) {
             this.container = container;
@@ -47,12 +48,12 @@ export class CreateElementCommand extends Command {
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         this.container.remove(this.newElement);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         this.container.add(this.newElement);
         return context.root;
     }

@@ -19,12 +19,12 @@ import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../../base/types";
 import { almostEquals, Bounds, Point } from '../../utils/geometry';
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
+import { Action } from "../../base/actions/action";
 import { IVNodeDecorator } from "../../base/views/vnode-decorators";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { ComputedBoundsAction, ElementAndBounds, ElementAndAlignment } from './bounds-manipulation';
+import { ComputedBoundsAction, ElementAndBounds, ElementAndAlignment, RequestBoundsAction } from './bounds-manipulation';
 import { BoundsAware, isSizeable, isLayoutContainer, isAlignable } from "./model";
 import { Layouter } from "./layout";
-import { isExportable } from "../export/model";
 
 export class BoundsData {
     vnode?: VNode;
@@ -69,9 +69,11 @@ export class HiddenBoundsUpdater implements IVNodeDecorator {
         return vnode;
     }
 
-    postUpdate() {
-        if (this.root !== undefined && isExportable(this.root) && this.root.export)
+    postUpdate(cause?: Action) {
+        if (cause === undefined || cause.kind !== RequestBoundsAction.KIND) {
             return;
+        }
+        const request = cause as RequestBoundsAction;
         this.getBoundsFromDOM();
         this.layouter.layout(this.element2boundsData);
         const resizes: ElementAndBounds[] = [];
@@ -90,7 +92,7 @@ export class HiddenBoundsUpdater implements IVNodeDecorator {
                     });
             });
         const revision = (this.root !== undefined) ? this.root.revision : undefined;
-        this.actionDispatcher.dispatch(new ComputedBoundsAction(resizes, revision, realignments));
+        this.actionDispatcher.dispatch(new ComputedBoundsAction(resizes, revision, realignments, request.requestId));
         this.element2boundsData.clear();
     }
 

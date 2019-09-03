@@ -20,8 +20,8 @@ import { Bounds, Point, translate } from "../../utils/geometry";
 import { TYPES } from "../../base/types";
 import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
-import { Action } from "../../base/actions/action";
-import { CommandExecutionContext, PopupCommand, SystemCommand } from "../../base/commands/command";
+import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
+import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn } from "../../base/commands/command";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
 import { KeyListener } from "../../base/views/key-tool";
 import { findParentByFeature, findParent } from "../../base/model/smodel-utils";
@@ -33,7 +33,8 @@ import { hasPopupFeature, isHoverable } from "./model";
  * Triggered when the user puts the mouse pointer over an element.
  */
 export class HoverFeedbackAction implements Action {
-    kind = HoverFeedbackCommand.KIND;
+    static readonly KIND = 'hoverFeedback';
+    kind = HoverFeedbackAction.KIND;
 
     constructor(public readonly mouseoverElement: string, public readonly mouseIsOver: boolean) {
     }
@@ -41,14 +42,13 @@ export class HoverFeedbackAction implements Action {
 
 @injectable()
 export class HoverFeedbackCommand extends SystemCommand {
-    static readonly KIND = 'hoverFeedback';
+    static readonly KIND = HoverFeedbackAction.KIND;
 
-    constructor(@inject(TYPES.Action) public action: HoverFeedbackAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: HoverFeedbackAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
-
+    execute(context: CommandExecutionContext): CommandReturn {
         const model: SModelRoot = context.root;
         const modelElement: SModelElement | undefined = model.index.getById(this.action.mouseoverElement);
 
@@ -61,11 +61,11 @@ export class HoverFeedbackCommand extends SystemCommand {
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): CommandReturn {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): CommandReturn {
         return context.root;
     }
 }
@@ -75,11 +75,17 @@ export class HoverFeedbackCommand extends SystemCommand {
  * that element. This action is sent from the client to the model source, e.g. a DiagramServer.
  * The response is a SetPopupModelAction.
  */
-export class RequestPopupModelAction implements Action {
+export class RequestPopupModelAction implements RequestAction<SetPopupModelAction> {
     static readonly KIND = 'requestPopupModel';
     readonly kind = RequestPopupModelAction.KIND;
 
-    constructor(public readonly elementId: string, public readonly bounds: Bounds) {
+    constructor(public readonly elementId: string,
+                public readonly bounds: Bounds,
+                public readonly requestId = '') {}
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(elementId: string, bounds: Bounds): RequestAction<SetPopupModelAction> {
+        return new RequestPopupModelAction(elementId, bounds, generateRequestId());
     }
 }
 
@@ -87,36 +93,37 @@ export class RequestPopupModelAction implements Action {
  * Sent from the model source to the client to display a popup in response to a RequestPopupModelAction.
  * This action can also be used to remove any existing popup by choosing EMPTY_ROOT as root element.
  */
-export class SetPopupModelAction implements Action {
-    readonly kind = SetPopupModelCommand.KIND;
+export class SetPopupModelAction implements ResponseAction {
+    static readonly KIND = 'setPopupModel';
+    readonly kind = SetPopupModelAction.KIND;
 
-    constructor(public readonly newRoot: SModelRootSchema) {
-    }
+    constructor(public readonly newRoot: SModelRootSchema,
+                public readonly responseId = '') {}
 }
 
 @injectable()
 export class SetPopupModelCommand extends PopupCommand {
-    static readonly KIND = 'setPopupModel';
+    static readonly KIND = SetPopupModelAction.KIND;
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(@inject(TYPES.Action) public action: SetPopupModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetPopupModelAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): CommandReturn {
         this.oldRoot = context.root;
         this.newRoot = context.modelFactory.createRoot(this.action.newRoot);
 
         return this.newRoot;
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): CommandReturn {
         return this.oldRoot;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.newRoot;
     }
 }

@@ -16,12 +16,13 @@
 
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
-import { SelectCommand, SelectAllCommand, SelectKeyboardListener, SelectMouseListener } from "./select";
+import { SelectCommand, SelectAllCommand, SelectKeyboardListener, SelectMouseListener, GetSelectionCommand } from "./select";
 import { configureCommand } from "../../base/commands/command-registration";
 
 const selectModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SelectCommand);
     configureCommand({ bind, isBound }, SelectAllCommand);
+    configureCommand({ bind, isBound }, GetSelectionCommand);
     bind(TYPES.KeyListener).to(SelectKeyboardListener);
     bind(TYPES.MouseListener).to(SelectMouseListener);
 });

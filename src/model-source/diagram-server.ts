@@ -41,7 +41,7 @@ export interface ActionMessage {
 }
 
 export function isActionMessage(object: any): object is ActionMessage {
-    return object !== undefined && object.hasOwnProperty('clientId') && object.hasOwnProperty('action');
+    return object !== undefined && object.hasOwnProperty('action');
 }
 
 /**

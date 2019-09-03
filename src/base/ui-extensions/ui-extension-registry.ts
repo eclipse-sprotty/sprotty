@@ -16,7 +16,7 @@
 import { inject, injectable, multiInject, optional } from "inversify";
 import { InstanceRegistry } from "../../utils/registry";
 import { Action } from "../actions/action";
-import { CommandExecutionContext, CommandResult, SystemCommand } from "../commands/command";
+import { CommandExecutionContext, SystemCommand, CommandReturn } from "../commands/command";
 import { TYPES } from "../types";
 import { IUIExtension } from "./ui-extension";
 
@@ -35,31 +35,36 @@ export class UIExtensionRegistry extends InstanceRegistry<IUIExtension>  {
  * Action to set the visibility state of the UI extension with the specified `id`.
  */
 export class SetUIExtensionVisibilityAction implements Action {
-    readonly kind = SetUIExtensionVisibilityCommand.KIND;
-    constructor(public readonly extensionId: string, public readonly visible: boolean, public readonly contextElementsId: string[] = []) { }
+    static readonly KIND = "setUIExtensionVisibility";
+    readonly kind = SetUIExtensionVisibilityAction.KIND;
+
+    constructor(public readonly extensionId: string,
+                public readonly visible: boolean,
+                public readonly contextElementsId: string[] = []) {}
 }
 
 @injectable()
 export class SetUIExtensionVisibilityCommand extends SystemCommand {
-    static KIND = "setUIExtensionVisibility";
+    static readonly KIND = SetUIExtensionVisibilityAction.KIND;
+
     @inject(TYPES.UIExtensionRegistry) protected readonly registry: UIExtensionRegistry;
 
-    constructor(@inject(TYPES.Action) public action: SetUIExtensionVisibilityAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetUIExtensionVisibilityAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const extension = this.registry.get(this.action.extensionId);
         if (extension) {
             this.action.visible ? extension.show(context.root, ...this.action.contextElementsId) : extension.hide();
         }
-        return context.root;
+        return { model: context.root, modelChanged: false };
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
-        return context.root;
+    undo(context: CommandExecutionContext): CommandReturn {
+        return { model: context.root, modelChanged: false };
     }
-    redo(context: CommandExecutionContext): CommandResult {
-        return context.root;
+    redo(context: CommandExecutionContext): CommandReturn {
+        return { model: context.root, modelChanged: false };
     }
 }

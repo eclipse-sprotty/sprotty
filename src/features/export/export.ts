@@ -16,16 +16,15 @@
 
 import { injectable, inject } from "inversify";
 import { VNode } from 'snabbdom/vnode';
-import { CommandExecutionContext, HiddenCommand } from '../../base/commands/command';
+import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
 import { IVNodeDecorator } from '../../base/views/vnode-decorators';
 import { isSelectable } from '../select/model';
-import { Action } from '../../base/actions/action';
+import { Action, RequestAction, generateRequestId } from '../../base/actions/action';
 import { SModelElement, SModelRoot } from '../../base/model/smodel';
 import { KeyListener } from '../../base/views/key-tool';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { isExportable } from './model';
-import { SvgExporter } from './svg-exporter';
-import { EMPTY_ROOT } from '../../base/model/smodel-factory';
+import { SvgExporter, ExportSvgAction } from './svg-exporter';
 import { isViewport } from '../viewport/model';
 import { isHoverable } from '../hover/model';
 import { TYPES } from '../../base/types';
@@ -40,18 +39,29 @@ export class ExportSvgKeyListener extends KeyListener {
     }
 }
 
-export class RequestExportSvgAction implements Action {
-    kind = ExportSvgCommand.KIND;
+export class RequestExportSvgAction implements RequestAction<ExportSvgAction> {
+    static readonly KIND = 'requestExportSvg';
+    readonly kind = RequestExportSvgAction.KIND;
+
+    constructor(public readonly requestId: string = '') {}
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(): RequestAction<ExportSvgAction> {
+        return new RequestExportSvgAction(generateRequestId());
+    }
 }
 
 export class ExportSvgCommand extends HiddenCommand {
-    static KIND = 'requestExportSvg';
+    static readonly KIND = RequestExportSvgAction.KIND;
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    constructor(@inject(TYPES.Action) protected action: RequestExportSvgAction) {
+        super();
+    }
+
+    execute(context: CommandExecutionContext): CommandResult {
         if (isExportable(context.root)) {
             const root = context.modelFactory.createRoot(context.modelFactory.createSchema(context.root));
             if (isExportable(root)) {
-                root.export = true;
                 if (isViewport(root)) {
                     root.zoom = 1;
                     root.scroll = {
@@ -65,10 +75,17 @@ export class ExportSvgCommand extends HiddenCommand {
                     if (isHoverable(element) && element.hoverFeedback)
                         element.hoverFeedback = false;
                 });
-                return root;
+                return {
+                    model: root,
+                    modelChanged: true,
+                    cause: this.action
+                };
             }
         }
-        return context.modelFactory.createRoot(EMPTY_ROOT);
+        return {
+            model: context.root,
+            modelChanged: false
+        };
     }
 }
 
@@ -85,9 +102,9 @@ export class ExportSvgDecorator implements IVNodeDecorator {
         return vnode;
     }
 
-    postUpdate(): void {
-        if (this.root && isExportable(this.root) && this.root.export)
-            this.svgExporter.export(this.root);
+    postUpdate(cause?: Action): void {
+        if (this.root && cause !== undefined && cause.kind === RequestExportSvgAction.KIND) {
+            this.svgExporter.export(this.root, cause as RequestExportSvgAction);
+        }
     }
 }
-

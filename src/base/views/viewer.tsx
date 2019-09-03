@@ -31,6 +31,7 @@ import { ILogger } from "../../utils/logging";
 import { ORIGIN_POINT } from "../../utils/geometry";
 import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
 import { IActionDispatcher } from "../actions/action-dispatcher";
+import { Action } from '../actions/action';
 import { InitializeCanvasBoundsAction } from "../features/initialize-canvas";
 import { IVNodeDecorator } from "./vnode-decorators";
 import { RenderingContext, ViewRegistry } from "./view";
@@ -40,9 +41,13 @@ import { isThunk } from "./thunk-view";
 import { EMPTY_ROOT } from "../model/smodel-factory";
 
 export interface IViewer {
-    update(model: SModelRoot): void
-    updateHidden(hiddenModel: SModelRoot): void
-    updatePopup(popupModel: SModelRoot): void
+    update(model: SModelRoot, cause?: Action): void
+}
+
+export interface IViewerProvider {
+    readonly modelViewer: IViewer
+    readonly hiddenModelViewer: IViewer
+    readonly popupModelViewer: IViewer
 }
 
 export class ModelRenderer implements RenderingContext {
@@ -68,44 +73,23 @@ export class ModelRenderer implements RenderingContext {
         return element.children.map((child) => this.renderElement(child, args));
     }
 
-    postUpdate() {
-        this.decorators.forEach(decorator => decorator.postUpdate());
+    postUpdate(cause?: Action) {
+        this.decorators.forEach(decorator => decorator.postUpdate(cause));
     }
 }
 
 export type ModelRendererFactory = (decorators: IVNodeDecorator[]) => ModelRenderer;
 
-/**
- * The component that turns the model into an SVG DOM.
- * Uses a VDOM based on snabbdom.js for performance.
- */
+export type Patcher = (oldRoot: VNode | Element, newRoot: VNode) => VNode;
+
 @injectable()
-export class Viewer implements IViewer {
+export class PatcherProvider {
 
-    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
-    @inject(TYPES.ILogger) protected logger: ILogger;
-    @inject(TYPES.IActionDispatcher) protected actiondispatcher: IActionDispatcher;
+    readonly patcher: Patcher;
 
-    constructor(
-        @inject(TYPES.ModelRendererFactory) protected readonly modelRendererFactory: ModelRendererFactory,
-        @multiInject(TYPES.IVNodeDecorator) @optional() decorators: IVNodeDecorator[],
-        @multiInject(TYPES.HiddenVNodeDecorator) @optional() hiddenDecorators: IVNodeDecorator[],
-        @multiInject(TYPES.PopupVNodeDecorator) @optional() popupDecorators: IVNodeDecorator[]) {
-        this.patcher = this.createPatcher();
-        this.renderer = this.modelRendererFactory(decorators);
-        this.hiddenRenderer = this.modelRendererFactory(hiddenDecorators);
-        this.popupRenderer = this.modelRendererFactory(popupDecorators);
+    constructor() {
+        this.patcher = init(this.createModules());
     }
-
-    protected renderer: ModelRenderer;
-    protected hiddenRenderer: ModelRenderer;
-    protected popupRenderer: ModelRenderer;
-
-    protected readonly patcher: Patcher;
-
-    protected lastVDOM: VNode;
-    protected lastHiddenVDOM: VNode;
-    protected lastPopupVDOM: VNode;
 
     protected createModules(): Module[] {
         return [
@@ -117,30 +101,32 @@ export class Viewer implements IViewer {
         ];
     }
 
-    protected createPatcher() {
-        return init(this.createModules());
+}
+
+/**
+ * The component that turns the model into an SVG DOM.
+ * Uses a VDOM based on snabbdom.js for performance.
+ */
+@injectable()
+export class ModelViewer implements IViewer {
+
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(TYPES.IActionDispatcher) protected actiondispatcher: IActionDispatcher;
+
+    constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
+                @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
+                @multiInject(TYPES.IVNodeDecorator) @optional() decorators: IVNodeDecorator[]) {
+        this.renderer = modelRendererFactory(decorators);
+        this.patcher = patcherProvider.patcher;
     }
 
-    protected onWindowResize = (vdom: VNode): void => {
-        const baseDiv = document.getElementById(this.options.baseDiv);
-        if (baseDiv !== null) {
-            const newBounds = this.getBoundsInPage(baseDiv as Element);
-            this.actiondispatcher.dispatch(new InitializeCanvasBoundsAction(newBounds));
-        }
-    }
+    protected readonly renderer: ModelRenderer;
+    protected readonly patcher: Patcher;
 
-    protected getBoundsInPage(element: Element) {
-        const bounds = element.getBoundingClientRect();
-        const scroll = typeof window !== 'undefined' ? {x: window.scrollX, y: window.scrollY} : ORIGIN_POINT;
-        return {
-            x: bounds.left + scroll.x,
-            y: bounds.top + scroll.y,
-            width: bounds.width,
-            height: bounds.height
-        };
-    }
+    protected lastVDOM: VNode;
 
-    update(model: Readonly<SModelRoot>): void {
+    update(model: Readonly<SModelRoot>, cause?: Action): void {
         this.logger.log(this, 'rendering', model);
         const newVDOM = <div id={this.options.baseDiv}>
             {this.renderer.renderElement(model)}
@@ -165,7 +151,7 @@ export class Viewer implements IViewer {
                 this.logger.error(this, 'element not in DOM:', this.options.baseDiv);
             }
         }
-        this.renderer.postUpdate();
+        this.renderer.postUpdate(cause);
     }
 
     protected hasFocus(): boolean {
@@ -190,7 +176,51 @@ export class Viewer implements IViewer {
         }
     }
 
-    updateHidden(hiddenModel: Readonly<SModelRoot>): void {
+    protected onWindowResize = (vdom: VNode): void => {
+        const baseDiv = document.getElementById(this.options.baseDiv);
+        if (baseDiv !== null) {
+            const newBounds = this.getBoundsInPage(baseDiv as Element);
+            this.actiondispatcher.dispatch(new InitializeCanvasBoundsAction(newBounds));
+        }
+    }
+
+    protected getBoundsInPage(element: Element) {
+        const bounds = element.getBoundingClientRect();
+        const scroll = typeof window !== 'undefined' ? {x: window.scrollX, y: window.scrollY} : ORIGIN_POINT;
+        return {
+            x: bounds.left + scroll.x,
+            y: bounds.top + scroll.y,
+            width: bounds.width,
+            height: bounds.height
+        };
+    }
+
+}
+
+/**
+ * Viewer for the _hidden_ model. This serves as an intermediate step to compute bounds
+ * of elements. The model is rendered in a section that is not visible to the user,
+ * and then the bounds are extracted from the DOM.
+ */
+@injectable()
+export class HiddenModelViewer implements IViewer {
+
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+
+    constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
+                @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
+                @multiInject(TYPES.HiddenVNodeDecorator) @optional() hiddenDecorators: IVNodeDecorator[]) {
+        this.hiddenRenderer = modelRendererFactory(hiddenDecorators);
+        this.patcher = patcherProvider.patcher;
+    }
+
+    protected readonly hiddenRenderer: ModelRenderer;
+    protected readonly patcher: Patcher;
+
+    protected lastHiddenVDOM: VNode;
+
+    update(hiddenModel: Readonly<SModelRoot>, cause?: Action): void {
         this.logger.log(this, 'rendering hidden');
 
         let newVDOM: VNode;
@@ -219,10 +249,30 @@ export class Viewer implements IViewer {
             setClass(newVDOM, this.options.hiddenClass, true);
             this.lastHiddenVDOM = this.patcher.call(this, placeholder, newVDOM);
         }
-        this.hiddenRenderer.postUpdate();
+        this.hiddenRenderer.postUpdate(cause);
     }
 
-    updatePopup(model: Readonly<SModelRoot>): void {
+}
+
+@injectable()
+export class PopupModelViewer implements IViewer {
+
+    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+
+    constructor(@inject(TYPES.ModelRendererFactory) protected readonly modelRendererFactory: ModelRendererFactory,
+                @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
+                @multiInject(TYPES.PopupVNodeDecorator) @optional() popupDecorators: IVNodeDecorator[]) {
+        this.popupRenderer = this.modelRendererFactory(popupDecorators);
+        this.patcher = patcherProvider.patcher;
+    }
+
+    protected readonly popupRenderer: ModelRenderer;
+    protected readonly patcher: Patcher;
+
+    protected lastPopupVDOM: VNode;
+
+    update(model: Readonly<SModelRoot>, cause?: Action): void {
         this.logger.log(this, 'rendering popup', model);
 
         const popupClosed = model.type === EMPTY_ROOT.type;
@@ -256,10 +306,7 @@ export class Viewer implements IViewer {
             setClass(newVDOM, this.options.popupClosedClass, popupClosed);
             this.lastPopupVDOM = this.patcher.call(this, placeholder, newVDOM);
         }
-        this.popupRenderer.postUpdate();
+        this.popupRenderer.postUpdate(cause);
     }
+
 }
-
-export type Patcher = (oldRoot: VNode | Element, newRoot: VNode) => VNode;
-
-export type IViewerProvider = () => Promise<Viewer>;

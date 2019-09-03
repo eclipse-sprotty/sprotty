@@ -16,7 +16,7 @@
 
 import { inject } from "inversify";
 import { Action, isAction } from "../../base/actions/action";
-import { CommandExecutionContext, CommandResult, Command } from "../../base/commands/command";
+import { CommandExecutionContext, CommandReturn, Command } from "../../base/commands/command";
 import { SModelElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
@@ -37,8 +37,9 @@ export function isEditLabelAction(element?: any): element is EditLabelAction {
 }
 
 export class ApplyLabelEditAction implements Action {
-    static KIND = 'ApplyLabelEdit';
+    static readonly KIND = 'applyLabelEdit';
     kind = ApplyLabelEditAction.KIND;
+
     constructor(readonly labelId: string, readonly text: string) { }
 }
 
@@ -49,15 +50,15 @@ export class ResolvedLabelEdit {
 }
 
 export class ApplyLabelEditCommand extends Command {
-    static KIND = ApplyLabelEditAction.KIND;
+    static readonly KIND = ApplyLabelEditAction.KIND;
 
-    resolvedLabelEdit: ResolvedLabelEdit;
+    protected resolvedLabelEdit: ResolvedLabelEdit;
 
-    constructor(@inject(TYPES.Action) public action: ApplyLabelEditAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ApplyLabelEditAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         const label = index.getById(this.action.labelId);
         if (label && isEditableLabel(label)) {
@@ -67,14 +68,14 @@ export class ApplyLabelEditCommand extends Command {
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         if (this.resolvedLabelEdit) {
             this.resolvedLabelEdit.label.text = this.resolvedLabelEdit.oldLabel;
         }
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         if (this.resolvedLabelEdit) {
             this.resolvedLabelEdit.label.text = this.resolvedLabelEdit.newLabel;
         }
