@@ -21,7 +21,8 @@ import {
 } from "../base/model/smodel";
 import { getBasicType } from "../base/model/smodel-utils";
 import {
-    SCompartment, SEdge, SEdgeSchema, SGraph, SGraphSchema, SLabel, SLabelSchema, SNode, SNodeSchema, SPortSchema, SPort
+    SCompartment, SEdge, SEdgeSchema, SGraph, SGraphSchema, SLabel, SLabelSchema, SNode,
+    SNodeSchema, SPortSchema, SPort, SCompartmentSchema
 } from "./sgraph";
 import { SButton, SButtonSchema } from '../features/button/model';
 
@@ -88,7 +89,7 @@ export class SGraphFactory extends SModelFactory {
         return getBasicType(schema) === 'label';
     }
 
-    isCompartmentSchema(schema: SModelElementSchema): schema is SLabelSchema {
+    isCompartmentSchema(schema: SModelElementSchema): schema is SCompartmentSchema {
         return getBasicType(schema) === 'comp';
     }
 
