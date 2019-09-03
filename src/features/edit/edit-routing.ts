@@ -16,7 +16,7 @@
 
 import { inject, injectable } from "inversify";
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { TYPES } from "../../base/types";
 import { Point } from "../../utils/geometry";
@@ -47,7 +47,7 @@ export class SwitchEditModeCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         this.action.elementsToActivate.forEach(id => {
             const element = index.getById(id);
@@ -110,7 +110,7 @@ export class SwitchEditModeCommand extends Command {
         return false;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         this.handlesToRemove.forEach(entry => {
             if (entry.point !== undefined)
                 entry.parent.routingPoints.splice(entry.handle.pointIndex, 0, entry.point);
@@ -131,7 +131,7 @@ export class SwitchEditModeCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.doExecute(context);
     }
 }

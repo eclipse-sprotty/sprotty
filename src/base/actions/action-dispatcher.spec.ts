@@ -22,7 +22,7 @@ import { TYPES } from "../types";
 import { EMPTY_BOUNDS } from '../../utils/geometry';
 import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
-import { Command, CommandExecutionContext, CommandResult, ICommand } from '../commands/command';
+import { Command, CommandExecutionContext, CommandReturn, ICommand } from '../commands/command';
 import { ICommandStack } from "../commands/command-stack";
 import { ActionDispatcher } from "./action-dispatcher";
 import { Action } from "./action";
@@ -35,15 +35,15 @@ describe('ActionDispatcher', () => {
     class MockCommand extends Command {
         static KIND = 'mock';
 
-        execute(context: CommandExecutionContext): CommandResult {
+        execute(context: CommandExecutionContext): CommandReturn {
             return context.root;
         }
 
-        undo(context: CommandExecutionContext): CommandResult {
+        undo(context: CommandExecutionContext): CommandReturn {
             return context.root;
         }
 
-        redo(context: CommandExecutionContext): CommandResult {
+        redo(context: CommandExecutionContext): CommandReturn {
             return context.root;
         }
     }

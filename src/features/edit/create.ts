@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SParentElement, SChildElement, SModelElementSchema } from "../../base/model/smodel";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../base/types";
@@ -38,7 +38,7 @@ export class CreateElementCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const container = context.root.index.getById(this.action.containerId);
         if (container instanceof SParentElement) {
             this.container = container;
@@ -48,12 +48,12 @@ export class CreateElementCommand extends Command {
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         this.container.remove(this.newElement);
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         this.container.add(this.newElement);
         return context.root;
     }

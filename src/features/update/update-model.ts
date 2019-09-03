@@ -17,7 +17,7 @@
 import { injectable, inject } from "inversify";
 import { isValidDimension, almostEquals } from "../../utils/geometry";
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
-import { CommandExecutionContext, CommandResult, Command } from '../../base/commands/command';
+import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
 import { Action } from '../../base/actions/action';
 import { SModelRootSchema, SModelRoot, SChildElement, SModelElement, SParentElement } from "../../base/model/smodel";
@@ -68,7 +68,7 @@ export class UpdateModelCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         let newRoot: SModelRoot;
         if (this.action.newRoot !== undefined) {
             newRoot = context.modelFactory.createRoot(this.action.newRoot);
@@ -82,7 +82,7 @@ export class UpdateModelCommand extends Command {
         return this.performUpdate(this.oldRoot, this.newRoot, context);
     }
 
-    protected performUpdate(oldRoot: SModelRoot, newRoot: SModelRoot, context: CommandExecutionContext): CommandResult {
+    protected performUpdate(oldRoot: SModelRoot, newRoot: SModelRoot, context: CommandExecutionContext): CommandReturn {
         if ((this.action.animate === undefined || this.action.animate) && oldRoot.id === newRoot.id) {
             let matchResult: MatchResult;
             if (this.action.matches === undefined) {
@@ -266,11 +266,11 @@ export class UpdateModelCommand extends Command {
         return animations;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         return this.performUpdate(this.newRoot, this.oldRoot, context);
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.performUpdate(this.oldRoot, this.newRoot, context);
     }
 }

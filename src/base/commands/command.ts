@@ -44,11 +44,11 @@ export interface ICommand {
      */
     readonly blockUntil?: (action: Action) => boolean;
 
-    execute(context: CommandExecutionContext): CommandResult
+    execute(context: CommandExecutionContext): CommandReturn
 
-    undo(context: CommandExecutionContext): CommandResult
+    undo(context: CommandExecutionContext): CommandReturn
 
-    redo(context: CommandExecutionContext): CommandResult
+    redo(context: CommandExecutionContext): CommandReturn
 }
 
 /**
@@ -59,15 +59,15 @@ export interface ICommand {
  * chaining, it is essential that a command does not make any assumption
  * on the state of the model before execute() is called.
  */
-export type CommandResult = SModelRoot | Promise<SModelRoot> | DetailedCommandResult;
+export type CommandReturn = SModelRoot | Promise<SModelRoot> | CommandResult;
 
 /**
- * The `DetailedCommandResult` allows to specify whether the model has changed
+ * The `CommandResult` allows to specify whether the model has changed
  * and the original action that caused the command to be executed. In case such
  * an action is given, it is passed to the viewer in order to link any
  * subsequent response action to the original request.
  */
-export type DetailedCommandResult = { model: SModelRoot, isChanged: boolean, cause?: Action };
+export type CommandResult = { model: SModelRoot, modelChanged: boolean, cause?: Action };
 
 /**
  * Base class for all commands.
@@ -89,11 +89,11 @@ export type DetailedCommandResult = { model: SModelRoot, isChanged: boolean, cau
 @injectable()
 export abstract class Command implements ICommand {
 
-    abstract execute(context: CommandExecutionContext): CommandResult;
+    abstract execute(context: CommandExecutionContext): CommandReturn;
 
-    abstract undo(context: CommandExecutionContext): CommandResult;
+    abstract undo(context: CommandExecutionContext): CommandReturn;
 
-    abstract redo(context: CommandExecutionContext): CommandResult;
+    abstract redo(context: CommandExecutionContext): CommandReturn;
 }
 
 /**
@@ -133,14 +133,14 @@ export abstract class MergeableCommand extends Command {
  */
 @injectable()
 export abstract class HiddenCommand extends Command {
-    abstract execute(context: CommandExecutionContext): SModelRoot | DetailedCommandResult;
+    abstract execute(context: CommandExecutionContext): SModelRoot | CommandResult;
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         context.logger.error(this, 'Cannot undo a hidden command');
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         context.logger.error(this, 'Cannot redo a hidden command');
         return context.root;
     }

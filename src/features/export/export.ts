@@ -16,7 +16,7 @@
 
 import { injectable, inject } from "inversify";
 import { VNode } from 'snabbdom/vnode';
-import { CommandExecutionContext, HiddenCommand, DetailedCommandResult } from '../../base/commands/command';
+import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
 import { IVNodeDecorator } from '../../base/views/vnode-decorators';
 import { isSelectable } from '../select/model';
 import { Action, RequestAction, generateRequestId } from '../../base/actions/action';
@@ -58,7 +58,7 @@ export class ExportSvgCommand extends HiddenCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): DetailedCommandResult {
+    execute(context: CommandExecutionContext): CommandResult {
         if (isExportable(context.root)) {
             const root = context.modelFactory.createRoot(context.modelFactory.createSchema(context.root));
             if (isExportable(root)) {
@@ -77,14 +77,14 @@ export class ExportSvgCommand extends HiddenCommand {
                 });
                 return {
                     model: root,
-                    isChanged: true,
+                    modelChanged: true,
                     cause: this.action
                 };
             }
         }
         return {
             model: context.root,
-            isChanged: false
+            modelChanged: false
         };
     }
 }

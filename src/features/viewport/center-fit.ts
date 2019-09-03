@@ -18,7 +18,7 @@ import { Bounds, center, combine, isValidDimension } from "../../utils/geometry"
 import { matchesKeystroke } from "../../utils/keyboard";
 import { SChildElement } from '../../base/model/smodel';
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { KeyListener } from "../../base/views/key-tool";
 import { isBoundsAware } from "../bounds/model";
@@ -119,12 +119,12 @@ export abstract class BoundsAwareViewportCommand extends Command {
 
     protected abstract getElementIds(): string[];
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         this.initialize(context.root);
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         const model = context.root;
         if (isViewport(model) && this.newViewport !== undefined && !this.equal(this.newViewport, this.oldViewport)) {
             if (this.animate)
@@ -137,7 +137,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
         return model;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         const model = context.root;
         if (isViewport(model) && this.newViewport !== undefined && !this.equal(this.newViewport, this.oldViewport)) {
             if (this.animate) {

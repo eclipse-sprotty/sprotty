@@ -16,7 +16,7 @@
 
 import { injectable, inject } from "inversify";
 import { TYPES } from "../types";
-import { SystemCommand, CommandExecutionContext, CommandResult } from "./command";
+import { SystemCommand, CommandExecutionContext, CommandReturn } from "./command";
 import { ResponseAction } from "../actions/action";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 
@@ -29,19 +29,19 @@ export abstract class ModelRequestCommand extends SystemCommand {
 
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const result = this.retrieveResult(context);
         this.actionDispatcher.dispatch(result);
-        return { model: context.root, isChanged: false };
+        return { model: context.root, modelChanged: false };
     }
 
     protected abstract retrieveResult(context: CommandExecutionContext): ResponseAction;
 
-    undo(context: CommandExecutionContext): CommandResult {
-        return { model: context.root, isChanged: false };
+    undo(context: CommandExecutionContext): CommandReturn {
+        return { model: context.root, modelChanged: false };
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
-        return { model: context.root, isChanged: false };
+    redo(context: CommandExecutionContext): CommandReturn {
+        return { model: context.root, modelChanged: false };
     }
 }

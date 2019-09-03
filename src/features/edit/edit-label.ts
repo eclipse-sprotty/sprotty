@@ -16,7 +16,7 @@
 
 import { inject } from "inversify";
 import { Action, isAction } from "../../base/actions/action";
-import { CommandExecutionContext, CommandResult, Command } from "../../base/commands/command";
+import { CommandExecutionContext, CommandReturn, Command } from "../../base/commands/command";
 import { SModelElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
@@ -58,7 +58,7 @@ export class ApplyLabelEditCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         const label = index.getById(this.action.labelId);
         if (label && isEditableLabel(label)) {
@@ -68,14 +68,14 @@ export class ApplyLabelEditCommand extends Command {
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         if (this.resolvedLabelEdit) {
             this.resolvedLabelEdit.label.text = this.resolvedLabelEdit.oldLabel;
         }
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         if (this.resolvedLabelEdit) {
             this.resolvedLabelEdit.label.text = this.resolvedLabelEdit.newLabel;
         }

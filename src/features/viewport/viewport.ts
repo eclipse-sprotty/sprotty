@@ -17,7 +17,7 @@
 import { ORIGIN_POINT, Bounds } from "../../utils/geometry";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
-import { MergeableCommand, ICommand, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { Animation } from "../../base/animations/animation";
 import { isViewport, Viewport } from "./model";
 import { injectable, inject } from "inversify";
@@ -34,6 +34,9 @@ export class SetViewportAction implements Action {
     }
 }
 
+/**
+ * Request action for retrieving the current viewport and canvas bounds.
+ */
 export class GetViewportAction implements RequestAction<ViewportResult> {
     static readonly KIND = 'getViewport';
     kind = GetViewportAction.KIND;
@@ -68,7 +71,7 @@ export class SetViewportCommand extends MergeableCommand {
         this.newViewport = action.newViewport;
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const model = context.root;
         const element = model.index.getById(this.action.elementId);
         if (element && isViewport(element)) {
@@ -87,11 +90,11 @@ export class SetViewportCommand extends MergeableCommand {
         return model;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         return new ViewportAnimation(this.element, this.newViewport, this.oldViewport, context).start();
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return new ViewportAnimation(this.element, this.oldViewport, this.newViewport, context).start();
     }
 

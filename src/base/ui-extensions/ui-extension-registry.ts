@@ -16,7 +16,7 @@
 import { inject, injectable, multiInject, optional } from "inversify";
 import { InstanceRegistry } from "../../utils/registry";
 import { Action } from "../actions/action";
-import { CommandExecutionContext, SystemCommand, CommandResult } from "../commands/command";
+import { CommandExecutionContext, SystemCommand, CommandReturn } from "../commands/command";
 import { TYPES } from "../types";
 import { IUIExtension } from "./ui-extension";
 
@@ -53,18 +53,18 @@ export class SetUIExtensionVisibilityCommand extends SystemCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const extension = this.registry.get(this.action.extensionId);
         if (extension) {
             this.action.visible ? extension.show(context.root, ...this.action.contextElementsId) : extension.hide();
         }
-        return { model: context.root, isChanged: false };
+        return { model: context.root, modelChanged: false };
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
-        return { model: context.root, isChanged: false };
+    undo(context: CommandExecutionContext): CommandReturn {
+        return { model: context.root, modelChanged: false };
     }
-    redo(context: CommandExecutionContext): CommandResult {
-        return { model: context.root, isChanged: false };
+    redo(context: CommandExecutionContext): CommandReturn {
+        return { model: context.root, modelChanged: false };
     }
 }

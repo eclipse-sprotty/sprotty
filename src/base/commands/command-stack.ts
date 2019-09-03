@@ -24,8 +24,8 @@ import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer, IViewerProvider } from "../views/viewer";
 import { CommandStackOptions } from './command-stack-options';
 import {
-    HiddenCommand, ICommand, CommandExecutionContext, CommandResult, SystemCommand,
-    MergeableCommand, PopupCommand, ResetCommand, DetailedCommandResult
+    HiddenCommand, ICommand, CommandExecutionContext, CommandReturn, SystemCommand,
+    MergeableCommand, PopupCommand, ResetCommand, CommandResult
 } from './command';
 
 /**
@@ -137,15 +137,15 @@ export class CommandStack implements ICommandStack {
         this.currentPromise = Promise.resolve({
             main: {
                 model: this.modelFactory.createRoot(EMPTY_ROOT),
-                isChanged: false,
+                modelChanged: false,
             },
             hidden: {
                 model: this.modelFactory.createRoot(EMPTY_ROOT),
-                isChanged: false,
+                modelChanged: false,
             },
             popup: {
                 model: this.modelFactory.createRoot(EMPTY_ROOT),
-                isChanged: false,
+                modelChanged: false,
             }
         });
     }
@@ -208,7 +208,7 @@ export class CommandStack implements ICommandStack {
      *      command on the appropriate stack.
      */
     protected handleCommand(command: ICommand,
-                            operation: (context: CommandExecutionContext) => CommandResult,
+                            operation: (context: CommandExecutionContext) => CommandReturn,
                             beforeResolve: (command: ICommand, context: CommandExecutionContext) => void) {
         this.currentPromise = this.currentPromise.then(state =>
             new Promise<CommandStackState>(resolve => {
@@ -221,7 +221,7 @@ export class CommandStack implements ICommandStack {
                     target = 'main';
                 const context = this.createContext(state[target].model);
 
-                let commandResult: CommandResult;
+                let commandResult: CommandReturn;
                 try {
                     commandResult = operation.call(command, context);
                 } catch (error) {
@@ -234,20 +234,20 @@ export class CommandStack implements ICommandStack {
                     commandResult.then(newModel => {
                         if (target === 'main')
                             beforeResolve.call(this, command, context);
-                        newState[target] = { model: newModel, isChanged: true };
+                        newState[target] = { model: newModel, modelChanged: true };
                         resolve(newState);
                     });
                 } else if (commandResult instanceof SModelRoot) {
                     if (target === 'main')
                         beforeResolve.call(this, command, context);
-                    newState[target] = { model: commandResult, isChanged: true };
+                    newState[target] = { model: commandResult, modelChanged: true };
                     resolve(newState);
                 } else {
                     if (target === 'main')
                         beforeResolve.call(this, command, context);
                     newState[target] = {
                         model: commandResult.model,
-                        isChanged: state[target].isChanged || commandResult.isChanged,
+                        modelChanged: state[target].modelChanged || commandResult.modelChanged,
                         cause: commandResult.cause
                     };
                     resolve(newState);
@@ -269,19 +269,19 @@ export class CommandStack implements ICommandStack {
     protected thenUpdate(): Promise<SModelRoot> {
         this.currentPromise = this.currentPromise.then(state => {
             const newState = copyState(state);
-            if (state.hidden.isChanged) {
+            if (state.hidden.modelChanged) {
                 this.updateHidden(state.hidden.model, state.hidden.cause);
-                newState.hidden.isChanged = false;
+                newState.hidden.modelChanged = false;
                 newState.hidden.cause = undefined;
             }
-            if (state.main.isChanged) {
+            if (state.main.modelChanged) {
                 this.update(state.main.model, state.main.cause);
-                newState.main.isChanged = false;
+                newState.main.modelChanged = false;
                 newState.main.cause = undefined;
             }
-            if (state.popup.isChanged) {
+            if (state.popup.modelChanged) {
                 this.updatePopup(state.popup.model, state.popup.cause);
-                newState.popup.isChanged = false;
+                newState.popup.modelChanged = false;
                 newState.popup.cause = undefined;
             }
             return newState;
@@ -437,9 +437,9 @@ export class CommandStack implements ICommandStack {
  * Internal type to pass the results between the promises in the `CommandStack`.
  */
 export interface CommandStackState {
-    main: DetailedCommandResult,
-    hidden: DetailedCommandResult,
-    popup: DetailedCommandResult
+    main: CommandResult,
+    hidden: CommandResult,
+    popup: CommandResult
 }
 
 function copyState(state: CommandStackState): CommandStackState {

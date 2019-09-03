@@ -18,7 +18,7 @@ import { inject, injectable, optional } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { Action } from "../../base/actions/action";
 import { Animation, CompoundAnimation } from "../../base/animations/animation";
-import { CommandExecutionContext, ICommand, MergeableCommand, CommandResult } from "../../base/commands/command";
+import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from "../../base/commands/command";
 import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smodel';
 import { findParentByFeature, translatePoint } from "../../base/model/smodel-utils";
 import { TYPES } from "../../base/types";
@@ -80,7 +80,7 @@ export class MoveCommand extends MergeableCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         const edge2handleMoves = new Map<SRoutableElement, ResolvedHandleMove[]>();
         const attachedEdgeShifts = new Map<SRoutableElement, Point>();

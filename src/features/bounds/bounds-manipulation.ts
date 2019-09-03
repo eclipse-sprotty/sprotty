@@ -17,7 +17,7 @@
 import { Bounds, Point } from "../../utils/geometry";
 import { SModelElement, SModelRootSchema } from "../../base/model/smodel";
 import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
-import { CommandExecutionContext, HiddenCommand, SystemCommand, DetailedCommandResult, CommandResult } from "../../base/commands/command";
+import { CommandExecutionContext, HiddenCommand, SystemCommand, CommandResult, CommandReturn } from "../../base/commands/command";
 import { BoundsAware, isBoundsAware, Alignable } from './model';
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../base/types";
@@ -118,7 +118,7 @@ export class SetBoundsCommand extends SystemCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         this.action.bounds.forEach(
             b => {
                 const element = context.root.index.getById(b.elementId);
@@ -134,14 +134,14 @@ export class SetBoundsCommand extends SystemCommand {
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         this.bounds.forEach(
             b => b.element.bounds = b.oldBounds
         );
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         this.bounds.forEach(
             b => b.element.bounds = b.newBounds
         );
@@ -157,10 +157,10 @@ export class RequestBoundsCommand extends HiddenCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): DetailedCommandResult {
+    execute(context: CommandExecutionContext): CommandResult {
         return {
             model: context.modelFactory.createRoot(this.action.newRoot),
-            isChanged: true,
+            modelChanged: true,
             cause: this.action
         };
     }

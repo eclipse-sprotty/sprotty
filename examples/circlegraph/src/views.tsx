@@ -34,7 +34,8 @@ export class CircleNodeView implements IView {
         </g>;
     }
 
-    protected getRadius(node: SNode) {
-        return 40;
+    protected getRadius(node: SNode): number {
+        const d = Math.min(node.size.width, node.size.height);
+        return d > 0 ? d / 2 : 0;
     }
 }

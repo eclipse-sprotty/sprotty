@@ -64,6 +64,9 @@ export class SelectAllAction implements Action {
     }
 }
 
+/**
+ * Request action for retrieving the current selection.
+ */
 export class GetSelectionAction implements RequestAction<SelectionResult> {
     static readonly KIND = 'getSelection';
     kind = GetSelectionAction.KIND;

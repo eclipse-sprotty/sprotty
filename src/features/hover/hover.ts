@@ -21,7 +21,7 @@ import { TYPES } from "../../base/types";
 import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
-import { CommandExecutionContext, PopupCommand, SystemCommand, CommandResult } from "../../base/commands/command";
+import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn } from "../../base/commands/command";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
 import { KeyListener } from "../../base/views/key-tool";
 import { findParentByFeature, findParent } from "../../base/model/smodel-utils";
@@ -48,7 +48,7 @@ export class HoverFeedbackCommand extends SystemCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         const model: SModelRoot = context.root;
         const modelElement: SModelElement | undefined = model.index.getById(this.action.mouseoverElement);
 
@@ -61,11 +61,11 @@ export class HoverFeedbackCommand extends SystemCommand {
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return context.root;
     }
 }
@@ -112,18 +112,18 @@ export class SetPopupModelCommand extends PopupCommand {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         this.oldRoot = context.root;
         this.newRoot = context.modelFactory.createRoot(this.action.newRoot);
 
         return this.newRoot;
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         return this.oldRoot;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.newRoot;
     }
 }

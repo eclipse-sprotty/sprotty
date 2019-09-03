@@ -16,7 +16,7 @@
 
 import { inject, injectable } from "inversify";
 import { Action } from "../../base/actions/action";
-import { Command, CommandExecutionContext, CommandResult } from "../../base/commands/command";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { TYPES } from "../../base/types";
 import { SRoutableElement } from "../routing/model";
 import { EdgeMemento, EdgeRouterRegistry } from "../routing/routing";
@@ -42,7 +42,7 @@ export class ReconnectCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): CommandResult {
+    execute(context: CommandExecutionContext): CommandReturn {
         this.doExecute(context);
         return context.root;
     }
@@ -63,7 +63,7 @@ export class ReconnectCommand extends Command {
         }
     }
 
-    undo(context: CommandExecutionContext): CommandResult {
+    undo(context: CommandExecutionContext): CommandReturn {
         if (this.memento) {
             const router = this.edgeRouterRegistry.get(this.memento.edge.routerKind);
             router.applySnapshot(this.memento.edge, this.memento.before);
@@ -71,7 +71,7 @@ export class ReconnectCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): CommandResult {
+    redo(context: CommandExecutionContext): CommandReturn {
         if (this.memento) {
             const router = this.edgeRouterRegistry.get(this.memento.edge.routerKind);
             router.applySnapshot(this.memento.edge, this.memento.after);
