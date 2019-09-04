@@ -26,6 +26,11 @@ import {
 } from "./sgraph";
 import { SButton, SButtonSchema } from '../features/button/model';
 
+/**
+ * @deprecated
+ * Subclassing SModelFactory is discouraged. Use `registerModelElement`
+ * or `configureModelElement` instead.
+ */
 @injectable()
 export class SGraphFactory extends SModelFactory {
 

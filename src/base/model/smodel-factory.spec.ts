@@ -19,11 +19,20 @@ import 'mocha';
 import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../types';
-import { SModelElementSchema, SModelIndex } from "./smodel";
+import { SModelElementSchema, SModelIndex, SChildElement } from './smodel';
 import { SModelFactory } from "./smodel-factory";
+import { registerModelElement } from './smodel-utils';
+import { selectFeature, Selectable } from '../../features/select/model';
+import { boundsFeature } from '../../features/bounds/model';
 import defaultModule from "../di.config";
 
 describe('model factory', () => {
+
+    class FooElement extends SChildElement implements Selectable {
+        static readonly DEFAULT_FEATURES = [selectFeature]
+        selected: boolean;
+    }
+
     it('creates a single element from a schema', () => {
         const container = new Container();
         container.load(defaultModule);
@@ -115,5 +124,34 @@ describe('model factory', () => {
         expect(element1.children).to.deep.equal([]);
         expect(element1.root).to.equal(root);
         expect(root.index).to.be.instanceOf(SModelIndex);
+    });
+
+    it('gets default features for registered element', () => {
+        const container = new Container();
+        container.load(defaultModule);
+        registerModelElement(container, 'foo', FooElement);
+
+        const factory = container.get<SModelFactory>(TYPES.IModelFactory);
+        const element = factory.createElement({
+            type: 'foo',
+            id: 'element1'
+        });
+        expect(Array.from(element.features as any)).to.deep.equal([selectFeature]);
+    });
+
+    it('applies custom features for registered element', () => {
+        const container = new Container();
+        container.load(defaultModule);
+        registerModelElement(container, 'foo', FooElement, {
+            enable: [boundsFeature],
+            disable: [selectFeature]
+        });
+
+        const factory = container.get<SModelFactory>(TYPES.IModelFactory);
+        const element = factory.createElement({
+            type: 'foo',
+            id: 'element1'
+        });
+        expect(Array.from(element.features as any)).to.deep.equal([boundsFeature]);
     });
 });

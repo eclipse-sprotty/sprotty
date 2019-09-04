@@ -163,7 +163,9 @@ export class SModelRegistry extends FactoryRegistry<SModelElement, void> {
         super();
 
         registrations.forEach(registration => {
-            const defaultFeatures = this.getDefaultFeatures(registration.constr);
+            let defaultFeatures = this.getDefaultFeatures(registration.constr);
+            if (!defaultFeatures && registration.features && registration.features.enable)
+                defaultFeatures = [];
             if (defaultFeatures) {
                 const featureSet = createFeatureSet(defaultFeatures, registration.features);
                 this.register(registration.type, () => {
