@@ -16,9 +16,10 @@
 
 import { injectable, multiInject, optional, inject } from 'inversify';
 import { TYPES } from "../types";
-import { ProviderRegistry } from '../../utils/registry';
+import { FactoryRegistry } from '../../utils/registry';
 import {
-    SChildElement, SModelElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement, isParent
+    SChildElement, SModelElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement,
+    isParent, FeatureSet
 } from './smodel';
 
 /**
@@ -139,19 +140,66 @@ export const EMPTY_ROOT: Readonly<SModelRootSchema> = Object.freeze({
  */
 export interface SModelElementRegistration {
     type: string
-    constr: new () => SModelElement
+    constr: SModelElementConstructor
+    features?: CustomFeatures
+}
+
+export interface SModelElementConstructor {
+    DEFAULT_FEATURES?: ReadonlyArray<symbol>
+    new (): SModelElement
+}
+
+export interface CustomFeatures {
+    enable?: symbol[]
+    disable?: symbol[]
 }
 
 /**
  * Model element classes registered here are considered automatically when constructring a model from its schema.
  */
 @injectable()
-export class SModelRegistry extends ProviderRegistry<SModelElement, void> {
+export class SModelRegistry extends FactoryRegistry<SModelElement, void> {
     constructor(@multiInject(TYPES.SModelElementRegistration) @optional() registrations: SModelElementRegistration[]) {
         super();
 
-        registrations.forEach(
-            registration => this.register(registration.type, registration.constr)
-        );
+        registrations.forEach(registration => {
+            const defaultFeatures = this.getDefaultFeatures(registration.constr);
+            if (defaultFeatures) {
+                const featureSet = createFeatureSet(defaultFeatures, registration.features);
+                this.register(registration.type, () => {
+                    const element = new registration.constr();
+                    element.features = featureSet;
+                    return element;
+                });
+            } else {
+                this.register(registration.type, () => new registration.constr());
+            }
+        });
     }
+
+    protected getDefaultFeatures(constr: SModelElementConstructor): ReadonlyArray<symbol> | undefined {
+        let obj = constr;
+        do {
+            const defaultFeatures = obj.DEFAULT_FEATURES;
+            if (defaultFeatures)
+                return defaultFeatures;
+            obj = Object.getPrototypeOf(obj);
+        } while (obj);
+        return undefined;
+    }
+}
+
+export function createFeatureSet(defaults: ReadonlyArray<symbol>, custom?: CustomFeatures): FeatureSet {
+    const featureSet = new Set<symbol>(defaults);
+    if (custom && custom.enable) {
+        for (const f of custom.enable) {
+            featureSet.add(f);
+        }
+    }
+    if (custom && custom.disable) {
+        for (const f of custom.disable) {
+            featureSet.delete(f);
+        }
+    }
+    return featureSet;
 }

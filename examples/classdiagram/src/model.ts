@@ -15,9 +15,8 @@
  ********************************************************************************/
 
 import {
-    SShapeElement, Expandable, boundsFeature, expandFeature, fadeFeature, layoutContainerFeature,
-    layoutableChildFeature, RectangularNode, Nameable, nameFeature, SLabel, EditableLabel, editLabelFeature,
-    WithEditableLabel, isEditableLabel, withEditLabelFeature
+    SShapeElement, Expandable, RectangularNode, Nameable, SLabel, WithEditableLabel, isEditableLabel,
+    boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature
 } from "../../../src";
 
 export class ClassNode extends RectangularNode implements Expandable, Nameable, WithEditableLabel {
@@ -40,27 +39,16 @@ export class ClassNode extends RectangularNode implements Expandable, Nameable, 
         }
         return this.id;
     }
-
-    hasFeature(feature: symbol) {
-        return feature === expandFeature || feature === nameFeature || feature === withEditLabelFeature || super.hasFeature(feature);
-    }
 }
 
-export class EditableSLabel extends SLabel implements EditableLabel {
-    hasFeature(feature: symbol) {
-        return feature === editLabelFeature || super.hasFeature(feature);
-    }
-}
-export class ClassLabel extends EditableSLabel { }
-export class PropertyLabel extends EditableSLabel { }
+export class ClassLabel extends SLabel { }
+export class PropertyLabel extends SLabel { }
 
 export class Icon extends SShapeElement {
+    static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature];
+
     size = {
         width: 32,
         height: 32
     };
-
-    hasFeature(feature: symbol): boolean {
-        return feature === boundsFeature || feature === layoutContainerFeature || feature === layoutableChildFeature || feature === fadeFeature;
-    }
 }

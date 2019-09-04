@@ -27,6 +27,8 @@ export interface ProcessorSchema extends SModelRootSchema {
 }
 
 export class Processor extends ViewportRootElement implements BoundsAware {
+    static readonly DEFAULT_FEATURES = [...ViewportRootElement.DEFAULT_FEATURES, boundsFeature];
+
     rows: number = 0;
     columns: number = 0;
     layoutOptions: any;
@@ -44,9 +46,6 @@ export class Processor extends ViewportRootElement implements BoundsAware {
         // Ignore the new bounds
     }
 
-    hasFeature(feature: symbol): boolean {
-        return feature === boundsFeature || super.hasFeature(feature);
-    }
 }
 
 export interface CoreSchema extends SModelElementSchema {
@@ -60,6 +59,9 @@ export interface CoreSchema extends SModelElementSchema {
 }
 
 export class Core extends SShapeElement implements Selectable, Fadeable, Hoverable, LayoutContainer {
+    static readonly DEFAULT_FEATURES = [selectFeature, fadeFeature, layoutContainerFeature,
+        hoverFeedbackFeature, popupFeature];
+
     hoverFeedback: boolean = false;
     column: number = 0;
     row: number = 0;
@@ -69,13 +71,6 @@ export class Core extends SShapeElement implements Selectable, Fadeable, Hoverab
     layout: string = 'vbox';
     resizeContainer: boolean = false;
 
-    hasFeature(feature: symbol): boolean {
-        return feature === selectFeature
-            || feature === fadeFeature
-            || feature === layoutContainerFeature
-            || feature === hoverFeedbackFeature
-            || feature === popupFeature;
-    }
 }
 
 export interface CrossbarSchema extends SModelElementSchema {
@@ -98,15 +93,14 @@ export interface ChannelSchema extends SModelElementSchema {
 }
 
 export class Channel extends SChildElement implements Selectable {
+    static readonly DEFAULT_FEATURES = [selectFeature];
+
     column: number = 0;
     row: number = 0;
     direction: Direction;
     load: number = 0;
     selected: boolean = false;
 
-    hasFeature(feature: symbol): boolean {
-        return feature === selectFeature;
-    }
 }
 
 

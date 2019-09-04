@@ -17,6 +17,7 @@
 import 'mocha';
 import { expect } from "chai";
 import { SModelElement, SParentElement } from '../../base/model/smodel';
+import { createFeatureSet } from '../../base/model/smodel-factory';
 import { SNode, SLabel } from '../../graph/sgraph';
 import { StatefulLayouter, LayoutRegistry } from './layout';
 import { BoundsData } from './hidden-bounds-updater';
@@ -25,12 +26,6 @@ import { ConsoleLogger } from '../../utils/logging';
 import { Dimension } from '../../utils/geometry';
 import { layoutableChildFeature } from './model';
 
-class ChildNode extends SNode {
-    hasFeature(feature: symbol) {
-        return feature === layoutableChildFeature || super.hasFeature(feature);
-    }
-}
-
 describe('HBoxLayouter', () => {
 
     const log = new ConsoleLogger();
@@ -38,7 +33,8 @@ describe('HBoxLayouter', () => {
     const map = new Map<SModelElement, BoundsData>();
 
     function snode(size: Dimension): SNode {
-        const node = new ChildNode();
+        const node = new SNode();
+        node.features = createFeatureSet(SNode.DEFAULT_FEATURES, { enable: [layoutableChildFeature] })
         node.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
@@ -47,6 +43,7 @@ describe('HBoxLayouter', () => {
 
     function slabel(size: Dimension): SLabel {
         const label = new SLabel();
+        label.features = createFeatureSet(SLabel.DEFAULT_FEATURES);
         label.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };

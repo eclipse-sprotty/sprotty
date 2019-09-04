@@ -23,9 +23,7 @@ export interface SButtonSchema extends SShapeElementSchema {
 }
 
 export class SButton extends SShapeElement {
-    enabled = true;
+    static readonly DEFAULT_FEATURES = [boundsFeature, layoutableChildFeature, fadeFeature];
 
-    hasFeature(feature: symbol) {
-        return feature === boundsFeature || feature === fadeFeature || feature === layoutableChildFeature;
-    }
+    enabled = true;
 }

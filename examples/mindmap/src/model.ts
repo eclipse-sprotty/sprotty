@@ -14,17 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelRoot, SModelRootSchema, SGraph, popupFeature } from "../../../src";
+import { SModelRoot, SModelRootSchema, SGraph } from "../../../src";
 
 export class Mindmap extends SGraph {
-
-    hasFeature(feature: symbol): boolean {
-        if (feature === popupFeature)
-            return true;
-        else
-            return super.hasFeature(feature);
-    }
-
 }
 
 export interface PopupButtonSchema extends SModelRootSchema {

@@ -20,11 +20,12 @@ import { svg } from 'snabbdom-jsx';
 import { injectable, multiInject, optional, interfaces } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../types";
-import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
-import { EMPTY_ROOT, SModelElementRegistration } from "../model/smodel-factory";
 import { InstanceRegistry } from "../../utils/registry";
 import { Point, ORIGIN_POINT } from "../../utils/geometry";
 import { isInjectable } from '../../utils/inversify';
+import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
+import { EMPTY_ROOT, CustomFeatures } from "../model/smodel-factory";
+import { registerModelElement } from '../model/smodel-utils';
 
 /**
  * Base interface for the components that turn GModelElements into virtual DOM elements.
@@ -79,15 +80,12 @@ export class ViewRegistry extends InstanceRegistry<IView> {
 }
 
 /**
- * Utility function to register model and view constructors for a model element type.
+ * Combines `registerModelElement` and `configureView`.
  */
 export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, type: string,
-    modelConstr: new () => SModelElement, constr: new () => IView): void {
-    context.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
-        type,
-        constr: modelConstr
-    });
-    configureView(context, type, constr);
+        modelConstr: new () => SModelElement, viewConstr: new () => IView, features?: CustomFeatures): void {
+    registerModelElement(context, type, modelConstr, features);
+    configureView(context, type, viewConstr);
 }
 
 /**
