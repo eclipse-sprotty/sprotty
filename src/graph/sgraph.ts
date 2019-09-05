@@ -68,6 +68,9 @@ export interface SNodeSchema extends SShapeElementSchema {
  * the edge, or indirect through a port, i.e. it contains an SPort which is the source or target of the edge.
  */
 export class SNode extends SConnectableElement implements Selectable, Fadeable, Hoverable {
+    static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
+        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
+
     children: SChildElement[];
     layout?: string;
     selected: boolean = false;
@@ -78,11 +81,6 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
         return this.children.find(c => c instanceof SPort) === undefined;
     }
 
-    hasFeature(feature: symbol): boolean {
-        return feature === selectFeature || feature === moveFeature || feature === boundsFeature
-            || feature === layoutContainerFeature || feature === fadeFeature || feature === hoverFeedbackFeature
-            || feature === popupFeature || feature === connectableFeature || feature === deletableFeature;
-    }
 }
 
 /**
@@ -99,14 +97,13 @@ export interface SPortSchema extends SShapeElementSchema {
  * A port is a connection point for edges. It should always be contained in an SNode.
  */
 export class SPort extends SConnectableElement implements Selectable, Fadeable, Hoverable {
+    static readonly DEFAULT_FEATURES = [connectableFeature, selectFeature, boundsFeature, fadeFeature,
+        hoverFeedbackFeature];
+
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    hasFeature(feature: symbol): boolean {
-        return feature === selectFeature || feature === boundsFeature || feature === fadeFeature
-            || feature === hoverFeedbackFeature || feature === connectableFeature;
-    }
 }
 
 /**
@@ -128,15 +125,13 @@ export interface SEdgeSchema extends SModelElementSchema {
  * ids and can be resolved with the index stored in the root element.
  */
 export class SEdge extends SRoutableElement implements Fadeable, Selectable, Hoverable, BoundsAware {
+    static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
+        hoverFeedbackFeature];
+
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    hasFeature(feature: symbol): boolean {
-        return feature === fadeFeature || feature === selectFeature ||
-            feature === editFeature || feature === hoverFeedbackFeature ||
-            feature === deletableFeature;
-    }
 }
 
 /**
@@ -151,15 +146,15 @@ export interface SLabelSchema extends SShapeElementSchema {
  * A label can be attached to a node, edge, or port, and contains some text to be rendered in its view.
  */
 export class SLabel extends SShapeElement implements Selectable, Alignable, Fadeable {
+    static readonly DEFAULT_FEATURES = [boundsFeature, alignFeature, layoutableChildFeature,
+        edgeLayoutFeature, fadeFeature];
+
     text: string;
     selected: boolean = false;
     alignment: Point = ORIGIN_POINT;
     opacity = 1;
     edgePlacement?: EdgePlacement;
 
-    hasFeature(feature: symbol) {
-        return feature === boundsFeature || feature === alignFeature || feature === fadeFeature || feature === layoutableChildFeature || feature === edgeLayoutFeature;
-    }
 }
 
 /**
@@ -174,14 +169,14 @@ export interface SCompartmentSchema extends SShapeElementSchema {
  * or `hbox` layout is used to arrange these children.
  */
 export class SCompartment extends SShapeElement implements Fadeable {
+    static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature,
+        fadeFeature];
+
     children: SChildElement[];
     layout?: string;
     layoutOptions?: {[key: string]: string | number | boolean};
     opacity = 1;
 
-    hasFeature(feature: symbol) {
-        return feature === boundsFeature || feature === layoutContainerFeature || feature === layoutableChildFeature || feature === fadeFeature;
-    }
 }
 
 /**

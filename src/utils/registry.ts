@@ -18,7 +18,7 @@ import { injectable } from "inversify";
 
 @injectable()
 export class ProviderRegistry<T, U> {
-    protected elements: Map<string, new(u: U) => T> = new Map;
+    protected elements: Map<string, new (u: U) => T> = new Map;
 
     register(key: string, cstr: new (u: U) => T) {
         if (key === undefined)

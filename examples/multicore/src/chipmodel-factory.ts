@@ -16,7 +16,7 @@
 
 import {
     SGraphFactory, SChildElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement, getBasicType,
-    Direction, HtmlRootSchema, PreRenderedElementSchema, PreRenderedElement, HtmlRoot
+    Direction, HtmlRootSchema, PreRenderedElementSchema, PreRenderedElement, HtmlRoot, createFeatureSet
 } from '../../../src';
 import {
     Channel, ChannelSchema, Core, CoreSchema, Crossbar, CrossbarSchema, Processor, ProcessorSchema
@@ -31,6 +31,7 @@ export class ChipModelFactory extends SGraphFactory {
             if (this.isCoreSchema(schema)) {
                 this.validate(schema, parent);
                 const core = this.initializeChild(new Core(), schema, parent) as Core;
+                core.features = createFeatureSet(Core.DEFAULT_FEATURES);
                 core.bounds = {
                     x: core.column * (CORE_WIDTH + CORE_DISTANCE),
                     y: core.row * (CORE_WIDTH + CORE_DISTANCE),
@@ -40,11 +41,14 @@ export class ChipModelFactory extends SGraphFactory {
                 return core;
             } else if (this.isChannelSchema(schema)) {
                 this.validate(schema, parent);
-                return this.initializeChild(new Channel(), schema, parent);
-            } else if (this.isCrossbarSchema(schema))
+                const channel = this.initializeChild(new Channel(), schema, parent);
+                channel.features = createFeatureSet(Channel.DEFAULT_FEATURES);
+                return channel;
+            } else if (this.isCrossbarSchema(schema)) {
                 return this.initializeChild(new Crossbar(), schema, parent);
-            else if (this.isPreRenderedSchema(schema))
+            } else if (this.isPreRenderedSchema(schema)) {
                 return this.initializeChild(new PreRenderedElement(), schema, parent);
+            }
         } catch (e) {
             console.error(e.message);
         }
@@ -52,12 +56,15 @@ export class ChipModelFactory extends SGraphFactory {
     }
 
     createRoot(schema: SModelRootSchema): SModelRoot {
-        if (this.isProcessorSchema(schema))
-            return this.initializeRoot(new Processor(), schema);
-        else if (this.isHtmlRootSchema(schema))
+        if (this.isProcessorSchema(schema)) {
+            const processor = this.initializeRoot(new Processor(), schema);
+            processor.features = createFeatureSet(Processor.DEFAULT_FEATURES);
+            return processor;
+        } else if (this.isHtmlRootSchema(schema)) {
             return this.initializeRoot(new HtmlRoot(), schema);
-        else
+        } else {
             return super.createRoot(schema);
+        }
     }
 
     private validate(coreOrChannel: CoreSchema | ChannelSchema, processor?: SParentElement) {

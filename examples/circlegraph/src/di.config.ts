@@ -23,15 +23,6 @@ import {
 } from "../../../src";
 import { CircleNodeView } from "./views";
 
-class CustomEdge extends SEdge {
-    hasFeature(feature: symbol): boolean {
-        if (feature === selectFeature)
-            return false;
-        else
-            return super.hasFeature(feature);
-    }
-}
-
 export default (useWebsocket: boolean) => {
     require("../../../css/sprotty.css");
     require("../css/diagram.css");
@@ -42,10 +33,13 @@ export default (useWebsocket: boolean) => {
             bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
-        configureModelElement(context, 'edge:straight', CustomEdge, PolylineEdgeView);
+        configureModelElement(context, 'edge:straight', SEdge, PolylineEdgeView, {
+            disable: [selectFeature]
+        });
         configureViewerOptions(context, {
             needsClientLayout: false
         });

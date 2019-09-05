@@ -14,8 +14,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SChildElement, SModelElement, SModelElementSchema } from "./smodel";
+import { interfaces } from "inversify";
+import { TYPES } from "../types";
 import { Point, Bounds } from "../../utils/geometry";
+import { SChildElement, SModelElement, SModelElementSchema } from "./smodel";
+import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
+
+/**
+ * Register a model element constructor for an element type.
+ */
+export function registerModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        type: string, constr: new () => SModelElement, features?: CustomFeatures): void {
+    context.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
+        type, constr, features
+    });
+}
 
 /**
  * Model element types can include a colon to separate the basic type and a sub-type. This function

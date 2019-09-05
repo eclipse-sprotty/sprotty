@@ -44,6 +44,7 @@ export interface SModelRootSchema extends SModelElementSchema {
 export class SModelElement {
     type: string;
     id: string;
+    features?: FeatureSet;
     cssClasses?: string[];
 
     get root(): SModelRoot {
@@ -65,11 +66,15 @@ export class SModelElement {
 
     /**
      * A feature is a symbol identifying some functionality that can be enabled or disabled for
-     * a model element. The base implementation always returns false, so it disables all features.
+     * a model element. The set of supported features is determined by the `features` property.
      */
     hasFeature(feature: symbol): boolean {
-        return false;
+        return this.features !== undefined && this.features.has(feature);
     }
+}
+
+export interface FeatureSet {
+    has(feature: symbol): boolean
 }
 
 export function isParent(element: SModelElementSchema | SModelElement):

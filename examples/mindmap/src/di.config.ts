@@ -20,7 +20,8 @@ import {
     LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
     viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule,
     expandModule, fadeModule, buttonModule, PreRenderedElement, SNode, SLabel, HtmlRoot,
-    configureModelElement, configureCommand, graphModule, updateModule, routingModule, modelSourceModule
+    configureModelElement, configureCommand, graphModule, updateModule, routingModule,
+    modelSourceModule, popupFeature
 } from "../../../src";
 import { MindmapNodeView, PopupButtonView } from "./views";
 import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
@@ -39,13 +40,17 @@ export default (useWebsocket: boolean, containerId: string) => {
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider).inSingletonScope();
         bind(TYPES.PopupMouseListener).to(PopupButtonMouseListener);
         configureCommand(container, AddElementCommand);
+
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'mindmap', Mindmap, SGraphView);
+        configureModelElement(container, 'mindmap', Mindmap, SGraphView, {
+            enable: [popupFeature]
+        });
         configureModelElement(container, 'node', SNode, MindmapNodeView);
         configureModelElement(container, 'label', SLabel, SLabelView);
         configureModelElement(container, 'html', HtmlRoot, HtmlRootView);
         configureModelElement(container, 'pre-rendered', PreRenderedElement, PreRenderedView);
         configureModelElement(container, 'popup:button', PopupButton, PopupButtonView);
+
         configureViewerOptions(context, {
             needsClientLayout: false,
             baseDiv: containerId,

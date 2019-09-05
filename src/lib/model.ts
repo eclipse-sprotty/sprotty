@@ -108,6 +108,8 @@ export interface ShapedPreRenderedElementSchema extends PreRenderedElementSchema
  * Same as PreRenderedElement, but with a position and a size.
  */
 export class ShapedPreRenderedElement extends PreRenderedElement implements BoundsAware, Locateable, Selectable, Alignable {
+    static readonly DEFAULT_FEATURES = [moveFeature, boundsFeature, selectFeature, alignFeature];
+
     position: Point = ORIGIN_POINT;
     size: Dimension = EMPTY_DIMENSION;
     selected: boolean = false;
@@ -133,7 +135,4 @@ export class ShapedPreRenderedElement extends PreRenderedElement implements Boun
         };
     }
 
-    hasFeature(feature: symbol): boolean {
-        return feature === moveFeature || feature === boundsFeature || feature === selectFeature || feature === alignFeature;
-    }
 }

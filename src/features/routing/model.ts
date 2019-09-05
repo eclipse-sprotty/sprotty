@@ -97,6 +97,8 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
 export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%';
 
 export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {
+    static readonly DEFAULT_FEATURES = [selectFeature, moveFeature, hoverFeedbackFeature];
+
     /**
      * 'junction' is a point where two line segments meet,
      * 'line' is a volatile handle placed on a line segment,
@@ -112,22 +114,17 @@ export class SRoutingHandle extends SChildElement implements Selectable, Hoverab
     selected: boolean = false;
     danglingAnchor?: SDanglingAnchor;
 
-    hasFeature(feature: symbol): boolean {
-        return feature === selectFeature || feature === moveFeature || feature === hoverFeedbackFeature;
-    }
 }
 
 export class SDanglingAnchor extends SConnectableElement {
+    static readonly DEFAULT_FEATURES = [deletableFeature];
+
     original?: SModelElement;
     type = 'dangling-anchor';
 
     constructor() {
         super();
         this.size = { width: 0, height: 0 };
-    }
-
-    hasFeature(feature: symbol) {
-        return feature === deletableFeature;
     }
 }
 

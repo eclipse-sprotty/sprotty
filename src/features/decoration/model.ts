@@ -29,13 +29,7 @@ export function isDecoration<T extends SModelElement>(e: T): e is T & Decoration
 }
 
 export class SDecoration extends SShapeElement implements Decoration {
-    hasFeature(feature: symbol) {
-        return feature === decorationFeature
-            || feature === boundsFeature
-            || feature === hoverFeedbackFeature
-            || feature === popupFeature
-            || super.hasFeature(feature);
-    }
+    static readonly DEFAULT_FEATURES = [decorationFeature, boundsFeature, hoverFeedbackFeature, popupFeature];
 }
 
 export type SIssueSeverity = 'error' | 'warning' | 'info';

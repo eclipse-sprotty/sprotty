@@ -22,7 +22,8 @@ import {
     fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
     HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
     edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule, commandPaletteModule,
-    RevealNamedElementActionProvider, CenterGridSnapper, labelEditModule, labelEditUiModule
+    RevealNamedElementActionProvider, CenterGridSnapper, labelEditModule, labelEditUiModule, expandFeature,
+    nameFeature, withEditLabelFeature, editLabelFeature
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
@@ -47,11 +48,18 @@ export default (useWebsocket: boolean, containerId: string) => {
         bind(TYPES.ISnapper).to(CenterGridSnapper);
         bind(TYPES.IEditLabelValidator).to(ClassDiagramLabelValidator);
         bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);
+
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
-        configureModelElement(context, 'node:class', ClassNode, ClassNodeView);
-        configureModelElement(context, 'label:heading', ClassLabel, SLabelView);
-        configureModelElement(context, 'label:text', PropertyLabel, SLabelView);
+        configureModelElement(context, 'node:class', ClassNode, ClassNodeView, {
+            enable: [expandFeature, nameFeature, withEditLabelFeature]
+        });
+        configureModelElement(context, 'label:heading', ClassLabel, SLabelView, {
+            enable: [editLabelFeature]
+        });
+        configureModelElement(context, 'label:text', PropertyLabel, SLabelView, {
+            enable: [editLabelFeature]
+        });
         configureModelElement(context, 'comp:comp', SCompartment, SCompartmentView);
         configureModelElement(context, 'comp:header', SCompartment, SCompartmentView);
         configureModelElement(context, 'icon', Icon, IconView);
@@ -62,6 +70,7 @@ export default (useWebsocket: boolean, containerId: string) => {
         configureModelElement(context, 'button:expand', SButton, ExpandButtonView);
         configureModelElement(context, 'routing-point', SRoutingHandle, SRoutingHandleView);
         configureModelElement(context, 'volatile-routing-point', SRoutingHandle, SRoutingHandleView);
+
         configureViewerOptions(context, {
             needsClientLayout: true,
             baseDiv: containerId

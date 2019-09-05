@@ -17,6 +17,7 @@
 import 'mocha';
 import { expect } from "chai";
 import { SModelElement, SParentElement } from '../../base/model/smodel';
+import { createFeatureSet } from '../../base/model/smodel-factory';
 import { SNode, SLabel } from '../../graph/sgraph';
 import { StatefulLayouter, LayoutRegistry } from './layout';
 import { BoundsData } from './hidden-bounds-updater';
@@ -32,6 +33,7 @@ describe('VBoxLayouter', () => {
 
     function snode(size: Dimension): SNode {
         const node = new SNode();
+        node.features = createFeatureSet(SNode.DEFAULT_FEATURES);
         node.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
@@ -40,6 +42,7 @@ describe('VBoxLayouter', () => {
 
     function slabel(size: Dimension): SLabel {
         const label = new SLabel();
+        label.features = createFeatureSet(SLabel.DEFAULT_FEATURES);
         label.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };

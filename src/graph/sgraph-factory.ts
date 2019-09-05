@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import { SModelFactory } from "../base/model/smodel-factory";
+import { SModelFactory, createFeatureSet } from "../base/model/smodel-factory";
 import {
     SChildElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement
 } from "../base/model/smodel";
@@ -26,8 +26,21 @@ import {
 } from "./sgraph";
 import { SButton, SButtonSchema } from '../features/button/model';
 
+/**
+ * @deprecated
+ * Subclassing SModelFactory is discouraged. Use `registerModelElement`
+ * or `configureModelElement` instead.
+ */
 @injectable()
 export class SGraphFactory extends SModelFactory {
+
+    protected readonly defaultGraphFeatures = createFeatureSet(SGraph.DEFAULT_FEATURES);
+    protected readonly defaultNodeFeatures = createFeatureSet(SNode.DEFAULT_FEATURES);
+    protected readonly defaultPortFeatures = createFeatureSet(SPort.DEFAULT_FEATURES);
+    protected readonly defaultEdgeFeatures = createFeatureSet(SEdge.DEFAULT_FEATURES);
+    protected readonly defaultLabelFeatures = createFeatureSet(SLabel.DEFAULT_FEATURES);
+    protected readonly defaultCompartmentFeatures = createFeatureSet(SCompartment.DEFAULT_FEATURES);
+    protected readonly defaultButtonFeatures = createFeatureSet(SButton.DEFAULT_FEATURES);
 
     createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
         let child: SChildElement;
@@ -38,16 +51,22 @@ export class SGraphFactory extends SModelFactory {
             child = regElement;
         } else if (this.isNodeSchema(schema)) {
             child = new SNode();
+            child.features = this.defaultNodeFeatures;
         } else if (this.isPortSchema(schema)) {
             child = new SPort();
+            child.features = this.defaultPortFeatures;
         } else if (this.isEdgeSchema(schema)) {
             child = new SEdge();
+            child.features = this.defaultEdgeFeatures;
         } else if (this.isLabelSchema(schema)) {
             child = new SLabel();
+            child.features = this.defaultLabelFeatures;
         } else if (this.isCompartmentSchema(schema)) {
             child = new SCompartment();
+            child.features = this.defaultCompartmentFeatures;
         } else if (this.isButtonSchema(schema)) {
             child = new SButton();
+            child.features = this.defaultButtonFeatures;
         } else {
             child = new SChildElement();
         }
@@ -63,6 +82,7 @@ export class SGraphFactory extends SModelFactory {
             root = regElement;
         } else if (this.isGraphSchema(schema)) {
             root = new SGraph();
+            root.features = this.defaultGraphFeatures;
         } else {
             root = new SModelRoot();
         }

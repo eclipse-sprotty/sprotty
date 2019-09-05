@@ -24,15 +24,13 @@ import { exportFeature } from "../export/model";
  * a `scroll` translation and a `zoom` scaling.
  */
 export class ViewportRootElement extends SModelRoot implements Viewport {
+    static readonly DEFAULT_FEATURES = [viewportFeature, exportFeature];
+
     scroll: Point = { x: 0, y: 0 };
     zoom: number = 1;
 
     constructor(index?: SModelIndex<SModelElement>) {
         super(index);
-    }
-
-    hasFeature(feature: symbol): boolean {
-        return feature === viewportFeature || feature === exportFeature;
     }
 
     localToParent(point: Point | Bounds): Bounds {
