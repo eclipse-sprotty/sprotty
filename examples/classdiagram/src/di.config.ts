@@ -16,14 +16,11 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    defaultModule, TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, PolylineEdgeView,
-    ConsoleLogger, LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
-    viewportModule, hoverModule, HtmlRootView, PreRenderedView, exportModule, expandModule,
-    fadeModule, ExpandButtonView, buttonModule, edgeEditModule, SRoutingHandleView, PreRenderedElement,
-    HtmlRoot, SGraph, configureModelElement, SLabel, SCompartment, SEdge, SButton, SRoutingHandle,
-    edgeLayoutModule, updateModule, graphModule, routingModule, modelSourceModule, commandPaletteModule,
-    RevealNamedElementActionProvider, CenterGridSnapper, labelEditModule, labelEditUiModule, expandFeature,
-    nameFeature, withEditLabelFeature, editLabelFeature
+    TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, PolylineEdgeView,
+    ConsoleLogger, LogLevel, loadDefaultModules, HtmlRootView, PreRenderedView, ExpandButtonView,
+    SRoutingHandleView, PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel,
+    SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
+    CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature
 } from "../../../src";
 import { ClassNodeView, IconView} from "./views";
 import { PopupModelProvider } from "./popup";
@@ -31,16 +28,14 @@ import { ClassDiagramModelSource } from './model-source';
 import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
 import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
 
-export default (useWebsocket: boolean, containerId: string) => {
+export default (containerId: string) => {
     require("../../../css/sprotty.css");
     require("../../../css/command-palette.css");
     require("../../../css/edit-label.css");
     require("../css/diagram.css");
+
     const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        if (useWebsocket)
-            bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();
-        else
-            bind(TYPES.ModelSource).to(ClassDiagramModelSource).inSingletonScope();
+        bind(TYPES.ModelSource).to(ClassDiagramModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider);
@@ -78,9 +73,7 @@ export default (useWebsocket: boolean, containerId: string) => {
     });
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
-        viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        updateModule, graphModule, routingModule, edgeEditModule, edgeLayoutModule, labelEditModule,
-        labelEditUiModule, modelSourceModule, commandPaletteModule, classDiagramModule);
+    loadDefaultModules(container);
+    container.load(classDiagramModule);
     return container;
 };

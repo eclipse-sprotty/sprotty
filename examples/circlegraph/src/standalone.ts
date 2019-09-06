@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import {
-    TYPES, IActionDispatcher, SModelElementSchema, SEdgeSchema, SNodeSchema, SGraphSchema, SGraphFactory,
-    ElementMove, MoveAction, LocalModelSource, Bounds, SelectAction, Point
+    TYPES, IActionDispatcher, SModelElementSchema, SEdgeSchema, SNodeSchema, SGraphSchema,
+    ElementMove, MoveAction, LocalModelSource, Bounds, SelectAction, Point, getBasicType
 } from "../../../src";
 import createContainer from "./di.config";
 
@@ -61,9 +61,8 @@ export default async function runCircleGraph() {
         }
     }
 
-    const container = createContainer(false);
+    const container = createContainer();
     const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-    const factory = container.get<SGraphFactory>(TYPES.IModelFactory);
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
 
     // Initialize model
@@ -93,7 +92,7 @@ export default async function runCircleGraph() {
         const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         graph.children.forEach(shape => {
-            if (factory.isNodeSchema(shape)) {
+            if (getBasicType(shape) === 'node') {
                 nodeMoves.push({
                     elementId: shape.id,
                     toPosition: {
@@ -113,7 +112,7 @@ export default async function runCircleGraph() {
         const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         selection.forEach(shape => {
-            if (factory.isNodeSchema(shape)) {
+            if (getBasicType(shape) === 'node') {
                 nodeMoves.push({
                     elementId: shape.id,
                     toPosition: {

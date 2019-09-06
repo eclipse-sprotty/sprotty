@@ -16,25 +16,20 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    defaultModule, TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger,
-    LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule,
-    viewportModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView, exportModule,
-    expandModule, fadeModule, buttonModule, PreRenderedElement, SNode, SLabel, HtmlRoot,
-    configureModelElement, configureCommand, graphModule, updateModule, routingModule,
-    modelSourceModule, popupFeature
+    TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
+    loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, PreRenderedElement,
+    SNode, SLabel, HtmlRoot, configureModelElement, configureCommand, popupFeature
 } from "../../../src";
 import { MindmapNodeView, PopupButtonView } from "./views";
 import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
 import { Mindmap, PopupButton } from "./model";
 
-export default (useWebsocket: boolean, containerId: string) => {
+export default (containerId: string) => {
     require("../../../css/sprotty.css");
     require("../css/diagram.css");
+
     const mindmapModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        if (useWebsocket)
-            bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();
-        else
-            bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
+        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider).inSingletonScope();
@@ -59,8 +54,7 @@ export default (useWebsocket: boolean, containerId: string) => {
     });
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule,
-        viewportModule, fadeModule, hoverModule, exportModule, expandModule, buttonModule,
-        updateModule, graphModule, routingModule, modelSourceModule, mindmapModule);
+    loadDefaultModules(container);
+    container.load(mindmapModule);
     return container;
 };

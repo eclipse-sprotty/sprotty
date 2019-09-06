@@ -18,7 +18,7 @@ import { TYPES, LocalModelSource } from "../../../src";
 import createContainer from "./di.config";
 
 export default function runMindmap() {
-    const container = createContainer(false, 'sprotty');
+    const container = createContainer('sprotty');
 
     // Start with empty model
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
