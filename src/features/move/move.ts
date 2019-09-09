@@ -25,6 +25,7 @@ import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { IVNodeDecorator } from "../../base/views/vnode-decorators";
 import { setAttr } from "../../base/views/vnode-utils";
+import { SEdge } from "../../graph/sgraph";
 import { CommitModelAction } from "../../model-source/commit-model";
 import { add, center, linear, Point, subtract } from '../../utils/geometry';
 import { findChildrenAtPosition, isAlignable } from "../bounds/model";
@@ -34,6 +35,7 @@ import { SwitchEditModeAction } from "../edit/edit-routing";
 import { ReconnectAction, ReconnectCommand } from "../edit/reconnect";
 import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElement, SRoutingHandle } from "../routing/model";
 import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot } from "../routing/routing";
+import { isEdgeLayoutable } from "../edge-layout/model";
 import { isSelectable } from "../select/model";
 import { SelectAction, SelectAllAction } from "../select/select";
 import { isViewport } from "../viewport/model";
@@ -556,6 +558,10 @@ export class MoveMouseListener extends MouseListener {
 export class LocationDecorator implements IVNodeDecorator {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
+        if (isEdgeLayoutable(element) && element.parent instanceof SEdge) {
+            // The element is handled by EdgeLayoutDecorator
+            return vnode;
+        }
         let translate: string  = '';
         if (isLocateable(element) && element instanceof SChildElement && element.parent !== undefined) {
             translate = 'translate(' + element.position.x + ', ' + element.position.y + ')';

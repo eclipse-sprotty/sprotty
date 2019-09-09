@@ -21,7 +21,7 @@ import {
 import createContainer from "./di.config";
 
 export default function runMulticore() {
-    const container = createContainer(false);
+    const container = createContainer();
 
     // Initialize model
     const dim = 32;

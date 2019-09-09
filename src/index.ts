@@ -175,6 +175,7 @@ export * from "./graph/views";
 
 // ------------------ Library ------------------
 
+export * from "./lib/modules";
 export * from "./lib/generic-views";
 export * from "./lib/html-views";
 export * from "./lib/model";

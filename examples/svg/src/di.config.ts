@@ -16,15 +16,14 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    defaultModule, TYPES, ConsoleLogger, LogLevel, boundsModule, moveModule, selectModule,
-    undoRedoModule, viewportModule, hoverModule, LocalModelSource, PreRenderedView, SvgViewportView,
-    exportModule, ViewportRootElement, ShapedPreRenderedElement, configureModelElement,
-    modelSourceModule
+    TYPES, ConsoleLogger, LogLevel, loadDefaultModules, LocalModelSource, PreRenderedView,
+    SvgViewportView, ViewportRootElement, ShapedPreRenderedElement, configureModelElement
 } from "../../../src";
 
 export default () => {
     require("../../../css/sprotty.css");
     require("../css/diagram.css");
+
     const svgModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
@@ -35,7 +34,7 @@ export default () => {
     });
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule,
-        hoverModule, exportModule, modelSourceModule, svgModule);
+    loadDefaultModules(container);
+    container.load(svgModule);
     return container;
 };

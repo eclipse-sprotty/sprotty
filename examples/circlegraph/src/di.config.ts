@@ -16,21 +16,18 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    defaultModule, TYPES, configureViewerOptions, SGraphView, PolylineEdgeView, ConsoleLogger,
-    LogLevel, WebSocketDiagramServer, boundsModule, moveModule, selectModule, undoRedoModule, viewportModule,
-    LocalModelSource, exportModule, CircularNode, configureModelElement, SGraph, SEdge, updateModule,
-    graphModule, routingModule, modelSourceModule, selectFeature
+    TYPES, configureViewerOptions, SGraphView, PolylineEdgeView, ConsoleLogger,
+    LogLevel, loadDefaultModules, LocalModelSource, CircularNode, configureModelElement,
+    SGraph, SEdge, selectFeature
 } from "../../../src";
 import { CircleNodeView } from "./views";
 
-export default (useWebsocket: boolean) => {
+export default () => {
     require("../../../css/sprotty.css");
     require("../css/diagram.css");
+
     const circlegraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        if (useWebsocket)
-            bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();
-        else
-            bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
+        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
@@ -46,7 +43,7 @@ export default (useWebsocket: boolean) => {
     });
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, boundsModule, undoRedoModule, viewportModule,
-        exportModule, updateModule, graphModule, routingModule, modelSourceModule, circlegraphModule);
+    loadDefaultModules(container);
+    container.load(circlegraphModule);
     return container;
 };

@@ -16,10 +16,9 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    SCompartmentView, SLabelView, defaultModule, TYPES, configureViewerOptions,
-    ConsoleLogger, LogLevel, WebSocketDiagramServer, boundsModule, selectModule, viewportModule,
-    moveModule, fadeModule, hoverModule, LocalModelSource, HtmlRootView, PreRenderedView,
-    exportModule, SvgExporter, configureView, graphModule, updateModule, modelSourceModule
+    SCompartmentView, SLabelView, TYPES, configureViewerOptions, ConsoleLogger, LogLevel,
+    loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, SvgExporter,
+    configureView
 } from '../../../src';
 import { ChipModelFactory } from "./chipmodel-factory";
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from "./views";
@@ -34,14 +33,12 @@ class FilteringSvgExporter extends SvgExporter {
     }
 }
 
-export default (useWebsocket: boolean) => {
+export default () => {
     require("../../../css/sprotty.css");
     require("../css/diagram.css");
+
     const multicoreModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        if (useWebsocket)
-            bind(TYPES.ModelSource).to(WebSocketDiagramServer).inSingletonScope();
-        else
-            bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
+        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         rebind(TYPES.IModelFactory).to(ChipModelFactory).inSingletonScope();
@@ -69,8 +66,8 @@ export default (useWebsocket: boolean) => {
     });
 
     const container = new Container();
-    container.load(defaultModule, boundsModule, selectModule, moveModule, viewportModule, fadeModule,
-        exportModule, hoverModule, graphModule, updateModule, modelSourceModule, multicoreModule);
+    loadDefaultModules(container);
+    container.load(multicoreModule);
 
     return container;
 };

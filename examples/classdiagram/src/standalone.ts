@@ -18,7 +18,7 @@ import createContainer from "./di.config";
 import { TYPES, LocalModelSource } from "../../../src";
 
 export default function runClassDiagram() {
-    const container = createContainer(false, 'sprotty');
+    const container = createContainer('sprotty');
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
     modelSource.updateModel();
 }
