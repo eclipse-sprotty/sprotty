@@ -17,7 +17,7 @@
 import { injectable, inject } from "inversify";
 import { VNode } from 'snabbdom/vnode';
 import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
-import { IVNodePostprocessor } from '../../base/views/vnode-decorators';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { isSelectable } from '../select/model';
 import { Action, RequestAction, generateRequestId } from '../../base/actions/action';
 import { SModelElement, SModelRoot } from '../../base/model/smodel';
@@ -87,7 +87,7 @@ export class ExportSvgCommand extends HiddenCommand {
 }
 
 @injectable()
-export class ExportSvgDecorator implements IVNodePostprocessor {
+export class ExportSvgPostprocessor implements IVNodePostprocessor {
 
     root: SModelRoot;
 

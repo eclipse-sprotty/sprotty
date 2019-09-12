@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 TypeFox and others.
+ * Copyright (c) 2017-2018 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,33 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { IVNodePostprocessor } from "./vnode-decorators";
+import { injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement } from "../model/smodel";
-import { setClass } from "./vnode-utils";
-import { injectable } from "inversify";
+import { Action } from "../actions/action";
+import { setAttr } from "./vnode-utils";
+
+/**
+ * Manipulates a created VNode after it has been created.
+ * Used to register listeners and add animations.
+ */
+export interface IVNodePostprocessor {
+    decorate(vnode: VNode, element: SModelElement): VNode
+    postUpdate(cause?: Action): void
+}
 
 @injectable()
-export class CssClassDecorator implements IVNodePostprocessor {
+export class FocusFixPostprocessor implements IVNodePostprocessor {
+
+    static tabIndex: number = 1000;
+
     decorate(vnode: VNode, element: SModelElement): VNode {
-        if (element.cssClasses) {
-            for (const cssClass of element.cssClasses)
-                setClass(vnode, cssClass, true);
-        }
+        if (vnode.sel && vnode.sel.startsWith('svg'))
+            // allows to set focus in Firefox
+            setAttr(vnode, 'tabindex', ++FocusFixPostprocessor.tabIndex);
         return vnode;
     }
 
     postUpdate(): void {
-        // empty
     }
 }

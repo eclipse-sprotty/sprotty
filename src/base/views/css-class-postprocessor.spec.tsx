@@ -19,17 +19,17 @@ import { svg } from 'snabbdom-jsx';
 
 import "mocha";
 import { expect } from "chai";
-import { CssClassDecorator } from './css-class-decorator';
+import { CssClassPostprocessor } from './css-class-postprocessor';
 import { SModelElement } from '../model/smodel';
 
-describe('CssClassDecorator', () => {
+describe('CssClassPostprocessor', () => {
     it('classes are not overwritten', () => {
         const vnode = <g class-foo={true}/>;
         expect(vnode.data!.class!.foo).to.be.true;
         expect(vnode.data!.class!.bar).to.be.undefined;
         const snode = new SModelElement()
         snode.cssClasses = ['bar']
-        new CssClassDecorator().decorate(vnode, snode)
+        new CssClassPostprocessor().decorate(vnode, snode)
         expect(vnode.data!.class!.foo).to.be.true;
         expect(vnode.data!.class!.bar).to.be.true;
     });

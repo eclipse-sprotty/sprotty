@@ -21,7 +21,7 @@ import { IActionDispatcher } from "../actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { TYPES } from "../types";
 import { DOMHelper } from "./dom-helper";
-import { IVNodePostprocessor } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { on } from "./vnode-utils";
 import { Point } from "../../utils/geometry";
 

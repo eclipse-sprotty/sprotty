@@ -25,7 +25,7 @@ const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SetBoundsCommand);
     configureCommand({ bind, isBound }, RequestBoundsCommand);
     bind(HiddenBoundsUpdater).toSelf().inSingletonScope();
-    bind(TYPES.HiddenVNodeDecorator).toService(HiddenBoundsUpdater);
+    bind(TYPES.HiddenVNodePostprocessor).toService(HiddenBoundsUpdater);
     bind(TYPES.Layouter).to(Layouter).inSingletonScope();
     bind(TYPES.LayoutRegistry).to(LayoutRegistry).inSingletonScope();
 });

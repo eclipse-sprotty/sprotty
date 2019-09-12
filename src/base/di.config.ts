@@ -28,13 +28,13 @@ import { IViewer, ModelViewer, HiddenModelViewer, PopupModelViewer, ModelRendere
 import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options";
 import { MouseTool, PopupMouseTool, MousePositionTracker } from "./views/mouse-tool";
 import { KeyTool } from "./views/key-tool";
-import { FocusFixDecorator, IVNodePostprocessor } from "./views/vnode-decorators";
+import { FocusFixPostprocessor, IVNodePostprocessor } from "./views/vnode-postprocessor";
 import { ViewRegistry } from "./views/view";
 import { ViewerCache } from "./views/viewer-cache";
 import { DOMHelper } from "./views/dom-helper";
-import { IdDecorator } from "./views/id-decorator";
+import { IdPostprocessor } from "./views/id-postprocessor";
 import { configureCommand, CommandActionHandlerInitializer } from "./commands/command-registration";
-import { CssClassDecorator } from "./views/css-class-decorator";
+import { CssClassPostprocessor } from "./views/css-class-postprocessor";
 import { ToolManager, DefaultToolsEnablingKeyListener, ToolManagerActionHandlerInitializer } from "./tool-manager/tool-manager";
 import { SetModelCommand } from "./features/set-model";
 import { UIExtensionRegistry, SetUIExtensionVisibilityCommand } from "./ui-extensions/ui-extension-registry";
@@ -122,28 +122,28 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.PatcherProvider).to(PatcherProvider).inSingletonScope();
     bind(TYPES.DOMHelper).to(DOMHelper).inSingletonScope();
     bind(TYPES.ModelRendererFactory).toFactory<ModelRenderer>((context: interfaces.Context) => {
-        return (decorators: IVNodePostprocessor[]) => {
+        return (processors: IVNodePostprocessor[]) => {
             const viewRegistry = context.container.get<ViewRegistry>(TYPES.ViewRegistry);
-            return new ModelRenderer(viewRegistry, decorators);
+            return new ModelRenderer(viewRegistry, processors);
         };
     });
 
     // Tools & Decorators --------------------------------------
-    bind(IdDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodePostprocessor).toService(IdDecorator);
-    bind(TYPES.HiddenVNodeDecorator).toService(IdDecorator);
-    bind(CssClassDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodePostprocessor).toService(CssClassDecorator);
-    bind(TYPES.HiddenVNodeDecorator).toService(CssClassDecorator);
+    bind(IdPostprocessor).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(IdPostprocessor);
+    bind(TYPES.HiddenVNodePostprocessor).toService(IdPostprocessor);
+    bind(CssClassPostprocessor).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(CssClassPostprocessor);
+    bind(TYPES.HiddenVNodePostprocessor).toService(CssClassPostprocessor);
     bind(MouseTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(MouseTool);
     bind(KeyTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(KeyTool);
-    bind(FocusFixDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodePostprocessor).toService(FocusFixDecorator);
-    bind(TYPES.PopupVNodeDecorator).toService(IdDecorator);
+    bind(FocusFixPostprocessor).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(FocusFixPostprocessor);
+    bind(TYPES.PopupVNodePostprocessor).toService(IdPostprocessor);
     bind(PopupMouseTool).toSelf().inSingletonScope();
-    bind(TYPES.PopupVNodeDecorator).toService(PopupMouseTool);
+    bind(TYPES.PopupVNodePostprocessor).toService(PopupMouseTool);
 
     // Animation Frame Sync ------------------------------------------
     bind(TYPES.AnimationFrameSyncer).to(AnimationFrameSyncer).inSingletonScope();

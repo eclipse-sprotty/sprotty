@@ -24,7 +24,7 @@ import { PopupActionHandlerInitializer } from "./initializer";
 import { configureCommand } from "../../base/commands/command-registration";
 
 const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.PopupVNodeDecorator).to(PopupPositionUpdater).inSingletonScope();
+    bind(TYPES.PopupVNodePostprocessor).to(PopupPositionUpdater).inSingletonScope();
     bind(TYPES.IActionHandlerInitializer).to(PopupActionHandlerInitializer);
     configureCommand({ bind, isBound }, HoverFeedbackCommand);
     configureCommand({ bind, isBound }, SetPopupModelCommand);
