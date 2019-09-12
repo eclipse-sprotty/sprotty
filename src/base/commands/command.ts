@@ -178,7 +178,7 @@ export abstract class ResetCommand extends Command {
  * access to the context.
  */
 export interface CommandExecutionContext {
-    /** The current Sprotty model */
+    /** The current Sprotty model (i.e. the main model that is visible to the user) */
     root: SModelRoot
 
     /** Used to turn sprotty schema elements (e.g. from the action) into model elements */

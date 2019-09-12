@@ -60,14 +60,11 @@ export class ExportSvgCommand extends HiddenCommand {
 
     execute(context: CommandExecutionContext): CommandResult {
         if (isExportable(context.root)) {
-            const root = context.modelFactory.createRoot(context.modelFactory.createSchema(context.root));
+            const root = context.modelFactory.createRoot(context.root);
             if (isExportable(root)) {
                 if (isViewport(root)) {
                     root.zoom = 1;
-                    root.scroll = {
-                        x: 0,
-                        y: 0
-                    };
+                    root.scroll = { x: 0, y: 0 };
                 }
                 root.index.all().forEach(element => {
                     if (isSelectable(element) && element.selected)

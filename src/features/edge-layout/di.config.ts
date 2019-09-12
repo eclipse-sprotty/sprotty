@@ -19,7 +19,9 @@ import { TYPES } from "../../base/types";
 import { EdgeLayoutDecorator } from "./edge-layout";
 
 const edgeLayoutModule = new ContainerModule(bind => {
-    bind(TYPES.IVNodePostprocessor).to(EdgeLayoutDecorator).inSingletonScope();
+    bind(EdgeLayoutDecorator).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(EdgeLayoutDecorator);
+    bind(TYPES.HiddenVNodeDecorator).toService(EdgeLayoutDecorator);
 });
 
 export default edgeLayoutModule;
