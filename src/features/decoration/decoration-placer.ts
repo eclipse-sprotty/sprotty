@@ -17,7 +17,7 @@
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement, SChildElement } from "../../base/model/smodel";
-import { IVNodeDecorator } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
 import { isDecoration, Decoration } from "./model";
 import { setAttr } from "../../base/views/vnode-utils";
 import { Point, ORIGIN_POINT } from "../../utils/geometry";
@@ -26,7 +26,7 @@ import { SRoutableElement } from "../routing/model";
 import { EdgeRouterRegistry } from "../routing/routing";
 
 @injectable()
-export class DecorationPlacer implements IVNodeDecorator {
+export class DecorationPlacer implements IVNodePostprocessor {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 

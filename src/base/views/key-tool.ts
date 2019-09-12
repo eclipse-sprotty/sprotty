@@ -20,11 +20,11 @@ import { TYPES } from "../types";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { Action } from "../actions/action";
-import { IVNodeDecorator } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-decorators";
 import { on } from "./vnode-utils";
 
 @injectable()
-export class KeyTool implements IVNodeDecorator {
+export class KeyTool implements IVNodePostprocessor {
 
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
 

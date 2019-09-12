@@ -24,13 +24,13 @@ import { setAttr } from "./vnode-utils";
  * Manipulates a created VNode after it has been created.
  * Used to register listeners and add animations.
  */
-export interface IVNodeDecorator {
+export interface IVNodePostprocessor {
     decorate(vnode: VNode, element: SModelElement): VNode
     postUpdate(cause?: Action): void
 }
 
 @injectable()
-export class FocusFixDecorator implements IVNodeDecorator {
+export class FocusFixDecorator implements IVNodePostprocessor {
 
     static tabIndex: number = 1000;
 

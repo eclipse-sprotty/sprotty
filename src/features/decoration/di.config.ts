@@ -24,7 +24,7 @@ import { DecorationPlacer } from "./decoration-placer";
 const decorationModule = new ContainerModule((bind, _unbind, isBound)  => {
     configureModelElement({ bind, isBound }, 'marker', SIssueMarker, IssueMarkerView);
     bind(DecorationPlacer).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(DecorationPlacer);
+    bind(TYPES.IVNodePostprocessor).toService(DecorationPlacer);
 });
 
 export default decorationModule;

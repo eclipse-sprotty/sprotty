@@ -14,14 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { IVNodeDecorator } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-decorators";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement } from "../model/smodel";
 import { setClass } from "./vnode-utils";
 import { injectable } from "inversify";
 
 @injectable()
-export class CssClassDecorator implements IVNodeDecorator {
+export class CssClassDecorator implements IVNodePostprocessor {
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (element.cssClasses) {
             for (const cssClass of element.cssClasses)

@@ -20,7 +20,7 @@ import { TYPES } from "../types";
 import { almostEquals, Bounds, isValidDimension, ORIGIN_POINT } from '../../utils/geometry';
 import { Action } from '../actions/action';
 import { IActionDispatcher } from '../actions/action-dispatcher';
-import { IVNodeDecorator } from "../views/vnode-decorators";
+import { IVNodePostprocessor } from "../views/vnode-decorators";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { SystemCommand, CommandExecutionContext, CommandReturn } from '../commands/command';
 
@@ -30,7 +30,7 @@ import { SystemCommand, CommandExecutionContext, CommandReturn } from '../comman
  * as FitToScreenAction.
  */
 @injectable()
-export class CanvasBoundsInitializer implements IVNodeDecorator {
+export class CanvasBoundsInitializer implements IVNodePostprocessor {
 
     protected rootAndVnode: [SModelRoot, VNode] | undefined;
 

@@ -33,7 +33,7 @@ import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 import { Action } from '../actions/action';
 import { InitializeCanvasBoundsAction } from "../features/initialize-canvas";
-import { IVNodeDecorator } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-decorators";
 import { RenderingContext, ViewRegistry } from "./view";
 import { setClass, setAttr, copyClassesFromElement, copyClassesFromVNode } from "./vnode-utils";
 import { ViewerOptions } from "./viewer-options";
@@ -53,14 +53,14 @@ export interface IViewerProvider {
 export class ModelRenderer implements RenderingContext {
 
     constructor(public viewRegistry: ViewRegistry,
-                private decorators: IVNodeDecorator[]) {
+                private decorators: IVNodePostprocessor[]) {
     }
 
     decorate(vnode: VNode, element: Readonly<SModelElement>): VNode {
         if (isThunk(vnode))
             return vnode;
         return this.decorators.reduce(
-            (n: VNode, decorator: IVNodeDecorator) => decorator.decorate(n, element),
+            (n: VNode, decorator: IVNodePostprocessor) => decorator.decorate(n, element),
             vnode);
     }
 
@@ -78,7 +78,7 @@ export class ModelRenderer implements RenderingContext {
     }
 }
 
-export type ModelRendererFactory = (decorators: IVNodeDecorator[]) => ModelRenderer;
+export type ModelRendererFactory = (decorators: IVNodePostprocessor[]) => ModelRenderer;
 
 export type Patcher = (oldRoot: VNode | Element, newRoot: VNode) => VNode;
 
@@ -116,7 +116,7 @@ export class ModelViewer implements IViewer {
 
     constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
                 @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
-                @multiInject(TYPES.IVNodeDecorator) @optional() decorators: IVNodeDecorator[]) {
+                @multiInject(TYPES.IVNodePostprocessor) @optional() decorators: IVNodePostprocessor[]) {
         this.renderer = modelRendererFactory(decorators);
         this.patcher = patcherProvider.patcher;
     }
@@ -210,7 +210,7 @@ export class HiddenModelViewer implements IViewer {
 
     constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
                 @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
-                @multiInject(TYPES.HiddenVNodeDecorator) @optional() hiddenDecorators: IVNodeDecorator[]) {
+                @multiInject(TYPES.HiddenVNodeDecorator) @optional() hiddenDecorators: IVNodePostprocessor[]) {
         this.hiddenRenderer = modelRendererFactory(hiddenDecorators);
         this.patcher = patcherProvider.patcher;
     }
@@ -262,7 +262,7 @@ export class PopupModelViewer implements IViewer {
 
     constructor(@inject(TYPES.ModelRendererFactory) protected readonly modelRendererFactory: ModelRendererFactory,
                 @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
-                @multiInject(TYPES.PopupVNodeDecorator) @optional() popupDecorators: IVNodeDecorator[]) {
+                @multiInject(TYPES.PopupVNodeDecorator) @optional() popupDecorators: IVNodePostprocessor[]) {
         this.popupRenderer = this.modelRendererFactory(popupDecorators);
         this.patcher = patcherProvider.patcher;
     }
