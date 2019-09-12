@@ -17,7 +17,7 @@
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement, SChildElement } from "../../base/model/smodel";
-import { IVNodeDecorator } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
 import { setAttr } from "../../base/views/vnode-utils";
 import { SEdge } from "../../graph/sgraph";
 import { EMPTY_BOUNDS, linear, Orientation, Point, toDegrees } from "../../utils/geometry";
@@ -26,7 +26,7 @@ import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement
 import { EdgeRouterRegistry } from "../routing/routing";
 
 @injectable()
-export class EdgeLayoutDecorator implements IVNodeDecorator {
+export class EdgeLayoutDecorator implements IVNodePostprocessor {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 

@@ -28,7 +28,7 @@ import { IViewer, ModelViewer, HiddenModelViewer, PopupModelViewer, ModelRendere
 import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options";
 import { MouseTool, PopupMouseTool, MousePositionTracker } from "./views/mouse-tool";
 import { KeyTool } from "./views/key-tool";
-import { FocusFixDecorator, IVNodeDecorator } from "./views/vnode-decorators";
+import { FocusFixDecorator, IVNodePostprocessor } from "./views/vnode-decorators";
 import { ViewRegistry } from "./views/view";
 import { ViewerCache } from "./views/viewer-cache";
 import { DOMHelper } from "./views/dom-helper";
@@ -122,7 +122,7 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.PatcherProvider).to(PatcherProvider).inSingletonScope();
     bind(TYPES.DOMHelper).to(DOMHelper).inSingletonScope();
     bind(TYPES.ModelRendererFactory).toFactory<ModelRenderer>((context: interfaces.Context) => {
-        return (decorators: IVNodeDecorator[]) => {
+        return (decorators: IVNodePostprocessor[]) => {
             const viewRegistry = context.container.get<ViewRegistry>(TYPES.ViewRegistry);
             return new ModelRenderer(viewRegistry, decorators);
         };
@@ -130,17 +130,17 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
 
     // Tools & Decorators --------------------------------------
     bind(IdDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(IdDecorator);
+    bind(TYPES.IVNodePostprocessor).toService(IdDecorator);
     bind(TYPES.HiddenVNodeDecorator).toService(IdDecorator);
     bind(CssClassDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(CssClassDecorator);
+    bind(TYPES.IVNodePostprocessor).toService(CssClassDecorator);
     bind(TYPES.HiddenVNodeDecorator).toService(CssClassDecorator);
     bind(MouseTool).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(MouseTool);
+    bind(TYPES.IVNodePostprocessor).toService(MouseTool);
     bind(KeyTool).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(KeyTool);
+    bind(TYPES.IVNodePostprocessor).toService(KeyTool);
     bind(FocusFixDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(FocusFixDecorator);
+    bind(TYPES.IVNodePostprocessor).toService(FocusFixDecorator);
     bind(TYPES.PopupVNodeDecorator).toService(IdDecorator);
     bind(PopupMouseTool).toSelf().inSingletonScope();
     bind(TYPES.PopupVNodeDecorator).toService(PopupMouseTool);
@@ -151,7 +151,7 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // Canvas Initialization ---------------------------------------------
     configureCommand({ bind, isBound }, InitializeCanvasBoundsCommand);
     bind(CanvasBoundsInitializer).toSelf().inSingletonScope();
-    bind(TYPES.IVNodeDecorator).toService(CanvasBoundsInitializer);
+    bind(TYPES.IVNodePostprocessor).toService(CanvasBoundsInitializer);
 
     // Model commands ---------------------------------------------
     configureCommand({ bind, isBound }, SetModelCommand);

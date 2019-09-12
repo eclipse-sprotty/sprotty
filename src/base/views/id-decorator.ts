@@ -19,12 +19,12 @@ import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
 import { SModelElement } from "../model/smodel";
-import { IVNodeDecorator } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-decorators";
 import { DOMHelper } from "./dom-helper";
 import { getAttrs } from "./vnode-utils";
 
 @injectable()
-export class IdDecorator implements IVNodeDecorator {
+export class IdDecorator implements IVNodePostprocessor {
 
     @inject(TYPES.ILogger) protected logger: ILogger;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;

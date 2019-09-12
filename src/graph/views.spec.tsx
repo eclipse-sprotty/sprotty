@@ -23,7 +23,7 @@ import { expect } from "chai";
 import { Container } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../base/types";
-import { IVNodeDecorator, FocusFixDecorator } from '../base/views/vnode-decorators';
+import { IVNodePostprocessor, FocusFixDecorator } from '../base/views/vnode-decorators';
 import { CircularNodeView, RectangularNodeView } from "../lib/svg-views";
 import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
 import { RenderingContext, configureView, ViewRegistry } from "../base/views/view";
@@ -68,7 +68,7 @@ describe('graph views', () => {
     configureView(container, 'edge:straight', PolylineEdgeView);
     configureView(container, 'port', RectangularNodeView);
 
-    const decorators = container.getAll<IVNodeDecorator>(TYPES.IVNodeDecorator);
+    const decorators = container.getAll<IVNodePostprocessor>(TYPES.IVNodePostprocessor);
     const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)(decorators);
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
     const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);

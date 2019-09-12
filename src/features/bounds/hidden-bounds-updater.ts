@@ -20,7 +20,7 @@ import { TYPES } from "../../base/types";
 import { almostEquals, Bounds, Point } from '../../utils/geometry';
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { Action } from "../../base/actions/action";
-import { IVNodeDecorator } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
 import { ComputedBoundsAction, ElementAndBounds, ElementAndAlignment, RequestBoundsAction } from './bounds-manipulation';
 import { BoundsAware, isSizeable, isLayoutContainer, isAlignable } from "./model";
@@ -46,7 +46,7 @@ export class BoundsData {
  * the origin, we also issue a realign with the ComputedBoundsAction.
  */
 @injectable()
-export class HiddenBoundsUpdater implements IVNodeDecorator {
+export class HiddenBoundsUpdater implements IVNodePostprocessor {
 
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.Layouter) protected layouter: Layouter;

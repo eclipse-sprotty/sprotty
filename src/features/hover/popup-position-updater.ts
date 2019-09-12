@@ -17,12 +17,12 @@
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../../base/types";
-import { IVNodeDecorator } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
 import { ViewerOptions } from "../../base/views/viewer-options";
 import { SModelElement } from "../../base/model/smodel";
 
 @injectable()
-export class PopupPositionUpdater implements IVNodeDecorator {
+export class PopupPositionUpdater implements IVNodePostprocessor {
 
     @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
 

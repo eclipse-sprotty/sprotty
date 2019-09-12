@@ -59,7 +59,7 @@ export const TYPES = {
     IViewerProvider: Symbol('IViewerProvider'),
     ViewRegistration: Symbol('ViewRegistration'),
     ViewRegistry: Symbol('ViewRegistry'),
-    IVNodeDecorator: Symbol('IVNodeDecorator'),
+    IVNodePostprocessor: Symbol('IVNodePostprocessor'),
     IToolManager: Symbol('IToolManager'),
     IUIExtension: Symbol('IUIExtension'),
     UIExtensionRegistry: Symbol('UIExtensionRegistry'),

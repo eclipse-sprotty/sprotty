@@ -21,12 +21,12 @@ import { IActionDispatcher } from "../actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { TYPES } from "../types";
 import { DOMHelper } from "./dom-helper";
-import { IVNodeDecorator } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-decorators";
 import { on } from "./vnode-utils";
 import { Point } from "../../utils/geometry";
 
 @injectable()
-export class MouseTool implements IVNodeDecorator {
+export class MouseTool implements IVNodePostprocessor {
 
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
