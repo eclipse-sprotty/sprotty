@@ -22,8 +22,9 @@ import { configureCommand } from "../../base/commands/command-registration";
 const moveModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.MouseListener).to(MoveMouseListener);
     configureCommand({ bind, isBound }, MoveCommand);
-    bind(TYPES.IVNodePostprocessor).to(LocationDecorator);
-    bind(TYPES.HiddenVNodeDecorator).to(LocationDecorator);
+    bind(LocationDecorator).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(LocationDecorator);
+    bind(TYPES.HiddenVNodeDecorator).toService(LocationDecorator);
 });
 
 export default moveModule;

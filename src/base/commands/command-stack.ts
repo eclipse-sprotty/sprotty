@@ -219,7 +219,7 @@ export class CommandStack implements ICommandStack {
                     target = 'popup';
                 else
                     target = 'main';
-                const context = this.createContext(state[target].model);
+                const context = this.createContext(state.main.model);
 
                 let commandResult: CommandReturn;
                 try {
