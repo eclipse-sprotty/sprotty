@@ -16,7 +16,7 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
 import { EnableDefaultToolsAction, EnableToolsAction, Tool } from "./tool";
-import { IActionHandlerInitializer, IActionHandler, ActionHandlerRegistry } from "../actions/action-handler";
+import { IActionHandler } from "../actions/action-handler";
 import { Action } from "../actions/action";
 import { ICommand } from "../commands/command";
 import { KeyListener } from "../views/key-tool";
@@ -119,20 +119,18 @@ export class ToolManager implements IToolManager {
 }
 
 @injectable()
-export class ToolManagerActionHandlerInitializer implements IActionHandlerInitializer, IActionHandler {
+export class ToolManagerActionHandler implements IActionHandler {
     @inject(TYPES.IToolManager)
     readonly toolManager: IToolManager;
 
-    initialize(registry: ActionHandlerRegistry): void {
-        registry.register(EnableDefaultToolsAction.KIND, this);
-        registry.register(EnableToolsAction.KIND, this);
-    }
-
     handle(action: Action): void | ICommand | Action {
-        if (action instanceof EnableDefaultToolsAction) {
-            this.toolManager.enableDefaultTools();
-        } else if (action instanceof EnableToolsAction) {
-            this.toolManager.enable(action.toolIds);
+        switch (action.kind) {
+            case EnableDefaultToolsAction.KIND:
+                this.toolManager.enableDefaultTools();
+                break;
+            case EnableToolsAction.KIND:
+                this.toolManager.enable((action as EnableToolsAction).toolIds);
+                break;
         }
     }
 }

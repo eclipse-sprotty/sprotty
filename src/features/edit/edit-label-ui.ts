@@ -16,7 +16,7 @@
 import { inject, injectable, optional } from "inversify";
 import { Action } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../../base/actions/action-handler";
+import { IActionHandler } from "../../base/actions/action-handler";
 import { ICommand } from "../../base/commands/command";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
@@ -28,19 +28,14 @@ import { CommitModelAction } from "../../model-source/commit-model";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
 import { getZoom } from "../viewport/zoom";
-import { ApplyLabelEditAction, EditLabelAction, EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity } from "./edit-label";
+import {
+    ApplyLabelEditAction, EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity
+} from "./edit-label";
 import { EditableLabel, isEditableLabel } from "./model";
 
 /** Shows a UI extension for editing a label on emitted `EditLabelAction`s. */
 @injectable()
-export class EditLabelActionHandlerInitializer implements IActionHandlerInitializer, IActionHandler {
-
-    @inject(TYPES.IActionDispatcherProvider) public actionDispatcherProvider: IActionDispatcherProvider;
-
-    initialize(registry: ActionHandlerRegistry): void {
-        registry.register(EditLabelAction.KIND, this);
-    }
-
+export class EditLabelActionHandler implements IActionHandler {
     handle(action: Action): void | Action | ICommand {
         if (isEditLabelAction(action)) {
             return new SetUIExtensionVisibilityAction(EditLabelUI.ID, true, [action.labelId]);

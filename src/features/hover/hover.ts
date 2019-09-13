@@ -21,7 +21,8 @@ import { TYPES } from "../../base/types";
 import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
-import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn } from "../../base/commands/command";
+import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn, ICommand } from "../../base/commands/command";
+import { IActionHandler } from "../../base/actions/action-handler";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
 import { KeyListener } from "../../base/views/key-tool";
 import { findParentByFeature, findParent } from "../../base/model/smodel-utils";
@@ -322,5 +323,18 @@ export class HoverKeyListener extends KeyListener {
             return [new SetPopupModelAction({type: EMPTY_ROOT.type, id: EMPTY_ROOT.id})];
         }
         return [];
+    }
+}
+
+@injectable()
+export class ClosePopupActionHandler implements IActionHandler {
+    protected popupOpen: boolean = false;
+
+    handle(action: Action): void | ICommand | Action {
+        if (action.kind === SetPopupModelCommand.KIND) {
+            this.popupOpen = (action as SetPopupModelAction).newRoot.type !== EMPTY_ROOT.type;
+        } else if (this.popupOpen) {
+            return new SetPopupModelAction({id: EMPTY_ROOT.id, type: EMPTY_ROOT.type});
+        }
     }
 }
