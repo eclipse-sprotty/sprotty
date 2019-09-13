@@ -16,15 +16,15 @@
 
 import { ContainerModule } from "inversify";
 import { TYPES } from '../../base/types';
-import { MoveCommand, MoveMouseListener, LocationDecorator } from './move';
+import { MoveCommand, MoveMouseListener, LocationPostprocessor } from './move';
 import { configureCommand } from "../../base/commands/command-registration";
 
 const moveModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.MouseListener).to(MoveMouseListener);
     configureCommand({ bind, isBound }, MoveCommand);
-    bind(LocationDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodePostprocessor).toService(LocationDecorator);
-    bind(TYPES.HiddenVNodeDecorator).toService(LocationDecorator);
+    bind(LocationPostprocessor).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(LocationPostprocessor);
+    bind(TYPES.HiddenVNodePostprocessor).toService(LocationPostprocessor);
 });
 
 export default moveModule;

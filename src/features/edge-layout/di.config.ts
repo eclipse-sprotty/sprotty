@@ -16,12 +16,12 @@
 
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
-import { EdgeLayoutDecorator } from "./edge-layout";
+import { EdgeLayoutPostprocessor } from "./edge-layout";
 
 const edgeLayoutModule = new ContainerModule(bind => {
-    bind(EdgeLayoutDecorator).toSelf().inSingletonScope();
-    bind(TYPES.IVNodePostprocessor).toService(EdgeLayoutDecorator);
-    bind(TYPES.HiddenVNodeDecorator).toService(EdgeLayoutDecorator);
+    bind(EdgeLayoutPostprocessor).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(EdgeLayoutPostprocessor);
+    bind(TYPES.HiddenVNodePostprocessor).toService(EdgeLayoutPostprocessor);
 });
 
 export default edgeLayoutModule;

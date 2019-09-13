@@ -20,7 +20,7 @@ import { TYPES } from "../types";
 import { almostEquals, Bounds, isValidDimension, ORIGIN_POINT } from '../../utils/geometry';
 import { Action } from '../actions/action';
 import { IActionDispatcher } from '../actions/action-dispatcher';
-import { IVNodePostprocessor } from "../views/vnode-decorators";
+import { IVNodePostprocessor } from "../views/vnode-postprocessor";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { SystemCommand, CommandExecutionContext, CommandReturn } from '../commands/command';
 

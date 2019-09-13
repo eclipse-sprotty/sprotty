@@ -23,7 +23,7 @@ import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smode
 import { findParentByFeature, translatePoint } from "../../base/model/smodel-utils";
 import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
-import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { setAttr } from "../../base/views/vnode-utils";
 import { SEdge } from "../../graph/sgraph";
 import { CommitModelAction } from "../../model-source/commit-model";
@@ -555,7 +555,7 @@ export class MoveMouseListener extends MouseListener {
 }
 
 @injectable()
-export class LocationDecorator implements IVNodePostprocessor {
+export class LocationPostprocessor implements IVNodePostprocessor {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (isEdgeLayoutable(element) && element.parent instanceof SEdge) {

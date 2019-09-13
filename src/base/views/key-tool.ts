@@ -20,7 +20,7 @@ import { TYPES } from "../types";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { Action } from "../actions/action";
-import { IVNodePostprocessor } from "./vnode-decorators";
+import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { on } from "./vnode-utils";
 
 @injectable()

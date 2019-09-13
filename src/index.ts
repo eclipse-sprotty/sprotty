@@ -51,7 +51,7 @@ export * from './base/views/view';
 export * from './base/views/viewer-cache';
 export * from './base/views/viewer-options';
 export * from './base/views/viewer';
-export * from './base/views/vnode-decorators';
+export * from './base/views/vnode-postprocessor';
 export * from './base/views/vnode-utils';
 
 export * from './base/types';

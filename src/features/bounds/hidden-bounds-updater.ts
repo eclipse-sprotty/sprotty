@@ -20,7 +20,7 @@ import { TYPES } from "../../base/types";
 import { almostEquals, Bounds, Point } from '../../utils/geometry';
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { Action } from "../../base/actions/action";
-import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
 import { ComputedBoundsAction, ElementAndBounds, ElementAndAlignment, RequestBoundsAction } from './bounds-manipulation';
 import { BoundsAware, isSizeable, isLayoutContainer, isAlignable } from "./model";

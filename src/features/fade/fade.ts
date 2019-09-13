@@ -19,7 +19,7 @@ import { VNode } from "snabbdom/vnode";
 import { Animation } from "../../base/animations/animation";
 import { CommandExecutionContext } from "../../base/commands/command";
 import { SModelRoot, SModelElement, SChildElement } from "../../base/model/smodel";
-import { IVNodePostprocessor } from "../../base/views/vnode-decorators";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { setAttr } from "../../base/views/vnode-utils";
 import { Fadeable, isFadeable } from "./model";
 

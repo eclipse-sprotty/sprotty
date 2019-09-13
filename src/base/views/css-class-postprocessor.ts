@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2018 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,32 +14,23 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
+import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { VNode } from "snabbdom/vnode";
-import { TYPES } from "../types";
-import { ILogger } from "../../utils/logging";
 import { SModelElement } from "../model/smodel";
-import { IVNodePostprocessor } from "./vnode-decorators";
-import { DOMHelper } from "./dom-helper";
-import { getAttrs } from "./vnode-utils";
+import { setClass } from "./vnode-utils";
+import { injectable } from "inversify";
 
 @injectable()
-export class IdDecorator implements IVNodePostprocessor {
-
-    @inject(TYPES.ILogger) protected logger: ILogger;
-    @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
-
+export class CssClassPostprocessor implements IVNodePostprocessor {
     decorate(vnode: VNode, element: SModelElement): VNode {
-        const attrs = getAttrs(vnode);
-        if (attrs.id !== undefined)
-            this.logger.warn(vnode, 'Overriding id of vnode (' + attrs.id + '). Make sure not to set it manually in view.');
-        attrs.id = this.domHelper.createUniqueDOMElementId(element);
-        if (!vnode.key)
-            vnode.key = element.id;
+        if (element.cssClasses) {
+            for (const cssClass of element.cssClasses)
+                setClass(vnode, cssClass, true);
+        }
         return vnode;
     }
 
     postUpdate(): void {
+        // empty
     }
-
 }

@@ -23,7 +23,7 @@ import { expect } from "chai";
 import { Container } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../base/types";
-import { IVNodePostprocessor, FocusFixDecorator } from '../base/views/vnode-decorators';
+import { IVNodePostprocessor, FocusFixPostprocessor } from '../base/views/vnode-postprocessor';
 import { CircularNodeView, RectangularNodeView } from "../lib/svg-views";
 import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
 import { RenderingContext, configureView, ViewRegistry } from "../base/views/view";
@@ -68,8 +68,8 @@ describe('graph views', () => {
     configureView(container, 'edge:straight', PolylineEdgeView);
     configureView(container, 'port', RectangularNodeView);
 
-    const decorators = container.getAll<IVNodePostprocessor>(TYPES.IVNodePostprocessor);
-    const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)(decorators);
+    const postprocessors = container.getAll<IVNodePostprocessor>(TYPES.IVNodePostprocessor);
+    const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)(postprocessors);
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
     const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
 
@@ -110,7 +110,7 @@ describe('graph views', () => {
     });
 
     it('render a whole graph', () => {
-        FocusFixDecorator.tabIndex = 1000;
+        FocusFixPostprocessor.tabIndex = 1000;
         const graph = createModel();
         const vnode = context.renderElement(graph);
         const expectation = '<svg id="sprotty_graph" class="sprotty-graph" tabindex="1001">'

@@ -14,33 +14,32 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
+import { TYPES } from "../types";
+import { ILogger } from "../../utils/logging";
 import { SModelElement } from "../model/smodel";
-import { Action } from "../actions/action";
-import { setAttr } from "./vnode-utils";
-
-/**
- * Manipulates a created VNode after it has been created.
- * Used to register listeners and add animations.
- */
-export interface IVNodePostprocessor {
-    decorate(vnode: VNode, element: SModelElement): VNode
-    postUpdate(cause?: Action): void
-}
+import { IVNodePostprocessor } from "./vnode-postprocessor";
+import { DOMHelper } from "./dom-helper";
+import { getAttrs } from "./vnode-utils";
 
 @injectable()
-export class FocusFixDecorator implements IVNodePostprocessor {
+export class IdPostprocessor implements IVNodePostprocessor {
 
-    static tabIndex: number = 1000;
+    @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
     decorate(vnode: VNode, element: SModelElement): VNode {
-        if (vnode.sel && vnode.sel.startsWith('svg'))
-            // allows to set focus in Firefox
-            setAttr(vnode, 'tabindex', ++FocusFixDecorator.tabIndex);
+        const attrs = getAttrs(vnode);
+        if (attrs.id !== undefined)
+            this.logger.warn(vnode, 'Overriding id of vnode (' + attrs.id + '). Make sure not to set it manually in view.');
+        attrs.id = this.domHelper.createUniqueDOMElementId(element);
+        if (!vnode.key)
+            vnode.key = element.id;
         return vnode;
     }
 
     postUpdate(): void {
     }
+
 }

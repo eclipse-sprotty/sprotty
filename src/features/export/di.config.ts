@@ -16,13 +16,13 @@
 
 import { ContainerModule } from "inversify";
 import { TYPES } from '../../base/types';
-import { ExportSvgDecorator, ExportSvgKeyListener, ExportSvgCommand } from './export';
+import { ExportSvgPostprocessor, ExportSvgKeyListener, ExportSvgCommand } from './export';
 import { SvgExporter } from './svg-exporter';
 import { configureCommand } from "../../base/commands/command-registration";
 
 const exportSvgModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.KeyListener).to(ExportSvgKeyListener).inSingletonScope();
-    bind(TYPES.HiddenVNodeDecorator).to(ExportSvgDecorator).inSingletonScope();
+    bind(TYPES.HiddenVNodePostprocessor).to(ExportSvgPostprocessor).inSingletonScope();
     configureCommand({ bind, isBound }, ExportSvgCommand);
     bind(TYPES.SvgExporter).to(SvgExporter).inSingletonScope();
 });
