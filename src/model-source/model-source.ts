@@ -23,7 +23,9 @@ import { RequestModelAction } from "../base/features/set-model";
 import { TYPES } from "../base/types";
 import { ViewerOptions } from "../base/views/viewer-options";
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { SModelRootSchema } from "../base/model/smodel";
+import { SModelRootSchema, SModelIndex, SModelElementSchema } from "../base/model/smodel";
+import { ComputedBoundsAction } from "../features/bounds/bounds-manipulation";
+import { Point, Dimension } from "../utils/geometry";
 
 /**
  * A model source is serving the model to the event cycle. It represents
@@ -69,4 +71,38 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
      * @return the previous model.
      */
     abstract commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema;
+}
+
+
+@injectable()
+export class ComputedBoundsApplicator {
+    apply(root: SModelRootSchema, action: ComputedBoundsAction): SModelIndex<SModelElementSchema> {
+        const index = new SModelIndex();
+        index.add(root);
+        for (const b of action.bounds) {
+            const element = index.getById(b.elementId);
+            if (element !== undefined)
+                this.applyBounds(element, b.newPosition, b.newSize);
+        }
+        if (action.alignments !== undefined) {
+            for (const a of action.alignments) {
+                const element = index.getById(a.elementId);
+                if (element !== undefined)
+                    this.applyAlignment(element, a.newAlignment);
+            }
+        }
+        return index;
+    }
+
+    protected applyAlignment(element: SModelElementSchema, newAlignment: Point) {
+        const e = element as any;
+        e.alignment = { x: newAlignment.x, y: newAlignment.y };
+    }
+
+    protected applyBounds(element: SModelElementSchema, newPosition: Point | undefined, newSize: Dimension) {
+        const e = element as any;
+        if (newPosition)
+            e.position = {...newPosition};
+        e.size = {...newSize};
+    }
 }
