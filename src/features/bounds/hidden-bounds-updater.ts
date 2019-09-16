@@ -16,15 +16,15 @@
 
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
-import { TYPES } from "../../base/types";
-import { almostEquals, Bounds, Point } from '../../utils/geometry';
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { Action } from "../../base/actions/action";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { ComputedBoundsAction, ElementAndBounds, ElementAndAlignment, RequestBoundsAction } from './bounds-manipulation';
-import { BoundsAware, isSizeable, isLayoutContainer, isAlignable } from "./model";
+import { SChildElement, SModelElement, SModelRoot } from "../../base/model/smodel";
+import { TYPES } from "../../base/types";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
+import { almostEquals, Bounds, Point } from '../../utils/geometry';
+import { ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from './bounds-manipulation';
 import { Layouter } from "./layout";
+import { BoundsAware, isAlignable, isLayoutContainer, isSizeable } from "./model";
 
 export class BoundsData {
     vnode?: VNode;
@@ -80,11 +80,22 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
         const realignments: ElementAndAlignment[] = [];
         this.element2boundsData.forEach(
             (boundsData, element) => {
-                if (boundsData.boundsChanged && boundsData.bounds !== undefined)
-                    resizes.push({
+                if (boundsData.boundsChanged && boundsData.bounds !== undefined) {
+                    const resize: ElementAndBounds = {
                         elementId: element.id,
-                        newBounds: boundsData.bounds
-                    });
+                        newSize: {
+                            width: boundsData.bounds.width,
+                            height: boundsData.bounds.height
+                        }
+                    };
+                    // don't copy position if the element is layouted by the server
+                    if (element instanceof SChildElement && isLayoutContainer(element.parent))
+                        resize.newPosition = {
+                            x: boundsData.bounds.x,
+                            y: boundsData.bounds.y,
+                        };
+                    resizes.push(resize);
+                }
                 if (boundsData.alignmentChanged && boundsData.alignment !== undefined)
                     realignments.push({
                         elementId: element.id,

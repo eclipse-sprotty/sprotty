@@ -29,6 +29,7 @@ import { IActionDispatcher } from "../base/actions/action-dispatcher";
 import { UpdateModelAction } from "../features/update/update-model";
 import { LocalModelSource } from "./local-model-source";
 import defaultContainerModule from "../base/di.config";
+import { ComputedBoundsApplicator } from "./model-source";
 
 describe('LocalModelSource', () => {
 
@@ -72,6 +73,7 @@ describe('LocalModelSource', () => {
         const container = new Container();
         container.load(defaultContainerModule);
         container.bind(TYPES.ModelSource).to(LocalModelSource);
+        container.bind(ComputedBoundsApplicator).toSelf().inSingletonScope();
         container.rebind(TYPES.IActionDispatcher).to(MockActionDispatcher).inSingletonScope();
         overrideViewerOptions(container, options);
         return container;
@@ -128,7 +130,8 @@ describe('LocalModelSource', () => {
         dispatcher.dispatch(new ComputedBoundsAction([
             {
                 elementId: 'child1',
-                newBounds: { x: 10, y: 10, width: 20, height: 20 }
+                newPosition: { x: 10, y: 10 },
+                newSize: { width: 20, height: 20 }
             }
         ], undefined, undefined, dispatcher.requests[0].requestId));
         const root2: SModelRootSchema = {
@@ -148,7 +151,8 @@ describe('LocalModelSource', () => {
         dispatcher.dispatch(new ComputedBoundsAction([
             {
                 elementId: 'bar',
-                newBounds: { x: 10, y: 10, width: 20, height: 20 }
+                newPosition: { x: 10, y: 10 },
+                newSize: { width: 20, height: 20 }
             }
         ], undefined, undefined, dispatcher.requests[1].requestId));
         await promise2;
@@ -167,7 +171,7 @@ describe('LocalModelSource', () => {
                     type: 'node',
                     id: 'child1',
                     position: { x: 10, y: 10 },
-                    size: { width: 20, height: 20 },
+                    size: { width: 20, height: 20 }
                 }
             ]
         });
@@ -284,7 +288,11 @@ describe('LocalModelSource', () => {
         const promise1 = modelSource.setModel(root1);
         expect(dispatcher.requests).to.have.lengthOf(1);
         dispatcher.dispatch(new ComputedBoundsAction([
-            { elementId: 'child1', newBounds: { x: 10, y: 10, width: 20, height: 20 } }
+            {
+                elementId: 'child1',
+                newPosition: { x: 10, y: 10 },
+                newSize: { width: 20, height: 20 }
+             }
         ], undefined, undefined, dispatcher.requests[0].requestId));
         await promise1;
 
@@ -296,7 +304,11 @@ describe('LocalModelSource', () => {
         const promise2 = modelSource.updateModel(root2);
         expect(dispatcher.requests).to.have.lengthOf(2);
         dispatcher.dispatch(new ComputedBoundsAction([
-            { elementId: 'bar', newBounds: { x: 10, y: 10, width: 20, height: 20 } }
+            {
+                elementId: 'bar',
+                newPosition: { x: 10, y: 10 },
+                newSize: { width: 20, height: 20 }
+            }
         ], undefined, undefined, dispatcher.requests[1].requestId));
         await promise2;
 

@@ -16,7 +16,7 @@
 
 import { saveAs } from 'file-saver';
 import { inject, injectable, optional } from "inversify";
-import { Bounds, Point } from "../utils/geometry";
+import { Bounds } from "../utils/geometry";
 import { ILogger } from "../utils/logging";
 import { FluentIterable } from '../utils/iterable';
 import { TYPES } from "../base/types";
@@ -34,7 +34,7 @@ import { RequestPopupModelAction, SetPopupModelAction } from "../features/hover/
 import { applyMatches, Match } from "../features/update/model-matching";
 import { UpdateModelAction } from "../features/update/update-model";
 import { GetSelectionAction } from '../features/select/select';
-import { ModelSource } from "./model-source";
+import { ModelSource, ComputedBoundsApplicator } from "./model-source";
 
 /**
  * A model source that allows to set and modify the model through function calls.
@@ -45,6 +45,7 @@ import { ModelSource } from "./model-source";
 export class LocalModelSource extends ModelSource {
 
     @inject(TYPES.ILogger) protected readonly logger: ILogger;
+    @inject(ComputedBoundsApplicator) protected readonly computedBoundsApplicator: ComputedBoundsApplicator;
     @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider;
     @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine;
 
@@ -80,7 +81,7 @@ export class LocalModelSource extends ModelSource {
         return this.submitModel(newRoot, false);
     }
 
-    commitModel(newRoot: SModelRootSchema): SModelRootSchema {
+    commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema {
         const previousRoot = this.currentRoot;
         this.currentRoot = newRoot;
         return previousRoot;
@@ -129,7 +130,7 @@ export class LocalModelSource extends ModelSource {
     protected async submitModel(newRoot: SModelRootSchema, update: boolean | Match[], cause?: Action): Promise<void> {
         if (this.viewerOptions.needsClientLayout) {
             const computedBounds = await this.actionDispatcher.request(RequestBoundsAction.create(newRoot));
-            const index = this.handleComputedBounds(computedBounds);
+            const index = this.computedBoundsApplicator.apply(this.currentRoot, computedBounds);
             await this.doSubmitModel(newRoot, true, cause, index);
         } else {
             await this.doSubmitModel(newRoot, update, cause);
@@ -237,7 +238,7 @@ export class LocalModelSource extends ModelSource {
                 this.handleRequestModel(action as RequestModelAction);
                 break;
             case ComputedBoundsAction.KIND:
-                this.handleComputedBounds(action as ComputedBoundsAction);
+                this.computedBoundsApplicator.apply(this.currentRoot, action as ComputedBoundsAction);
                 break;
             case RequestPopupModelAction.KIND:
                 this.handleRequestPopupModel(action as RequestPopupModelAction);
@@ -250,36 +251,6 @@ export class LocalModelSource extends ModelSource {
 
     protected handleRequestModel(action: RequestModelAction): void {
         this.submitModel(this.currentRoot, false, action);
-    }
-
-    protected handleComputedBounds(action: ComputedBoundsAction): SModelIndex<SModelElementSchema> {
-        const root = this.currentRoot;
-        const index = new SModelIndex();
-        index.add(root);
-        for (const b of action.bounds) {
-            const element = index.getById(b.elementId);
-            if (element !== undefined)
-                this.applyBounds(element, b.newBounds);
-        }
-        if (action.alignments !== undefined) {
-            for (const a of action.alignments) {
-                const element = index.getById(a.elementId);
-                if (element !== undefined)
-                    this.applyAlignment(element, a.newAlignment);
-            }
-        }
-        return index;
-    }
-
-    protected applyBounds(element: SModelElementSchema, newBounds: Bounds) {
-        const e = element as any;
-        e.position = { x: newBounds.x, y: newBounds.y };
-        e.size = { width: newBounds.width, height: newBounds.height };
-    }
-
-    protected applyAlignment(element: SModelElementSchema, newAlignment: Point) {
-        const e = element as any;
-        e.alignment = { x: newAlignment.x, y: newAlignment.y };
     }
 
     protected handleRequestPopupModel(action: RequestPopupModelAction): void {

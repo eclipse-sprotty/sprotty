@@ -20,7 +20,7 @@ import { Action } from "../base/actions/action";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { ICommand } from "../base/commands/command";
 import { SetModelAction, SetModelCommand } from "../base/features/set-model";
-import { SModelElementSchema, SModelIndex, SModelRootSchema } from "../base/model/smodel";
+import { SModelRootSchema } from "../base/model/smodel";
 import { TYPES } from "../base/types";
 import { ComputedBoundsAction, RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
 import { CollapseExpandAction, CollapseExpandAllAction } from '../features/expand/expand';
@@ -28,9 +28,8 @@ import { ExportSvgAction } from '../features/export/svg-exporter';
 import { RequestPopupModelAction } from "../features/hover/hover";
 import { OpenAction } from '../features/open/open';
 import { UpdateModelAction, UpdateModelCommand } from "../features/update/update-model";
-import { Bounds, Point } from "../utils/geometry";
 import { ILogger } from "../utils/logging";
-import { ModelSource } from "./model-source";
+import { ComputedBoundsApplicator, ModelSource } from "./model-source";
 
 /**
  * Wrapper for actions when transferring them between client and server via a DiagramServer.
@@ -67,6 +66,7 @@ const receivedFromServerProperty = '__receivedFromServer';
 export abstract class DiagramServer extends ModelSource {
 
     @inject(TYPES.ILogger) protected logger: ILogger;
+    @inject(ComputedBoundsApplicator) protected readonly computedBoundsApplicator: ComputedBoundsApplicator;
 
     clientId: string;
 
@@ -165,21 +165,8 @@ export abstract class DiagramServer extends ModelSource {
         if (this.viewerOptions.needsServerLayout) {
             return true;
         } else {
-            const index = new SModelIndex();
             const root = this.currentRoot;
-            index.add(root);
-            for (const b of action.bounds) {
-                const element = index.getById(b.elementId);
-                if (element !== undefined)
-                    this.applyBounds(element, b.newBounds);
-            }
-            if (action.alignments !== undefined) {
-                for (const a of action.alignments) {
-                    const element = index.getById(a.elementId);
-                    if (element !== undefined)
-                        this.applyAlignment(element, a.newAlignment);
-                }
-            }
+            this.computedBoundsApplicator.apply(root, action);
             if (root.type === this.lastSubmittedModelType) {
                 this.actionDispatcher.dispatch(new UpdateModelAction(root));
             } else {
@@ -188,17 +175,6 @@ export abstract class DiagramServer extends ModelSource {
             this.lastSubmittedModelType = root.type;
             return false;
         }
-    }
-
-    protected applyBounds(element: SModelElementSchema, newBounds: Bounds) {
-        const e = element as any;
-        e.position = { x: newBounds.x, y: newBounds.y };
-        e.size = { width: newBounds.width, height: newBounds.height };
-    }
-
-    protected applyAlignment(element: SModelElementSchema, newAlignment: Point) {
-        const e = element as any;
-        e.alignment = { x: newAlignment.x, y: newAlignment.y };
     }
 
     protected handleExportSvgAction(action: ExportSvgAction): boolean {

@@ -14,13 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Point } from "../../utils/geometry";
+import { inject, injectable } from "inversify";
+import { Action, generateRequestId, RequestAction, ResponseAction } from "../../base/actions/action";
+import { CommandExecutionContext, CommandResult, CommandReturn, HiddenCommand, SystemCommand } from "../../base/commands/command";
 import { SModelElement, SModelRootSchema } from "../../base/model/smodel";
-import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
-import { CommandExecutionContext, HiddenCommand, SystemCommand, CommandResult, CommandReturn } from "../../base/commands/command";
-import { BoundsAware, isBoundsAware, Alignable } from './model';
-import { injectable, inject } from "inversify";
 import { TYPES } from "../../base/types";
+import { Bounds, Dimension, Point } from "../../utils/geometry";
+import { Alignable, BoundsAware, isBoundsAware } from './model';
 
 /**
  * Sent from the model source (e.g. a DiagramServer) to the client to update the bounds of some
@@ -75,7 +75,8 @@ export class ComputedBoundsAction implements ResponseAction {
  */
 export interface ElementAndBounds {
     elementId: string
-    newBounds: Bounds
+    newPosition?: Point
+    newSize: Dimension
 }
 
 /**
@@ -93,13 +94,15 @@ export class LayoutAction implements Action {
     static readonly KIND = 'layout';
     readonly kind = LayoutAction.KIND;
 
+    layoutType: string;
     elementIds: string[];
 }
 
 export interface ResolvedElementAndBounds {
     element: SModelElement & BoundsAware
     oldBounds: Bounds
-    newBounds: Bounds
+    newPosition?: Point
+    newSize: Dimension
 }
 
 export interface ResolvedElementAndAlignment {
@@ -126,7 +129,8 @@ export class SetBoundsCommand extends SystemCommand {
                     this.bounds.push({
                         element: element,
                         oldBounds: element.bounds,
-                        newBounds: b.newBounds,
+                        newPosition: b.newPosition,
+                        newSize: b.newSize
                     });
                 }
             }
@@ -143,7 +147,20 @@ export class SetBoundsCommand extends SystemCommand {
 
     redo(context: CommandExecutionContext): CommandReturn {
         this.bounds.forEach(
-            b => b.element.bounds = b.newBounds
+            b => {
+                if (b.newPosition)
+                    b.element.bounds = {
+                        ...b.newPosition,
+                        ...b.newSize,
+                    };
+                else
+                    // keep the position
+                    b.element.bounds = {
+                        x: b.element.bounds.x,
+                        y: b.element.bounds.y,
+                        ...b.newSize
+                    };
+            }
         );
         return context.root;
     }

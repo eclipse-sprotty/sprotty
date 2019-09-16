@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../base/types";
-import { ModelSource } from "./model-source";
 import { configureCommand } from "../base/commands/command-registration";
+import { TYPES } from "../base/types";
 import { CommitModelCommand } from "./commit-model";
+import { ComputedBoundsApplicator, ModelSource } from "./model-source";
 
 /**
  * This container module does NOT provide any binding for TYPES.ModelSource because that needs to be
@@ -35,6 +35,7 @@ const modelSourceModule = new ContainerModule((bind, _unbind, isBound) => {
     });
     configureCommand({bind, isBound}, CommitModelCommand);
     bind(TYPES.IActionHandlerInitializer).toService(TYPES.ModelSource);
+    bind(ComputedBoundsApplicator).toSelf().inSingletonScope();
 });
 
 export default modelSourceModule;
