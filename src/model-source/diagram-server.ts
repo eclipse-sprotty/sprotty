@@ -19,7 +19,7 @@ import { inject, injectable } from "inversify";
 import { Action } from "../base/actions/action";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { ICommand } from "../base/commands/command";
-import { SetModelAction, SetModelCommand } from "../base/features/set-model";
+import { SetModelAction, SetModelCommand, RequestModelAction } from "../base/features/set-model";
 import { SModelRootSchema } from "../base/model/smodel";
 import { TYPES } from "../base/types";
 import { ComputedBoundsAction, RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
@@ -94,14 +94,17 @@ export abstract class DiagramServer extends ModelSource {
 
     handle(action: Action): void | ICommand | Action {
         const forwardToServer = this.handleLocally(action);
-        if (forwardToServer) {
-            const message: ActionMessage = {
-                clientId: this.clientId,
-                action: action
-            };
-            this.logger.log(this, 'sending', message);
-            this.sendMessage(message);
-        }
+        if (forwardToServer)
+            this.forwardToServer(action);
+    }
+
+    protected forwardToServer(action: Action): void {
+        const message: ActionMessage = {
+            clientId: this.clientId,
+            action: action
+        };
+        this.logger.log(this, 'sending', message);
+        this.sendMessage(message);
     }
 
     protected abstract sendMessage(message: ActionMessage): void;
@@ -130,6 +133,8 @@ export abstract class DiagramServer extends ModelSource {
         switch (action.kind) {
             case ComputedBoundsAction.KIND:
                 return this.handleComputedBounds(action as ComputedBoundsAction);
+            case RequestModelAction.KIND:
+                return this.handleRequestModel(action as RequestModelAction);
             case RequestBoundsCommand.KIND:
                 return false;
             case ExportSvgAction.KIND:
@@ -155,6 +160,20 @@ export abstract class DiagramServer extends ModelSource {
                 }
             }
         }
+    }
+
+    protected handleRequestModel(action: RequestModelAction): boolean {
+        const newOptions = {
+            needsClientLayout: this.viewerOptions.needsClientLayout,
+            needsServerLayout: this.viewerOptions.needsServerLayout,
+            ...action.options
+        };
+        const newAction = {
+            ...action,
+            options: newOptions
+        };
+        this.forwardToServer(newAction);
+        return false;
     }
 
     /**
