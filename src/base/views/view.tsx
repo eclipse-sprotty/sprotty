@@ -48,7 +48,7 @@ export interface RenderingContext {
 }
 
 /**
- * Used to bind a model element type to a view constructor in the ViewRegistry.
+ * Used to bind a model element type to a view factory in the ViewRegistry.
  */
 export interface ViewRegistration {
     type: string
@@ -82,8 +82,9 @@ export class ViewRegistry extends InstanceRegistry<IView> {
 /**
  * Combines `registerModelElement` and `configureView`.
  */
-export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, type: string,
-        modelConstr: new () => SModelElement, viewConstr: new () => IView, features?: CustomFeatures): void {
+export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        type: string, modelConstr: new () => SModelElement, viewConstr: interfaces.ServiceIdentifier<IView>,
+        features?: CustomFeatures): void {
     registerModelElement(context, type, modelConstr, features);
     configureView(context, type, viewConstr);
 }
@@ -91,19 +92,20 @@ export function configureModelElement(context: { bind: interfaces.Bind, isBound:
 /**
  * Utility function to register a view for a model element type.
  */
-export function configureView(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, type: string, constr: new () => IView): void {
-    if (isInjectable(constr)) {
-        if (!context.isBound(constr))
+export function configureView(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        type: string, constr: interfaces.ServiceIdentifier<IView>): void {
+    if (typeof constr === 'function') {
+        if (!isInjectable(constr)) {
+            throw new Error(`Views should be @injectable: ${constr.name}`);
+        }
+        if (!context.isBound(constr)) {
             context.bind(constr).toSelf();
-        context.bind(TYPES.ViewRegistration).toDynamicValue((ctx) => {
-            return {
-                factory: () => ctx.container.get(constr),
-                type
-            };
-        });
-    } else {
-            throw Error(`Views should be @injectable ${constr.name}`);
+        }
     }
+    context.bind(TYPES.ViewRegistration).toDynamicValue(ctx => ({
+        type,
+        factory: () => ctx.container.get(constr)
+    }));
 }
 
 /**

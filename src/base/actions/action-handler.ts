@@ -14,9 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional } from "inversify";
+import { injectable, multiInject, optional, interfaces } from "inversify";
 import { TYPES } from "../types";
 import { MultiInstanceRegistry } from "../../utils/registry";
+import { isInjectable } from "../../utils/inversify";
 import { ICommand } from "../commands/command";
 import { Action } from "./action";
 
@@ -29,7 +30,16 @@ export interface IActionHandler {
 }
 
 /**
- * Initializes and registers action handlers.
+ * Used to bind an action kind to an action handler factory in the ActionHandlerRegistry.
+ */
+export interface ActionHandlerRegistration {
+    actionKind: string
+    factory: () => IActionHandler
+}
+
+/**
+ * Initializes and registers an action handler for multiple action kinds. In most cases
+ * `ActionHandlerRegistration` should be used instead.
  */
 export interface IActionHandlerInitializer {
     initialize(registry: ActionHandlerRegistry): void
@@ -41,15 +51,37 @@ export interface IActionHandlerInitializer {
 @injectable()
 export class ActionHandlerRegistry extends MultiInstanceRegistry<IActionHandler> {
 
-    constructor(@multiInject(TYPES.IActionHandlerInitializer) @optional() initializers: (IActionHandlerInitializer)[]) {
+    constructor(@multiInject(TYPES.ActionHandlerRegistration) @optional() registrations: ActionHandlerRegistration[],
+                @multiInject(TYPES.IActionHandlerInitializer) @optional() initializers: IActionHandlerInitializer[]) {
         super();
-
-        initializers.forEach(
-            initializer => this.initializeActionHandler(initializer)
+        registrations.forEach(registration =>
+            this.register(registration.actionKind, registration.factory())
+        );
+        initializers.forEach(initializer =>
+            this.initializeActionHandler(initializer)
         );
     }
 
     initializeActionHandler(initializer: IActionHandlerInitializer): void {
         initializer.initialize(this);
     }
+}
+
+/**
+ * Utility function to register an action handler for an action kind.
+ */
+export function configureActionHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        kind: string, constr: interfaces.ServiceIdentifier<IActionHandler>): void {
+    if (typeof constr === 'function') {
+        if (!isInjectable(constr)) {
+            throw new Error(`Action handlers should be @injectable: ${constr.name}`);
+        }
+        if (!context.isBound(constr)) {
+            context.bind(constr).toSelf();
+        }
+    }
+    context.bind(TYPES.ActionHandlerRegistration).toDynamicValue(ctx => ({
+        actionKind: kind,
+        factory: () => ctx.container.get(constr)
+    }));
 }

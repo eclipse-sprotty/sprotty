@@ -56,22 +56,21 @@ export interface ICommandConstructor<T extends Action> {
 /**
  * Use this method in your DI configuration to register a new command to the diagram.
  */
-export function configureCommand<T extends Action>(context: { bind: interfaces.Bind, isBound: interfaces.IsBound }, constr: ICommandConstructor<T>) {
+export function configureCommand<T extends Action>(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        constr: ICommandConstructor<T>) {
     if (!isInjectable(constr)) {
-        throw new Error(`Commands should be @injectable ${constr.name}`);
+        throw new Error(`Commands should be @injectable: ${constr.name}`);
     }
     if (!context.isBound(constr)) {
         context.bind(constr).toSelf();
     }
-    context.bind(TYPES.CommandRegistration).toDynamicValue((ctx) => {
-        return {
-            factory: (action: Action) => {
-                const childContainer = new Container();
-                childContainer.parent = ctx.container;
-                childContainer.bind(TYPES.Action).toConstantValue(action);
-                return childContainer.get<ICommand>(constr);
-            },
-            kind: constr.KIND
-        };
-    });
+    context.bind(TYPES.CommandRegistration).toDynamicValue(ctx => ({
+        kind: constr.KIND,
+        factory: (action: Action) => {
+            const childContainer = new Container();
+            childContainer.parent = ctx.container;
+            childContainer.bind(TYPES.Action).toConstantValue(action);
+            return childContainer.get<ICommand>(constr);
+        }
+    }));
 }

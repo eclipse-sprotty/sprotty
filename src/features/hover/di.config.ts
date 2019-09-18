@@ -17,17 +17,18 @@
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
 import {
-    HoverMouseListener, PopupHoverMouseListener, HoverFeedbackCommand, SetPopupModelCommand, HoverKeyListener, HoverState
+    HoverMouseListener, PopupHoverMouseListener, HoverFeedbackCommand, SetPopupModelCommand,
+    HoverKeyListener, HoverState, ClosePopupActionHandler
 } from "./hover";
 import { PopupPositionUpdater } from "./popup-position-updater";
-import { PopupActionHandlerInitializer } from "./initializer";
 import { configureCommand } from "../../base/commands/command-registration";
+import { configureActionHandler } from "../../base/actions/action-handler";
+import { FitToScreenCommand, CenterCommand } from "../viewport/center-fit";
+import { SetViewportCommand } from "../viewport/viewport";
+import { MoveCommand } from "../move/move";
 
 const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.PopupVNodePostprocessor).to(PopupPositionUpdater).inSingletonScope();
-    bind(TYPES.IActionHandlerInitializer).to(PopupActionHandlerInitializer);
-    configureCommand({ bind, isBound }, HoverFeedbackCommand);
-    configureCommand({ bind, isBound }, SetPopupModelCommand);
     bind(TYPES.MouseListener).to(HoverMouseListener);
     bind(TYPES.PopupMouseListener).to(PopupHoverMouseListener);
     bind(TYPES.KeyListener).to(HoverKeyListener);
@@ -37,6 +38,16 @@ const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
         popupOpen: false,
         previousPopupElement: undefined
     });
+    bind(ClosePopupActionHandler).toSelf().inSingletonScope();
+
+    const context = { bind, isBound };
+    configureCommand(context, HoverFeedbackCommand);
+    configureCommand(context, SetPopupModelCommand);
+    configureActionHandler(context, SetPopupModelCommand.KIND, ClosePopupActionHandler);
+    configureActionHandler(context, FitToScreenCommand.KIND, ClosePopupActionHandler);
+    configureActionHandler(context, CenterCommand.KIND, ClosePopupActionHandler);
+    configureActionHandler(context, SetViewportCommand.KIND, ClosePopupActionHandler);
+    configureActionHandler(context, MoveCommand.KIND, ClosePopupActionHandler);
 });
 
 export default hoverModule;

@@ -15,22 +15,24 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { configureCommand } from "../../base/commands/command-registration";
 import { TYPES } from "../../base/types";
+import { configureCommand } from "../../base/commands/command-registration";
+import { configureActionHandler } from "../../base/actions/action-handler";
 import { configureModelElement } from "../../base/views/view";
 import { SDanglingAnchor } from "../../features/routing/model";
 import { EmptyGroupView } from "../../lib/svg-views";
 import { DeleteElementCommand } from "./delete";
-import { EditLabelMouseListener, ApplyLabelEditCommand, EditLabelKeyListener } from "./edit-label";
-import { EditLabelUI, EditLabelActionHandlerInitializer } from "./edit-label-ui";
+import { EditLabelMouseListener, ApplyLabelEditCommand, EditLabelKeyListener, EditLabelAction } from "./edit-label";
+import { EditLabelUI, EditLabelActionHandler } from "./edit-label-ui";
 import { SwitchEditModeCommand } from "./edit-routing";
 import { ReconnectCommand } from "./reconnect";
 
 export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
-    configureCommand({ bind, isBound }, SwitchEditModeCommand);
-    configureCommand({ bind, isBound }, ReconnectCommand);
-    configureCommand({ bind, isBound }, DeleteElementCommand);
-    configureModelElement({ bind, isBound }, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);
+    const context = { bind, isBound };
+    configureCommand(context, SwitchEditModeCommand);
+    configureCommand(context, ReconnectCommand);
+    configureCommand(context, DeleteElementCommand);
+    configureModelElement(context, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);
 });
 
 export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
@@ -39,8 +41,9 @@ export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, ApplyLabelEditCommand);
 });
 
-export const labelEditUiModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-    bind(TYPES.IActionHandlerInitializer).to(EditLabelActionHandlerInitializer);
+export const labelEditUiModule = new ContainerModule((bind, _unbind, isBound) => {
+    const context = { bind, isBound };
+    configureActionHandler(context, EditLabelAction.KIND, EditLabelActionHandler);
     bind(EditLabelUI).toSelf().inSingletonScope();
     bind(TYPES.IUIExtension).toService(EditLabelUI);
 });
