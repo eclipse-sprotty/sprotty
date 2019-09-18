@@ -3,26 +3,26 @@ var path = require('path');
 var CircularDependencyPlugin = require('circular-dependency-plugin');
 
 module.exports = {
+    mode: 'development',
+    devtool: 'source-map',
+
     entry: [
-        'core-js/es6/map', 
-        'core-js/es6/promise', 
-        'core-js/es6/string', 
-        'core-js/es6/symbol', 
+        'core-js/es/map', 
+        'core-js/es/promise', 
+        'core-js/es/string', 
+        'core-js/es/symbol', 
         './examples/app.ts'
     ],
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, '../examples')
     },
-    mode: 'development',
-    devtool: 'source-map',
+
     resolve: {
-        // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js']
     },
     module: {
         rules: [
-            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
             {
                 test: /\.tsx?$/,
                 use: [{
@@ -33,13 +33,19 @@ module.exports = {
                 }]
             },
             {
+                test: /\.js$/,
+                use: ['source-map-loader'],
+                enforce: 'pre'
+            },
+            {
                 test: /\.css$/,
                 exclude: /\.useable\.css$/,
-                loader: 'style-loader!css-loader'
+                use: ['style-loader', 'css-loader']
             }
         ]
     },
     node : { fs: 'empty', net: 'empty' },
+
     plugins: [
         new CircularDependencyPlugin({
             exclude: /(node_modules|examples)\/./,
@@ -48,6 +54,7 @@ module.exports = {
         new webpack.WatchIgnorePlugin([
             /\.js$/,
             /\.d\.ts$/
-        ])
+        ]),
+        new webpack.ProgressPlugin()
     ]
 };
