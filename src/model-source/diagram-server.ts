@@ -89,7 +89,8 @@ export abstract class DiagramServer extends ModelSource {
         registry.register(OpenAction.KIND, this);
         registry.register(ServerStatusAction.KIND, this);
 
-        this.clientId = this.viewerOptions.baseDiv;
+        if (!this.clientId)
+            this.clientId = this.viewerOptions.baseDiv;
     }
 
     handle(action: Action): void | ICommand | Action {

@@ -115,7 +115,7 @@ export class SRoutingHandle extends SChildElement implements Selectable, Hoverab
     danglingAnchor?: SDanglingAnchor;
 
     /**
-     * SRoutingHandles are created using the constructor, so we hard-wire the 
+     * SRoutingHandles are created using the constructor, so we hard-wire the
      * default features
      */
     hasFeature(feature: symbol): boolean {
