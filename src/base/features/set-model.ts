@@ -30,11 +30,11 @@ export class RequestModelAction implements RequestAction<SetModelAction> {
     static readonly KIND = 'requestModel';
     readonly kind = RequestModelAction.KIND;
 
-    constructor(public readonly options?: { [key: string]: string },
+    constructor(public readonly options?: { [key: string]: string | number | boolean },
                 public readonly requestId = '') {}
 
     /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(options?: { [key: string]: string }): RequestAction<SetModelAction> {
+    static create(options?: { [key: string]: string | number | boolean }): RequestAction<SetModelAction> {
         return new RequestModelAction(options, generateRequestId());
     }
 }
