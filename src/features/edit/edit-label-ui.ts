@@ -238,10 +238,7 @@ function getEditableLabels(contextElementIds: string[], root: Readonly<SModelRoo
     return contextElementIds.map(id => root.index.getById(id)).filter(isEditableLabel);
 }
 
-function scaledFont(font: string | null, zoom: number): string | null {
-    if (font === null) {
-        return null;
-    }
+function scaledFont(font: string, zoom: number): string {
     return font.replace(/([0-9]+)/, (match) => {
         return String(Number.parseInt(match, 10) * zoom);
     });
