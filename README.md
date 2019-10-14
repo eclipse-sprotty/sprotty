@@ -37,6 +37,5 @@ For further information please consult the [wiki](https://github.com/eclipse/spr
 
 - [DSL in the Cloud example](http://github.com/TypeFox/theia-xtext-sprotty-example) an example using Xtext, Theia and Sprotty to create a DSL workbench in the cloud.
 - [npm dependencies](http://npm-dependencies.com/) to discover dependencies of npm packages
-- [Examples](http://sprotty-demo.typefox.io) a hosted version of some Sprotty examples
 - [yangster](http://github.com/theia-ide/yangster) a Theia extension for the YANG language.
 
