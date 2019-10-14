@@ -30,6 +30,7 @@ import { isSelectable } from "../select/model";
 import { MatchResult, ModelMatcher, Match, forEachMatch } from "./model-matching";
 import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
 import { TYPES } from "../../base/types";
+import { isViewport } from "../viewport/model";
 
 /**
  * Sent from the model source to the client in order to update the model. If no model is present yet,
@@ -99,6 +100,10 @@ export class UpdateModelCommand extends Command {
         } else {
             if (oldRoot.type === newRoot.type && isValidDimension(oldRoot.canvasBounds))
                 newRoot.canvasBounds = oldRoot.canvasBounds;
+            if (isViewport(oldRoot) && isViewport(newRoot)) {
+                newRoot.zoom = oldRoot.zoom;
+                newRoot.scroll = oldRoot.scroll;
+            }
             return newRoot;
         }
     }
