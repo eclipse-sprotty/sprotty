@@ -28,7 +28,7 @@ import { classModule } from "snabbdom/modules/class";
 import { inject, injectable, multiInject, optional } from "inversify";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
-import { ORIGIN_POINT } from "../../utils/geometry";
+import { getWindowScroll } from '../../utils/browser';
 import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 import { Action } from '../actions/action';
@@ -186,7 +186,7 @@ export class ModelViewer implements IViewer {
 
     protected getBoundsInPage(element: Element) {
         const bounds = element.getBoundingClientRect();
-        const scroll = typeof window !== 'undefined' ? {x: window.scrollX, y: window.scrollY} : ORIGIN_POINT;
+        const scroll = getWindowScroll();
         return {
             x: bounds.left + scroll.x,
             y: bounds.top + scroll.y,

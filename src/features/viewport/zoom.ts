@@ -14,7 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement } from "../../base/model/smodel";
+import { Point } from "../../utils/geometry";
+import { getWindowScroll } from "../../utils/browser";
+import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { Action } from "../../base/actions/action";
 import { SModelExtension } from "../../base/model/smodel-extension";
@@ -44,12 +46,13 @@ export class ZoomMouseListener extends MouseListener {
     wheel(target: SModelElement, event: WheelEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
         if (viewport) {
-            const newZoom = Math.exp(-event.deltaY * 0.005);
-            const factor = 1. / (newZoom * viewport.zoom) - 1. / viewport.zoom;
+            const newZoom = this.getZoomFactor(event);
+            const viewportOffset = this.getViewportOffset(target.root, event);
+            const offsetFactor = 1.0 / (newZoom * viewport.zoom) - 1.0 / viewport.zoom;
             const newViewport: Viewport = {
                 scroll: {
-                    x: -(factor * event.offsetX - viewport.scroll.x),
-                    y: -(factor * event.offsetY - viewport.scroll.y)
+                    x: viewport.scroll.x - offsetFactor * viewportOffset.x,
+                    y: viewport.scroll.y - offsetFactor * viewportOffset.y
                 },
                 zoom: viewport.zoom * newZoom
             };
@@ -57,4 +60,23 @@ export class ZoomMouseListener extends MouseListener {
         }
         return [];
     }
+
+    protected getViewportOffset(root: SModelRoot, event: WheelEvent): Point {
+        const canvasBounds = root.canvasBounds;
+        const windowScroll = getWindowScroll();
+        return {
+            x: event.clientX + windowScroll.x - canvasBounds.x,
+            y: event.clientY + windowScroll.y - canvasBounds.y
+        };
+    }
+
+    protected getZoomFactor(event: WheelEvent): number {
+        if (event.deltaMode === event.DOM_DELTA_PAGE)
+            return Math.exp(-event.deltaY * 0.5);
+        else if (event.deltaMode === event.DOM_DELTA_LINE)
+            return Math.exp(-event.deltaY * 0.05);
+        else // deltaMode === DOM_DELTA_PIXEL
+            return Math.exp(-event.deltaY * 0.005);
+    }
+
 }
