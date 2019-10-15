@@ -17,6 +17,7 @@
 import virtualize from "snabbdom-virtualize/strings";
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
+import { setNamespace } from "../base/views/vnode-utils";
 import { PreRenderedElement } from "./model";
 import { injectable } from "inversify";
 
@@ -30,20 +31,7 @@ export class PreRenderedView implements IView {
 
     protected correctNamespace(node: VNode) {
         if (node.sel === 'svg' || node.sel === 'g')
-            this.setNamespace(node, 'http://www.w3.org/2000/svg');
+            setNamespace(node, 'http://www.w3.org/2000/svg');
     }
 
-    protected setNamespace(node: VNode, ns: string) {
-        if (node.data === undefined)
-            node.data = {};
-        node.data.ns = ns;
-        const children = node.children;
-        if (children !== undefined) {
-            for (let i = 0; i < children.length; i++) {
-                const child = children[i];
-                if (typeof child !== 'string')
-                    this.setNamespace(child, ns);
-            }
-        }
-    }
 }

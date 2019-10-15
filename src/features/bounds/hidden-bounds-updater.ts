@@ -16,12 +16,13 @@
 
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
+import { ILogger } from "../../utils/logging";
+import { almostEquals, Bounds, Point, EMPTY_BOUNDS } from '../../utils/geometry';
 import { Action } from "../../base/actions/action";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
 import { SChildElement, SModelElement, SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { almostEquals, Bounds, Point } from '../../utils/geometry';
 import { ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from './bounds-manipulation';
 import { Layouter } from "./layout";
 import { BoundsAware, isAlignable, isLayoutContainer, isSizeable } from "./model";
@@ -48,6 +49,7 @@ export class BoundsData {
 @injectable()
 export class HiddenBoundsUpdater implements IVNodePostprocessor {
 
+    @inject(TYPES.ILogger) protected logger: ILogger;
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.Layouter) protected layouter: Layouter;
 
@@ -143,6 +145,10 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
     }
 
     protected getBounds(elm: any, element: BoundsAware): Bounds {
+        if (typeof elm.getBBox !== 'function') {
+            this.logger.error(this, 'Not an SVG element:', elm);
+            return EMPTY_BOUNDS;
+        }
         const bounds = elm.getBBox();
         return {
             x: bounds.x,
