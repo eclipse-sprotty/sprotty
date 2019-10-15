@@ -33,7 +33,8 @@ import { SButton } from '../button/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { SRoutingHandle } from '../routing/model';
 import { SRoutableElement } from '../routing/model';
-import { isSelectable } from "./model";
+import { BringToFrontAction } from '../zorder/zorder';
+import { isSelectable, Selectable } from "./model";
 
 /**
  * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting
@@ -87,18 +88,12 @@ export class SelectionResult implements ResponseAction {
                 public readonly responseId: string) {}
 }
 
-export type ElementSelection = {
-    element: SChildElement
-    parent: SParentElement
-    index: number
-};
-
 @injectable()
 export class SelectCommand extends Command {
-    static readonly KIND = 'elementSelected';
+    static readonly KIND = SelectAction.KIND;
 
-    protected selected: ElementSelection[] = [];
-    protected deselected: ElementSelection[] = [];
+    protected selected: (SChildElement & Selectable)[] = [];
+    protected deselected: (SChildElement & Selectable)[] = [];
 
     constructor(@inject(TYPES.Action) public action: SelectAction) {
         super();
@@ -109,56 +104,35 @@ export class SelectCommand extends Command {
         this.action.selectedElementsIDs.forEach(id => {
             const element = model.index.getById(id);
             if (element instanceof SChildElement && isSelectable(element)) {
-                this.selected.push({
-                    element,
-                    parent: element.parent,
-                    index: element.parent.children.indexOf(element)
-                });
+                this.selected.push(element);
             }
         });
         this.action.deselectedElementsIDs.forEach(id => {
             const element = model.index.getById(id);
             if (element instanceof SChildElement && isSelectable(element)) {
-                this.deselected.push({
-                    element,
-                    parent: element.parent,
-                    index: element.parent.children.indexOf(element)
-                });
+                this.deselected.push(element);
             }
         });
         return this.redo(context);
     }
 
     undo(context: CommandExecutionContext): SModelRoot {
-        for (let i = this.selected.length - 1; i >= 0; --i) {
-            const selection = this.selected[i];
-            const element = selection.element;
-            if (isSelectable(element))
-                element.selected = false;
-            selection.parent.move(element, selection.index);
+        for (const element of this.selected) {
+            element.selected = false;
         }
-        this.deselected.reverse().forEach(selection => {
-            if (isSelectable(selection.element))
-                selection.element.selected = true;
-        });
+        for (const element of this.deselected) {
+            element.selected = true;
+        }
         return context.root;
     }
 
     redo(context: CommandExecutionContext): SModelRoot {
-        for (let i = 0; i < this.selected.length; ++i) {
-            const selection = this.selected[i];
-            const element = selection.element;
-            const childrenLength = selection.parent.children.length;
-            selection.parent.move(element, childrenLength - 1);
+        for (const element of this.deselected) {
+            element.selected = false;
         }
-        this.deselected.forEach(selection => {
-            if (isSelectable(selection.element))
-                selection.element.selected = false;
-        });
-        this.selected.forEach(selection => {
-            if (isSelectable(selection.element))
-                selection.element.selected = true;
-        });
+        for (const element of this.selected) {
+            element.selected = true;
+        }
         return context.root;
     }
 }
@@ -235,6 +209,7 @@ export class SelectMouseListener extends MouseListener {
                     if (!selectableTarget.selected) {
                         this.wasSelected = false;
                         result.push(new SelectAction([selectableTarget.id], deselect.map(e => e.id)));
+                        result.push(new BringToFrontAction([selectableTarget.id]));
                         const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
                         if (selectableTarget instanceof SRoutableElement)
                             result.push(new SwitchEditModeAction([selectableTarget.id], routableDeselect));
@@ -307,8 +282,7 @@ export class GetSelectionCommand extends ModelRequestCommand {
 export class SelectKeyboardListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyA', 'ctrlCmd')) {
-            const selected = toArray(element.root.index.all().filter(e => isSelectable(e)).map(e => e.id));
-            return [new SelectAction(selected, [])];
+            return [new SelectAllAction()];
         }
         return [];
     }

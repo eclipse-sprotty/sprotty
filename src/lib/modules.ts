@@ -34,6 +34,7 @@ import selectModule from '../features/select/di.config';
 import undoRedoModule from '../features/undo-redo/di.config';
 import updateModule from '../features/update/di.config';
 import viewportModule from '../features/viewport/di.config';
+import zorderModule from '../features/zorder/di.config';
 
 export interface LoadModuleOptions {
     exclude?: ContainerModule[]
@@ -47,7 +48,7 @@ export function loadDefaultModules(container: Container, options?: LoadModuleOpt
         defaultModule, modelSourceModule, boundsModule, buttonModule, commandPaletteModule,
         decorationModule, edgeLayoutModule, edgeEditModule, labelEditModule, labelEditUiModule,
         expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule,
-        routingModule, selectModule, undoRedoModule, updateModule, viewportModule
+        routingModule, selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
     ];
     if (options && options.exclude) {
         for (const mod of options.exclude) {

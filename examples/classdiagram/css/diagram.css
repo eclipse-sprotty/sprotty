@@ -19,8 +19,6 @@
 }
 
 .sprotty-node {
-    fill: #cdc;
-    stroke: #152;
     stroke-width: 0;
     font-weight: bold;
 }
@@ -31,6 +29,16 @@
 
 .sprotty-node.mouseover:not(.selected) {
     stroke-width: 3;
+}
+
+.node-class {
+    fill: #cdc;
+    stroke: #152;
+}
+
+.node-package {
+    fill: #d0c8c0;
+    stroke: #541;
 }
 
 .sprotty-comp {

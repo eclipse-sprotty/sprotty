@@ -17,18 +17,20 @@
 /** @jsx svg */
 import { svg } from 'snabbdom-jsx';
 
-import { RenderingContext, RectangularNodeView, IView } from "../../../src";
+import { RenderingContext, IView, RectangularNodeView, SNode } from "../../../src";
 import { VNode } from "snabbdom/vnode";
-import { Icon, ClassNode } from './model';
+import { Icon } from './model';
 import { injectable } from 'inversify';
 
 @injectable()
-export class ClassNodeView extends RectangularNodeView {
-    render(node: ClassNode, context: RenderingContext): VNode {
-        return <g class-node={true}>
-            <rect class-sprotty-node={true} class-selected={node.selected} class-mouseover={node.hoverFeedback}
-                  x={0} y={0}
-                  width={Math.max(0, node.bounds.width)} height={Math.max(0, node.bounds.height)} />
+export class NodeView extends RectangularNodeView {
+    render(node: Readonly<SNode>, context: RenderingContext): VNode {
+        return <g>
+            <rect class-sprotty-node={true}
+                  class-node-package={node.type === 'node:package'}
+                  class-node-class={node.type === 'node:class'}
+                  class-mouseover={node.hoverFeedback} class-selected={node.selected}
+                  x="0" y="0" width={Math.max(node.size.width, 0)} height={Math.max(node.size.height, 0)}></rect>
             {context.renderChildren(node)}
         </g>;
     }
