@@ -14,6 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Point, ORIGIN_POINT } from "./geometry";
+
 /**
  * Returns whether the mouse or keyboard event includes the CMD key
  * on Mac or CTRL key on Linux / others.
@@ -39,4 +41,17 @@ export function isCrossSite(url: string): boolean {
         return baseURL.length > 0 && !url.startsWith(baseURL);
     }
     return false;
+}
+
+/**
+ * Returns the amount of scroll of the browser window as a point.
+ */
+export function getWindowScroll(): Point {
+    if (typeof window === 'undefined') {
+        return ORIGIN_POINT;
+    }
+    return {
+        x: window.scrollX,
+        y: window.scrollY
+    };
 }
