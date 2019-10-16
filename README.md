@@ -33,6 +33,8 @@ The Sprotty project spans across four GitHub repositories
 
 For further information please consult the [wiki](https://github.com/eclipse/sprotty/wiki) or this [blog post](http://typefox.io/sprotty-a-web-based-diagramming-framework).
 
+The version history is documented in the [CHANGELOG](https://github.com/eclipse/sprotty/blob/master/CHANGELOG.md).
+
 ## References
 
 - [DSL in the Cloud example](http://github.com/TypeFox/theia-xtext-sprotty-example) an example using Xtext, Theia and Sprotty to create a DSL workbench in the cloud.
