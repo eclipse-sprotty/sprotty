@@ -29,6 +29,8 @@ The Sprotty project spans across four GitHub repositories
 * [sprotty-theia](https://github.com/eclipse/sprotty-theia) contains the glue code (TypeScript) to integrate sprotty views in the Theia IDE.
 * [sprotty-layout](https://github.com/eclipse/sprotty-layout) contains the API for client-side diagram layout and an implementation based on the Eclipse Layout Kernel.
 
+The project is built on [jenkins.eclipse.org/sprotty](https://jenkins.eclipse.org/sprotty/).
+
 ## Docs
 
 For further information please consult the [wiki](https://github.com/eclipse/sprotty/wiki) or this [blog post](http://typefox.io/sprotty-a-web-based-diagramming-framework).
