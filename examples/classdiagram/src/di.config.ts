@@ -20,9 +20,10 @@ import {
     ConsoleLogger, LogLevel, loadDefaultModules, HtmlRootView, PreRenderedView, ExpandButtonView,
     SRoutingHandleView, PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel,
     SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
-    CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature
+    CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
+    RectangularNode
 } from "../../../src";
-import { ClassNodeView, IconView} from "./views";
+import { IconView, NodeView} from "./views";
 import { PopupModelProvider } from "./popup";
 import { ClassDiagramModelSource } from './model-source';
 import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
@@ -46,7 +47,8 @@ export default (containerId: string) => {
 
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
-        configureModelElement(context, 'node:class', ClassNode, ClassNodeView, {
+        configureModelElement(context, 'node:package', RectangularNode, NodeView);
+        configureModelElement(context, 'node:class', ClassNode, NodeView, {
             enable: [expandFeature, nameFeature, withEditLabelFeature]
         });
         configureModelElement(context, 'label:heading', ClassLabel, SLabelView, {
@@ -57,6 +59,7 @@ export default (containerId: string) => {
         });
         configureModelElement(context, 'comp:comp', SCompartment, SCompartmentView);
         configureModelElement(context, 'comp:header', SCompartment, SCompartmentView);
+        configureModelElement(context, 'comp:pkgcontent', SCompartment, SCompartmentView);
         configureModelElement(context, 'icon', Icon, IconView);
         configureModelElement(context, 'label:icon', SLabel, SLabelView);
         configureModelElement(context, 'edge:straight', SEdge, PolylineEdgeView);

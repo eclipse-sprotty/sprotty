@@ -15,9 +15,11 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Action, ActionHandlerRegistry, CollapseExpandAction, CollapseExpandAllAction, LocalModelSource,
+import {
+    Action, ActionHandlerRegistry, CollapseExpandAction, CollapseExpandAllAction, LocalModelSource,
     SCompartmentSchema, SEdgeSchema, SGraphSchema, SLabelSchema, SModelElementSchema, SModelIndex,
-    SModelRootSchema } from "../../../src";
+    SModelRootSchema, SNodeSchema, Expandable
+} from "../../../src";
 
 @injectable()
 export class ClassDiagramModelSource extends LocalModelSource {
@@ -148,7 +150,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
     }
 
     initializeModel(): SModelRootSchema {
-        const node0 = {
+        const node0: SNodeSchema & Expandable = {
             id: 'node0',
             type: 'node:class',
             expanded: false,
@@ -158,7 +160,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             },
             layout: 'vbox',
             children: [
-                {
+                <SCompartmentSchema>{
                     id: 'node0_header',
                     type: 'comp:header',
                     layout: 'hbox',
@@ -172,18 +174,19 @@ export class ClassDiagramModelSource extends LocalModelSource {
                                 resizeContainer: false
                             },
                             children: [
-                                {
+                                <SLabelSchema>{
                                     id: 'node0_ticon',
                                     type: 'label:icon',
                                     text: 'C'
                                 }
                             ]
                         },
-                        {
+                        <SLabelSchema>{
                             id: 'node0_classname',
                             type: 'label:heading',
                             text: 'Foo'
-                        }, {
+                        },
+                        {
                             id: 'node0_expand',
                             type: 'button:expand'
                         }
@@ -191,17 +194,17 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 }
             ]
         };
-        const node1 = {
+        const node1: SNodeSchema & Expandable = {
             id: 'node1',
             type: 'node:class',
             expanded: false,
             position: {
-                x: 500,
-                y: 200
+                x: 100,
+                y: 100
             },
             layout: 'vbox',
             children: [
-                {
+                <SCompartmentSchema>{
                     id: 'node1_header',
                     type: 'comp:header',
                     layout: 'hbox',
@@ -215,24 +218,27 @@ export class ClassDiagramModelSource extends LocalModelSource {
                                 resizeContainer: false
                             },
                             children: [
-                                {
+                                <SLabelSchema>{
                                     id: 'node1_ticon',
                                     type: 'label:icon',
                                     text: 'C'
                                 },
                             ]
-                        }, {
-                        id: 'node1_classname',
-                        type: 'label:heading',
-                        text: 'Bar'
-                    }, {
-                        id: 'node1_expand',
-                        type: 'button:expand'
-                    }]
+                        },
+                        <SLabelSchema>{
+                            id: 'node1_classname',
+                            type: 'label:heading',
+                            text: 'Bar'
+                        },
+                        {
+                            id: 'node1_expand',
+                            type: 'button:expand'
+                        }
+                    ]
                 }
             ]
         };
-        const node2 = {
+        const node2: SNodeSchema & Expandable = {
             id: 'node2',
             type: 'node:class',
             expanded: false,
@@ -242,7 +248,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             },
             layout: 'vbox',
             children: [
-                {
+                <SCompartmentSchema>{
                     id: 'node2_header',
                     type: 'comp:header',
                     layout: 'hbox',
@@ -256,23 +262,56 @@ export class ClassDiagramModelSource extends LocalModelSource {
                                 resizeContainer: false
                             },
                             children: [
-                                {
+                                <SLabelSchema>{
                                     id: 'node2_ticon',
                                     type: 'label:icon',
                                     text: 'C'
                                 },
                             ]
-                        }, {
-                        id: 'node2_classname',
-                        type: 'label:heading',
-                        text: 'Baz'
-                    }, {
-                        id: 'node2_expand',
-                        type: 'button:expand'
-                    }]
+                        },
+                        <SLabelSchema>{
+                            id: 'node2_classname',
+                            type: 'label:heading',
+                            text: 'Baz'
+                        },
+                        {
+                            id: 'node2_expand',
+                            type: 'button:expand'
+                        }
+                    ]
                 }
             ]
         };
+        const package0: SNodeSchema = {
+            id: 'package0',
+            type: 'node:package',
+            position: {
+                x: 400,
+                y: 120
+            },
+            size: {
+                width: 400,
+                height: 300
+            },
+            children: [
+                <SLabelSchema>{
+                    id: 'package0_pkgname',
+                    type: 'label:heading',
+                    text: 'com.example.package',
+                    position: {
+                        x: 10,
+                        y: 10
+                    }
+                },
+                <SCompartmentSchema>{
+                    id: 'package0_content',
+                    type: 'comp:pkgcontent',
+                    children: [
+                        node1
+                    ]
+                }
+            ]
+        }
         const edge = {
             id: 'edge',
             type: 'edge:straight',
@@ -389,7 +428,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
         const graph: SGraphSchema = {
             id: 'graph',
             type: 'graph',
-            children: [node0, node1, node2, edge, edge1 ],
+            children: [node0, node2, package0, edge, edge1 ],
             layoutOptions: {
                 hGap: 5,
                 hAlign: 'left',

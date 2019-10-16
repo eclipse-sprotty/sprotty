@@ -141,6 +141,8 @@ export * from "./features/viewport/viewport-root";
 export * from "./features/viewport/viewport";
 export * from "./features/viewport/zoom";
 
+export * from "./features/zorder/zorder";
+
 import graphModule from "./graph/di.config";
 
 import boundsModule from "./features/bounds/di.config";
@@ -159,11 +161,12 @@ import selectModule from "./features/select/di.config";
 import undoRedoModule from "./features/undo-redo/di.config";
 import updateModule from "./features/update/di.config";
 import viewportModule from "./features/viewport/di.config";
+import zorderModule from './features/zorder/di.config';
 
 export {
     graphModule, boundsModule, buttonModule, commandPaletteModule, decorationModule, edgeLayoutModule,
     expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
-    selectModule, undoRedoModule, updateModule, viewportModule
+    selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
 };
 
 // ------------------ Graph ------------------

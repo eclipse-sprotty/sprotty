@@ -37,10 +37,6 @@ function isNodeSelected(nodeId: string, model: SModelRoot) {
     return getNode(nodeId, model).selected;
 }
 
-function getNodeIndex(nodeId: string, model: SModelRoot) {
-    return model.children.indexOf(getNode(nodeId, model));
-}
-
 describe('SelectCommand', () => {
     const container = new Container();
     container.load(defaultModule);
@@ -55,7 +51,6 @@ describe('SelectCommand', () => {
         type: 'graph',
         children: [myNode1, myNode0]  // myNode0 is selected, so put at the end
     });
-    const lastIndex = initialModel.children.length - 1;
 
     // Create the select action
     const mySelectAction = new SelectAction(
@@ -87,10 +82,6 @@ describe('SelectCommand', () => {
         // Confirm selection is as expected
         expect(true).to.equal(isNodeSelected('node1', newModel));
         expect(false).to.equal(isNodeSelected('node0', newModel));
-
-        // The selected node is moved at the end of the array
-        expect(lastIndex).to.equal(getNodeIndex('node1', newModel));
-        expect(0).to.equal(getNodeIndex('node0', newModel));
     });
 
     it('undo() works as expected', () => {
@@ -101,10 +92,6 @@ describe('SelectCommand', () => {
         // Confirm selection is as expected
         expect(true).to.equal(isNodeSelected('node0', newModel));
         expect(false).to.equal(isNodeSelected('node1', newModel));
-
-        // The selected node is moved at the end of the array
-        expect(lastIndex).to.equal(getNodeIndex('node0', newModel));
-        expect(0).to.equal(getNodeIndex('node1', newModel));
     });
 
     it('redo() works as expected', () => {
@@ -115,10 +102,6 @@ describe('SelectCommand', () => {
         // Confirm selection is as expected
         expect(true).to.equal(isNodeSelected('node1', newModel));
         expect(false).to.equal(isNodeSelected('node0', newModel));
-
-        // The selected node is moved at the end of the array
-        expect(lastIndex).to.equal(getNodeIndex('node1', newModel));
-        expect(0).to.equal(getNodeIndex('node0', newModel));
     });
 });
 
