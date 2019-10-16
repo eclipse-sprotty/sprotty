@@ -25,6 +25,20 @@ export function setClass(vnode: VNode, name: string, value: boolean) {
     getClass(vnode)[name] = value;
 }
 
+export function setNamespace(node: VNode, ns: string) {
+    if (node.data === undefined)
+        node.data = {};
+    node.data.ns = ns;
+    const children = node.children;
+    if (children !== undefined) {
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            if (typeof child !== 'string')
+                setNamespace(child, ns);
+        }
+    }
+}
+
 export function copyClassesFromVNode(source: VNode, target: VNode) {
     const classList = getClass(source);
     for (const c in classList) {
