@@ -40,6 +40,7 @@ const configureAutocomplete: (settings: AutocompleteSettings<LabeledAction>) => 
 @injectable()
 export class CommandPalette extends AbstractUIExtension {
     static readonly ID = "command-palette";
+    static readonly isInvokePaletteKey = (event: KeyboardEvent) => matchesKeystroke(event, 'Space', 'ctrl');
 
     readonly id = CommandPalette.ID;
     readonly containerClass = "command-palette";
@@ -50,6 +51,7 @@ export class CommandPalette extends AbstractUIExtension {
     readonly debounceWaitMs = 200;
     protected inputElement: HTMLInputElement;
     protected autoCompleteResult: AutocompleteResult;
+    protected paletteIndex = 0;
     protected contextActions?: LabeledAction[];
 
     @inject(TYPES.IActionDispatcherProvider) protected actionDispatcherProvider: IActionDispatcherProvider;
@@ -60,6 +62,7 @@ export class CommandPalette extends AbstractUIExtension {
 
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         super.show(root, ...contextElementIds);
+        this.paletteIndex = 0;
         this.contextActions = undefined;
 
         if (this.inputElement!.value) {
@@ -74,12 +77,22 @@ export class CommandPalette extends AbstractUIExtension {
         this.inputElement = document.createElement('input');
         this.inputElement.style.width = '100%';
         this.inputElement.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
+        this.inputElement.addEventListener('keydown', (event) => this.cylceIfInvokePaletteKey(event));
         this.inputElement.onblur = () => window.setTimeout(() => this.hide(), 200);
         containerElement.appendChild(this.inputElement);
     }
 
     protected hideIfEscapeEvent(event: KeyboardEvent): any {
         if (matchesKeystroke(event, 'Escape')) { this.hide(); }
+    }
+
+    protected cylceIfInvokePaletteKey(event: KeyboardEvent): any {
+        if (CommandPalette.isInvokePaletteKey(event)) { this.cycle(); }
+    }
+
+    protected cycle() {
+        this.contextActions = undefined;
+        this.paletteIndex++;
     }
 
     protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...selectedElementIds: string[]) {
@@ -130,7 +143,8 @@ export class CommandPalette extends AbstractUIExtension {
             update(this.filterActions(text, this.contextActions));
             this.inputElement.classList.remove(this.actionsLoadingClass);
         } else {
-            this.actionProviderRegistry.getActions(root, text, this.mousePositionTracker.lastPositionOnDiagram)
+            this.actionProviderRegistry
+                .getActions(root, text, this.mousePositionTracker.lastPositionOnDiagram, this.paletteIndex)
                 .then(actions => {
                     this.contextActions = actions;
                     update(this.filterActions(text, actions));
@@ -193,7 +207,7 @@ export class CommandPaletteKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
             return [new SetUIExtensionVisibilityAction(CommandPalette.ID, false, [])];
-        } else if (matchesKeystroke(event, 'Space', 'ctrl')) {
+        } else if (CommandPalette.isInvokePaletteKey(event)) {
             const selectedElements = toArray(element.index.all().filter(e => isSelectable(e) && e.selected).map(e => e.id));
             return [new SetUIExtensionVisibilityAction(CommandPalette.ID, true, selectedElements)];
         }
