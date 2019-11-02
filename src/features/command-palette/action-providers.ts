@@ -20,12 +20,12 @@ import { TYPES } from "../../base/types";
 import { toArray } from "../../utils/iterable";
 import { ILogger } from "../../utils/logging";
 import { isNameable, name } from "../nameable/model";
-import { SelectAction } from "../select/select";
+import { SelectAction, SelectAllAction } from "../select/select";
 import { CenterAction } from "../viewport/center-fit";
 import { Point } from "../../utils/geometry";
 
 export interface ICommandPaletteActionProvider {
-    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point): Promise<LabeledAction[]>;
+    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number): Promise<LabeledAction[]>;
 }
 
 @injectable()
@@ -34,8 +34,8 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
     constructor(@multiInject(TYPES.ICommandPaletteActionProvider) @optional() protected actionProviders: ICommandPaletteActionProvider[] = []) {
     }
 
-    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point) {
-        const actionLists = this.actionProviders.map(provider => provider.getActions(root, text, lastMousePosition));
+    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number) {
+        const actionLists = this.actionProviders.map(provider => provider.getActions(root, text, lastMousePosition, index));
         return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc));
     }
 }
@@ -55,8 +55,11 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
 
     constructor(@inject(TYPES.ILogger) protected logger: ILogger) { }
 
-    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point) {
-        return Promise.resolve(this.createSelectActions(root));
+    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number) {
+        if (index !== undefined && index % 2 === 0)
+            return Promise.resolve(this.createSelectActions(root));
+        else
+            return Promise.resolve([new LabeledAction("Select all", [new SelectAllAction()])]);
     }
 
     createSelectActions(modelRoot: SModelRoot): LabeledAction[] {
