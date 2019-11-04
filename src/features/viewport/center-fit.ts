@@ -30,7 +30,8 @@ import { TYPES } from "../../base/types";
 
 /**
  * Triggered when the user requests the viewer to center on the current model. The resulting
- * CenterCommand changes the scroll setting of the viewport accordingly and resets the zoom to its default.
+ * CenterCommand changes the scroll setting of the viewport accordingly.
+ * It also resets the zoom to its default if retainZoom is false.
  * This action can also be sent from the model source to the client in order to perform such a
  * viewport change programmatically.
  */
@@ -39,7 +40,8 @@ export class CenterAction implements Action {
     readonly kind = CenterAction.KIND;
 
     constructor(public readonly elementIds: string[],
-                public readonly animate: boolean = true) {
+                public readonly animate: boolean = true,
+                public readonly retainZoom: boolean = false) {
     }
 }
 
@@ -170,13 +172,14 @@ export class CenterCommand extends BoundsAwareViewportCommand {
         if (!isValidDimension(model.canvasBounds)) {
             return undefined;
         }
+        const zoom = (this.action.retainZoom && isViewport(model)) ? model.zoom : 1;
         const c = center(bounds);
         return {
             scroll: {
-                x: c.x - 0.5 * model.canvasBounds.width,
-                y: c.y - 0.5 * model.canvasBounds.height
+                x: c.x - 0.5 * model.canvasBounds.width / zoom,
+                y: c.y - 0.5 * model.canvasBounds.height / zoom
             },
-            zoom: 1
+            zoom: zoom
         };
     }
 }
