@@ -23,7 +23,7 @@ import { expect } from "chai";
 import { Container } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../base/types";
-import { IVNodePostprocessor, FocusFixPostprocessor } from '../base/views/vnode-postprocessor';
+import { IVNodePostprocessor } from '../base/views/vnode-postprocessor';
 import { CircularNodeView, RectangularNodeView } from "../lib/svg-views";
 import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
 import { RenderingContext, configureView, ViewRegistry } from "../base/views/view";
@@ -110,10 +110,9 @@ describe('graph views', () => {
     });
 
     it('render a whole graph', () => {
-        FocusFixPostprocessor.tabIndex = 1000;
         const graph = createModel();
         const vnode = context.renderElement(graph);
-        const expectation = '<svg id="sprotty_graph" class="sprotty-graph" tabindex="1001">'
+        const expectation = '<svg id="sprotty_graph" class="sprotty-graph" tabindex="0">'
             + '<g transform="scale(1) translate(0,0)">'
             +   '<g id="sprotty_node0" transform="translate(100, 100)">'
             +     '<circle class="sprotty-node" r="40" cx="40" cy="40" />'
