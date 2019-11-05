@@ -32,12 +32,10 @@ export interface IVNodePostprocessor {
 @injectable()
 export class FocusFixPostprocessor implements IVNodePostprocessor {
 
-    static tabIndex: number = 1000;
-
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (vnode.sel && vnode.sel.startsWith('svg'))
             // allows to set focus in Firefox
-            setAttr(vnode, 'tabindex', ++FocusFixPostprocessor.tabIndex);
+            setAttr(vnode, 'tabindex', 0);
         return vnode;
     }
 
