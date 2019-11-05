@@ -26,3 +26,7 @@ export interface Selectable extends SModelExtension {
 export function isSelectable(element: SModelElement): element is SModelElement & Selectable {
     return element.hasFeature(selectFeature);
 }
+
+export function isSelected(element: SModelElement | undefined): element is SModelElement & Selectable {
+    return element !== undefined && isSelectable(element) && element.selected;
+}

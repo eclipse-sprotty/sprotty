@@ -76,6 +76,10 @@ export * from "./features/button/model";
 export * from "./features/command-palette/action-providers";
 export * from "./features/command-palette/command-palette";
 
+export * from "./features/context-menu/context-menu-service";
+export * from "./features/context-menu/menu-providers";
+export * from "./features/context-menu/mouse-listener";
+
 export * from "./features/edge-layout/di.config";
 export * from "./features/edge-layout/edge-layout";
 export * from "./features/edge-layout/model";
@@ -148,6 +152,7 @@ import graphModule from "./graph/di.config";
 import boundsModule from "./features/bounds/di.config";
 import buttonModule from "./features/button/di.config";
 import commandPaletteModule from "./features/command-palette/di.config";
+import contextMenuModule from "./features/context-menu/di.config";
 import decorationModule from "./features/decoration/di.config";
 import edgeLayoutModule from "./features/edge-layout/di.config";
 import expandModule from "./features/expand/di.config";
@@ -164,9 +169,9 @@ import viewportModule from "./features/viewport/di.config";
 import zorderModule from './features/zorder/di.config';
 
 export {
-    graphModule, boundsModule, buttonModule, commandPaletteModule, decorationModule, edgeLayoutModule,
-    expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule, routingModule,
-    selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
+    graphModule, boundsModule, buttonModule, commandPaletteModule, contextMenuModule, decorationModule,
+    edgeLayoutModule, expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule,
+    routingModule, selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
 };
 
 // ------------------ Graph ------------------

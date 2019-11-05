@@ -15,7 +15,7 @@
  ********************************************************************************/
 import { AutocompleteResult, AutocompleteSettings } from "autocompleter";
 import { inject, injectable } from "inversify";
-import { Action, isAction } from "../../base/actions/action";
+import { Action, isAction, LabeledAction, isLabeledAction } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
@@ -28,7 +28,7 @@ import { toArray } from "../../utils/iterable";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
 import { isSelectable } from "../select/model";
-import { CommandPaletteActionProviderRegistry, isLabeledAction, LabeledAction } from "./action-providers";
+import { CommandPaletteActionProviderRegistry } from "./action-providers";
 import { MousePositionTracker } from "../../base/views/mouse-tool";
 
 
