@@ -67,5 +67,9 @@ export const TYPES = {
     ICommandPaletteActionProviderRegistry: Symbol('ICommandPaletteActionProviderRegistry'),
     ICommandPaletteActionProvider: Symbol('ICommandPaletteActionProvider'),
     IEditLabelValidator: Symbol('IEditLabelValidator'),
-    IEditLabelValidationDecorator: Symbol('IEditLabelValidationDecorator')
+    IEditLabelValidationDecorator: Symbol('IEditLabelValidationDecorator'),
+    IContextMenuService: Symbol.for("IContextMenuService"),
+    IContextMenuServiceProvider: Symbol.for("IContextMenuServiceProvider"),
+    IContextMenuProviderRegistry: Symbol.for("IContextMenuProviderRegistry"),
+    IContextMenuProvider: Symbol.for("IContextMenuProvider")
 };

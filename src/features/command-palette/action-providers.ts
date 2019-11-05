@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable, multiInject, optional } from "inversify";
-import { Action } from "../../base/actions/action";
+import { LabeledAction } from "../../base/actions/action";
 import { SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { toArray } from "../../utils/iterable";
@@ -38,16 +38,6 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
         const actionLists = this.actionProviders.map(provider => provider.getActions(root, text, lastMousePosition, index));
         return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc));
     }
-}
-
-export class LabeledAction {
-    constructor(readonly label: string, readonly actions: Action[], readonly icon?: string) { }
-}
-
-export function isLabeledAction(element: any): element is LabeledAction {
-    return element !== undefined
-        && (<LabeledAction>element).label !== undefined
-        && (<LabeledAction>element).actions !== undefined;
 }
 
 @injectable()

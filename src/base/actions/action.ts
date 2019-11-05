@@ -62,3 +62,13 @@ export function isResponseAction(object?: any): object is ResponseAction {
             && typeof((object as any)['responseId']) === 'string'
             && (object as any)['responseId'] !== '';
 }
+
+export class LabeledAction {
+    constructor(readonly label: string, readonly actions: Action[], readonly icon?: string) { }
+}
+
+export function isLabeledAction(element: any): element is LabeledAction {
+    return element !== undefined
+        && (<LabeledAction>element).label !== undefined
+        && (<LabeledAction>element).actions !== undefined;
+}
