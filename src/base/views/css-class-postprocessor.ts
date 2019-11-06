@@ -19,6 +19,7 @@ import { VNode } from "snabbdom/vnode";
 import { SModelElement } from "../model/smodel";
 import { setClass } from "./vnode-utils";
 import { injectable } from "inversify";
+import { getSubType } from '../model/smodel-utils';
 
 @injectable()
 export class CssClassPostprocessor implements IVNodePostprocessor {
@@ -26,6 +27,11 @@ export class CssClassPostprocessor implements IVNodePostprocessor {
         if (element.cssClasses) {
             for (const cssClass of element.cssClasses)
                 setClass(vnode, cssClass, true);
+        }
+        // append model subtype as class
+        const subType = getSubType(element);
+        if (subType && subType !== element.type) {
+            setClass(vnode, subType, true);
         }
         return vnode;
     }
