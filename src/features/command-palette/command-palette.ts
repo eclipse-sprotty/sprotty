@@ -119,6 +119,7 @@ export class CommandPalette extends AbstractUIExtension {
             emptyMsg: "No commands available",
             className: "command-palette-suggestions",
             debounceWaitMs: this.debounceWaitMs,
+            showOnFocus: true,
             minLength: -1,
             fetch: (text: string, update: (items: LabeledAction[]) => void) =>
                 this.updateAutoCompleteActions(update, text, root),
