@@ -44,12 +44,15 @@ export class CommandPalette extends AbstractUIExtension {
 
     readonly id = CommandPalette.ID;
     readonly containerClass = "command-palette";
-    readonly actionsLoadingClass = "autocomplete-loading";
-    readonly xOffset = 20;
-    readonly yOffset = 20;
-    readonly defaultWidth = 400;
-    readonly debounceWaitMs = 200;
+
+    protected loadingIndicatorClasses = ['loading'];
+    protected xOffset = 20;
+    protected yOffset = 20;
+    protected defaultWidth = 400;
+    protected debounceWaitMs = 100;
+
     protected inputElement: HTMLInputElement;
+    protected loadingIndicator: HTMLSpanElement;
     protected autoCompleteResult: AutocompleteResult;
     protected paletteIndex = 0;
     protected contextActions?: LabeledAction[];
@@ -135,23 +138,33 @@ export class CommandPalette extends AbstractUIExtension {
     }
 
     protected updateAutoCompleteActions(update: (items: LabeledAction[]) => void, text: string, root: Readonly<SModelRoot>) {
-        this.inputElement.classList.add(this.actionsLoadingClass);
+        this.onLoading();
         if (this.contextActions) {
             update(this.filterActions(text, this.contextActions));
-            this.inputElement.classList.remove(this.actionsLoadingClass);
+            this.onLoaded('success');
         } else {
             this.actionProviderRegistry
                 .getActions(root, text, this.mousePositionTracker.lastPositionOnDiagram, this.paletteIndex)
                 .then(actions => {
                     this.contextActions = actions;
                     update(this.filterActions(text, actions));
-                    this.inputElement.classList.remove(this.actionsLoadingClass);
+                    this.onLoaded('success');
                 })
                 .catch((reason) => {
                     this.logger.error(this, "Failed to obtain actions from command palette action providers", reason);
-                    this.inputElement.classList.remove(this.actionsLoadingClass);
+                    this.onLoaded('error');
                 });
         }
+    }
+
+    protected onLoading() {
+        this.loadingIndicator = document.createElement('span');
+        this.loadingIndicator.classList.add(...this.loadingIndicatorClasses);
+        this.containerElement.appendChild(this.loadingIndicator);
+    }
+
+    protected onLoaded(success: 'success' | 'error') {
+        this.containerElement.removeChild(this.loadingIndicator);
     }
 
     protected renderLabeledActionSuggestion(item: LabeledAction, value: string) {
