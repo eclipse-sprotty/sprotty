@@ -50,6 +50,7 @@ export class CommandPalette extends AbstractUIExtension {
     protected yOffset = 20;
     protected defaultWidth = 400;
     protected debounceWaitMs = 100;
+    protected noCommandsMsg = "No commands available";
 
     protected inputElement: HTMLInputElement;
     protected loadingIndicator: HTMLSpanElement;
@@ -116,7 +117,7 @@ export class CommandPalette extends AbstractUIExtension {
     private autocompleteSettings(root: Readonly<SModelRoot>): AutocompleteSettings<LabeledAction> {
         return {
             input: this.inputElement,
-            emptyMsg: "No commands available",
+            emptyMsg: this.noCommandsMsg,
             className: "command-palette-suggestions",
             debounceWaitMs: this.debounceWaitMs,
             showOnFocus: true,
@@ -170,7 +171,7 @@ export class CommandPalette extends AbstractUIExtension {
 
     protected renderLabeledActionSuggestion(item: LabeledAction, value: string) {
         const itemElement = document.createElement("div");
-        const wordMatcher = value.split(" ").join("|");
+        const wordMatcher = espaceForRegExp(value).split(" ").join("|");
         const regex = new RegExp(wordMatcher, "gi");
         if (item.icon) {
             this.renderIcon(itemElement, item.icon);
@@ -212,6 +213,10 @@ function toActionArray(input: LabeledAction | Action[] | Action): Action[] {
         return [input];
     }
     return [];
+}
+
+function espaceForRegExp(value: string): string {
+    return value.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
 }
 
 export class CommandPaletteKeyListener extends KeyListener {
