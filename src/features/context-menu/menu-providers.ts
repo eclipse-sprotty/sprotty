@@ -30,7 +30,7 @@ export interface IContextMenuItemProvider {
 @injectable()
 export class ContextMenuProviderRegistry implements IContextMenuItemProvider {
 
-    constructor(@multiInject(TYPES.IContextMenuProvider) @optional() protected menuProviders: IContextMenuItemProvider[] = []) { }
+    constructor(@multiInject(TYPES.IContextMenuItemProvider) @optional() protected menuProviders: IContextMenuItemProvider[] = []) { }
 
     getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point) {
         const menues = this.menuProviders.map(provider => provider.getItems(root, lastMousePosition));
