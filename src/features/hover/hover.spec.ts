@@ -65,6 +65,11 @@ describe('hover', () => {
     class HoverableTarget extends SModelElement implements Hoverable {
         hoverFeedback: boolean = false;
 
+        constructor(id: string = "1") {
+            super();
+            this.id = id;
+        }
+
         hasFeature(feature: symbol): boolean {
             return feature === hoverFeedbackFeature;
         }
@@ -89,6 +94,25 @@ describe('hover', () => {
 
             expect(mouseOverResult).to.have.lengthOf(1);
             expect(mouseOverResult[0]).to.be.an.instanceof(HoverFeedbackAction);
+        });
+        it('resets the hover feedback on hovering over another element', () => {
+            const target = new HoverableTarget("1");
+            const anotherTarget = new HoverableTarget("2");
+            hoverListener.mouseOver(target, event);
+            const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(anotherTarget, event);
+
+            expect(mouseOverResult).to.have.lengthOf(2);
+            expect(mouseOverResult[0]).to.be.an.instanceof(HoverFeedbackAction);
+            expect(mouseOverResult[1]).to.be.an.instanceof(HoverFeedbackAction);
+
+            const action1 = mouseOverResult[0] as HoverFeedbackAction;
+            const action2 = mouseOverResult[1] as HoverFeedbackAction;
+            const actionForTarget = [action1, action2].filter(action => action.mouseoverElement === target.id);
+            const actionForAnotherTarget = [action1, action2].filter(action => action.mouseoverElement === anotherTarget.id);
+            expect(actionForTarget[0].mouseIsOver).to.be.false;
+            expect(actionForAnotherTarget[0].mouseIsOver).to.be.true;
+            // reset state by hovering over the root
+            hoverListener.mouseOver(new SModelRoot(), event);
         });
         it('contains SetPopupModelAction if popup is open and hovering over an non-hoverable element', () => {
             hoverListener.popupIsOpen = true;

@@ -182,6 +182,8 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
 @injectable()
 export class HoverMouseListener extends AbstractHoverMouseListener {
 
+    protected lastHoverFeedbackElementId?: string;
+
     @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
 
     protected computePopupBounds(target: SModelElement, mousePosition: Point): Bounds {
@@ -245,9 +247,15 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 (this.state.previousPopupElement === undefined || this.state.previousPopupElement.id !== popupTarget.id)) {
                 result.push(this.startMouseOverTimer(popupTarget, event));
             }
+            if (this.lastHoverFeedbackElementId) {
+                result.push(new HoverFeedbackAction(this.lastHoverFeedbackElementId, false));
+                this.lastHoverFeedbackElementId = undefined;
+            }
             const hoverTarget = findParentByFeature(target, isHoverable);
-            if (hoverTarget !== undefined)
+            if (hoverTarget !== undefined) {
                 result.push(new HoverFeedbackAction(hoverTarget.id, true));
+                this.lastHoverFeedbackElementId = hoverTarget.id;
+            }
         }
         return result;
     }
@@ -265,8 +273,10 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 }
                 this.stopMouseOverTimer();
                 const hoverTarget = findParentByFeature(target, isHoverable);
-                if (hoverTarget !== undefined)
+                if (hoverTarget !== undefined) {
                     result.push(new HoverFeedbackAction(hoverTarget.id, false));
+                    this.lastHoverFeedbackElementId = undefined;
+                }
             }
         }
         return result;
