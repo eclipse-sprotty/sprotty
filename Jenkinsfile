@@ -13,6 +13,13 @@ spec:
       requests:
         memory: "2Gi"
         cpu: "1"
+    volumeMounts:
+    - mountPath: "/.yarn"
+      name: "yarn-global"
+      readonly: false
+  volumes:
+  - name: "yarn-global"
+    emptyDir: {}
 """
 
 pipeline {
@@ -25,18 +32,19 @@ pipeline {
     options {
         buildDiscarder logRotator(numToKeepStr: '15')
     }
+
+    environment {
+        YARN_CACHE_FOLDER = "${env.WORKSPACE}/yarn-cache"
+        SPAWN_WRAP_SHIM_ROOT = "${env.WORKSPACE}"
+    }
     
     stages {
-        stage('Build sprotty') {
-            environment {
-                SPAWN_WRAP_SHIM_ROOT = "${env.WORKSPACE}"
-                YARN_ARGS = "--cache-folder ${env.WORKSPACE}/yarn-cache --global-folder ${env.WORKSPACE}/yarn-global"
-            }
+        stage('Build sprotty') { 
             steps {
                 container('node') {
-                    sh "yarn ${env.YARN_ARGS} install"
-                    sh "yarn ${env.YARN_ARGS} examples:build"
-                    sh "yarn ${env.YARN_ARGS} test || true" // Ignore test failures
+                    sh "yarn install"
+                    sh "yarn examples:build"
+                    sh "yarn test || true" // Ignore test failures
                 }
             }
         }
