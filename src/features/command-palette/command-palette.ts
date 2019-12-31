@@ -114,7 +114,7 @@ export class CommandPalette extends AbstractUIExtension {
         containerElement.style.width = `${this.defaultWidth}px`;
     }
 
-    private autocompleteSettings(root: Readonly<SModelRoot>): AutocompleteSettings<LabeledAction> {
+    protected autocompleteSettings(root: Readonly<SModelRoot>): AutocompleteSettings<LabeledAction> {
         return {
             input: this.inputElement,
             emptyMsg: this.noCommandsMsg,
@@ -124,10 +124,7 @@ export class CommandPalette extends AbstractUIExtension {
             minLength: -1,
             fetch: (text: string, update: (items: LabeledAction[]) => void) =>
                 this.updateAutoCompleteActions(update, text, root),
-            onSelect: (item: LabeledAction) => {
-                this.executeAction(item);
-                this.hide();
-            },
+            onSelect: (item: LabeledAction) => this.onSelect(item),
             render: (item: LabeledAction, currentValue: string): HTMLDivElement | undefined =>
                 this.renderLabeledActionSuggestion(item, currentValue),
             customize: (input: HTMLInputElement, inputRect: ClientRect | DOMRect, container: HTMLDivElement, maxHeight: number) => {
@@ -137,6 +134,11 @@ export class CommandPalette extends AbstractUIExtension {
                 }
             }
         };
+    }
+
+    protected onSelect(item: LabeledAction) {
+        this.executeAction(item);
+        this.hide();
     }
 
     protected updateAutoCompleteActions(update: (items: LabeledAction[]) => void, text: string, root: Readonly<SModelRoot>) {
@@ -160,6 +162,9 @@ export class CommandPalette extends AbstractUIExtension {
     }
 
     protected onLoading() {
+        if (this.loadingIndicator && this.containerElement.contains(this.loadingIndicator)) {
+            return;
+        }
         this.loadingIndicator = document.createElement('span');
         this.loadingIndicator.classList.add(...this.loadingIndicatorClasses);
         this.containerElement.appendChild(this.loadingIndicator);

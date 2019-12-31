@@ -33,4 +33,18 @@ describe('CssClassPostprocessor', () => {
         expect(vnode.data!.class!.foo).to.be.true;
         expect(vnode.data!.class!.bar).to.be.true;
     });
+    it('subtype is appended as class', () => {
+        const vnode = <g/>;
+        const snode = new SModelElement();
+        snode.type = "type:subtype";
+        new CssClassPostprocessor().decorate(vnode, snode);
+        expect(vnode.data!.class!.subtype).to.be.true;
+    });
+    it('type is not appended as class', () => {
+        const vnode = <g/>;
+        const snode = new SModelElement();
+        snode.type = "type";
+        new CssClassPostprocessor().decorate(vnode, snode);
+        expect(vnode.data!.class).to.be.undefined;
+    });
 });
