@@ -20,6 +20,7 @@ import modelSourceModule from '../model-source/di.config';
 import boundsModule from '../features/bounds/di.config';
 import buttonModule from '../features/button/di.config';
 import commandPaletteModule from '../features/command-palette/di.config';
+import contextMenuModule from '../features/context-menu/di.config';
 import decorationModule from '../features/decoration/di.config';
 import edgeLayoutModule from '../features/edge-layout/di.config';
 import { edgeEditModule, labelEditModule, labelEditUiModule } from '../features/edit/di.config';
@@ -45,10 +46,12 @@ export interface LoadModuleOptions {
  */
 export function loadDefaultModules(container: Container, options?: LoadModuleOptions) {
     const modules = [
-        defaultModule, modelSourceModule, boundsModule, buttonModule, commandPaletteModule,
-        decorationModule, edgeLayoutModule, edgeEditModule, labelEditModule, labelEditUiModule,
-        expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule,
-        routingModule, selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
+        defaultModule, modelSourceModule, boundsModule, buttonModule,
+        commandPaletteModule, contextMenuModule, decorationModule, edgeEditModule,
+        edgeLayoutModule, expandModule, exportModule, fadeModule,
+        hoverModule, labelEditModule, labelEditUiModule, moveModule,
+        openModule, routingModule, selectModule, undoRedoModule,
+        updateModule, viewportModule, zorderModule
     ];
     if (options && options.exclude) {
         for (const mod of options.exclude) {

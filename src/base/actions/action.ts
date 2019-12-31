@@ -63,6 +63,11 @@ export function isResponseAction(object?: any): object is ResponseAction {
             && (object as any)['responseId'] !== '';
 }
 
+/**
+ * A list of actions with a label.
+ * Labeled actions are used to denote a group of actions in a user-interface context, e.g.,
+ * to define an entry in the command palette or in the context menu.
+ */
 export class LabeledAction {
     constructor(readonly label: string, readonly actions: Action[], readonly icon?: string) { }
 }
