@@ -16,7 +16,7 @@ Some selected features:
 * fast, scalable SVG rendering that is compatible with many browsers and stylable with CSS,
 * animations built into the core,
 * support for a distributed runtime with a diagram client and a model server,
-* a fast, reactive client architecure implemented in TypeScript,
+* a fast, reactive client architecture implemented in TypeScript,
 * a Java-based server architecture,
 * configuration via dependency injection,
 * integration with Xtext, the Language Server Protocol and Theia that can be run as rich-client as well as in the browser.
