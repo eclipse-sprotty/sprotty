@@ -29,11 +29,11 @@ export interface MenuItem extends LabeledAction {
      */
     readonly parentId?: string;
     /** Function determining whether the element is enabled. */
-    readonly isEnabled?: () => boolean | Promise<boolean>;
+    readonly isEnabled?: () => boolean;
     /** Function determining whether the element is visible. */
-    readonly isVisible?: () => boolean | Promise<boolean>;
+    readonly isVisible?: () => boolean;
     /** Function determining whether the element is toggled on or off. */
-    readonly isToggled?: () => boolean | Promise<boolean>;
+    readonly isToggled?: () => boolean;
     /** Children of this item. If this item has children, they will be added into a submenu of this item. */
     children?: MenuItem[];
 }

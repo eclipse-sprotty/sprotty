@@ -65,7 +65,7 @@ export class ContextMenuProviderRegistry implements IContextMenuItemProvider {
 }
 
 @injectable()
-export class DeleteContextMenuProviderRegistry implements IContextMenuItemProvider {
+export class DeleteContextMenuItemProvider implements IContextMenuItemProvider {
     getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<MenuItem[]> {
         const selectedElements = Array.from(root.index.all().filter(isSelected).filter(isDeletable));
         return Promise.resolve([
