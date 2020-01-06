@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 TypeFox and others.
+ * Copyright (c) 2019-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -222,6 +222,7 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
         if (addRoutingPoints) {
             this.addAdditionalCorner(edge, routingPoints, sourceAnchors, targetAnchors, updateHandles);
             this.addAdditionalCorner(edge, routingPoints, targetAnchors, sourceAnchors, updateHandles);
+            this.manhattanify(edge, routingPoints);
         }
     }
 
@@ -276,6 +277,27 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
                     });
                     this.addHandle(edge, 'manhattan-50%', 'volatile-routing-point', shiftIndex);
                 }
+            }
+        }
+    }
+
+    /**
+     * Add artificial routing points to keep all angles rectilinear.
+     *
+     * This makes edge morphing look a lot smoother, where RP positions are interpolated
+     * linearly probably resulting in non-rectilinear angles. We don't add handles for
+     * these additional RPs.
+     */
+    protected manhattanify(edge: SRoutableElement, routingPoints: Point[]) {
+        for (let i = 1; i < routingPoints.length; ++i) {
+            const isVertical = Math.abs(routingPoints[i - 1].x - routingPoints[i].x) < 1;
+            const isHorizontal = Math.abs(routingPoints[i - 1].y - routingPoints[i].y) < 1;
+            if (!isVertical && !isHorizontal) {
+                routingPoints.splice(i, 0, {
+                    x: routingPoints[i - 1].x,
+                    y: routingPoints[i].y
+                });
+                ++i;
             }
         }
     }

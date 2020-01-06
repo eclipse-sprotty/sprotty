@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import { DeleteElementAction } from "../edit/delete";
 import { SwitchEditModeAction } from "../edit/edit-routing";
 import { ReconnectAction, ReconnectCommand } from "../edit/reconnect";
 import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElement, SRoutingHandle } from "../routing/model";
-import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot } from "../routing/routing";
+import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from "../routing/routing";
 import { isEdgeLayoutable } from "../edge-layout/model";
 import { isSelectable } from "../select/model";
 import { SelectAction, SelectAllAction } from "../select/select";
@@ -277,42 +277,31 @@ export class MoveAnimation extends Animation {
     }
 }
 
+interface ExpandedEdgeMorph {
+    startExpandedRoute: Point[],
+    endExpandedRoute: Point[],
+    memento: EdgeMemento
+}
+
 export class MorphEdgesAnimation extends Animation {
 
-    protected expandedMementi: EdgeMemento[] = [];
+    protected expanded: ExpandedEdgeMorph[] = [];
 
     constructor(protected model: SModelRoot,
-                protected originalMementi: EdgeMemento[],
+                originalMementi: EdgeMemento[],
                 context: CommandExecutionContext,
                 protected reverse: boolean = false) {
         super(context);
         originalMementi.forEach(edgeMemento => {
             const start = this.reverse ? edgeMemento.after : edgeMemento.before;
             const end = this.reverse ? edgeMemento.before : edgeMemento.after;
-
-            // duplicate RPs such that both snapshots have the same number of RPs
-            const startRpsExpanded = start.routingPoints.slice();
-            const endRpsExpanded = end.routingPoints.slice();
-            const midPoint = this.midPoint(edgeMemento);
-            let diff = startRpsExpanded.length - endRpsExpanded.length;
-            while (diff > 0) {
-                endRpsExpanded.push(endRpsExpanded[endRpsExpanded.length - 1] || midPoint);
-                --diff;
-            }
-            while (diff < 0) {
-                startRpsExpanded.push(startRpsExpanded[startRpsExpanded.length - 1] || midPoint);
-                ++diff;
-            }
-            this.expandedMementi.push({
-                edge: edgeMemento.edge,
-                before: {
-                    ...start,
-                    routingPoints: startRpsExpanded,
-                },
-                after: {
-                    ...end,
-                    routingPoints: endRpsExpanded
-                }
+            const startRoute = start.routedPoints;
+            const endRoute = end.routedPoints;
+            const maxRoutingPoints = Math.max(startRoute.length, endRoute.length);
+            this.expanded.push({
+                startExpandedRoute: this.growToSize(startRoute, maxRoutingPoints),
+                endExpandedRoute: this.growToSize(endRoute, maxRoutingPoints),
+                memento: edgeMemento
             });
         });
     }
@@ -328,42 +317,64 @@ export class MorphEdgesAnimation extends Animation {
     }
 
     start() {
-        this.expandedMementi.forEach(memento => {
-            memento.edge.removeAll(e => e instanceof SRoutingHandle);
+        this.expanded.forEach(morph => {
+            morph.memento.edge.removeAll(e => e instanceof SRoutingHandle);
         });
         return super.start();
     }
 
     tween(t: number) {
         if (t === 1) {
-            this.originalMementi.forEach(memento => {
+            this.expanded.forEach(morph => {
+                const memento = morph.memento;
                 if (this.reverse)
-                    memento.after.router.applySnapshot(memento.edge, memento.before);
+                    memento.before.router.applySnapshot(memento.edge, memento.before);
                 else
                     memento.after.router.applySnapshot(memento.edge, memento.after);
             });
         } else {
-            this.expandedMementi.forEach(memento => {
+            this.expanded.forEach(morph => {
                 const newRoutingPoints: Point[] = [];
-                for (let i = 0; i < memento.before.routingPoints.length; ++i) {
-                    const startPoint = memento.before.routingPoints[i];
-                    const endPoint = memento.after.routingPoints[i];
-                    newRoutingPoints.push({
-                        x: (1 - t) * startPoint.x + t * endPoint.x,
-                        y: (1 - t) * startPoint.y + t * endPoint.y
-                    });
-                }
-                const closestSnapshot = t < 0.5 ? memento.before : memento.after;
+                // ignore source and target anchor
+                for (let i = 1; i < morph.startExpandedRoute.length - 1; ++i)
+                    newRoutingPoints.push(linear(morph.startExpandedRoute[i], morph.endExpandedRoute[i], t));
+
+                const closestSnapshot = t < 0.5 ? morph.memento.before : morph.memento.after;
                 const newSnapshot: EdgeSnapshot = {
                     ...closestSnapshot,
                     routingPoints: newRoutingPoints,
                     routingHandles: []
                 };
-                closestSnapshot.router.applySnapshot(memento.edge, newSnapshot);
+                closestSnapshot.router.applySnapshot(morph.memento.edge, newSnapshot);
             });
         }
         return this.model;
     }
+
+    protected growToSize(route: RoutedPoint[], targetSize: number): Point[] {
+        const diff = targetSize - route.length;
+        if (diff <= 0)
+            return route;
+        const result: Point[] = [];
+        result.push(route[0]);
+        const deltaDiff = 1 / (diff + 1);
+        const deltaSmaller = 1 / (route.length - 1);
+        let nextInsertion = 1;
+        for (let i = 1; i < route.length; ++i) {
+            const pos = deltaSmaller * i;
+            let insertions = 0;
+            while (pos > (nextInsertion + insertions) * deltaDiff)
+                ++insertions;
+            nextInsertion += insertions;
+            for (let j = 0; j < insertions; ++j) {
+                const p = linear(route[i - 1], route[i], (j + 1) / (insertions + 1));
+                result.push(p);
+            }
+            result.push(route[i]);
+        }
+        return result;
+    }
+
 }
 
 export class MoveMouseListener extends MouseListener {
