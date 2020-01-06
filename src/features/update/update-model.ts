@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
+import { injectable, inject, optional } from "inversify";
 import { isValidDimension, almostEquals } from "../../utils/geometry";
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
 import { Action } from '../../base/actions/action';
 import { SModelRootSchema, SModelRoot, SChildElement, SModelElement, SParentElement } from "../../base/model/smodel";
-import { MoveAnimation, ResolvedElementMove } from "../move/move";
+import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from "../move/move";
 import { Fadeable, isFadeable } from "../fade/model";
 import { isLocateable } from "../move/model";
 import { isSizeable } from "../bounds/model";
@@ -31,6 +31,8 @@ import { MatchResult, ModelMatcher, Match, forEachMatch } from "./model-matching
 import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
 import { TYPES } from "../../base/types";
 import { isViewport } from "../viewport/model";
+import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from "../routing/routing";
+import { SRoutableElement } from "../routing/model";
 
 /**
  * Sent from the model source to the client in order to update the model. If no model is present yet,
@@ -56,6 +58,7 @@ export interface UpdateAnimationData {
     fades: ResolvedElementFade[]
     moves?: ResolvedElementMove[]
     resizes?: ResolvedElementResize[]
+    edgeMementi?: EdgeMemento[]
 }
 
 @injectable()
@@ -64,6 +67,8 @@ export class UpdateModelCommand extends Command {
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
+
+    @inject(EdgeRouterRegistry)@optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
     constructor(@inject(TYPES.Action) protected readonly action: UpdateModelAction) {
         super();
@@ -237,6 +242,15 @@ export class UpdateModelCommand extends Command {
                 });
             }
         }
+        if (left instanceof SRoutableElement && right instanceof SRoutableElement && this.edgeRouterRegistry) {
+            if (animationData.edgeMementi === undefined)
+                animationData.edgeMementi = [];
+            animationData.edgeMementi.push({
+                edge: right,
+                before: this.takeSnapshot(left),
+                after: this.takeSnapshot(right),
+            });
+        }
         if (isSelectable(left) && isSelectable(right)) {
             right.selected = left.selected;
         }
@@ -247,6 +261,11 @@ export class UpdateModelCommand extends Command {
             right.scroll = left.scroll;
             right.zoom = left.zoom;
         }
+    }
+
+    protected takeSnapshot(edge: SRoutableElement): EdgeSnapshot {
+        const router = this.edgeRouterRegistry!.get(edge.routerKind);
+        return router.takeSnapshot(edge);
     }
 
     protected createAnimations(data: UpdateAnimationData, root: SModelRoot, context: CommandExecutionContext): Animation[] {
@@ -267,6 +286,9 @@ export class UpdateModelCommand extends Command {
                 resizesMap.set(resize.element.id, resize);
             }
             animations.push(new ResizeAnimation(root, resizesMap, context, false));
+        }
+        if (data.edgeMementi  !== undefined && data.edgeMementi.length > 0) {
+            animations.push(new MorphEdgesAnimation(root, data.edgeMementi, context, false));
         }
         return animations;
     }

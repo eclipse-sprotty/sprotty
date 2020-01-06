@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,6 @@ export class ClassDiagramModelSource extends LocalModelSource {
         super.initialize(registry);
         registry.register(CollapseExpandAction.KIND, this);
         registry.register(CollapseExpandAllAction.KIND, this);
-    }
-
-    commitModel(newRoot: SModelRootSchema) {
-        const previousModel = super.commitModel(newRoot);
-        this.updateModel();
-        return previousModel;
     }
 
     handle(action: Action) {
