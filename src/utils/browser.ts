@@ -51,7 +51,7 @@ export function getWindowScroll(): Point {
         return ORIGIN_POINT;
     }
     return {
-        x: window.scrollX,
-        y: window.scrollY
+        x: window.pageXOffset,
+        y: window.pageYOffset
     };
 }
