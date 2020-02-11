@@ -17,12 +17,13 @@
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import { TYPES } from "../types";
-import { almostEquals, Bounds, isValidDimension, ORIGIN_POINT } from '../../utils/geometry';
+import { almostEquals, Bounds, isValidDimension } from '../../utils/geometry';
 import { Action } from '../actions/action';
 import { IActionDispatcher } from '../actions/action-dispatcher';
 import { IVNodePostprocessor } from "../views/vnode-postprocessor";
 import { SModelElement, SModelRoot } from "../model/smodel";
 import { SystemCommand, CommandExecutionContext, CommandReturn } from '../commands/command';
+import { getWindowScroll } from "../../utils/browser";
 
 /**
  * Grabs the bounds from the root element in page coordinates and fires a
@@ -62,7 +63,7 @@ export class CanvasBoundsInitializer implements IVNodePostprocessor {
 
     protected getBoundsInPage(element: Element) {
         const bounds = element.getBoundingClientRect();
-        const scroll = typeof window !== 'undefined' ? { x: window.scrollX, y: window.scrollY } : ORIGIN_POINT;
+        const scroll = getWindowScroll();
         return {
             x: bounds.left + scroll.x,
             y: bounds.top + scroll.y,

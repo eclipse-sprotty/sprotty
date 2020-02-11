@@ -21,6 +21,7 @@ import { DOMHelper } from "../../base/views/dom-helper";
 import { ViewerOptions } from "../../base/views/viewer-options";
 import { Bounds, Dimension, EMPTY_BOUNDS, EMPTY_DIMENSION, includes, isBounds, ORIGIN_POINT, Point } from "../../utils/geometry";
 import { Locateable } from '../move/model';
+import { getWindowScroll } from "../../utils/browser";
 
 export const boundsFeature = Symbol('boundsFeature');
 export const layoutContainerFeature = Symbol('layoutContainerFeature');
@@ -117,8 +118,9 @@ export function getAbsoluteClientBounds(element: SModelElement, domHelper: DOMHe
     const svgElement = document.getElementById(svgElementId);
     if (svgElement) {
         const rect = svgElement.getBoundingClientRect();
-        x = rect.left + window.scrollX;
-        y = rect.top + window.scrollY;
+        const scroll = getWindowScroll();
+        x = rect.left + scroll.x;
+        y = rect.top + scroll.y;
         width = rect.width;
         height = rect.height;
     }

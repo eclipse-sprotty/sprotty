@@ -35,11 +35,11 @@ export class PopupPositionUpdater implements IVNodePostprocessor {
         if (popupDiv !== null && typeof window !== 'undefined') {
             const boundingClientRect = popupDiv.getBoundingClientRect();
             if (window.innerHeight < boundingClientRect.height + boundingClientRect.top) {
-                popupDiv.style.top = (window.scrollY + window.innerHeight - boundingClientRect.height - 5) + 'px';
+                popupDiv.style.top = (window.pageYOffset + window.innerHeight - boundingClientRect.height - 5) + 'px';
             }
 
             if (window.innerWidth < boundingClientRect.left + boundingClientRect.width) {
-                popupDiv.style.left = (window.scrollX + window.innerWidth - boundingClientRect.width - 5) + 'px';
+                popupDiv.style.left = (window.pageXOffset + window.innerWidth - boundingClientRect.width - 5) + 'px';
             }
 
             if (boundingClientRect.left < 0) {
