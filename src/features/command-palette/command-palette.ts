@@ -128,10 +128,7 @@ export class CommandPalette extends AbstractUIExtension {
             render: (item: LabeledAction, currentValue: string): HTMLDivElement | undefined =>
                 this.renderLabeledActionSuggestion(item, currentValue),
             customize: (input: HTMLInputElement, inputRect: ClientRect | DOMRect, container: HTMLDivElement, maxHeight: number) => {
-                // move container into our command palette container as this is already positioned correctly
-                if (this.containerElement) {
-                    this.containerElement.appendChild(container);
-                }
+                this.customizeSuggestionContainer(container, inputRect, maxHeight);
             }
         };
     }
@@ -195,6 +192,13 @@ export class CommandPalette extends AbstractUIExtension {
             const searchWords = filterText.split(' ');
             return searchWords.every(word => label.indexOf(word.toLowerCase()) !== -1);
         }));
+    }
+
+    protected customizeSuggestionContainer(container: HTMLDivElement, inputRect: ClientRect | DOMRect, maxHeight: number) {
+        // move container into our command palette container as this is already positioned correctly
+        if (this.containerElement) {
+            this.containerElement.appendChild(container);
+        }
     }
 
     hide() {
