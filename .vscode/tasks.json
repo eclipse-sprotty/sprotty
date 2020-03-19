@@ -1,0 +1,113 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build all",
+            "type": "shell",
+            "detail": "Build Sprotty and Sprotty examples",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "command": "echo 😎 Finished building Sprotty and Sprotty examples",
+            "isBackground": true,
+            "problemMatcher": [],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build Sprotty",
+                "Build Sprotty examples"
+            ]
+        },
+        {
+            "label": "Build Sprotty",
+            "type": "shell",
+            "command": "yarn",
+            "group": "build",
+            "presentation": {
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$tslint5"
+            ]
+        },
+        {
+            "label": "Build Sprotty examples",
+            "type": "shell",
+            "command": "yarn examples:build",
+            "group": "build",
+            "presentation": {
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$tslint5"
+            ]
+        },
+        {
+            "label": "Watch all",
+            "detail": "Watch Sprotty and Sprotty example",
+            "type": "shell",
+            "group": "none",
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "command": "echo",
+            "problemMatcher": [],
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "Watch Sprotty",
+                "Watch Sprotty examples"
+            ]
+        },
+        {
+            "label": "Watch Sprotty",
+            "type": "shell",
+            "command": "yarn watch",
+            "group": "none",
+            "presentation": {
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        },
+        {
+            "label": "Watch Sprotty examples",
+            "type": "shell",
+            "command": "yarn examples:watch",
+            "group": "none",
+            "presentation": {
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        }
+    ]
+}
