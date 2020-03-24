@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2019 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@
 import { SModelElement } from '../../base/model/smodel';
 import { SRoutableElement } from '../routing/model';
 import { SModelExtension } from '../../base/model/smodel-extension';
+import { Bounds } from '../../utils/geometry';
 
 export const editFeature = Symbol('editFeature');
 
@@ -28,6 +29,8 @@ export const editLabelFeature = Symbol('editLabelFeature');
 
 export interface EditableLabel extends SModelExtension {
     text: string;
+    readonly isMultiLine?: boolean;
+    readonly editControlBoundsCorrection?: Bounds;
 }
 
 export function isEditableLabel<T extends SModelElement>(element: T): element is T & EditableLabel {

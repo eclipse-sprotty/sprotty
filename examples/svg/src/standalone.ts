@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LocalModelSource, TYPES, SModelRootSchema, ShapedPreRenderedElementSchema, ForeignObjectElementSchema } from "../../../src";
+import { LocalModelSource, TYPES, SModelRootSchema, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema } from "../../../src";
 import createContainer from "./di.config";
 
 function loadFile(path: string): Promise<string> {
@@ -60,7 +60,26 @@ export default function runMulticore() {
                     position: { x: 50, y: 350 },
                     size: { height: 50, width: 190 },
                     code: "<p>This is a free-floating HTML paragraph!</p>"
-                } as ForeignObjectElementSchema
+                } as ForeignObjectElementSchema,
+                {
+                    id: 'foreign-object-in-shape',
+                    type: 'node',
+                    position: {
+                        x: 50,
+                        y: 90
+                    },
+                    size: {
+                        height: 60,
+                        width: 160
+                    },
+                    children: [
+                        {
+                            type: 'child-foreign-object',
+                            id: 'foreign-object-in-shape-contents',
+                            code: "<div>This is <em>HTML</em> within <u>an SVG rectangle</u>!</div>"
+                        } as ForeignObjectElementSchema
+                    ]
+                } as SShapeElementSchema
             ]
         };
 

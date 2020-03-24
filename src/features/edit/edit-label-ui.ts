@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 EclipseSource and others.
+ * Copyright (c) 2019-2020 EclipseSource and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-exte
 import { DOMHelper } from "../../base/views/dom-helper";
 import { ViewerOptions } from "../../base/views/viewer-options";
 import { CommitModelAction } from "../../model-source/commit-model";
-import { matchesKeystroke } from "../../utils/keyboard";
+import { matchesKeystroke, KeyCode, KeyboardModifier } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
 import { getZoom } from "../viewport/zoom";
 import {
@@ -44,8 +44,8 @@ export class EditLabelActionHandler implements IActionHandler {
 }
 
 export interface IEditLabelValidationDecorator {
-    decorate(input: HTMLInputElement, validationResult: EditLabelValidationResult): void;
-    dispose(input: HTMLInputElement): void;
+    decorate(input: HTMLInputElement | HTMLTextAreaElement, validationResult: EditLabelValidationResult): void;
+    dispose(input: HTMLInputElement | HTMLTextAreaElement): void;
 }
 
 @injectable()
@@ -55,9 +55,6 @@ export class EditLabelUI extends AbstractUIExtension {
     readonly id = EditLabelUI.ID;
     readonly containerClass = "label-edit";
 
-    /** The additional width to be added to the current label length for editing in pixel. Will be scaled depending on zoom level. */
-    readonly additionalInputWidth = 100;
-
     @inject(TYPES.IActionDispatcherProvider) public actionDispatcherProvider: IActionDispatcherProvider;
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
@@ -65,6 +62,8 @@ export class EditLabelUI extends AbstractUIExtension {
     @inject(TYPES.IEditLabelValidationDecorator) @optional() public validationDecorator: IEditLabelValidationDecorator;
 
     protected inputElement: HTMLInputElement;
+    protected textAreaElement: HTMLTextAreaElement;
+
     protected label?: EditableLabel & SModelElement;
     protected labelElement: HTMLElement | null;
     protected validationTimeout?: number = undefined;
@@ -77,24 +76,41 @@ export class EditLabelUI extends AbstractUIExtension {
 
     protected initializeContents(containerElement: HTMLElement) {
         containerElement.style.position = 'absolute';
+
         this.inputElement = document.createElement('input');
-        this.inputElement.onkeydown = (event) => this.handleKeyDown(event);
-        this.inputElement.onkeyup = (event) => this.validateLabelIfContentChange(event, this.inputElement.value);
-        this.inputElement.onblur = () => window.setTimeout(() => this.applyLabelEdit(), 200);
-        containerElement.appendChild(this.inputElement);
+        this.configureAndAdd(this.inputElement, containerElement);
+        this.inputElement.onkeydown = (event) => this.hideIfEscapeEvent(event);
+        this.inputElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter');
+
+        this.textAreaElement = document.createElement('textarea');
+        this.configureAndAdd(this.textAreaElement, containerElement);
+        this.textAreaElement.onkeydown = (event) => this.hideIfEscapeEvent(event);
+        this.textAreaElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter', 'ctrl');
     }
 
-    protected handleKeyDown(event: KeyboardEvent) {
-        this.hideIfEscapeEvent(event);
-        this.applyLabelEditIfEnterEvent(event);
+    protected configureAndAdd(element: HTMLElement, containerElement: HTMLElement) {
+        element.style.visibility = 'hidden';
+        element.style.position = 'absolute';
+        element.style.top = '0px';
+        element.style.left = '0px';
+        element.onkeyup = (event) => this.validateLabelIfContentChange(event, this.inputElement.value);
+        element.onblur = () => window.setTimeout(() => this.applyLabelEdit(), 200);
+        containerElement.appendChild(element);
+    }
+
+    get editControl(): HTMLInputElement | HTMLTextAreaElement {
+        if (this.label && this.label.isMultiLine) {
+            return this.textAreaElement;
+        }
+        return this.inputElement;
     }
 
     protected hideIfEscapeEvent(event: KeyboardEvent) {
         if (matchesKeystroke(event, 'Escape')) { this.hide(); }
     }
 
-    protected applyLabelEditIfEnterEvent(event: KeyboardEvent) {
-        if (matchesKeystroke(event, 'Enter')) {
+    protected applyLabelEditOnEvent(event: KeyboardEvent, code?: KeyCode, ...modifiers: KeyboardModifier[]) {
+        if (matchesKeystroke(event, code ? code : 'Enter', ...modifiers)) {
             this.applyLabelEdit();
         }
     }
@@ -102,7 +118,7 @@ export class EditLabelUI extends AbstractUIExtension {
     protected validateLabelIfContentChange(event: KeyboardEvent, value: string) {
         if (this.previousLabelContent === undefined || this.previousLabelContent !== value) {
             this.previousLabelContent = value;
-            this.performLabelValidation(event, this.inputElement.value);
+            this.performLabelValidation(event, this.editControl.value);
         }
     }
 
@@ -111,14 +127,14 @@ export class EditLabelUI extends AbstractUIExtension {
             return;
         }
         if (this.blockApplyEditOnInvalidInput) {
-            const result = await this.validateLabel(this.inputElement.value);
+            const result = await this.validateLabel(this.editControl.value);
             if ('error' === result.severity) {
-                this.inputElement.focus();
+                this.editControl.focus();
                 return;
             }
         }
         this.actionDispatcherProvider()
-            .then((actionDispatcher) => actionDispatcher.dispatchAll([new ApplyLabelEditAction(this.labelId, this.inputElement.value), new CommitModelAction()]))
+            .then((actionDispatcher) => actionDispatcher.dispatchAll([new ApplyLabelEditAction(this.labelId, this.editControl.value), new CommitModelAction()]))
             .catch((reason) => this.logger.error(this, 'No action dispatcher available to execute apply label edit action', reason));
         this.hide();
     }
@@ -148,13 +164,13 @@ export class EditLabelUI extends AbstractUIExtension {
     protected showValidationResult(result: EditLabelValidationResult) {
         this.clearValidationResult();
         if (this.validationDecorator) {
-            this.validationDecorator.decorate(this.inputElement, result);
+            this.validationDecorator.decorate(this.editControl, result);
         }
     }
 
     protected clearValidationResult() {
         if (this.validationDecorator) {
-            this.validationDecorator.dispose(this.inputElement);
+            this.validationDecorator.dispose(this.editControl);
         }
     }
 
@@ -164,10 +180,10 @@ export class EditLabelUI extends AbstractUIExtension {
         }
         super.show(root, ...contextElementIds);
         this.isActive = true;
-        this.inputElement.focus();
     }
 
     hide(): void {
+        this.editControl.style.visibility = 'hidden';
         super.hide();
         this.clearValidationResult();
         this.isActive = false;
@@ -184,6 +200,8 @@ export class EditLabelUI extends AbstractUIExtension {
         this.setPosition(containerElement);
         this.applyTextContents();
         this.applyFontStyling();
+        this.editControl.style.visibility = 'visible';
+        this.editControl.focus();
     }
 
     protected setPosition(containerElement: HTMLElement) {
@@ -193,24 +211,33 @@ export class EditLabelUI extends AbstractUIExtension {
         let height = 20;
 
         if (this.label) {
+            const zoom = getZoom(this.label);
             const bounds = getAbsoluteClientBounds(this.label, this.domHelper, this.viewerOptions);
-            x = bounds.x;
-            y = bounds.y;
-            height = bounds.height;
-            width = bounds.width + (this.additionalInputWidth * getZoom(this.label));
+            x = bounds.x + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.x * zoom : 0);
+            y = bounds.y + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.y * zoom : 0);
+            height = bounds.height + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.height * zoom : 0);
+            width = bounds.width + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.width * zoom : 0);
         }
 
         containerElement.style.left = `${x}px`;
         containerElement.style.top = `${y}px`;
         containerElement.style.width = `${width}px`;
+        this.editControl.style.width = `${width}px`;
         containerElement.style.height = `${height}px`;
-        this.inputElement.style.position = 'absolute';
+        this.editControl.style.height = `${height}px`;
     }
 
     protected applyTextContents() {
         if (this.label) {
-            this.inputElement.value = this.label.text;
-            this.inputElement.setSelectionRange(0, this.inputElement.value.length);
+            this.editControl.value = this.label.text;
+            if (this.editControl instanceof HTMLTextAreaElement) {
+                this.editControl.selectionStart = 0;
+                this.editControl.selectionEnd = 0;
+                this.editControl.scrollTop = 0;
+                this.editControl.scrollLeft = 0;
+            } else {
+                this.editControl.setSelectionRange(0, this.editControl.value.length);
+            }
         }
     }
 
@@ -220,11 +247,12 @@ export class EditLabelUI extends AbstractUIExtension {
             if (this.labelElement) {
                 this.labelElement.style.visibility = 'hidden';
                 const style = window.getComputedStyle(this.labelElement);
-                this.inputElement.style.font = style.font;
-                this.inputElement.style.fontStyle = style.fontStyle;
-                this.inputElement.style.fontFamily = style.fontFamily;
-                this.inputElement.style.fontSize = scaledFont(style.fontSize, getZoom(this.label));
-                this.inputElement.style.fontWeight = style.fontWeight;
+                this.editControl.style.font = style.font;
+                this.editControl.style.fontStyle = style.fontStyle;
+                this.editControl.style.fontFamily = style.fontFamily;
+                this.editControl.style.fontSize = scaledFont(style.fontSize, getZoom(this.label));
+                this.editControl.style.fontWeight = style.fontWeight;
+                this.editControl.style.lineHeight = style.lineHeight;
             }
         }
     }

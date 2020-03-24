@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,4 +20,19 @@
     fill: #f00;
     font-size: 14pt;
     text-anchor: middle;
+}
+
+.sprotty-node {
+    fill: darkorange;
+}
+
+.child-foreign-object div {
+    margin: 5px;
+    color: seashell;
+    text-align: center;
+    user-select: none;
+}
+
+.foreign-object {
+    user-select: none;
 }
