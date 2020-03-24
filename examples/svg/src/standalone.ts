@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LocalModelSource, TYPES, SModelRootSchema, ShapedPreRenderedElementSchema } from "../../../src";
+import { LocalModelSource, TYPES, SModelRootSchema, ShapedPreRenderedElementSchema, ForeignObjectElementSchema } from "../../../src";
 import createContainer from "./di.config";
 
 function loadFile(path: string): Promise<string> {
@@ -53,7 +53,14 @@ export default function runMulticore() {
                     id: 'tiger',
                     position: { x: 400, y: 0 },
                     code: tiger
-                } as ShapedPreRenderedElementSchema
+                } as ShapedPreRenderedElementSchema,
+                {
+                    type: 'foreign-object',
+                    id: 'direct-html',
+                    position: { x: 50, y: 350 },
+                    size: { height: 50, width: 190 },
+                    code: "<p>This is a free-floating HTML paragraph!</p>"
+                } as ForeignObjectElementSchema
             ]
         };
 
