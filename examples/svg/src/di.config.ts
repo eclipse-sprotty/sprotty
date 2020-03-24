@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,8 @@
 import { Container, ContainerModule } from "inversify";
 import {
     TYPES, ConsoleLogger, LogLevel, loadDefaultModules, LocalModelSource, PreRenderedView,
-    SvgViewportView, ViewportRootElement, ShapedPreRenderedElement, configureModelElement
+    SvgViewportView, ViewportRootElement, ShapedPreRenderedElement, configureModelElement,
+    ForeignObjectElement, ForeignObjectView
 } from "../../../src";
 
 export default () => {
@@ -31,6 +32,7 @@ export default () => {
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'svg', ViewportRootElement, SvgViewportView);
         configureModelElement(context, 'pre-rendered', ShapedPreRenderedElement, PreRenderedView);
+        configureModelElement(context, 'foreign-object', ForeignObjectElement, ForeignObjectView);
     });
 
     const container = new Container();

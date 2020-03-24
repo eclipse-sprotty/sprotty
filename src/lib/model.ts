@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { SModelRoot, SModelRootSchema, SChildElement, SModelElementSchema } from "../base/model/smodel";
-import { Point, Dimension, ORIGIN_POINT, EMPTY_DIMENSION, Bounds } from "../utils/geometry";
-import { BoundsAware, boundsFeature, Alignable, alignFeature } from "../features/bounds/model";
+import { Point, Dimension, ORIGIN_POINT, EMPTY_DIMENSION, Bounds, isValidDimension, EMPTY_BOUNDS } from "../utils/geometry";
+import { BoundsAware, boundsFeature, Alignable, alignFeature, isBoundsAware } from "../features/bounds/model";
 import { Locateable, moveFeature } from "../features/move/model";
 import { Selectable, selectFeature } from "../features/select/model";
 import { SNode, SPort } from '../graph/sgraph';
@@ -135,4 +135,45 @@ export class ShapedPreRenderedElement extends PreRenderedElement implements Boun
         };
     }
 
+}
+
+/**
+ * A `foreignObject` element to be transferred to the DOM within the SVG.
+ *
+ * This can be useful to to benefit from e.g. HTML rendering features, such as line wrapping, inside of
+ * the SVG diagram.  Note that `foreignObject` is not supported by all browsers and SVG viewers may not
+ * support rendering the `foreignObject` content.
+ *
+ * If no dimensions are specified in the schema element, this element will obtain the dimension of
+ * its parent to fill the entire available room. Thus, this element requires specified bounds itself
+ * or bounds to be available for its parent.
+ */
+export class ForeignObjectElement extends ShapedPreRenderedElement {
+    namespace: string;
+    get bounds(): Bounds {
+        if (isValidDimension(this.size)) {
+            return {
+                x: this.position.x,
+                y: this.position.y,
+                width: this.size.width,
+                height: this.size.height
+            };
+        } else if (isBoundsAware(this.parent)) {
+            return {
+                x: this.position.x,
+                y: this.position.y,
+                width: this.parent.bounds.width,
+                height: this.parent.bounds.height
+            };
+        }
+        return EMPTY_BOUNDS;
+    }
+}
+
+/**
+ * Serializable schema for ForeignObjectElement.
+ */
+export interface ForeignObjectElementSchema extends ShapedPreRenderedElementSchema {
+    /** The namespace to be assigned to the elements inside of the `foreignObject`. */
+    namespace: string
 }

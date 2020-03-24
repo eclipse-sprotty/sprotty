@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+/** @jsx svg */
+import { injectable } from "inversify";
+import { svg } from 'snabbdom-jsx';
 import virtualize from "snabbdom-virtualize/strings";
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
-import { setNamespace } from "../base/views/vnode-utils";
-import { PreRenderedElement } from "./model";
-import { injectable } from "inversify";
+import { setNamespace, setAttr } from "../base/views/vnode-utils";
+import { ForeignObjectElement, PreRenderedElement } from "./model";
+import { getSubType } from "../base/model/smodel-utils";
 
 @injectable()
 export class PreRenderedView implements IView {
@@ -34,4 +37,27 @@ export class PreRenderedView implements IView {
             setNamespace(node, 'http://www.w3.org/2000/svg');
     }
 
+}
+
+/**
+ * An SVG `foreignObject` view with a namespace specified by the provided `ForeignObjectElement`.
+ * Note that `foreignObject` may not be supported by all browsers or SVG viewers.
+ */
+@injectable()
+export class ForeignObjectView implements IView {
+    render(model: ForeignObjectElement, context: RenderingContext): VNode {
+        const foreignObjectContents = virtualize(model.code);
+        const node = <g>
+            <foreignObject requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility'
+                height={model.bounds.height} width={model.bounds.width} x={0} y={0}>
+                {foreignObjectContents}
+            </foreignObject>
+            {context.renderChildren(model)}
+        </g>;
+        setAttr(node, 'class', model.type);
+        const subType = getSubType(model);
+        if (subType) setAttr(node, 'class', subType);
+        setNamespace(foreignObjectContents, model.namespace);
+        return node;
+    }
 }
