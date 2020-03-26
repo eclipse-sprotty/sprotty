@@ -42,9 +42,6 @@ export class CommandPalette extends AbstractUIExtension {
     static readonly ID = "command-palette";
     static readonly isInvokePaletteKey = (event: KeyboardEvent) => matchesKeystroke(event, 'Space', 'ctrl');
 
-    readonly id = CommandPalette.ID;
-    readonly containerClass = "command-palette";
-
     protected loadingIndicatorClasses = ['loading'];
     protected xOffset = 20;
     protected yOffset = 20;
@@ -63,6 +60,9 @@ export class CommandPalette extends AbstractUIExtension {
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
     @inject(MousePositionTracker) protected mousePositionTracker: MousePositionTracker;
+
+    public id() { return CommandPalette.ID; }
+    public containerClass() { return "command-palette"; }
 
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         super.show(root, ...contextElementIds);

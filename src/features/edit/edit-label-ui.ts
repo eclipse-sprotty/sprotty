@@ -52,9 +52,6 @@ export interface IEditLabelValidationDecorator {
 export class EditLabelUI extends AbstractUIExtension {
     static readonly ID = "editLabelUi";
 
-    readonly id = EditLabelUI.ID;
-    readonly containerClass = "label-edit";
-
     @inject(TYPES.IActionDispatcherProvider) public actionDispatcherProvider: IActionDispatcherProvider;
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
@@ -72,6 +69,9 @@ export class EditLabelUI extends AbstractUIExtension {
     protected isCurrentLabelValid: boolean = true;
     protected previousLabelContent?: string;
 
+    public id() { return EditLabelUI.ID; }
+    public containerClass() { return "label-edit"; }
+
     protected get labelId() { return this.label ? this.label.id : 'unknown'; }
 
     protected initializeContents(containerElement: HTMLElement) {
@@ -79,12 +79,10 @@ export class EditLabelUI extends AbstractUIExtension {
 
         this.inputElement = document.createElement('input');
         this.configureAndAdd(this.inputElement, containerElement);
-        this.inputElement.onkeydown = (event) => this.hideIfEscapeEvent(event);
         this.inputElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter');
 
         this.textAreaElement = document.createElement('textarea');
         this.configureAndAdd(this.textAreaElement, containerElement);
-        this.textAreaElement.onkeydown = (event) => this.hideIfEscapeEvent(event);
         this.textAreaElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter', 'ctrl');
     }
 
@@ -94,6 +92,7 @@ export class EditLabelUI extends AbstractUIExtension {
         element.style.top = '0px';
         element.style.left = '0px';
         element.onkeyup = (event) => this.validateLabelIfContentChange(event, this.inputElement.value);
+        element.onkeydown = (event) => this.hideIfEscapeEvent(event);
         element.onblur = () => window.setTimeout(() => this.applyLabelEdit(), 200);
         containerElement.appendChild(element);
     }

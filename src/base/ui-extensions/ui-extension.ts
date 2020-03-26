@@ -23,7 +23,7 @@ import { ViewerOptions } from "../views/viewer-options";
  * A UI extension displaying additional UI elements on top of a sprotty diagram.
  */
 export interface IUIExtension {
-    readonly id: string;
+    id(): string;
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void;
     hide(): void;
 }
@@ -36,10 +36,11 @@ export abstract class AbstractUIExtension implements IUIExtension {
     @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
     @inject(TYPES.ILogger) protected logger: ILogger;
 
-    abstract readonly id: string;
-    abstract readonly containerClass: string;
     protected containerElement: HTMLElement;
     protected activeElement: Element | null;
+
+    abstract id(): string;
+    abstract containerClass(): string;
 
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void {
         this.activeElement = document.activeElement;
@@ -78,11 +79,11 @@ export abstract class AbstractUIExtension implements IUIExtension {
     }
 
     protected getOrCreateContainer(baseDivId: string): HTMLElement {
-        let container = document.getElementById(this.id);
+        let container = document.getElementById(this.id());
         if (container === null) {
             container = document.createElement('div');
-            container.id = baseDivId + "_" + this.id;
-            container.classList.add(this.containerClass);
+            container.id = baseDivId + "_" + this.id();
+            container.classList.add(this.containerClass());
         }
         return container;
     }
