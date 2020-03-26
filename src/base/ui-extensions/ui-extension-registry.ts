@@ -27,7 +27,7 @@ import { IUIExtension } from "./ui-extension";
 export class UIExtensionRegistry extends InstanceRegistry<IUIExtension>  {
     constructor(@multiInject(TYPES.IUIExtension) @optional() extensions: (IUIExtension)[] = []) {
         super();
-        extensions.forEach((extension) => this.register(extension.id, extension));
+        extensions.forEach((extension) => this.register(extension.id(), extension));
     }
 }
 
