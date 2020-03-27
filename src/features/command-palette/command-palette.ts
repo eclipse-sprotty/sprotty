@@ -168,7 +168,9 @@ export class CommandPalette extends AbstractUIExtension {
     }
 
     protected onLoaded(success: 'success' | 'error') {
-        this.containerElement.removeChild(this.loadingIndicator);
+        if (this.containerElement.contains(this.loadingIndicator)) {
+            this.containerElement.removeChild(this.loadingIndicator);
+        }
     }
 
     protected renderLabeledActionSuggestion(item: LabeledAction, value: string) {
