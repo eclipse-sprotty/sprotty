@@ -59,7 +59,7 @@ export class RectangleWithEditableLabel extends RectangularNode implements WithE
 
 export class EditableForeignObjectElement extends ForeignObjectElement implements EditableLabel {
     readonly isMultiLine = true;
-    readonly editControlBoundsCorrection = { x: 5, y: 3, height: -7.5, width: -7.5 };
+    get editControlDimension() { return { width: this.bounds.width, height: this.bounds.height }; }
 
     get text(): string {
         return this.code;
