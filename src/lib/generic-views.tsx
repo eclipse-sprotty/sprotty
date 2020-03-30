@@ -22,7 +22,6 @@ import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
 import { setNamespace, setAttr } from "../base/views/vnode-utils";
 import { ForeignObjectElement, PreRenderedElement } from "./model";
-import { getSubType } from "../base/model/smodel-utils";
 
 @injectable()
 export class PreRenderedView implements IView {
@@ -55,8 +54,6 @@ export class ForeignObjectView implements IView {
             {context.renderChildren(model)}
         </g>;
         setAttr(node, 'class', model.type);
-        const subType = getSubType(model);
-        if (subType) setAttr(node, 'class', subType);
         setNamespace(foreignObjectContents, model.namespace);
         return node;
     }

@@ -91,9 +91,9 @@ export class EditLabelUI extends AbstractUIExtension {
         element.style.position = 'absolute';
         element.style.top = '0px';
         element.style.left = '0px';
-        element.onkeyup = (event) => this.validateLabelIfContentChange(event, this.inputElement.value);
-        element.onkeydown = (event) => this.hideIfEscapeEvent(event);
-        element.onblur = () => window.setTimeout(() => this.applyLabelEdit(), 200);
+        element.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
+        element.addEventListener('keyup', (event) => this.validateLabelIfContentChange(event, this.inputElement.value));
+        element.addEventListener('blur', () => window.setTimeout(() => this.applyLabelEdit(), 200));
         containerElement.appendChild(element);
     }
 
@@ -212,10 +212,10 @@ export class EditLabelUI extends AbstractUIExtension {
         if (this.label) {
             const zoom = getZoom(this.label);
             const bounds = getAbsoluteClientBounds(this.label, this.domHelper, this.viewerOptions);
-            x = bounds.x + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.x * zoom : 0);
-            y = bounds.y + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.y * zoom : 0);
-            height = bounds.height + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.height * zoom : 0);
-            width = bounds.width + (this.label.editControlBoundsCorrection ? this.label.editControlBoundsCorrection.width * zoom : 0);
+            x = bounds.x + (this.label.editControlPositionCorrection ? this.label.editControlPositionCorrection.x : 0) * zoom;
+            y = bounds.y + (this.label.editControlPositionCorrection ? this.label.editControlPositionCorrection.y : 0) * zoom;
+            height = (this.label.editControlDimension ? this.label.editControlDimension.height : height) * zoom;
+            width = (this.label.editControlDimension ? this.label.editControlDimension.width : width) * zoom;
         }
 
         containerElement.style.left = `${x}px`;
