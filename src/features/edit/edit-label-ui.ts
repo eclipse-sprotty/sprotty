@@ -86,13 +86,13 @@ export class EditLabelUI extends AbstractUIExtension {
         this.textAreaElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter', 'ctrl');
     }
 
-    protected configureAndAdd(element: HTMLElement, containerElement: HTMLElement) {
+    protected configureAndAdd(element: HTMLInputElement | HTMLTextAreaElement, containerElement: HTMLElement) {
         element.style.visibility = 'hidden';
         element.style.position = 'absolute';
         element.style.top = '0px';
         element.style.left = '0px';
-        element.addEventListener('keydown', (event) => this.hideIfEscapeEvent(event));
-        element.addEventListener('keyup', (event) => this.validateLabelIfContentChange(event, this.inputElement.value));
+        element.addEventListener('keydown', (event: KeyboardEvent) => this.hideIfEscapeEvent(event));
+        element.addEventListener('keyup', (event: KeyboardEvent) => this.validateLabelIfContentChange(event, element.value));
         element.addEventListener('blur', () => window.setTimeout(() => this.applyLabelEdit(), 200));
         containerElement.appendChild(element);
     }
