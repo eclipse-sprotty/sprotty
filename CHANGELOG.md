@@ -2,6 +2,27 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-layout](https://github.com/eclipse/sprotty-layout/blob/master/CHANGELOG.md).
 
+### v0.8.0 (Apr. 2020)
+
+New features:
+ * CenterAction retains zoom level ([#138](https://github.com/eclipse/sprotty/pull/138))
+ * Cycling through command palettes ([#141](https://github.com/eclipse/sprotty/pull/141))
+ * Context menus ([#139](https://github.com/eclipse/sprotty/pull/139)[#144](https://github.com/eclipse/sprotty/pull/144)) 
+ * Use element subtype as css style ([#145](https://github.com/eclipse/sprotty/pull/145))
+ * Improve loading indicator of command palette ([#148](https://github.com/eclipse/sprotty/pull/148), [#151](https://github.com/eclipse/sprotty/pull/151))
+ * Reset previous hover feedback on mouseover ([#153](https://github.com/eclipse/sprotty/pull/153)) 
+ * Edge changes are animated ([#158](https://github.com/eclipse/sprotty/pull/158)) 
+ * Fix scrolling on all browsers ([#163](https://github.com/eclipse/sprotty/pull/163))
+ * Multi-line Label editing and ForeignObjects ([#171](https://github.com/eclipse/sprotty/pull/171), [#173](https://github.com/eclipse/sprotty/pull/173))
+ 
+Fixed issues: https://github.com/eclipse/sprotty/milestone/3?closed=1
+
+Breaking API changes:
+ * `DeleteContextMenuProviderRegistry` has been renamed to `DeleteContextMenuProvider` ([#157](https://github.com/eclipse/sprotty/pull/#157))
+ * `MenuItem.isEnabled()`, `MenuItem.isToggled()`and `MenuItem.isVisible()` no longer return promises  ([#157](https://github.com/eclipse/sprotty/pull/#157))
+ * `IUIExtension.id` and `IUIExtension.containerClass` have become methods  ([#171](https://github.com/eclipse/sprotty/pull/#171))
+ * `EdgeSnapshot` additionally stores `routedPoints` ([#158](https://github.com/eclipse/sprotty/pull/#158))
+ 
 ### v0.7.0 (Oct. 2019)
 
 New features:
