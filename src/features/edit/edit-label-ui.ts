@@ -76,14 +76,12 @@ export class EditLabelUI extends AbstractUIExtension {
 
     protected initializeContents(containerElement: HTMLElement) {
         containerElement.style.position = 'absolute';
-
         this.inputElement = document.createElement('input');
-        this.configureAndAdd(this.inputElement, containerElement);
-        this.inputElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter');
-
         this.textAreaElement = document.createElement('textarea');
-        this.configureAndAdd(this.textAreaElement, containerElement);
-        this.textAreaElement.onkeydown = (event) => this.applyLabelEditOnEvent(event, 'Enter', 'ctrl');
+        [this.inputElement, this.textAreaElement].forEach((element) => {
+            element.onkeydown = event => this.applyLabelEditOnEvent(event, 'Enter');
+            this.configureAndAdd(element, containerElement);
+        });
     }
 
     protected configureAndAdd(element: HTMLInputElement | HTMLTextAreaElement, containerElement: HTMLElement) {
@@ -110,6 +108,7 @@ export class EditLabelUI extends AbstractUIExtension {
 
     protected applyLabelEditOnEvent(event: KeyboardEvent, code?: KeyCode, ...modifiers: KeyboardModifier[]) {
         if (matchesKeystroke(event, code ? code : 'Enter', ...modifiers)) {
+            event.preventDefault();
             this.applyLabelEdit();
         }
     }
