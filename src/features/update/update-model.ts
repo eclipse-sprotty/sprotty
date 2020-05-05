@@ -46,7 +46,8 @@ export class UpdateModelAction implements Action {
     public readonly matches?: Match[];
 
     constructor(input: SModelRootSchema | Match[],
-                public readonly animate: boolean = true) {
+                public readonly animate: boolean = true,
+                public readonly cause?: Action) {
         if ((input as SModelRootSchema).id !== undefined)
             this.newRoot = input as SModelRootSchema;
         else
