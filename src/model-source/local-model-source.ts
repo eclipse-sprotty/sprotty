@@ -162,7 +162,7 @@ export class LocalModelSource extends ModelSource {
             await this.actionDispatcher.dispatch(new SetModelAction(newRoot, request.requestId));
         } else if (update && newRoot.type === lastSubmittedModelType) {
             const input = Array.isArray(update) ? update : newRoot;
-            await this.actionDispatcher.dispatch(new UpdateModelAction(input));
+            await this.actionDispatcher.dispatch(new UpdateModelAction(input, true, cause));
         } else {
             await this.actionDispatcher.dispatch(new SetModelAction(newRoot));
         }
