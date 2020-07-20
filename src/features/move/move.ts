@@ -575,15 +575,23 @@ export class LocationPostprocessor implements IVNodePostprocessor {
         }
         let translate: string  = '';
         if (isLocateable(element) && element instanceof SChildElement && element.parent !== undefined) {
-            translate = 'translate(' + element.position.x + ', ' + element.position.y + ')';
+            const pos = element.position;
+            if (pos.x !== 0 || pos.y !== 0) {
+                translate = 'translate(' + pos.x + ', ' + pos.y + ')';
+            }
         }
         if (isAlignable(element)) {
-            if (translate.length > 0)
-                translate += ' ';
-            translate += 'translate('  + element.alignment.x + ', ' + element.alignment.y + ')';
+            const ali = element.alignment;
+            if (ali.x !== 0 || ali.y !== 0) {
+                if (translate.length > 0) {
+                    translate += ' ';
+                }
+                translate += 'translate('  + ali.x + ', ' + ali.y + ')';
+            }
         }
-        if (translate.length > 0)
+        if (translate.length > 0) {
             setAttr(vnode, 'transform', translate);
+        }
         return vnode;
     }
 

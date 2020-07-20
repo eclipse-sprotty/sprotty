@@ -58,7 +58,7 @@ export class FadeAnimation extends Animation {
 export class ElementFader implements IVNodePostprocessor {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
-        if (isFadeable(element)) {
+        if (isFadeable(element) && element.opacity !== 1) {
             setAttr(vnode, 'opacity', element.opacity);
         }
         return vnode;
