@@ -59,7 +59,7 @@ describe('ThunkView', () => {
         }
     }
 
-    const context = new ModelRenderer(undefined!, []);
+    const context = new ModelRenderer(undefined!, 'main', []);
 
     const patcher = init([]);
 

@@ -16,20 +16,26 @@
 
 /** @jsx svg */
 import { svg } from 'snabbdom-jsx';
-
-import { VNode } from "snabbdom/vnode";
-import { RenderingContext, SNode, IView } from "../../../src";
 import { injectable } from 'inversify';
+import { VNode } from "snabbdom/vnode";
+import { RenderingContext, SNode, IView, isVisible, PolylineEdgeView, SEdge, isRouteVisible } from "../../../src";
 
 /**
  * A very simple example node consisting of a plain circle.
  */
 @injectable()
 export class CircleNodeView implements IView {
-    render(node: SNode, context: RenderingContext): VNode {
+    render(node: SNode, context: RenderingContext): VNode | undefined {
+        if (!isVisible(node, context)) {
+            return undefined;
+        }
         const radius = this.getRadius(node);
         return <g>
-            <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius}></circle>
+            <circle class-sprotty-node={true}
+                    class-selected={node.selected}
+                    class-mouseover={node.hoverFeedback}
+                    r={radius} cx={radius} cy={radius}>
+            </circle>
             <text x={radius} y={radius + 7} class-sprotty-text={true}>{node.id.substr(4)}</text>
         </g>;
     }
@@ -38,4 +44,26 @@ export class CircleNodeView implements IView {
         const d = Math.min(node.size.width, node.size.height);
         return d > 0 ? d / 2 : 0;
     }
+}
+
+@injectable()
+export class StraightEdgeView extends PolylineEdgeView {
+
+    render(edge: Readonly<SEdge>, context: RenderingContext): VNode {
+        const router = this.edgeRouterRegistry.get(edge.routerKind);
+        const route = router.route(edge);
+        if (route.length === 0) {
+            return this.renderDanglingEdge("Cannot compute route", edge, context);
+        }
+        if (!isRouteVisible(edge, route, context)) {
+            return undefined!;
+        }
+
+        return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
+            {this.renderLine(edge, route, context)}
+            {this.renderAdditionals(edge, route, context)}
+            {context.renderChildren(edge, { route })}
+        </g>;
+    }
+
 }

@@ -16,6 +16,7 @@
 
 import { SChildElement, SModelElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
+import { RenderingContext } from '../../base/views/view';
 import { SEdge, SGraphIndex } from '../../graph/sgraph';
 import { Point, Bounds, combine, EMPTY_BOUNDS } from '../../utils/geometry';
 import { FluentIterable } from '../../utils/iterable';
@@ -60,6 +61,57 @@ export interface Connectable extends SModelExtension {
 
 export function isConnectable<T extends SModelElement>(element: T): element is Connectable & T {
     return element.hasFeature(connectableFeature) && (element as any).canConnect;
+}
+
+/**
+ * Determine whether the given routable element is visible in the current canvas.
+ */
+export function isRouteVisible(element: SRoutableElement, route: Point[] = element.routingPoints, context?: RenderingContext): boolean {
+    if (context && context.targetKind === 'hidden') {
+        // Don't hide any element for hidden rendering
+        return true;
+    }
+    const ab = getAbsoluteRouteBounds(element, route);
+    const canvasBounds = element.root.canvasBounds;
+    return ab.x <= canvasBounds.width
+        && ab.x + ab.width >= 0
+        && ab.y <= canvasBounds.height
+        && ab.y + ab.height >= 0;
+}
+
+export function getAbsoluteRouteBounds(element: SRoutableElement, route: Point[] = element.routingPoints): Bounds {
+    let bounds = getRouteBounds(route);
+    let current: SModelElement = element;
+    while (current instanceof SChildElement) {
+        const parent = current.parent;
+        bounds = parent.localToParent(bounds);
+        current = parent;
+    }
+    return bounds;
+}
+
+export function getRouteBounds(route: Point[]): Bounds {
+    const bounds = { x: NaN, y: NaN, width: 0, height: 0};
+    for (const point of route) {
+        if (isNaN(bounds.x)) {
+            bounds.x = point.x;
+            bounds.y = point.y;
+        } else {
+            if (point.x < bounds.x) {
+                bounds.width += bounds.x - point.x;
+                bounds.x = point.x;
+            } else if (point.x > bounds.x + bounds.width) {
+                bounds.width = point.x - bounds.x;
+            }
+            if (point.y < bounds.y) {
+                bounds.height += bounds.y - point.y;
+                bounds.y = point.y;
+            } else if (point.y > bounds.y + bounds.height) {
+                bounds.height = point.y - bounds.y;
+            }
+        }
+    }
+    return bounds;
 }
 
 /**

@@ -31,18 +31,21 @@ import { registerModelElement } from '../model/smodel-utils';
  * Base interface for the components that turn GModelElements into virtual DOM elements.
  */
 export interface IView {
-    render(model: Readonly<SModelElement>, context: RenderingContext, args?: object): VNode
+    render(model: Readonly<SModelElement>, context: RenderingContext, args?: object): VNode | undefined
 }
+
+export type RenderingTargetKind = 'main' | 'popup' | 'hidden';
 
 /**
  * Bundles additional data that is passed to views for VNode creation.
  */
 export interface RenderingContext {
-    viewRegistry: ViewRegistry
+    readonly viewRegistry: ViewRegistry
+    readonly targetKind: RenderingTargetKind;
 
     decorate(vnode: VNode, element: Readonly<SModelElement>): VNode
 
-    renderElement(element: Readonly<SModelElement>, args?: object): VNode
+    renderElement(element: Readonly<SModelElement>, args?: object): VNode | undefined
 
     renderChildren(element: Readonly<SParentElement>, args?: object): VNode[]
 }

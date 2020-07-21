@@ -58,7 +58,7 @@ export default async function runCircleGraph() {
             ...scroll,
             width: canvasBounds.width / zoom,
             height: canvasBounds.height / zoom
-        }
+        };
     }
 
     const container = createContainer();
@@ -69,7 +69,7 @@ export default async function runCircleGraph() {
     const node0 = { id: 'node0', type: 'node:circle', position: { x: 100, y: 100 }, size: { width: NODE_SIZE, height: NODE_SIZE } };
     const graph: SGraphSchema = { id: 'graph', type: 'graph', children: [node0] };
 
-    const initialViewport = await modelSource.getViewport()
+    const initialViewport = await modelSource.getViewport();
     for (let i = 0; i < 200; ++i) {
         const newElements = addNode(getVisibleBounds(initialViewport));
         graph.children.push(...newElements);
@@ -80,7 +80,7 @@ export default async function runCircleGraph() {
 
     // Button features
     document.getElementById('addNode')!.addEventListener('click', async () => {
-        const viewport = await modelSource.getViewport()
+        const viewport = await modelSource.getViewport();
         const newElements = addNode(getVisibleBounds(viewport));
         modelSource.addElements(newElements);
         dispatcher.dispatch(new SelectAction(newElements.map(e => e.id)));
@@ -88,7 +88,7 @@ export default async function runCircleGraph() {
     });
 
     document.getElementById('scrambleAll')!.addEventListener('click', async () => {
-        const viewport = await modelSource.getViewport()
+        const viewport = await modelSource.getViewport();
         const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         graph.children.forEach(shape => {
@@ -108,7 +108,7 @@ export default async function runCircleGraph() {
 
     document.getElementById('scrambleSelection')!.addEventListener('click', async () => {
         const selection = await modelSource.getSelection();
-        const viewport = await modelSource.getViewport()
+        const viewport = await modelSource.getViewport();
         const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         selection.forEach(shape => {
