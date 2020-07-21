@@ -31,6 +31,10 @@
     stroke-width: 2;
 }
 
+.sprotty-node.mouseover {
+    stroke-width: 6;
+}
+
 .sprotty-node.selected {
     stroke: #dd8;
     stroke-width: 6;

@@ -33,7 +33,7 @@ describe('base views', () => {
 
     const modelFactory = container.get<SModelFactory>(TYPES.IModelFactory);
     const emptyRoot = modelFactory.createRoot(EMPTY_ROOT);
-    const context = new ModelRenderer(undefined!, []);
+    const context = new ModelRenderer(undefined!, 'main', []);
 
     it('empty view', () => {
         const emptyView = new EmptyView();

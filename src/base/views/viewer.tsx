@@ -34,7 +34,7 @@ import { IActionDispatcher } from "../actions/action-dispatcher";
 import { Action } from '../actions/action';
 import { InitializeCanvasBoundsAction } from "../features/initialize-canvas";
 import { IVNodePostprocessor } from "./vnode-postprocessor";
-import { RenderingContext, ViewRegistry } from "./view";
+import { RenderingContext, ViewRegistry, RenderingTargetKind } from "./view";
 import { setClass, setAttr, copyClassesFromElement, copyClassesFromVNode } from "./vnode-utils";
 import { ViewerOptions } from "./viewer-options";
 import { isThunk } from "./thunk-view";
@@ -52,25 +52,34 @@ export interface IViewerProvider {
 
 export class ModelRenderer implements RenderingContext {
 
-    constructor(public viewRegistry: ViewRegistry,
+    constructor(readonly viewRegistry: ViewRegistry,
+                readonly targetKind: RenderingTargetKind,
                 private postprocessors: IVNodePostprocessor[]) {
     }
 
     decorate(vnode: VNode, element: Readonly<SModelElement>): VNode {
-        if (isThunk(vnode))
+        if (isThunk(vnode)) {
             return vnode;
+        }
         return this.postprocessors.reduce(
             (n: VNode, processor: IVNodePostprocessor) => processor.decorate(n, element),
             vnode);
     }
 
-    renderElement(element: Readonly<SModelElement>, args?: object): VNode {
-        const vNode = this.viewRegistry.get(element.type).render(element, this, args);
-        return this.decorate(vNode, element);
+    renderElement(element: Readonly<SModelElement>, args?: object): VNode | undefined {
+        const view = this.viewRegistry.get(element.type);
+        const vnode = view.render(element, this, args);
+        if (vnode) {
+            return this.decorate(vnode, element);
+        } else {
+            return undefined;
+        }
     }
 
     renderChildren(element: Readonly<SParentElement>, args?: object): VNode[] {
-        return element.children.map((child) => this.renderElement(child, args));
+        return element.children
+            .map(child => this.renderElement(child, args))
+            .filter(vnode => vnode !== undefined) as VNode[];
     }
 
     postUpdate(cause?: Action) {
@@ -78,7 +87,7 @@ export class ModelRenderer implements RenderingContext {
     }
 }
 
-export type ModelRendererFactory = (postprocessors: IVNodePostprocessor[]) => ModelRenderer;
+export type ModelRendererFactory = (targetKind: RenderingTargetKind, postprocessors: IVNodePostprocessor[]) => ModelRenderer;
 
 export type Patcher = (oldRoot: VNode | Element, newRoot: VNode) => VNode;
 
@@ -117,7 +126,7 @@ export class ModelViewer implements IViewer {
     constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
                 @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
                 @multiInject(TYPES.IVNodePostprocessor) @optional() postprocessors: IVNodePostprocessor[]) {
-        this.renderer = modelRendererFactory(postprocessors);
+        this.renderer = modelRendererFactory('main', postprocessors);
         this.patcher = patcherProvider.patcher;
     }
 
@@ -211,7 +220,7 @@ export class HiddenModelViewer implements IViewer {
     constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
                 @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
                 @multiInject(TYPES.HiddenVNodePostprocessor) @optional() hiddenPostprocessors: IVNodePostprocessor[]) {
-        this.hiddenRenderer = modelRendererFactory(hiddenPostprocessors);
+        this.hiddenRenderer = modelRendererFactory('hidden', hiddenPostprocessors);
         this.patcher = patcherProvider.patcher;
     }
 
@@ -228,7 +237,9 @@ export class HiddenModelViewer implements IViewer {
             newVDOM = <div id={this.options.hiddenDiv}></div>;
         } else {
             const hiddenVNode = this.hiddenRenderer.renderElement(hiddenModel);
-            setAttr(hiddenVNode, 'opacity', 0);
+            if (hiddenVNode) {
+                setAttr(hiddenVNode, 'opacity', 0);
+            }
             newVDOM = <div id={this.options.hiddenDiv}>
                 {hiddenVNode}
             </div>;
@@ -263,7 +274,7 @@ export class PopupModelViewer implements IViewer {
     constructor(@inject(TYPES.ModelRendererFactory) protected readonly modelRendererFactory: ModelRendererFactory,
                 @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
                 @multiInject(TYPES.PopupVNodePostprocessor) @optional() popupPostprocessors: IVNodePostprocessor[]) {
-        this.popupRenderer = this.modelRendererFactory(popupPostprocessors);
+        this.popupRenderer = this.modelRendererFactory('popup', popupPostprocessors);
         this.patcher = patcherProvider.patcher;
     }
 

@@ -18,7 +18,7 @@
 import { svg } from 'snabbdom-jsx';
 
 import { VNode } from "snabbdom/vnode";
-import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb } from '../../../src';
+import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, isVisible } from '../../../src';
 import { Channel, Core, Crossbar, Processor } from './chipmodel';
 import { injectable } from 'inversify';
 
@@ -43,17 +43,12 @@ export const CORE_WIDTH = 50;
 export const CORE_DISTANCE = 10;
 
 @injectable()
-export class SimpleCoreView extends ThunkView {
+export class SimpleCoreView implements IView {
 
-    watchedArgs(model: Core): any[] {
-        return [ model.kernelNr, model.opacity ];
-    }
-
-    selector(model: Core): string {
-        return 'g';
-    }
-
-    doRender(model: Core, context: RenderingContext): VNode {
+    render(model: Core, context: RenderingContext): VNode | undefined {
+        if (!isVisible(model, context)) {
+            return undefined;
+        }
         const fillColor = KernelColor.getSVG(model.kernelNr);
         const content = <g>
                 {context.renderChildren(model)}
@@ -74,7 +69,10 @@ export class SimpleCoreView extends ThunkView {
 @injectable()
 export class CoreView implements IView {
 
-    render(model: Core, context: RenderingContext): VNode {
+    render(model: Core, context: RenderingContext): VNode | undefined {
+        if (!isVisible(model, context)) {
+            return undefined;
+        }
         const fillColor = KernelColor.getSVG(model.kernelNr);
         const content = <g>
                 {context.renderChildren(model)}

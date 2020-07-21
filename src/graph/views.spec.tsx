@@ -69,7 +69,7 @@ describe('graph views', () => {
     configureView(container, 'port', RectangularNodeView);
 
     const postprocessors = container.getAll<IVNodePostprocessor>(TYPES.IVNodePostprocessor);
-    const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)(postprocessors);
+    const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)('main', postprocessors);
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
     const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
 
