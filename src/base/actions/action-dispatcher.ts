@@ -23,7 +23,7 @@ import { ICommandStack } from "../commands/command-stack";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { SetModelAction } from '../features/set-model';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
-import { Action, isAction, RequestAction, ResponseAction, isResponseAction } from './action';
+import { Action, isAction, RequestAction, ResponseAction, isResponseAction, RejectAction, isRequestAction } from './action';
 import { ActionHandlerRegistry } from "./action-handler";
 import { IDiagramLocker } from "./diagram-locker";
 
@@ -115,7 +115,11 @@ export class ActionDispatcher implements IActionDispatcher {
             const deferred = this.requests.get(action.responseId);
             if (deferred !== undefined) {
                 this.requests.delete(action.responseId);
-                deferred.resolve(action);
+                if (action.kind === RejectAction.KIND) {
+                    deferred.reject(new Error((action as RejectAction).message));
+                } else {
+                    deferred.resolve(action);
+                }
                 return Promise.resolve();
             }
             this.logger.log(this, 'No matching request for response', action);
@@ -124,7 +128,15 @@ export class ActionDispatcher implements IActionDispatcher {
         const handlers = this.actionHandlerRegistry.get(action.kind);
         if (handlers.length === 0) {
             this.logger.warn(this, 'Missing handler for action', action);
-            return Promise.reject(`Missing handler for action '${action.kind}'`);
+            const error = new Error(`Missing handler for action '${action.kind}'`);
+            if (isRequestAction(action)) {
+                const deferred = this.requests.get(action.requestId);
+                if (deferred !== undefined) {
+                    this.requests.delete(action.requestId);
+                    deferred.reject(error);
+                }
+            }
+            return Promise.reject(error);
         }
         this.logger.log(this, 'Handle', action);
         const promises: Promise<any>[] = [];

@@ -17,7 +17,7 @@
 import 'reflect-metadata';
 import 'mocha';
 import { expect } from "chai";
-import { Container, injectable } from "inversify";
+import { Container, injectable, interfaces } from "inversify";
 import { TYPES } from "../types";
 import { EMPTY_BOUNDS } from '../../utils/geometry';
 import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
@@ -25,10 +25,11 @@ import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
 import { Command, CommandExecutionContext, CommandReturn, ICommand } from '../commands/command';
 import { ICommandStack } from "../commands/command-stack";
 import { ActionDispatcher } from "./action-dispatcher";
-import { Action } from "./action";
+import { Action, RejectAction } from "./action";
 import defaultModule from "../di.config";
-import { SetModelAction } from '../features/set-model';
+import { SetModelAction, RequestModelAction } from '../features/set-model';
 import { EMPTY_ROOT } from '../model/smodel-factory';
+import { IActionHandler, configureActionHandler } from './action-handler';
 
 describe('ActionDispatcher', () => {
     @injectable()
@@ -52,7 +53,21 @@ describe('ActionDispatcher', () => {
         kind = MockCommand.KIND;
     }
 
-    function setup() {
+    @injectable()
+    class ResolvingHandler implements IActionHandler {
+        handle(action: RequestModelAction): Action {
+            return new SetModelAction({ type: 'root', id: 'foo' }, action.requestId);
+        }
+    }
+
+    @injectable()
+    class RejectingHandler implements IActionHandler {
+        handle(action: RequestModelAction): Action {
+            return new RejectAction('because bar', action.requestId);
+        }
+    }
+
+    function setup(options: { requestHandler?: interfaces.Newable<IActionHandler>, initialize?: boolean } = {}) {
         const state = {
             execCount: 0,
             undoCount: 0,
@@ -81,8 +96,14 @@ describe('ActionDispatcher', () => {
         const container = new Container();
         container.load(defaultModule);
         container.rebind(TYPES.ICommandStack).toConstantValue(mockCommandStack);
+        if (options.requestHandler) {
+            configureActionHandler(container, RequestModelAction.KIND, options.requestHandler);
+        }
 
         const actionDispatcher = container.get<ActionDispatcher>(TYPES.IActionDispatcher);
+        if (options.initialize) {
+            actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+        }
         return { actionDispatcher, state };
     }
 
@@ -126,19 +147,44 @@ describe('ActionDispatcher', () => {
     });
 
     it('should resolve/reject promises', async () => {
-        const { actionDispatcher } = setup();
-        await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+        const { actionDispatcher } = setup({ initialize: true });
 
+        // We expect this promise to be resolved
         await actionDispatcher.dispatch(new SetModelAction(EMPTY_ROOT));
-        // We expect this promis to be resolved
+        // Remove the blocking
         await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
-        // remove the blocking
 
         try {
             await actionDispatcher.dispatch({ kind: 'unknown' });
             expect.fail();
         } catch {
             // We expect this promise to be rejected
+        }
+    });
+
+    it('should reject requests without handler', async () => {
+        const { actionDispatcher } = setup({ initialize: true });
+        try {
+            await actionDispatcher.request(RequestModelAction.create());
+            expect.fail();
+        } catch (err) {
+            // We expect this promise to be rejected
+        }
+    });
+
+    it('should be able to resolve requests', async () => {
+        const { actionDispatcher } = setup({ requestHandler: ResolvingHandler, initialize: true });
+        const response = await actionDispatcher.request(RequestModelAction.create());
+        expect(response.newRoot.id).to.equal('foo');
+    });
+
+    it('should be able to reject requests', async () => {
+        const { actionDispatcher } = setup({ requestHandler: RejectingHandler, initialize: true });
+        try {
+            await actionDispatcher.request(RequestModelAction.create());
+            expect.fail();
+        } catch (err) {
+            expect(err.message).to.equal('because bar');
         }
     });
 });
