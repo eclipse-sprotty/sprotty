@@ -64,6 +64,17 @@ export function isResponseAction(object?: any): object is ResponseAction {
 }
 
 /**
+ * A reject action is fired to indicate that a request must be rejected.
+ */
+export class RejectAction implements ResponseAction {
+    static readonly KIND = 'rejectRequest';
+    readonly kind = RejectAction.KIND;
+
+    constructor(public readonly message: string,
+                public readonly responseId: string) {}
+}
+
+/**
  * A list of actions with a label.
  * Labeled actions are used to denote a group of actions in a user-interface context, e.g.,
  * to define an entry in the command palette or in the context menu.
