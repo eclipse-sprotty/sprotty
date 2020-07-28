@@ -17,7 +17,8 @@
 import {
     SShapeElement, SChildElement, SModelElementSchema, SModelRootSchema,
     Bounds, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
-    layoutContainerFeature, LayoutContainer, Selectable, selectFeature, ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature
+    layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
+    ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature, JsonMap
 } from '../../../src';
 import { CORE_DISTANCE, CORE_WIDTH } from "./views";
 
@@ -31,7 +32,7 @@ export class Processor extends ViewportRootElement implements BoundsAware {
 
     rows: number = 0;
     columns: number = 0;
-    layoutOptions: any;
+    layoutOptions: JsonMap;
 
     get bounds(): Bounds {
         return {

@@ -21,7 +21,7 @@ import { ILayout, StatefulLayouter } from './layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 
-export abstract class AbstractLayout<T extends AbstractLayoutOptions & Object> implements ILayout {
+export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements ILayout {
 
     layout(container: SParentElement & LayoutContainer,
            layouter: StatefulLayouter) {
@@ -63,7 +63,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions & Object> i
 
     protected getFixedContainerBounds(
             container: SModelElement,
-            layoutOptions: any,
+            layoutOptions: T,
             layouter: StatefulLayouter): Bounds {
         let currentContainer = container;
         while (true) {

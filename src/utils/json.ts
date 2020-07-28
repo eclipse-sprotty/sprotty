@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2020 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { JsonMap } from '../../utils/json';
+export type JsonAny =  JsonPrimitive | JsonMap | JsonArray | null;
 
-export type HAlignment = 'left' | 'center' | 'right';
+export type JsonPrimitive = string | number | boolean;
 
-export type VAlignment = 'top' | 'center' | 'bottom';
-
-export interface AbstractLayoutOptions extends JsonMap {
-    resizeContainer: boolean
-    paddingTop: number
-    paddingBottom: number
-    paddingLeft: number
-    paddingRight: number
-    paddingFactor: number
-    minWidth: number
-    minHeight: number
+export interface JsonMap {
+    [key: string]: JsonAny;
 }
+
+export interface JsonArray extends Array<JsonAny> {}

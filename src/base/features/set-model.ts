@@ -15,6 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
+import { JsonPrimitive } from '../../utils/json';
 import { Action, RequestAction, ResponseAction, generateRequestId } from "../actions/action";
 import { CommandExecutionContext, ResetCommand } from "../commands/command";
 import { SModelRoot, SModelRootSchema } from "../model/smodel";
@@ -30,11 +31,11 @@ export class RequestModelAction implements RequestAction<SetModelAction> {
     static readonly KIND = 'requestModel';
     readonly kind = RequestModelAction.KIND;
 
-    constructor(public readonly options?: { [key: string]: string | number | boolean },
+    constructor(public readonly options?: { [key: string]: JsonPrimitive },
                 public readonly requestId = '') {}
 
     /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(options?: { [key: string]: string | number | boolean }): RequestAction<SetModelAction> {
+    static create(options?: { [key: string]: JsonPrimitive }): RequestAction<SetModelAction> {
         return new RequestModelAction(options, generateRequestId());
     }
 }

@@ -133,7 +133,7 @@ export class MouseTool implements IVNodePostprocessor {
             on(vnode, 'mouseup', this.mouseUp.bind(this), element);
             on(vnode, 'mousemove', this.mouseMove.bind(this), element);
             on(vnode, 'wheel', this.wheel.bind(this), element);
-            on(vnode, 'contextmenu', (target: SModelElement, event: any) => {
+            on(vnode, 'contextmenu', (target: SModelElement, event: Event) => {
                 event.preventDefault();
             }, element);
             on(vnode, 'dblclick', this.doubleClick.bind(this), element);
