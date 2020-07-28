@@ -14,6 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { JsonAny } from '../../utils/json';
+
 /**
  * An action describes a change to the model declaratively.
  * It is a plain data structure, and as such transferable between server and client. An action must never contain actual
@@ -71,7 +73,8 @@ export class RejectAction implements ResponseAction {
     readonly kind = RejectAction.KIND;
 
     constructor(public readonly message: string,
-                public readonly responseId: string) {}
+                public readonly responseId: string,
+                public readonly detail?: JsonAny) {}
 }
 
 /**

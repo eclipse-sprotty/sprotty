@@ -116,7 +116,10 @@ export class ActionDispatcher implements IActionDispatcher {
             if (deferred !== undefined) {
                 this.requests.delete(action.responseId);
                 if (action.kind === RejectAction.KIND) {
-                    deferred.reject(new Error((action as RejectAction).message));
+                    const rejectAction = action as RejectAction;
+                    deferred.reject(new Error(rejectAction.message));
+                    this.logger.warn(this, `Request with id ${action.responseId} failed.`,
+                            rejectAction.message, rejectAction.detail);
                 } else {
                     deferred.resolve(action);
                 }

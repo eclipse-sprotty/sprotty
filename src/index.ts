@@ -209,5 +209,6 @@ export * from "./utils/browser";
 export * from "./utils/color";
 export * from "./utils/geometry";
 export * from "./utils/inversify";
+export * from "./utils/json";
 export * from "./utils/logging";
 export * from "./utils/registry";
