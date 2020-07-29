@@ -20,7 +20,9 @@ import { findParentByFeature } from '../../base/model/smodel-utils';
 import { DOMHelper } from "../../base/views/dom-helper";
 import { RenderingContext } from '../../base/views/view';
 import { ViewerOptions } from "../../base/views/viewer-options";
-import { Bounds, Dimension, EMPTY_BOUNDS, EMPTY_DIMENSION, includes, isBounds, ORIGIN_POINT, Point } from "../../utils/geometry";
+import {
+    Bounds, Dimension, EMPTY_BOUNDS, EMPTY_DIMENSION, includes, isBounds, ORIGIN_POINT, Point, isValidDimension
+} from "../../utils/geometry";
 import { Locateable } from '../move/model';
 import { getWindowScroll } from "../../utils/browser";
 
@@ -67,7 +69,7 @@ export function isLayoutContainer(element: SModelElement): element is SParentEle
         && 'layout' in element;
 }
 
-export function isLayoutableChild(element: SModelElement): element is SParentElement & LayoutableChild {
+export function isLayoutableChild(element: SModelElement): element is SChildElement & LayoutableChild {
     return isBoundsAware(element)
         && element.hasFeature(layoutableChildFeature);
 }
@@ -106,6 +108,10 @@ export function getAbsoluteBounds(element: SModelElement): Bounds {
 export function isVisible(element: Readonly<SModelElement>, context?: RenderingContext): boolean {
     if (context && context.targetKind === 'hidden') {
         // Don't hide any element for hidden rendering
+        return true;
+    }
+    if (!isBoundsAware(element) || !isValidDimension(element.bounds)) {
+        // We should hide only if we know the element's bounds
         return true;
     }
     const ab = getAbsoluteBounds(element);

@@ -21,11 +21,15 @@ import virtualize from "snabbdom-virtualize/strings";
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
 import { setNamespace, setAttr } from "../base/views/vnode-utils";
+import { isVisible } from "../features/bounds/model";
 import { ForeignObjectElement, PreRenderedElement } from "./model";
 
 @injectable()
 export class PreRenderedView implements IView {
-    render(model: PreRenderedElement, context: RenderingContext): VNode {
+    render(model: PreRenderedElement, context: RenderingContext): VNode | undefined {
+        if (!isVisible(model, context)) {
+            return undefined;
+        }
         const node = virtualize(model.code);
         this.correctNamespace(node);
         return node;

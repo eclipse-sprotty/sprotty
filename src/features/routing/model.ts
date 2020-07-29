@@ -51,6 +51,33 @@ export abstract class SRoutableElement extends SChildElement {
             height: 0
         }), EMPTY_BOUNDS);
     }
+
+    /**
+     * Determine whether this routable element is visible in the current canvas.
+     */
+    isVisible(route: Point[] = this.routingPoints, context?: RenderingContext): boolean {
+        if (context && context.targetKind === 'hidden') {
+            // Don't hide any element for hidden rendering
+            return true;
+        }
+        const ab = this.getAbsoluteBounds(route);
+        const canvasBounds = this.root.canvasBounds;
+        return ab.x <= canvasBounds.width
+            && ab.x + ab.width >= 0
+            && ab.y <= canvasBounds.height
+            && ab.y + ab.height >= 0;
+    }
+
+    getAbsoluteBounds(route: Point[] = this.routingPoints): Bounds {
+        let bounds = getRouteBounds(route);
+        let current: SModelElement = this;
+        while (current instanceof SChildElement) {
+            const parent = current.parent;
+            bounds = parent.localToParent(bounds);
+            current = parent;
+        }
+        return bounds;
+    }
 }
 
 export const connectableFeature = Symbol('connectableFeature');
@@ -61,33 +88,6 @@ export interface Connectable extends SModelExtension {
 
 export function isConnectable<T extends SModelElement>(element: T): element is Connectable & T {
     return element.hasFeature(connectableFeature) && (element as any).canConnect;
-}
-
-/**
- * Determine whether the given routable element is visible in the current canvas.
- */
-export function isRouteVisible(element: SRoutableElement, route: Point[] = element.routingPoints, context?: RenderingContext): boolean {
-    if (context && context.targetKind === 'hidden') {
-        // Don't hide any element for hidden rendering
-        return true;
-    }
-    const ab = getAbsoluteRouteBounds(element, route);
-    const canvasBounds = element.root.canvasBounds;
-    return ab.x <= canvasBounds.width
-        && ab.x + ab.width >= 0
-        && ab.y <= canvasBounds.height
-        && ab.y + ab.height >= 0;
-}
-
-export function getAbsoluteRouteBounds(element: SRoutableElement, route: Point[] = element.routingPoints): Bounds {
-    let bounds = getRouteBounds(route);
-    let current: SModelElement = element;
-    while (current instanceof SChildElement) {
-        const parent = current.parent;
-        bounds = parent.localToParent(bounds);
-        current = parent;
-    }
-    return bounds;
 }
 
 export function getRouteBounds(route: Point[]): Bounds {

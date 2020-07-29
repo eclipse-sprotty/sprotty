@@ -21,8 +21,9 @@ import { VNode } from "snabbdom/vnode";
 import { getSubType } from "../base/model/smodel-utils";
 import { IView, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
-import { SRoutingHandle } from '../features/routing/model';
-import { SRoutableElement } from '../features/routing/model';
+import { isVisible } from '../features/bounds/model';
+import { isEdgeLayoutable } from '../features/edge-layout/model';
+import { SRoutingHandle, SRoutableElement } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
 import { Point } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
@@ -49,11 +50,20 @@ export class PolylineEdgeView implements IView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(edge: Readonly<SEdge>, context: RenderingContext): VNode {
+    render(edge: Readonly<SEdge>, context: RenderingContext): VNode | undefined {
         const router = this.edgeRouterRegistry.get(edge.routerKind);
         const route = router.route(edge);
-        if (route.length === 0)
+        if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
+        }
+        if (!edge.isVisible(route, context)) {
+            if (edge.children.length === 0) {
+                return undefined;
+            }
+            // The children of an edge are not necessarily inside the bounding box of the route,
+            // so we need to render a group to ensure the children have a chance to be rendered.
+            return <g>{context.renderChildren(edge, { route })}</g>;
+        }
 
         return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
             {this.renderLine(edge, route, context)}
@@ -114,23 +124,27 @@ export class SRoutingHandleView implements IView {
 
 @injectable()
 export class SLabelView implements IView {
-    render(label: Readonly<SLabel>, context: RenderingContext): VNode {
+    render(label: Readonly<SLabel>, context: RenderingContext): VNode | undefined {
+        if (!isEdgeLayoutable(label) && !isVisible(label, context)) {
+            return undefined;
+        }
         const vnode = <text class-sprotty-label={true}>{label.text}</text>;
         const subType = getSubType(label);
-        if (subType)
+        if (subType) {
             setAttr(vnode, 'class', subType);
+        }
         return vnode;
     }
 }
 
 @injectable()
 export class SCompartmentView implements IView {
-    render(model: Readonly<SCompartment>, context: RenderingContext): VNode {
-        const translate = `translate(${model.bounds.x}, ${model.bounds.y})`;
+    render(compartment: Readonly<SCompartment>, context: RenderingContext): VNode | undefined {
+        const translate = `translate(${compartment.bounds.x}, ${compartment.bounds.y})`;
         const vnode = <g transform={translate} class-sprotty-comp="{true}">
-            {context.renderChildren(model)}
+            {context.renderChildren(compartment)}
         </g>;
-        const subType = getSubType(model);
+        const subType = getSubType(compartment);
         if (subType)
             setAttr(vnode, 'class', subType);
         return vnode;

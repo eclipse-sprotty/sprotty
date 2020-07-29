@@ -20,9 +20,9 @@ import { SModelRoot } from '../../base/model/smodel';
 import { RenderingContext } from '../../base/views/view';
 import { SShapeElement } from '../bounds/model';
 import { ViewportRootElement } from '../viewport/viewport-root';
-import { SRoutableElement, getAbsoluteRouteBounds, isRouteVisible } from './model';
+import { SRoutableElement } from './model';
 
-describe('getAbsoluteRouteBounds', () => {
+describe('SRoutableElement.getAbsoluteBounds', () => {
     function createModel(): SModelRoot {
         const root = new SModelRoot();
         const node1 = new TestNode();
@@ -40,13 +40,14 @@ describe('getAbsoluteRouteBounds', () => {
 
     it('should compute the absolute bounds of a routable element', () => {
         const model = createModel();
-        expect(getAbsoluteRouteBounds(model.children[0].children[0] as SRoutableElement)).to.deep.equal({
+        const routable = model.children[0].children[0] as SRoutableElement;
+        expect(routable.getAbsoluteBounds()).to.deep.equal({
             x: 110, y: 110, width: 30, height: 20
         });
     });
 });
 
-describe('isRouteVisible', () => {
+describe('SRoutableElement.isVisible', () => {
     function createModel(): ViewportRootElement {
         const root = new ViewportRootElement();
         root.canvasBounds = { x: 0, y: 0, width: 100, height: 100 };
@@ -67,21 +68,24 @@ describe('isRouteVisible', () => {
         const model = createModel();
         model.scroll = { x: 80, y: 80 };
         model.zoom = 1;
-        expect(isRouteVisible(model.children[0].children[0] as SRoutableElement)).to.equal(true);
+        const routable = model.children[0].children[0] as SRoutableElement;
+        expect(routable.isVisible()).to.equal(true);
     });
 
     it('should return false when the viewport is panned away', () => {
         const model = createModel();
         model.scroll = { x: 150, y: 80 };
         model.zoom = 1;
-        expect(isRouteVisible(model.children[0].children[0] as SRoutableElement)).to.equal(false);
+        const routable = model.children[0].children[0] as SRoutableElement;
+        expect(routable.isVisible()).to.equal(false);
     });
 
     it('should return false when the viewport is zoomed away', () => {
         const model = createModel();
         model.scroll = { x: 80, y: 80 };
         model.zoom = 10;
-        expect(isRouteVisible(model.children[0].children[0] as SRoutableElement)).to.equal(false);
+        const routable = model.children[0].children[0] as SRoutableElement;
+        expect(routable.isVisible()).to.equal(false);
     });
 
     it('should return true when rendered in a hidden context', () => {
@@ -89,7 +93,8 @@ describe('isRouteVisible', () => {
         model.scroll = { x: 150, y: 80 };
         model.zoom = 10;
         const context = { targetKind: 'hidden' } as RenderingContext;
-        expect(isRouteVisible(model.children[0].children[0] as SRoutableElement, undefined, context)).to.equal(true);
+        const routable = model.children[0].children[0] as SRoutableElement;
+        expect(routable.isVisible(undefined, context)).to.equal(true);
     });
 });
 
