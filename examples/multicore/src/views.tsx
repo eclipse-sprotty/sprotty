@@ -18,7 +18,7 @@
 import { svg } from 'snabbdom-jsx';
 
 import { VNode } from "snabbdom/vnode";
-import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, isVisible } from '../../../src';
+import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, ShapeView } from '../../../src';
 import { Channel, Core, Crossbar, Processor } from './chipmodel';
 import { injectable } from 'inversify';
 
@@ -43,10 +43,10 @@ export const CORE_WIDTH = 50;
 export const CORE_DISTANCE = 10;
 
 @injectable()
-export class SimpleCoreView implements IView {
+export class SimpleCoreView extends ShapeView {
 
     render(model: Core, context: RenderingContext): VNode | undefined {
-        if (!isVisible(model, context)) {
+        if (!this.isInViewport(model, context)) {
             return undefined;
         }
         const fillColor = KernelColor.getSVG(model.kernelNr);
@@ -67,10 +67,10 @@ export class SimpleCoreView implements IView {
 }
 
 @injectable()
-export class CoreView implements IView {
+export class CoreView extends ShapeView {
 
     render(model: Core, context: RenderingContext): VNode | undefined {
-        if (!isVisible(model, context)) {
+        if (!this.isInViewport(model, context)) {
             return undefined;
         }
         const fillColor = KernelColor.getSVG(model.kernelNr);

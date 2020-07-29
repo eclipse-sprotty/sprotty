@@ -69,6 +69,7 @@ export * from "./features/bounds/model";
 export * from "./features/bounds/vbox-layout";
 export * from "./features/bounds/hbox-layout";
 export * from "./features/bounds/stack-layout";
+export * from "./features/bounds/views";
 
 export * from "./features/button/button-handler";
 export * from "./features/button/model";
@@ -129,6 +130,7 @@ export * from "./features/routing/model";
 export * from "./features/routing/polyline-anchors";
 export * from "./features/routing/polyline-edge-router";
 export * from "./features/routing/routing";
+export * from "./features/routing/views";
 
 export * from "./features/select/model";
 export * from "./features/select/select";

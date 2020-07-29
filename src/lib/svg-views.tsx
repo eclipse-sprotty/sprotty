@@ -21,7 +21,8 @@ import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
 import { SNode, SPort } from "../graph/sgraph";
 import { ViewportRootElement } from "../features/viewport/viewport-root";
-import { SShapeElement, isVisible } from '../features/bounds/model';
+import { SShapeElement } from '../features/bounds/model';
+import { ShapeView } from '../features/bounds/views';
 import { Hoverable } from '../features/hover/model';
 import { Selectable } from '../features/select/model';
 import { Diamond, Point } from '../utils/geometry';
@@ -41,9 +42,9 @@ export class SvgViewportView implements IView {
 }
 
 @injectable()
-export class CircularNodeView implements IView {
+export class CircularNodeView extends ShapeView {
     render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
-        if (!isVisible(node, context)) {
+        if (!this.isInViewport(node, context)) {
             return undefined;
         }
         const radius = this.getRadius(node);
@@ -62,9 +63,9 @@ export class CircularNodeView implements IView {
 }
 
 @injectable()
-export class RectangularNodeView implements IView {
+export class RectangularNodeView extends ShapeView {
     render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
-        if (!isVisible(node, context)) {
+        if (!this.isInViewport(node, context)) {
             return undefined;
         }
         return <g>
@@ -77,9 +78,9 @@ export class RectangularNodeView implements IView {
 }
 
 @injectable()
-export class DiamondNodeView implements IView {
+export class DiamondNodeView extends ShapeView {
     render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
-        if (!isVisible(node, context)) {
+        if (!this.isInViewport(node, context)) {
             return undefined;
         }
         const diamond = new Diamond({ height: Math.max(node.size.height, 0), width: Math.max(node.size.width, 0), x: 0, y: 0 });

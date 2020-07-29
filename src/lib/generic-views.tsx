@@ -21,13 +21,13 @@ import virtualize from "snabbdom-virtualize/strings";
 import { VNode } from "snabbdom/vnode";
 import { IView, RenderingContext } from "../base/views/view";
 import { setNamespace, setAttr } from "../base/views/vnode-utils";
-import { isVisible } from "../features/bounds/model";
-import { ForeignObjectElement, PreRenderedElement } from "./model";
+import { ShapeView } from "../features/bounds/views";
+import { ForeignObjectElement, PreRenderedElement, ShapedPreRenderedElement } from "./model";
 
 @injectable()
-export class PreRenderedView implements IView {
-    render(model: PreRenderedElement, context: RenderingContext): VNode | undefined {
-        if (!isVisible(model, context)) {
+export class PreRenderedView extends ShapeView {
+    render(model: Readonly<PreRenderedElement>, context: RenderingContext): VNode | undefined {
+        if (model instanceof ShapedPreRenderedElement && !this.isInViewport(model, context)) {
             return undefined;
         }
         const node = virtualize(model.code);
