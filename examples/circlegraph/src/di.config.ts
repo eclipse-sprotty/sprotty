@@ -17,9 +17,9 @@
 import { Container, ContainerModule } from "inversify";
 import {
     TYPES, configureViewerOptions, SGraphView, ConsoleLogger, LogLevel, loadDefaultModules,
-    LocalModelSource, CircularNode, configureModelElement, SGraph, SEdge, selectFeature
+    LocalModelSource, CircularNode, configureModelElement, SGraph, SEdge, selectFeature, PolylineEdgeView
 } from "../../../src";
-import { CircleNodeView, StraightEdgeView } from "./views";
+import { CircleNodeView } from "./views";
 
 export default () => {
     require("../../../css/sprotty.css");
@@ -33,7 +33,7 @@ export default () => {
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
-        configureModelElement(context, 'edge:straight', SEdge, StraightEdgeView, {
+        configureModelElement(context, 'edge:straight', SEdge, PolylineEdgeView, {
             disable: [selectFeature]
         });
         configureViewerOptions(context, {

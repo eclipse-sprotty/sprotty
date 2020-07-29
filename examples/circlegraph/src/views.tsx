@@ -18,7 +18,7 @@
 import { svg } from 'snabbdom-jsx';
 import { injectable } from 'inversify';
 import { VNode } from "snabbdom/vnode";
-import { RenderingContext, SNode, IView, isVisible, PolylineEdgeView, SEdge, isRouteVisible } from "../../../src";
+import { RenderingContext, SNode, IView, isVisible } from "../../../src";
 
 /**
  * A very simple example node consisting of a plain circle.
@@ -44,26 +44,4 @@ export class CircleNodeView implements IView {
         const d = Math.min(node.size.width, node.size.height);
         return d > 0 ? d / 2 : 0;
     }
-}
-
-@injectable()
-export class StraightEdgeView extends PolylineEdgeView {
-
-    render(edge: Readonly<SEdge>, context: RenderingContext): VNode {
-        const router = this.edgeRouterRegistry.get(edge.routerKind);
-        const route = router.route(edge);
-        if (route.length === 0) {
-            return this.renderDanglingEdge("Cannot compute route", edge, context);
-        }
-        if (!isRouteVisible(edge, route, context)) {
-            return undefined!;
-        }
-
-        return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
-            {this.renderLine(edge, route, context)}
-            {this.renderAdditionals(edge, route, context)}
-            {context.renderChildren(edge, { route })}
-        </g>;
-    }
-
 }

@@ -69,7 +69,7 @@ describe('graph views', () => {
     configureView(container, 'port', RectangularNodeView);
 
     const postprocessors = container.getAll<IVNodePostprocessor>(TYPES.IVNodePostprocessor);
-    const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)('main', postprocessors);
+    const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)('hidden', postprocessors);
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
     const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
 
@@ -192,6 +192,7 @@ describe('PolylineEdgeView', () => {
     const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
     const edgeView = viewRegistry.get('edge:straight');
     const context = {
+        targetKind: 'hidden',
         viewRegistry,
         decorate: function(vnode: VNode, element: SModelElement): VNode { return vnode; },
         renderElement: function(element: SModelElement): VNode { return <g></g>; },

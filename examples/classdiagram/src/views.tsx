@@ -17,14 +17,17 @@
 /** @jsx svg */
 import { svg } from 'snabbdom-jsx';
 
-import { RenderingContext, IView, RectangularNodeView, SNode } from "../../../src";
+import { RenderingContext, IView, RectangularNodeView, SNode, isVisible } from "../../../src";
 import { VNode } from "snabbdom/vnode";
 import { Icon } from './model';
 import { injectable } from 'inversify';
 
 @injectable()
 export class NodeView extends RectangularNodeView {
-    render(node: Readonly<SNode>, context: RenderingContext): VNode {
+    render(node: Readonly<SNode>, context: RenderingContext): VNode | undefined {
+        if (!isVisible(node, context)) {
+            return undefined;
+        }
         return <g>
             <rect class-sprotty-node={true}
                   class-node-package={node.type === 'node:package'}
