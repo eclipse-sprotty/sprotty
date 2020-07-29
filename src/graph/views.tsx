@@ -21,10 +21,11 @@ import { VNode } from "snabbdom/vnode";
 import { getSubType } from "../base/model/smodel-utils";
 import { IView, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
-import { isVisible } from '../features/bounds/model';
+import { ShapeView } from '../features/bounds/views';
 import { isEdgeLayoutable } from '../features/edge-layout/model';
 import { SRoutingHandle, SRoutableElement } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
+import { RoutableView } from '../features/routing/views';
 import { Point } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
 
@@ -46,7 +47,7 @@ export class SGraphView implements IView {
 }
 
 @injectable()
-export class PolylineEdgeView implements IView {
+export class PolylineEdgeView extends RoutableView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
@@ -56,7 +57,7 @@ export class PolylineEdgeView implements IView {
         if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
         }
-        if (!edge.isVisible(route, context)) {
+        if (!this.isInViewport(edge, route, context)) {
             if (edge.children.length === 0) {
                 return undefined;
             }
@@ -123,9 +124,9 @@ export class SRoutingHandleView implements IView {
 }
 
 @injectable()
-export class SLabelView implements IView {
+export class SLabelView extends ShapeView {
     render(label: Readonly<SLabel>, context: RenderingContext): VNode | undefined {
-        if (!isEdgeLayoutable(label) && !isVisible(label, context)) {
+        if (!isEdgeLayoutable(label) && !this.isInViewport(label, context)) {
             return undefined;
         }
         const vnode = <text class-sprotty-label={true}>{label.text}</text>;
