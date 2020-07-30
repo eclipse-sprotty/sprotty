@@ -28,7 +28,7 @@ export abstract class ShapeView implements IView {
      * in your `render` implementation to skip rendering in case the element is not visible.
      * This can greatly enhance performance for large models.
      */
-    isInViewport(model: Readonly<SChildElement & BoundsAware>, context: RenderingContext): boolean {
+    isVisible(model: Readonly<SChildElement & BoundsAware>, context: RenderingContext): boolean {
         if (context.targetKind === 'hidden') {
             // Don't hide any element for hidden rendering
             return true;

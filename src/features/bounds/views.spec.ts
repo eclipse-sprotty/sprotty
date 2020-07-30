@@ -22,7 +22,7 @@ import { SShapeElement } from './model';
 import { ShapeView } from './views';
 import { VNode } from 'snabbdom/vnode';
 
-describe('ShapeView.isInViewport', () => {
+describe('ShapeView.isVisible', () => {
 
     class TestNode extends SShapeElement {
     }
@@ -52,7 +52,7 @@ describe('ShapeView.isInViewport', () => {
         model.zoom = 1;
         const node = model.children[0].children[0] as SShapeElement;
         const context = { targetKind: 'main' } as RenderingContext;
-        expect(view.isInViewport(node, context)).to.equal(true);
+        expect(view.isVisible(node, context)).to.equal(true);
     });
 
     it('should return false when the viewport is panned away', () => {
@@ -61,7 +61,7 @@ describe('ShapeView.isInViewport', () => {
         model.zoom = 1;
         const node = model.children[0].children[0] as SShapeElement;
         const context = { targetKind: 'main' } as RenderingContext;
-        expect(view.isInViewport(node, context)).to.equal(false);
+        expect(view.isVisible(node, context)).to.equal(false);
     });
 
     it('should return false when the viewport is zoomed away', () => {
@@ -70,7 +70,7 @@ describe('ShapeView.isInViewport', () => {
         model.zoom = 10;
         const node = model.children[0].children[0] as SShapeElement;
         const context = { targetKind: 'main' } as RenderingContext;
-        expect(view.isInViewport(node, context)).to.equal(false);
+        expect(view.isVisible(node, context)).to.equal(false);
     });
 
     it('should return true when rendered in a hidden context', () => {
@@ -79,6 +79,6 @@ describe('ShapeView.isInViewport', () => {
         model.zoom = 10;
         const node = model.children[0].children[0] as SShapeElement;
         const context = { targetKind: 'hidden' } as RenderingContext;
-        expect(view.isInViewport(node, context)).to.equal(true);
+        expect(view.isVisible(node, context)).to.equal(true);
     });
 });

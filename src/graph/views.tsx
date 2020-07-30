@@ -57,7 +57,7 @@ export class PolylineEdgeView extends RoutableView {
         if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
         }
-        if (!this.isInViewport(edge, route, context)) {
+        if (!this.isVisible(edge, route, context)) {
             if (edge.children.length === 0) {
                 return undefined;
             }
@@ -126,7 +126,7 @@ export class SRoutingHandleView implements IView {
 @injectable()
 export class SLabelView extends ShapeView {
     render(label: Readonly<SLabel>, context: RenderingContext): VNode | undefined {
-        if (!isEdgeLayoutable(label) && !this.isInViewport(label, context)) {
+        if (!isEdgeLayoutable(label) && !this.isVisible(label, context)) {
             return undefined;
         }
         const vnode = <text class-sprotty-label={true}>{label.text}</text>;

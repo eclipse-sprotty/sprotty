@@ -27,7 +27,7 @@ export abstract class RoutableView implements IView {
      * in your `render` implementation to skip rendering in case the element is not visible.
      * This can greatly enhance performance for large models.
      */
-    isInViewport(model: Readonly<SRoutableElement>, route: Point[], context: RenderingContext): boolean {
+    isVisible(model: Readonly<SRoutableElement>, route: Point[], context: RenderingContext): boolean {
         if (context.targetKind === 'hidden') {
             // Don't hide any element for hidden rendering
             return true;

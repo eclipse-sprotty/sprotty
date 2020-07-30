@@ -23,7 +23,7 @@ import { SRoutableElement } from './model';
 import { RoutableView } from './views';
 import { VNode } from 'snabbdom/vnode';
 
-describe('RoutableView.isInViewport', () => {
+describe('RoutableView.isVisible', () => {
 
     class TestNode extends SShapeElement {
     }
@@ -60,7 +60,7 @@ describe('RoutableView.isInViewport', () => {
         model.zoom = 1;
         const routable = model.children[0].children[0] as SRoutableElement;
         const context = { targetKind: 'main' } as RenderingContext;
-        expect(view.isInViewport(routable, routable.routingPoints, context)).to.equal(true);
+        expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(true);
     });
 
     it('should return false when the viewport is panned away', () => {
@@ -69,7 +69,7 @@ describe('RoutableView.isInViewport', () => {
         model.zoom = 1;
         const routable = model.children[0].children[0] as SRoutableElement;
         const context = { targetKind: 'main' } as RenderingContext;
-        expect(view.isInViewport(routable, routable.routingPoints, context)).to.equal(false);
+        expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(false);
     });
 
     it('should return false when the viewport is zoomed away', () => {
@@ -78,7 +78,7 @@ describe('RoutableView.isInViewport', () => {
         model.zoom = 10;
         const routable = model.children[0].children[0] as SRoutableElement;
         const context = { targetKind: 'main' } as RenderingContext;
-        expect(view.isInViewport(routable, routable.routingPoints, context)).to.equal(false);
+        expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(false);
     });
 
     it('should return true when rendered in a hidden context', () => {
@@ -87,6 +87,6 @@ describe('RoutableView.isInViewport', () => {
         model.zoom = 10;
         const routable = model.children[0].children[0] as SRoutableElement;
         const context = { targetKind: 'hidden' } as RenderingContext;
-        expect(view.isInViewport(routable, routable.routingPoints, context)).to.equal(true);
+        expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(true);
     });
 });
