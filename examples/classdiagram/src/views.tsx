@@ -25,7 +25,7 @@ import { injectable } from 'inversify';
 @injectable()
 export class NodeView extends RectangularNodeView {
     render(node: Readonly<SNode>, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(node, context)) {
+        if (!this.isVisible(node, context)) {
             return undefined;
         }
         return <g>

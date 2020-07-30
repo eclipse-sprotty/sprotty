@@ -46,7 +46,7 @@ export const CORE_DISTANCE = 10;
 export class SimpleCoreView extends ShapeView {
 
     render(model: Core, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(model, context)) {
+        if (!this.isVisible(model, context)) {
             return undefined;
         }
         const fillColor = KernelColor.getSVG(model.kernelNr);
@@ -70,7 +70,7 @@ export class SimpleCoreView extends ShapeView {
 export class CoreView extends ShapeView {
 
     render(model: Core, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(model, context)) {
+        if (!this.isVisible(model, context)) {
             return undefined;
         }
         const fillColor = KernelColor.getSVG(model.kernelNr);

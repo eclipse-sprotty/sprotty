@@ -44,7 +44,7 @@ export class SvgViewportView implements IView {
 @injectable()
 export class CircularNodeView extends ShapeView {
     render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(node, context)) {
+        if (!this.isVisible(node, context)) {
             return undefined;
         }
         const radius = this.getRadius(node);
@@ -65,7 +65,7 @@ export class CircularNodeView extends ShapeView {
 @injectable()
 export class RectangularNodeView extends ShapeView {
     render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(node, context)) {
+        if (!this.isVisible(node, context)) {
             return undefined;
         }
         return <g>
@@ -80,7 +80,7 @@ export class RectangularNodeView extends ShapeView {
 @injectable()
 export class DiamondNodeView extends ShapeView {
     render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(node, context)) {
+        if (!this.isVisible(node, context)) {
             return undefined;
         }
         const diamond = new Diamond({ height: Math.max(node.size.height, 0), width: Math.max(node.size.width, 0), x: 0, y: 0 });

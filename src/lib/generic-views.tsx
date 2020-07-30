@@ -27,7 +27,7 @@ import { ForeignObjectElement, PreRenderedElement, ShapedPreRenderedElement } fr
 @injectable()
 export class PreRenderedView extends ShapeView {
     render(model: Readonly<PreRenderedElement>, context: RenderingContext): VNode | undefined {
-        if (model instanceof ShapedPreRenderedElement && !this.isInViewport(model, context)) {
+        if (model instanceof ShapedPreRenderedElement && !this.isVisible(model, context)) {
             return undefined;
         }
         const node = virtualize(model.code);

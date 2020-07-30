@@ -26,7 +26,7 @@ import { RenderingContext, SNode, ShapeView } from "../../../src";
 @injectable()
 export class CircleNodeView extends ShapeView {
     render(node: SNode, context: RenderingContext): VNode | undefined {
-        if (!this.isInViewport(node, context)) {
+        if (!this.isVisible(node, context)) {
             return undefined;
         }
         const radius = this.getRadius(node);
