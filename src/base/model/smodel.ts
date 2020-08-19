@@ -89,15 +89,15 @@ export function isParent(element: SModelElementSchema | SModelElement):
 export class SParentElement extends SModelElement {
     readonly children: ReadonlyArray<SChildElement> = [];
 
-    add(child: SChildElement, i?: number) {
+    add(child: SChildElement, index?: number) {
         const children = this.children as SChildElement[];
-        if (i === undefined) {
+        if (index === undefined) {
             children.push(child);
         } else {
-            if (i < 0 || i > this.children.length) {
-                throw new Error(`Child index ${i} out of bounds (0..${children.length})`);
+            if (index < 0 || index > this.children.length) {
+                throw new Error(`Child index ${index} out of bounds (0..${children.length})`);
             }
-            children.splice(i, 0, child);
+            children.splice(index, 0, child);
         }
         (child as {parent: SParentElement}).parent = this;
         this.index.add(child);
@@ -213,7 +213,8 @@ export function createRandomId(length: number = 8): string {
  */
 export class SModelIndex<E extends SModelElementSchema> {
 
-    private id2element: Map<string, E> = new Map;
+    private readonly id2element: Map<string, E> = new Map();
+    private id2parent?: Map<string, E>;
 
     add(element: E): void {
         if (!element.id) {
@@ -227,6 +228,12 @@ export class SModelIndex<E extends SModelElementSchema> {
         if (element.children !== undefined && element.children.constructor === Array) {
             for (const child of element.children) {
                 this.add(child as any);
+                if (!(child instanceof SChildElement)) {
+                    if (this.id2parent === undefined) {
+                        this.id2parent = new Map();
+                    }
+                    this.id2parent.set(child.id, element);
+                }
             }
         }
     }
@@ -235,6 +242,12 @@ export class SModelIndex<E extends SModelElementSchema> {
         this.id2element.delete(element.id);
         if (element.children !== undefined && element.children.constructor === Array) {
             for (const child of element.children) {
+                if (!(child instanceof SChildElement)) {
+                    if (this.id2parent === undefined) {
+                        this.id2parent = new Map();
+                    }
+                    this.id2parent.delete(child.id);
+                }
                 this.remove(child as any);
             }
         }
@@ -246,6 +259,42 @@ export class SModelIndex<E extends SModelElementSchema> {
 
     getById(id: string): E | undefined {
         return this.id2element.get(id);
+    }
+
+    /**
+     * This utility method is for SModelElementSchema. For SChildElements, simply
+     * use the `parent` property.
+     */
+    getParent(id: string): E | undefined {
+        if (this.id2parent !== undefined) {
+            return this.id2parent.get(id);
+        }
+        const element = this.getById(id);
+        if (element instanceof SChildElement) {
+            return element.parent as any;
+        }
+        return undefined;
+    }
+
+    /**
+     * This utility method is for SModelElementSchema. For SModelElements, simply
+     * use the `root` property.
+     */
+    getRoot(element: E): E extends SModelElement ? SModelRoot : SModelRootSchema {
+        if (this.id2parent !== undefined) {
+            let current: SModelElementSchema | undefined = element;
+            while (current) {
+                const parent = this.id2parent.get(current.id);
+                if (parent === undefined) {
+                    return current as any;
+                }
+                current = parent;
+            }
+        }
+        if (element instanceof SChildElement) {
+            return element.root as any;
+        }
+        throw new Error("Element has no root");
     }
 
     getAttachedElements(element: E): FluentIterable<E> {
