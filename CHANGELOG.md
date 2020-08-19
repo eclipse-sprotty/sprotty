@@ -2,6 +2,14 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-layout](https://github.com/eclipse/sprotty-layout/blob/master/CHANGELOG.md).
 
+### v0.9.0 (Aug. 2020)
+
+New features:
+ * Skip rendering elements that are not in viewport ([#182](https://github.com/eclipse/sprotty/pull/182))
+ * Rejecting request actions ([#184](https://github.com/eclipse/sprotty/pull/184))
+
+Fixed issues: https://github.com/eclipse/sprotty/milestone/4?closed=1
+
 ### v0.8.0 (Apr. 2020)
 
 New features:
@@ -22,7 +30,9 @@ Breaking API changes:
  * `MenuItem.isEnabled()`, `MenuItem.isToggled()`and `MenuItem.isVisible()` no longer return promises  ([#157](https://github.com/eclipse/sprotty/pull/#157))
  * `IUIExtension.id` and `IUIExtension.containerClass` have become methods  ([#171](https://github.com/eclipse/sprotty/pull/#171))
  * `EdgeSnapshot` additionally stores `routedPoints` ([#158](https://github.com/eclipse/sprotty/pull/#158))
- 
+
+-----
+
 ### v0.7.0 (Oct. 2019)
 
 New features:
