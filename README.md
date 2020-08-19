@@ -26,7 +26,8 @@ Some selected features:
 The Sprotty project spans across four GitHub repositories
 * [sprotty](https://github.com/eclipse/sprotty) (this repository) contains client code (TypeScript) and the examples.
 * [sprotty-server](https://github.com/eclipse/sprotty-server) contains server code (Java/Xtend) including server-side diagram layout, the extension of the Language Server Protocol, and the integration with the Xtext framework.
-* [sprotty-theia](https://github.com/eclipse/sprotty-theia) contains the glue code (TypeScript) to integrate sprotty views in the Theia IDE.
+* [sprotty-theia](https://github.com/eclipse/sprotty-theia) contains the glue code (TypeScript) to integrate Sprotty views in the Theia IDE.
+* [sprotty-vscode](https://github.com/eclipse/sprotty-vscode) contains the glue code (TypeScript) to integrate Sprotty views in VS Code.
 * [sprotty-layout](https://github.com/eclipse/sprotty-layout) contains the API for client-side diagram layout and an implementation based on the Eclipse Layout Kernel.
 
 The project is built on [jenkins.eclipse.org/sprotty](https://jenkins.eclipse.org/sprotty/).
