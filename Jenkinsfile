@@ -48,6 +48,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy (master only)') {
+            when { branch 'master'}
+            steps {
+                build job: 'deploy-sprotty', wait: false
+            }
+        }
     }
     
     post {
