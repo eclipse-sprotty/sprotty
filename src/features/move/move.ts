@@ -46,8 +46,8 @@ export class MoveAction implements Action {
     kind = MoveCommand.KIND;
 
     constructor(public readonly moves: ElementMove[],
-                public readonly animate: boolean = true,
-                public readonly finished: boolean = false) {
+        public readonly animate: boolean = true,
+        public readonly finished: boolean = false) {
     }
 }
 
@@ -73,7 +73,7 @@ export interface ResolvedHandleMove {
 export class MoveCommand extends MergeableCommand {
     static readonly KIND = 'move';
 
-    @inject(EdgeRouterRegistry)@optional() edgeRouterRegistry?: EdgeRouterRegistry;
+    @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
     protected resolvedMoves: Map<string, ResolvedElementMove> = new Map;
     protected edgeMementi: EdgeMemento[] = [];
@@ -131,7 +131,7 @@ export class MoveCommand extends MergeableCommand {
         return context.root;
     }
 
-    protected resolveHandleMove(handle: SRoutingHandle, edge: SRoutableElement, move: ElementMove): ResolvedHandleMove | undefined {
+    protected resolveHandleMove(handle: SRoutingHandle, edge: SRoutableElement, move: ElementMove): ResolvedHandleMove | undefined {
         let fromPosition = move.fromPosition;
         if (!fromPosition) {
             const router = this.edgeRouterRegistry!.get(edge.routerKind);
@@ -146,7 +146,7 @@ export class MoveCommand extends MergeableCommand {
         return undefined;
     }
 
-    protected resolveElementMove(element: SModelElement & Locateable, move: ElementMove): ResolvedElementMove | undefined {
+    protected resolveElementMove(element: SModelElement & Locateable, move: ElementMove): ResolvedElementMove | undefined {
         const fromPosition = move.fromPosition
             || { x: element.position.x, y: element.position.y };
         return {
@@ -253,9 +253,9 @@ export class MoveCommand extends MergeableCommand {
 export class MoveAnimation extends Animation {
 
     constructor(protected model: SModelRoot,
-                public elementMoves: Map<string, ResolvedElementMove>,
-                context: CommandExecutionContext,
-                protected reverse: boolean = false) {
+        public elementMoves: Map<string, ResolvedElementMove>,
+        context: CommandExecutionContext,
+        protected reverse: boolean = false) {
         super(context);
     }
 
@@ -288,9 +288,9 @@ export class MorphEdgesAnimation extends Animation {
     protected expanded: ExpandedEdgeMorph[] = [];
 
     constructor(protected model: SModelRoot,
-                originalMementi: EdgeMemento[],
-                context: CommandExecutionContext,
-                protected reverse: boolean = false) {
+        originalMementi: EdgeMemento[],
+        context: CommandExecutionContext,
+        protected reverse: boolean = false) {
         super(context);
         originalMementi.forEach(edgeMemento => {
             const start = this.reverse ? edgeMemento.after : edgeMemento.before;
@@ -379,8 +379,8 @@ export class MorphEdgesAnimation extends Animation {
 
 export class MoveMouseListener extends MouseListener {
 
-    @inject(EdgeRouterRegistry)@optional() edgeRouterRegistry?: EdgeRouterRegistry;
-    @inject(TYPES.ISnapper)@optional() snapper?: ISnapper;
+    @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
+    @inject(TYPES.ISnapper) @optional() snapper?: ISnapper;
 
     hasDragged = false;
     startDragPosition: Point | undefined;
@@ -428,9 +428,11 @@ export class MoveMouseListener extends MouseListener {
     }
 
     protected collectStartPositions(root: SModelRoot) {
-        root.index.all()
-            .filter(element => isSelectable(element) && element.selected)
-            .forEach(element => {
+        const selectedElements = new Set<SModelElement>(root.index.all()
+            .filter(element => isSelectable(element) && element.selected));
+
+        selectedElements.forEach(element => {
+            if (!this.isChildOfSelected(selectedElements, element)) {
                 if (isMoveable(element))
                     this.elementId2startPos.set(element.id, element.position);
                 else if (element instanceof SRoutingHandle) {
@@ -438,7 +440,18 @@ export class MoveMouseListener extends MouseListener {
                     if (position)
                         this.elementId2startPos.set(element.id, position);
                 }
-            });
+            }
+        });
+    }
+
+    private isChildOfSelected(selectedElements: Set<SModelElement>, element: SModelElement): boolean {
+        while (element instanceof SChildElement) {
+            element = element.parent;
+            if (selectedElements.has(element)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected getElementMoves(target: SModelElement, event: MouseEvent, isFinished: boolean): MoveAction | undefined {
@@ -573,7 +586,7 @@ export class LocationPostprocessor implements IVNodePostprocessor {
             // The element is handled by EdgeLayoutDecorator
             return vnode;
         }
-        let translate: string  = '';
+        let translate: string = '';
         if (isLocateable(element) && element instanceof SChildElement && element.parent !== undefined) {
             const pos = element.position;
             if (pos.x !== 0 || pos.y !== 0) {
@@ -586,7 +599,7 @@ export class LocationPostprocessor implements IVNodePostprocessor {
                 if (translate.length > 0) {
                     translate += ' ';
                 }
-                translate += 'translate('  + ali.x + ', ' + ali.y + ')';
+                translate += 'translate(' + ali.x + ', ' + ali.y + ')';
             }
         }
         if (translate.length > 0) {
