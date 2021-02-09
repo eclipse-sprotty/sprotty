@@ -46,8 +46,8 @@ export class MoveAction implements Action {
     kind = MoveCommand.KIND;
 
     constructor(public readonly moves: ElementMove[],
-        public readonly animate: boolean = true,
-        public readonly finished: boolean = false) {
+                public readonly animate: boolean = true,
+                public readonly finished: boolean = false) {
     }
 }
 
@@ -444,10 +444,10 @@ export class MoveMouseListener extends MouseListener {
         });
     }
 
-    private isChildOfSelected(selectedElements: Set<SModelElement>, element: SModelElement): boolean {
+    protected isChildOfSelected(selectedElements: Set<SModelElement>, element: SModelElement): boolean {
         while (element instanceof SChildElement) {
             element = element.parent;
-            if (selectedElements.has(element)) {
+            if (isMoveable(element) && selectedElements.has(element)) {
                 return true;
             }
         }
