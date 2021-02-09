@@ -253,9 +253,9 @@ export class MoveCommand extends MergeableCommand {
 export class MoveAnimation extends Animation {
 
     constructor(protected model: SModelRoot,
-        public elementMoves: Map<string, ResolvedElementMove>,
-        context: CommandExecutionContext,
-        protected reverse: boolean = false) {
+                public elementMoves: Map<string, ResolvedElementMove>,
+                context: CommandExecutionContext,
+                protected reverse: boolean = false) {
         super(context);
     }
 
@@ -288,9 +288,9 @@ export class MorphEdgesAnimation extends Animation {
     protected expanded: ExpandedEdgeMorph[] = [];
 
     constructor(protected model: SModelRoot,
-        originalMementi: EdgeMemento[],
-        context: CommandExecutionContext,
-        protected reverse: boolean = false) {
+                originalMementi: EdgeMemento[],
+                context: CommandExecutionContext,
+                protected reverse: boolean = false) {
         super(context);
         originalMementi.forEach(edgeMemento => {
             const start = this.reverse ? edgeMemento.after : edgeMemento.before;
