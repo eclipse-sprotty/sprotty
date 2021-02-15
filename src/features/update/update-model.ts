@@ -122,6 +122,8 @@ export class UpdateModelCommand extends Command {
                 if (element instanceof SChildElement)
                     element.parent.remove(element);
             }
+        }
+        for (const match of matches) {
             if (match.right !== undefined) {
                 const element = context.modelFactory.createElement(match.right);
                 let parent: SModelElement | undefined;

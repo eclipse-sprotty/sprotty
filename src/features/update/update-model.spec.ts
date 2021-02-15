@@ -416,6 +416,62 @@ describe('UpdateModelCommand', () => {
         }
     });
 
+    // tests regression #190
+    it('removes relocated elements before adding them', () => {
+        context.root = graphFactory.createRoot({
+            type: 'graph',
+            id: 'model',
+            children: [
+                {
+                    type: 'node',
+                    id: 'a',
+                    children: [
+                        {
+                            type: 'node',
+                            id: 'b'
+                        }
+                    ]
+                }
+            ]
+        });
+        const flattenCommand = new UpdateModelCommand({
+            kind: UpdateModelCommand.KIND,
+            animate: false,
+            matches: [
+                {
+                    right: {
+                        type: 'node',
+                        id: 'b'
+                    },
+                    rightParentId: 'model'
+                },
+                {
+                    left: {
+                        type: 'node',
+                        id: 'b'
+                    },
+                    leftParentId: 'a'
+                }
+            ]
+        });
+        const actual = flattenCommand.execute(context);
+        const expected: SModelElementSchema = {
+            type: 'graph',
+            id: 'model',
+            children: [
+                {
+                    type: 'node',
+                    id: 'a'
+                },
+                {
+                    type: 'node',
+                    id: 'b'
+                }
+            ]
+        };
+        compare(expected, actual as SModelRoot);
+    });
+
     function newModelWithEdge(edgeId: string, routingPoints: Point[]): SModelRootSchema {
         return {
             type: 'graph',
