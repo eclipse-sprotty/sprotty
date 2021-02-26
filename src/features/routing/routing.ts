@@ -22,6 +22,8 @@ import { injectable, multiInject } from "inversify";
 import { ResolvedHandleMove } from "../move/move";
 import { SRoutingHandle } from "../routing/model";
 import { TYPES } from "../../base/types";
+import { SParentElement } from "../../base/model/smodel";
+import { mapIterable } from "../../utils/iterable";
 
 /**
  * A point describing the shape of an edge.
@@ -75,7 +77,7 @@ export interface IEdgeRouter {
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
-    pointAt(edge: SRoutableElement, t: number): Point | undefined
+    pointAt(edge: SRoutableElement, t: number): Point | undefined
 
     /**
      * Calculates the derivative at a point on the edge.
@@ -88,7 +90,7 @@ export interface IEdgeRouter {
     /**
      * Retuns the position of the given handle based on the routing points of the edge.
      */
-    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
+    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
 
     /**
      * Creates the routing handles for the given target.
@@ -136,6 +138,62 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
     }
 
     get(kind: string | undefined): IEdgeRouter {
-        return super.get(kind || this.defaultKind);
+        return super.get(kind || this.defaultKind);
     }
+
+    routeAllChildren(parent: Readonly<SParentElement>): EdgeRoutes {
+        const routes = new EdgeRoutes();
+        for (const child of parent.children) {
+            if (child instanceof SRoutableElement) {
+                routes.set(child, this.route(child));
+            }
+            if (child instanceof SParentElement) {
+                const childRoutes = this.routeAllChildren(child);
+                routes.setAll(childRoutes);
+            }
+        }
+        return routes;
+    }
+
+    route(edge: Readonly<SRoutableElement>, args?: object): RoutedPoint[] {
+        if (containsEdgeRoutes(args)) {
+            const route = args.edgeRoutes.get(edge);
+            if (route) {
+                return route;
+            }
+        }
+        const router = this.get(edge.routerKind);
+        return router.route(edge);
+    }
+
+}
+
+export interface EdgeRoutesContainer {
+    edgeRoutes: EdgeRoutes;
+}
+
+export function containsEdgeRoutes(args?: object): args is object & EdgeRoutesContainer {
+    return args !== undefined && 'edgeRoutes' in args;
+}
+
+export class EdgeRoutes {
+
+    protected _routes = new Map<string, RoutedPoint[]>();
+
+    set(routable: Readonly<SRoutableElement>, route: RoutedPoint[]): void {
+        this._routes.set(routable.id, route);
+    }
+
+    setAll(otherRoutes: EdgeRoutes): void {
+        otherRoutes.routes.forEach((route, routableId) => this._routes.set(routableId, route));
+    }
+
+    get(routable: Readonly<SRoutableElement>): RoutedPoint[] | undefined {
+        return this._routes.get(routable.id);
+    }
+
+    get routes() {
+        return this._routes;
+    }
+
 }

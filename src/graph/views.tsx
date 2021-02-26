@@ -29,21 +29,24 @@ import { RoutableView } from '../features/routing/views';
 import { Point } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
 
-
 /**
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.
  */
 @injectable()
 export class SGraphView implements IView {
 
-    render(model: Readonly<SGraph>, context: RenderingContext): VNode {
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
+    render(model: Readonly<SGraph>, context: RenderingContext, args?: object): VNode {
+        const edgeRoutes = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg class-sprotty-graph={true}>
             <g transform={transform}>
-                {context.renderChildren(model)}
+                {context.renderChildren(model, {...args, edgeRoutes })}
             </g>
         </svg>;
     }
+
 }
 
 @injectable()
@@ -51,9 +54,8 @@ export class PolylineEdgeView extends RoutableView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(edge: Readonly<SEdge>, context: RenderingContext): VNode | undefined {
-        const router = this.edgeRouterRegistry.get(edge.routerKind);
-        const route = router.route(edge);
+    render(edge: Readonly<SEdge>, context: RenderingContext, args?: object): VNode | undefined {
+        const route = this.edgeRouterRegistry.route(edge, args);
         if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
         }
@@ -63,13 +65,13 @@ export class PolylineEdgeView extends RoutableView {
             }
             // The children of an edge are not necessarily inside the bounding box of the route,
             // so we need to render a group to ensure the children have a chance to be rendered.
-            return <g>{context.renderChildren(edge, { route })}</g>;
+            return <g>{context.renderChildren(edge, { ...args, route })}</g>;
         }
 
         return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
             {this.renderLine(edge, route, context)}
             {this.renderAdditionals(edge, route, context)}
-            {context.renderChildren(edge, { route })}
+            {context.renderChildren(edge, { ...args, route })}
         </g>;
     }
 
@@ -103,7 +105,7 @@ export class SRoutingHandleView implements IView {
         if (args && args.route) {
             if (handle.parent instanceof SRoutableElement) {
                 const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
-                const theRoute = args.route === undefined ? router.route(handle.parent) : args.route;
+                const theRoute = args.route === undefined ? this.edgeRouterRegistry.route(handle.parent, args) : args.route;
                 const position = router.getHandlePosition(handle.parent, theRoute, handle);
                 if (position !== undefined) {
                     const node = <circle class-sprotty-routing-handle={true}
@@ -140,10 +142,10 @@ export class SLabelView extends ShapeView {
 
 @injectable()
 export class SCompartmentView implements IView {
-    render(compartment: Readonly<SCompartment>, context: RenderingContext): VNode | undefined {
+    render(compartment: Readonly<SCompartment>, context: RenderingContext, args?: object): VNode | undefined {
         const translate = `translate(${compartment.bounds.x}, ${compartment.bounds.y})`;
         const vnode = <g transform={translate} class-sprotty-comp="{true}">
-            {context.renderChildren(compartment)}
+            {context.renderChildren(compartment, args)}
         </g>;
         const subType = getSubType(compartment);
         if (subType)
