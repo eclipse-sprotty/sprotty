@@ -416,8 +416,20 @@ describe('UpdateModelCommand', () => {
         }
     });
 
-    // tests regression #190
-    it('removes relocated elements before adding them', () => {
+    it('#190 removes relocated elements before adding them { animate: false }', async () => {
+        return removesRelocatedElementsBeforeAddingThem(false);
+    });
+    it('#190 removes relocated elements before adding them { animate: true }', async () => {
+        return removesRelocatedElementsBeforeAddingThem(true);
+    });
+    it('#190 removes container element and adds contained element { animate: false }', async () => {
+        return removesContainerElementAndAddsContainedElement(false);
+    });
+    it('#190 removes container element and adds contained element { animate: true }', async () => {
+        return removesContainerElementAndAddsContainedElement(true);
+    });
+
+    async function removesRelocatedElementsBeforeAddingThem(animate: boolean): Promise<void> {
         context.root = graphFactory.createRoot({
             type: 'graph',
             id: 'model',
@@ -436,7 +448,7 @@ describe('UpdateModelCommand', () => {
         });
         const flattenCommand = new UpdateModelCommand({
             kind: UpdateModelCommand.KIND,
-            animate: false,
+            animate,
             matches: [
                 {
                     right: {
@@ -454,7 +466,7 @@ describe('UpdateModelCommand', () => {
                 }
             ]
         });
-        const actual = flattenCommand.execute(context);
+        const actual = await flattenCommand.execute(context);
         const expected: SModelElementSchema = {
             type: 'graph',
             id: 'model',
@@ -470,7 +482,58 @@ describe('UpdateModelCommand', () => {
             ]
         };
         compare(expected, actual as SModelRoot);
-    });
+    }
+
+    async function removesContainerElementAndAddsContainedElement(animate: boolean): Promise<void> {
+        context.root = graphFactory.createRoot({
+            type: 'graph',
+            id: 'model',
+            children: [
+                {
+                    type: 'node',
+                    id: 'a',
+                    children: [
+                        {
+                            type: 'node',
+                            id: 'b'
+                        }
+                    ]
+                }
+            ]
+        });
+        const flattenCommand = new UpdateModelCommand({
+            kind: UpdateModelCommand.KIND,
+            animate,
+            matches: [
+                {
+                    right: {
+                        type: 'node',
+                        id: 'b'
+                    },
+                    rightParentId: 'model'
+                },
+                {
+                    left: {
+                        type: 'node',
+                        id: 'a'
+                    },
+                    leftParentId: 'model'
+                }
+            ]
+        });
+        const actual = await flattenCommand.execute(context);
+        const expected: SModelElementSchema = {
+            type: 'graph',
+            id: 'model',
+            children: [
+                {
+                    type: 'node',
+                    id: 'b'
+                }
+            ]
+        };
+        compare(expected, actual as SModelRoot);
+    }
 
     function newModelWithEdge(edgeId: string, routingPoints: Point[]): SModelRootSchema {
         return {
