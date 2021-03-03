@@ -33,6 +33,7 @@ import { TYPES } from "../../base/types";
 import { isViewport } from "../viewport/model";
 import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from "../routing/routing";
 import { SRoutableElement } from "../routing/model";
+import { containsSome } from "../../base/model/smodel-utils";
 
 /**
  * Sent from the model source to the client in order to update the model. If no model is present yet,
@@ -180,7 +181,7 @@ export class UpdateModelCommand extends Command {
                 // An element has been removed
                 const left = match.left;
                 if (isFadeable(left) && match.leftParentId !== undefined) {
-                    if (newRoot.index.getById(left.id) === undefined) {
+                    if (!containsSome(newRoot, left)) {
                         const parent = newRoot.index.getById(match.leftParentId);
                         if (parent instanceof SParentElement) {
                             const leftCopy = context.modelFactory.createElement(left) as SChildElement & Fadeable;
