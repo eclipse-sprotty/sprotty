@@ -1,6 +1,7 @@
 {
-    "tslint.enable": true,
-    "tslint.configFile": "configs/tslint.json",
+    "eslint.options": {
+      "configFile": "configs/.eslintrc.js"  
+    },
     "search.exclude": {
         "**/node_modules": true,
         "**/lib": true,
