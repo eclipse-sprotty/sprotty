@@ -18,8 +18,38 @@ module.exports = {
         "header"
     ],
     "rules": {
-        "@typescript-eslint/indent": "warn",
-        "@typescript-eslint/naming-convention": "warn",
+        "@typescript-eslint/indent": "off",
+        "@typescript-eslint/naming-convention": [
+            "warn",
+                {
+                    "selector": 'default',
+                    "format": ['camelCase'],
+                    "leadingUnderscore": 'allow',
+                    "trailingUnderscore": 'allow',
+                },
+                {
+                    "selector": 'variable',
+                    "format": ['camelCase', 'UPPER_CASE'],
+                    "leadingUnderscore": 'allow',
+                    "trailingUnderscore": 'allow',
+                },
+                {
+                    "selector": 'typeLike',
+                    "format": ['PascalCase'],
+                },                
+                {
+                    "selector": "classProperty",
+                    "format": ["camelCase", "UPPER_CASE"]
+                },      
+                {
+                    "selector": "typeProperty",
+                    "format": ["camelCase", "UPPER_CASE"]
+                },
+                {
+                    "selector": "enumMember",
+                    "format": ["camelCase", "UPPER_CASE"]
+                }
+            ],
         "@typescript-eslint/no-dynamic-delete": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-misused-new": "error",
@@ -38,9 +68,13 @@ module.exports = {
         "header/header": ["error", "block", [{"pattern": "[\n\r]+ \\* Copyright \\([cC]\\) \\d{4}(-\\d{4})? .*[\n\r]+"}]],
         "brace-style": [
             "warn",
-            "1tbs"
+            "1tbs",
+            { "allowSingleLine": true }
         ],
-        "comma-dangle": "warn",
+        "comma-dangle": ["warn", {
+            "arrays": "only-multiline",
+            "objects": "only-multiline",
+        }],
         "constructor-super": "error",
         "curly": "off",
         "eol-last": "warn",
@@ -95,6 +129,9 @@ module.exports = {
             {
                 "markers": [
                     "/"
+                ],
+                "exceptions": [
+                    "*"
                 ]
             }
         ],

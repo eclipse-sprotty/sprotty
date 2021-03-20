@@ -81,7 +81,7 @@ export class ForwardingLogger implements ILogger {
             } catch (error) {
                 try {
                     console.log.apply(thisArg, [message, action, error]);
-                } catch (error) {}
+                } catch (e) {}
             }
         });
     }
