@@ -185,7 +185,7 @@ export class ModelViewer implements IViewer {
         }
     }
 
-    protected onWindowResize = (vdom: VNode): void => {
+    protected onWindowResize(vdom: VNode): void {
         const baseDiv = document.getElementById(this.options.baseDiv);
         if (baseDiv !== null) {
             const newBounds = this.getBoundsInPage(baseDiv as Element);
