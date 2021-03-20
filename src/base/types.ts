@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+ /* eslint-disable @typescript-eslint/naming-convention */
 export const TYPES = {
     Action: Symbol('Action'),
     IActionDispatcher: Symbol('IActionDispatcher'),
@@ -73,3 +74,4 @@ export const TYPES = {
     ViewerOptions: Symbol('ViewerOptions'),
     IViewerProvider: Symbol('IViewerProvider'),
 };
+/* eslint-enable */

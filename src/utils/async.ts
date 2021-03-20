@@ -23,7 +23,7 @@ export class Deferred<T> {
     reject: (reason?: any) => void;
 
     readonly promise = new Promise<T>((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
+        this.resolve = resolve; // eslint-disable-line no-invalid-this
+        this.reject = reject; // eslint-disable-line no-invalid-this
     });
 }
