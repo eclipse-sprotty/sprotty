@@ -109,6 +109,9 @@
   "main": "lib/index",
   "types": "lib/index",
   "eslintIgnore": [
-    "/configs/.eslintrc.js"
+    "configs/.eslintrc.js",
+    "configs/webpack.config.js",
+    "src/**/*.spec.?(ts|tsx)",
+    "examples/**/*"
   ]
 }
