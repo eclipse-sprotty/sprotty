@@ -33,7 +33,7 @@ export class UndoRedoKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
             return [new UndoAction];
-        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift'))
+        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || matchesKeystroke(event, 'KeyY', 'ctrlCmd'))
             return [new RedoAction];
         return [];
     }
