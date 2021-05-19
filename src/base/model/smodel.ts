@@ -61,7 +61,7 @@ export class SModelElement {
     }
 
     get index(): SModelIndex<SModelElement> {
-        return this.root.modelRootindex;
+        return this.root.index;
     }
 
     /**
@@ -181,14 +181,17 @@ export class SChildElement extends SParentElement {
  * Base class for the root element of the diagram model tree.
  */
 export class SModelRoot extends SParentElement {
-    readonly modelRootindex: SModelIndex<SModelElement>;
     revision?: number;
 
     canvasBounds: Bounds = EMPTY_BOUNDS;
 
     constructor(index = new SModelIndex<SModelElement>()) {
         super();
-        this.modelRootindex = index;
+          // Override the index property from SModelElement, which has a getter, with a data property
+          Object.defineProperty(this, 'index', {
+            value: index,
+            writable: false
+        });
     }
 }
 
