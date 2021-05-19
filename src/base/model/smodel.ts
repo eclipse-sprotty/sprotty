@@ -61,7 +61,7 @@ export class SModelElement {
     }
 
     get index(): SModelIndex<SModelElement> {
-        return this.root.index;
+        return this.root.modelRootindex;
     }
 
     /**
@@ -110,7 +110,6 @@ export class SParentElement extends SModelElement {
             throw new Error(`No such child ${child.id}`);
         }
         children.splice(i, 1);
-        delete (child as {parent: SParentElement}).parent;
         this.index.remove(child);
     }
 
@@ -120,13 +119,11 @@ export class SParentElement extends SModelElement {
             for (let i = children.length - 1; i >= 0; i--) {
                 if (filter(children[i])) {
                     const child = children.splice(i, 1)[0];
-                    delete (child as {parent: SParentElement}).parent;
                     this.index.remove(child);
                 }
             }
         } else {
             children.forEach(child => {
-                delete (child as {parent: SParentElement}).parent;
                 this.index.remove(child);
             });
             children.splice(0, children.length);
@@ -184,18 +181,14 @@ export class SChildElement extends SParentElement {
  * Base class for the root element of the diagram model tree.
  */
 export class SModelRoot extends SParentElement {
-    readonly index: SModelIndex<SModelElement>;
+    readonly modelRootindex: SModelIndex<SModelElement>;
     revision?: number;
 
     canvasBounds: Bounds = EMPTY_BOUNDS;
 
     constructor(index = new SModelIndex<SModelElement>()) {
         super();
-        // Override the index property from SModelElement, which has a getter, with a data property
-        Object.defineProperty(this, 'index', {
-            value: index,
-            writable: false
-        });
+        this.modelRootindex = index;
     }
 }
 

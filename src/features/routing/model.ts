@@ -103,9 +103,11 @@ export function getRouteBounds(route: Point[]): Bounds {
  * ports (`SPort`). A node represents a main entity, while a port is a connection point inside a node.
  */
 export abstract class SConnectableElement extends SShapeElement implements Connectable {
-
-    anchorKind?: string;
-
+     
+    get anchorKind() : string | undefined{
+         return undefined;
+     }
+    
     strokeWidth: number = 0;
 
     /**
