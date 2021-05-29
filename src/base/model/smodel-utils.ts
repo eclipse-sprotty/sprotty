@@ -154,7 +154,7 @@ export function translateBounds(bounds: Bounds, source: SModelElement, target: S
  * Tests if the given model contains an id of then given element or one of its descendants.
  */
 export function containsSome(root: SModelRoot, element: SChildElement): boolean {
-    const test = (element: SChildElement) => root.index.getById(element.id) !== undefined;
-    const find = (elements: readonly SChildElement[]): boolean => elements.some(element => test(element) || find(element.children));
+    const test = (el: SChildElement) => root.index.getById(el.id) !== undefined;
+    const find = (elements: readonly SChildElement[]): boolean => elements.some(el => test(el) || find(el.children));
     return find([element]);
 }
