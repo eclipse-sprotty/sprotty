@@ -90,7 +90,7 @@
   "scripts": {
     "clean": "rimraf lib artifacts",
     "build": "tsc -p ./tsconfig.json && yarn run lint",
-    "lint": "eslint -c configs/.eslintrc.js src/**/!(*.spec.ts*)",
+    "lint": "eslint -c configs/.eslintrc.js \"src/**/!(*.spec.ts*)\"",
     "watch": "tsc -w -p ./tsconfig.json",
     "test": "jenkins-mocha --opts ./configs/mocha.opts \"./src/**/*.spec.?(ts|tsx)\"",
     "prepare": "yarn run clean && yarn run build",
