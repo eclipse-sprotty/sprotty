@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
+import { svg } from './jsx';
 import { injectable } from "inversify";
-import { svg } from 'snabbdom-jsx';
 import virtualize from "./virtualize";
-import { VNode } from "snabbdom/vnode";
+import { VNode } from "snabbdom";
 import { IView, RenderingContext } from "../base/views/view";
 import { setNamespace, setAttr } from "../base/views/vnode-utils";
 import { ShapeView } from "../features/bounds/views";

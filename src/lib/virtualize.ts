@@ -14,8 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { h } from 'snabbdom/h';
-import { vnode, VNode, VNodeData } from 'snabbdom/vnode';
+import { h, vnode, VNode, VNodeData } from 'snabbdom';
 
 function buildVNodeData(attrs: { [key: string]: string }) {
     const data: VNodeData = {};
@@ -225,4 +224,3 @@ export default function virtualizeString(html?: string) {
     if (vdom === null) return null;
     return stripVNode(vdom);
 }
-

@@ -4569,13 +4569,6 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-snabbdom-jsx@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/snabbdom-jsx/-/snabbdom-jsx-0.4.2.tgz#e580682d60b4cc1da9898c6a0bacfcd062a0cffc"
-  integrity sha512-6akqPyuossD3niO3RCgaqAIrQ6ylBI+shzUKukIwqkNOybCmgst81khJ48BHYtEamQ7ltlFaEKjvKi3N0NPNVw==
-  dependencies:
-    snabbdom "^0.7.0"
-
 snabbdom-to-html@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/snabbdom-to-html/-/snabbdom-to-html-5.1.1.tgz#c89ae3dc9bbe2e28ed6b7d78f96c46be731817b2"
@@ -4589,10 +4582,10 @@ snabbdom-to-html@^5.1.1:
     object-assign "^4.1.0"
     parse-sel "^1.0.0"
 
-snabbdom@0.7.3, snabbdom@^0.7.0:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/snabbdom/-/snabbdom-0.7.3.tgz#27b29b41228779ae5d99696a07edaaff4912fc54"
-  integrity sha512-XNh90GQiV36hWdfSL46fIVrSSvmBuZlWk3++qaEgBeQWQJCqTphcbjTODPv8/vyZHJaB3VhePsWfGxi/zBxXyw==
+snabbdom@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/snabbdom/-/snabbdom-3.0.3.tgz#13ff22fbdd1c971ace1af55d4831bdb4972aafd0"
+  integrity sha512-+HEwNccHj1lTKx3I7vKm7La+FhhcJFJloPkmPE0pwYQFq6aZSx2SCJrUKotD/+L8kA+EHcXRmBe5Yd2LX1WlQQ==
 
 snapdragon-node@^2.0.1:
   version "2.1.1"

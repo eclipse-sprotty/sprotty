@@ -28,8 +28,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
 import virtualize from './virtualize';
-import { h } from 'snabbdom/h';
-import { vnode } from 'snabbdom/vnode';
+import { h, vnode } from 'snabbdom';
 
 import setup from './test-helper';
 
