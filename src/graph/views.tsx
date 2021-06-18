@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
- /** @jsx svg */
+/** @jsx svg */
 import { inject, injectable } from 'inversify';
 import { svg } from 'snabbdom-jsx';
 import { VNode } from "snabbdom/vnode";
@@ -22,11 +22,12 @@ import { getSubType } from "../base/model/smodel-utils";
 import { IView, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
 import { ShapeView } from '../features/bounds/views';
+import { BY_X_THEN_Y, IntersectingRoutedPoint, Intersection, isIntersectingRoutedPoint } from '../features/edge-intersection/intersection-finder';
 import { isEdgeLayoutable } from '../features/edge-layout/model';
 import { SRoutingHandle, SRoutableElement } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
 import { RoutableView } from '../features/routing/views';
-import { Point } from '../utils/geometry';
+import { Point, PointToPointLine, shiftTowards } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
 
 /**
@@ -38,11 +39,11 @@ export class SGraphView implements IView {
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
     render(model: Readonly<SGraph>, context: RenderingContext, args?: object): VNode {
-        const edgeRoutes = this.edgeRouterRegistry.routeAllChildren(model);
+        const edgeRouting = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg class-sprotty-graph={true}>
             <g transform={transform}>
-                {context.renderChildren(model, {...args, edgeRoutes })}
+                {context.renderChildren(model, { ...args, edgeRouting })}
             </g>
         </svg>;
     }
@@ -69,20 +70,20 @@ export class PolylineEdgeView extends RoutableView {
         }
 
         return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
-            {this.renderLine(edge, route, context)}
+            {this.renderLine(edge, route, context, args)}
             {this.renderAdditionals(edge, route, context)}
             {context.renderChildren(edge, { ...args, route })}
         </g>;
     }
 
-    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext): VNode {
+    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: object): VNode {
         const firstPoint = segments[0];
         let path = `M ${firstPoint.x},${firstPoint.y}`;
         for (let i = 1; i < segments.length; i++) {
             const p = segments[i];
             path += ` L ${p.x},${p.y}`;
         }
-        return <path d={path}/>;
+        return <path d={path} />;
     }
 
     protected renderAdditionals(edge: SEdge, segments: Point[], context: RenderingContext): VNode[] {
@@ -92,6 +93,98 @@ export class PolylineEdgeView extends RoutableView {
     protected renderDanglingEdge(message: string, edge: SEdge, context: RenderingContext): VNode {
         return <text class-sprotty-edge-dangling={true} title={message}>?</text>;
     }
+}
+
+/**
+ * A `PolylineEdgeView` that renders jumps over intersections.
+ *
+ * In order to find intersections, `IntersectionFinder` needs to be configured as a `TYPES.IEdgeRoutePostprocessor`
+ * so that that intersections are declared as `IntersectingRoutedPoint` in the computed routes.
+ *
+ * @see IntersectionFinder
+ * @see IntersectingRoutedPoint
+ * @see EdgeRouterRegistry
+ */
+@injectable()
+export class JumpingPolylineEdgeView extends PolylineEdgeView {
+
+    protected jumpOffsetBefore = 5;
+    protected jumpOffsetAfter = 5;
+    protected skipOffsetBefore = 3;
+    protected skipOffsetAfter = 2;
+
+    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: object): VNode {
+        let path = '';
+        for (let i = 0; i < segments.length; i++) {
+            const p = segments[i];
+            if (i === 0) {
+                path = `M ${p.x},${p.y}`;
+            }
+            if (isIntersectingRoutedPoint(p)) {
+                path += this.intersectionPath(edge, segments, p, args);
+            }
+            if (i !== 0) {
+                path += ` L ${p.x},${p.y}`;
+            }
+        }
+        return <path d={path} />;
+    }
+
+    protected intersectionPath(edge: SEdge, segments: Point[], intersectingPoint: IntersectingRoutedPoint, args?: object): string {
+        let path = '';
+        for (const intersection of intersectingPoint.intersections.sort(BY_X_THEN_Y)) {
+            const otherLineSegment = this.getOtherLineSegment(edge, intersection, args);
+            if (otherLineSegment === undefined) {
+                continue;
+            }
+            const lineSegment = this.getLineSegment(edge, intersection, args, segments);
+            const intersectionPoint = intersection.intersectionPoint;
+            if (Math.abs(lineSegment.slopeOrMax) < Math.abs(otherLineSegment.slopeOrMax)) {
+                path += this.createJumpPath(intersectionPoint, lineSegment);
+            } else {
+                path += this.createSkipPath(intersectionPoint, lineSegment);
+            }
+        }
+        return path;
+    }
+
+    protected getOtherLineSegment(currentEdge: SEdge, intersection: Intersection, args?: object): PointToPointLine | undefined {
+        const otherEdgeId = intersection.routable1 === currentEdge.id ? intersection.routable2 : intersection.routable1;
+        const otherEdge = currentEdge.index.getById(otherEdgeId);
+        if (!(otherEdge instanceof SRoutableElement)) {
+            return undefined;
+        }
+        return this.getLineSegment(otherEdge, intersection, args);
+    }
+
+    protected getLineSegment(edge: SRoutableElement, intersection: Intersection, args?: object, segments?: Point[]): PointToPointLine {
+        const route = segments ? segments : this.edgeRouterRegistry.route(edge, args);
+        const index = intersection.routable1 === edge.id ? intersection.segmentIndex1 : intersection.segmentIndex2;
+        return new PointToPointLine(route[index], route[index + 1]);
+    }
+
+    protected createJumpPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+        const anchorBefore = shiftTowards(intersectionPoint, lineSegment.p1, this.jumpOffsetBefore);
+        const anchorAfter = shiftTowards(intersectionPoint, lineSegment.p2, this.jumpOffsetAfter);
+        const rotation = lineSegment.p1.x < lineSegment.p2.x ? 1 : 0;
+        return ` L ${anchorBefore.x},${anchorBefore.y} A 1,1 0,0 ${rotation} ${anchorAfter.x},${anchorAfter.y}`;
+    }
+
+    protected createSkipPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+        let offsetBefore;
+        let offsetAfter;
+        if (intersectionPoint.y < lineSegment.p1.y) {
+            offsetBefore = -this.skipOffsetBefore;
+            offsetAfter = this.jumpOffsetAfter + this.skipOffsetAfter;
+        } else {
+            offsetBefore = this.jumpOffsetBefore + this.skipOffsetAfter;
+            offsetAfter = -this.skipOffsetBefore;
+        }
+        const anchorBefore = shiftTowards(intersectionPoint, lineSegment.p1, offsetBefore);
+        const anchorAfter = shiftTowards(intersectionPoint, lineSegment.p2, offsetAfter);
+        return ` L ${anchorBefore.x},${anchorBefore.y} M ${anchorAfter.x},${anchorAfter.y}`;
+    }
+
 }
 
 @injectable()
@@ -109,15 +202,15 @@ export class SRoutingHandleView implements IView {
                 const position = router.getHandlePosition(handle.parent, theRoute, handle);
                 if (position !== undefined) {
                     const node = <circle class-sprotty-routing-handle={true}
-                            class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
-                            cx={position.x} cy={position.y} r={this.getRadius()}/>;
+                        class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
+                        cx={position.x} cy={position.y} r={this.getRadius()} />;
                     setAttr(node, 'data-kind', handle.kind);
                     return node;
                 }
             }
         }
         // Fallback: Create an empty group
-        return <g/>;
+        return <g />;
     }
 
     getRadius(): number {

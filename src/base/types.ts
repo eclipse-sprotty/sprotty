@@ -37,6 +37,7 @@ export const TYPES = {
     DOMHelper: Symbol('DOMHelper'),
     IDiagramLocker: Symbol('IDiagramLocker'),
     IEdgeRouter: Symbol('IEdgeRouter'),
+    IEdgeRoutePostprocessor: Symbol('IEdgeRoutePostprocessor'),
     IEditLabelValidationDecorator: Symbol('IEditLabelValidationDecorator'),
     IEditLabelValidator: Symbol('IEditLabelValidator'),
     HiddenModelViewer: Symbol('HiddenModelViewer'),
