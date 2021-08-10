@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2020 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,16 +31,19 @@ const modulesNS = ['hook', 'on', 'style', 'class', 'props', 'attrs', 'dataset'];
 const SVGNS = 'http://www.w3.org/2000/svg';
 
 function normalizeAttrs(source: VNodeData | null, defNS: string, namespace?: string) {
-  if (source === null) return source;
   const data: VNodeData = {};
 
   if (namespace) {
     data.ns = namespace;
   }
+  if (source === null) {
+    return data;
+  }
 
   modulesNS.forEach(mod => {
-    if (source[mod])
+    if (source[mod]) {
       data[mod] = source[mod];
+    }
   });
   Object.keys(source).forEach(key => {
     if (key === 'key' || key === 'classNames' || key === 'selector') return;

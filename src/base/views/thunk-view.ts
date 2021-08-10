@@ -14,8 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { h } from "snabbdom";
-import { VNode, VNodeData } from "snabbdom";
+import { h, VNode, VNodeData } from "snabbdom";
 import { SModelElement } from "../model/smodel";
 import { RenderingContext, IView } from "./view";
 import { injectable } from "inversify";
