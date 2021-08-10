@@ -20,6 +20,27 @@ import { Point, PointToPointLine } from "../../utils/geometry";
 import { Intersection } from "./intersection-finder";
 import { RoutedPoint } from "../routing/routing";
 
+/*
+ * The algorithm implemented in this module is loosely based on the Bentley-Ottmann algorithm for
+ * finding intersection among line segments in `O((n+k) log n)`, whereas `n` is the number of line
+ * segments and `k` is the number of intersections.
+ * The underlying idea is to use a imaginary sweep line that moves over the x/y plane and testing
+ * only the line segments for intersection that the sweepline currently crosses, instead of
+ * testing all segment with each other, which would be `O(n^2)`.
+ * It does so by generating a prioritized event queue for start and end events of the line segments
+ * and working its way through the queue (i.e., sweeping).
+ * More information can be found at https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm
+ * In contrast to the original Bently-Ottmann algorithm, the implementation below does not use a tree
+ * data structure to store the segments in order to simplify the implementation.
+ * See also https://github.com/rowanwins/sweepline-intersections#algorithm-notes
+ */
+
+/**
+ * Add the specified `route` to the event `queue` from left to right.
+ * @param routeId id of the route.
+ * @param route the route as array of points.
+ * @param queue the queue to add the route to.
+ */
 export function addRoute(routeId: string, route: RoutedPoint[], queue: TinyQueue<SweepEvent>) {
     if (route.length < 1) return;
     let currentPoint = route[0];
@@ -47,6 +68,11 @@ export function addRoute(routeId: string, route: RoutedPoint[], queue: TinyQueue
     }
 }
 
+/**
+ * Returns which of the two events is left.
+ * This is used to classify the endpoints of a segment when generating the
+ * event queue.
+ */
 export function checkWhichEventIsLeft(e1: SweepEvent, e2: SweepEvent): 1 | -1 {
     if (e1.point.x > e2.point.x) return 1;
     if (e1.point.x < e2.point.x) return -1;
@@ -54,19 +80,22 @@ export function checkWhichEventIsLeft(e1: SweepEvent, e2: SweepEvent): 1 | -1 {
     return 1;
 }
 
-export function checkWhichSegmentHasRightEndpointFirst(seg1: Segment, seg2: Segment): 1 | -1 {
-    if (seg1.rightSweepEvent.point.x > seg2.rightSweepEvent.point.x) return 1;
-    if (seg1.rightSweepEvent.point.x < seg2.rightSweepEvent.point.x) return -1;
-    if (seg1.rightSweepEvent.point.y !== seg2.rightSweepEvent.point.y) return seg1.rightSweepEvent.point.y < seg2.rightSweepEvent.point.y ? 1 : -1;
-    return 1;
-}
-
+/**
+ * An event -- or with other words a start or end point of a segment -- in the context
+ * of the event queue for the sweep.
+ *
+ * Stores the original Sprotty `edgeId` and the segment index of this segment in the edge
+ * to keep track of which edge and segment this event originated from.
+ */
 export class SweepEvent {
     otherEvent: SweepEvent;
     isLeftEndpoint: boolean;
     constructor(readonly edgeId: string, readonly point: Point, readonly segmentIndex: number) { }
 }
 
+/**
+ * A line segment consists of a start and a stop event.
+ */
 export class Segment {
     readonly leftSweepEvent: SweepEvent;
     readonly rightSweepEvent: SweepEvent;
@@ -76,6 +105,22 @@ export class Segment {
     }
 }
 
+/**
+ * Performs the main sweep algorithm on the specified event queue.
+ *
+ * An empty priority queue is created to store segments encountered.
+ * An item is removed from the priority queue if the vertex is the left endpoint
+ * of a segment, we test it against every other segment in the segment queue for
+ * intersections with any intersection recorded. We then add the vertex (and it's
+ * associated right endpoint) to the segment queue.
+ * If we encounter a right endpoint we remove the first item from the segment queue.
+ *
+ * Each pair of segments are only tested once. And only segments that overlap on the
+ * x plane are tested against each other.
+ *
+ * @param eventQueue the event queue.
+ * @returns the identified intersections.
+ */
 export function runSweep(eventQueue: TinyQueue<SweepEvent>): Intersection[] {
     const intersectionPoints: Intersection[] = [];
     const outQueue = new TinyQueue<Segment>([], checkWhichSegmentHasRightEndpointFirst);
@@ -106,10 +151,24 @@ export function runSweep(eventQueue: TinyQueue<SweepEvent>): Intersection[] {
     return intersectionPoints;
 }
 
+/**
+ * Specifies which of the two specified segments has a right endpoint first.
+ * Used as a comparator to sort the event queue.
+ */
+export function checkWhichSegmentHasRightEndpointFirst(seg1: Segment, seg2: Segment): 1 | -1 {
+    if (seg1.rightSweepEvent.point.x > seg2.rightSweepEvent.point.x) return 1;
+    if (seg1.rightSweepEvent.point.x < seg2.rightSweepEvent.point.x) return -1;
+    if (seg1.rightSweepEvent.point.y !== seg2.rightSweepEvent.point.y) return seg1.rightSweepEvent.point.y < seg2.rightSweepEvent.point.y ? 1 : -1;
+    return 1;
+}
+
 export function getSegmentIndex(segment: Segment): number {
     return Math.min(segment.leftSweepEvent.segmentIndex, segment.rightSweepEvent.segmentIndex);
 }
 
+/**
+ * Tests whether two segments intersect and returns the intersection point if existing.
+ */
 export function intersectionOfSegments(seg1: Segment, seg2: Segment): Point | undefined {
     if (seg1.leftSweepEvent.edgeId === seg2.leftSweepEvent.edgeId) {
         return undefined;

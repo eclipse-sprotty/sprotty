@@ -2,6 +2,17 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-layout](https://github.com/eclipse/sprotty-layout/blob/master/CHANGELOG.md).
 
+### v0.10.0 (upcoming)
+
+New features:
+ * Line jumps to visually clarify intersecting lines ([#226](https://github.com/eclipse/sprotty/pull/226))
+ * `TYPES.IEdgeRoutePostprocessor` can be registered to analyse and/or change computed routes ([#226](https://github.com/eclipse/sprotty/pull/226))
+ * `EdgeRouterRegistry` can route all edges contained in a parent element at once. These pre-computed routes are then usually added to the `args` that are passed on to the views. This allows `IView` and `IEdgeRoutePostprocessor` implementations to consider all computed routes for rendering before the routed edges may even have been rendered. ([#226](https://github.com/eclipse/sprotty/pull/226))
+
+Breaking API changes:
+ * It is recommended that implementations of the `IView` for `SGraph` instances computes the routes of its children with `this.edgeRouterRegistry.routeAllChildren(model)` and pass on the routes as arguments to its child views. See default implementation of `SGraphView` ([#226](https://github.com/eclipse/sprotty/pull/226))
+ * It is recommended that all implementations of `IView` pass the received `args` on to its child views via `renderChildren()` so that, e.g., pre-computed routes are available them by default ([#226](https://github.com/eclipse/sprotty/pull/226))
+
 ### v0.9.0 (Aug. 2020)
 
 New features:

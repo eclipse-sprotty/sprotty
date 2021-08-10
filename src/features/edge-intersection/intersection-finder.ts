@@ -43,11 +43,6 @@ export const BY_X_THEN_Y = (a: Intersection, b: Intersection): number => {
     return a.intersectionPoint.x - b.intersectionPoint.x;
 };
 
-
-export class RouteSegment {
-    constructor(public routableId: string, public segmentIndex: number, public point: Point) { }
-}
-
 /**
  * Finds intersections among edges and updates routed points to reflect those intersections.
  */
