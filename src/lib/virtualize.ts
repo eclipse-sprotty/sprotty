@@ -214,7 +214,7 @@ export default function virtualizeString(html?: string) {
 
     if (doc?.firstChild?.nodeName === 'parsererror') {
         const error = `${doc?.firstChild?.textContent}`;
-        throw new Error(error);
+        return h('parsererror', [error]);
     }
 
     delimited = false;

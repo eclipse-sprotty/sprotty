@@ -31,7 +31,7 @@ export class PreRenderedView extends ShapeView {
             return undefined;
         }
         const node = virtualize(model.code);
-        if (node === null) throw new Error('node must be single Element');
+        if (node === null) return undefined;
         this.correctNamespace(node);
         return node;
     }
@@ -40,7 +40,6 @@ export class PreRenderedView extends ShapeView {
         if (node.sel === 'svg' || node.sel === 'g')
             setNamespace(node, 'http://www.w3.org/2000/svg');
     }
-
 }
 
 /**
@@ -49,9 +48,9 @@ export class PreRenderedView extends ShapeView {
  */
 @injectable()
 export class ForeignObjectView implements IView {
-    render(model: ForeignObjectElement, context: RenderingContext): VNode {
+    render(model: ForeignObjectElement, context: RenderingContext): VNode | undefined{
         const foreignObjectContents = virtualize(model.code);
-        if (foreignObjectContents === null) throw new Error('node must be single Element');
+        if (foreignObjectContents === null) return undefined;
         const node = <g>
             <foreignObject requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility'
                 height={model.bounds.height} width={model.bounds.width} x={0} y={0}>

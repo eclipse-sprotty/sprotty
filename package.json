@@ -88,7 +88,7 @@
   "scripts": {
     "clean": "rimraf lib artifacts",
     "build": "tsc -p ./tsconfig.json && yarn run lint",
-    "lint": "eslint -c configs/.eslintrc.js \"src/**/!(*.spec.ts*)\"",
+    "lint": "eslint -c configs/.eslintrc.js \"src/**/!(*.spec.ts*|test-helper.ts)\"",
     "test:cli": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\"",
     "watch": "tsc -w -p ./tsconfig.json",
     "test": "jenkins-mocha --opts ./configs/mocha.opts \"./src/**/*.spec.?(ts|tsx)\"",
@@ -111,6 +111,7 @@
     "configs/.eslintrc.js",
     "configs/webpack.config.js",
     "src/**/*.spec.?(ts|tsx)",
+    "src/util/test-helper.ts",
     "examples/**/*"
   ]
 }
