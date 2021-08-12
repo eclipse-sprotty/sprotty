@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
+import { inject, injectable, multiInject, optional } from "inversify";
 import { TYPES } from "../../base/types";
 import { ILogger } from '../../utils/logging';
 import { InstanceRegistry } from "../../utils/registry";
@@ -22,17 +22,24 @@ import { Bounds, EMPTY_BOUNDS } from "../../utils/geometry";
 import { SParentElement, SModelElement } from "../../base/model/smodel";
 import { isLayoutContainer, LayoutContainer } from "./model";
 import { BoundsData } from "./hidden-bounds-updater";
-import { VBoxLayouter } from "./vbox-layout";
-import { HBoxLayouter } from "./hbox-layout";
-import { StackLayouter } from "./stack-layout";
 
+@injectable()
 export class LayoutRegistry extends InstanceRegistry<ILayout> {
-    constructor() {
+    constructor(@multiInject(TYPES.LayoutRegistration) @optional() layouts: (LayoutRegistration)[] = []) {
         super();
-        this.register(VBoxLayouter.KIND, new VBoxLayouter());
-        this.register(HBoxLayouter.KIND, new HBoxLayouter());
-        this.register(StackLayouter.KIND, new StackLayouter());
+        layouts.forEach(layout => {
+            if (this.hasKey(layout.layoutKind)) {
+                console.log('Layout kind is already defined: ', layout.layoutKind);
+            } else {
+                this.register(layout.layoutKind, layout.factory());
+            }
+        });
     }
+}
+
+export interface LayoutRegistration {
+    layoutKind: string;
+    factory: () => ILayout;
 }
 
 @injectable()

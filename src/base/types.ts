@@ -73,5 +73,6 @@ export const TYPES = {
     IViewer: Symbol('IViewer'),
     ViewerOptions: Symbol('ViewerOptions'),
     IViewerProvider: Symbol('IViewerProvider'),
+    LayoutRegistration: Symbol('LayoutRegistration'),
 };
 /* eslint-enable */

@@ -20,6 +20,9 @@ import { SetBoundsCommand, RequestBoundsCommand } from "./bounds-manipulation";
 import { HiddenBoundsUpdater } from './hidden-bounds-updater';
 import { Layouter, LayoutRegistry } from "./layout";
 import { configureCommand } from "../../base/commands/command-registration";
+import { HBoxLayoutRegistration } from "./hbox-layout";
+import { VBoxLayoutRegistration } from "./vbox-layout";
+import { StackLayoutRegistration } from "./stack-layout";
 
 const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SetBoundsCommand);
@@ -28,6 +31,9 @@ const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.HiddenVNodePostprocessor).toService(HiddenBoundsUpdater);
     bind(TYPES.Layouter).to(Layouter).inSingletonScope();
     bind(TYPES.LayoutRegistry).to(LayoutRegistry).inSingletonScope();
+    bind(TYPES.LayoutRegistration).to(VBoxLayoutRegistration);
+    bind(TYPES.LayoutRegistration).to(HBoxLayoutRegistration);
+    bind(TYPES.LayoutRegistration).to(StackLayoutRegistration);
 });
 
 export default boundsModule;
