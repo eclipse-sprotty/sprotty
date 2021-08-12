@@ -33,6 +33,11 @@ export class MouseTool implements IVNodePostprocessor {
 
     constructor(@multiInject(TYPES.MouseListener) @optional() protected mouseListeners: MouseListener[] = []) { }
 
+    delay = (ms: number) => new Promise(res => {setTimeout(res, ms);});
+    delayed = false;
+    delayedWEvents: WheelEvent[] = [];
+    delayedWModels: SModelRoot[] = [];
+
     register(mouseListener: MouseListener) {
         this.mouseListeners.push(mouseListener);
     }
