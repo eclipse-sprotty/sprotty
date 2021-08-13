@@ -21,7 +21,7 @@ import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { LayoutContainer, isLayoutableChild } from './model';
-import { ILayout, LayoutRegistration, StatefulLayouter } from './layout';
+import { StatefulLayouter } from './layout';
 
 export interface StackLayoutOptions extends AbstractLayoutOptions {
     paddingFactor: number
@@ -29,6 +29,7 @@ export interface StackLayoutOptions extends AbstractLayoutOptions {
     hAlign: HAlignment
 }
 
+@injectable()
 export class StackLayouter extends AbstractLayout<StackLayoutOptions> {
 
     static KIND = 'stack';
@@ -91,14 +92,5 @@ export class StackLayouter extends AbstractLayout<StackLayoutOptions> {
 
     protected spread(a: StackLayoutOptions, b: StackLayoutOptions): StackLayoutOptions {
         return { ...a, ...b };
-    }
-}
-
-@injectable()
-export class StackLayoutRegistration implements LayoutRegistration {
-    layoutKind = StackLayouter.KIND;
-
-    factory(): ILayout {
-        return new StackLayouter();
     }
 }

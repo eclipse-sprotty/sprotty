@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, multiInject, optional } from "inversify";
+import { inject, injectable, interfaces, multiInject, optional } from "inversify";
 import { TYPES } from "../../base/types";
 import { ILogger } from '../../utils/logging';
 import { InstanceRegistry } from "../../utils/registry";
@@ -22,6 +22,7 @@ import { Bounds, EMPTY_BOUNDS } from "../../utils/geometry";
 import { SParentElement, SModelElement } from "../../base/model/smodel";
 import { isLayoutContainer, LayoutContainer } from "./model";
 import { BoundsData } from "./hidden-bounds-updater";
+import { isInjectable } from "../../utils/inversify";
 
 @injectable()
 export class LayoutRegistry extends InstanceRegistry<ILayout> {
@@ -115,4 +116,22 @@ export class StatefulLayouter {
 export interface ILayout {
     layout(container: SParentElement & LayoutContainer,
            layouter: StatefulLayouter): void
+}
+
+
+export function configureLayout(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+    kind: string, constr: interfaces.ServiceIdentifier<ILayout>) {
+
+    if (typeof constr === 'function') {
+        if (!isInjectable(constr)) {
+            throw new Error(`Layouts be @injectable: ${constr.name}`);
+        }
+        if (!context.isBound(constr)) {
+            context.bind(constr).toSelf();
+        }
+    }
+    context.bind(TYPES.LayoutRegistration).toDynamicValue(ctx => ({
+        layoutKind: kind,
+        factory: () => ctx.container.get(constr)
+    }));
 }

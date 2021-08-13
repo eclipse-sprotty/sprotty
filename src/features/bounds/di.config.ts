@@ -18,11 +18,11 @@ import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
 import { SetBoundsCommand, RequestBoundsCommand } from "./bounds-manipulation";
 import { HiddenBoundsUpdater } from './hidden-bounds-updater';
-import { Layouter, LayoutRegistry } from "./layout";
+import { configureLayout, Layouter, LayoutRegistry } from "./layout";
 import { configureCommand } from "../../base/commands/command-registration";
-import { HBoxLayoutRegistration } from "./hbox-layout";
-import { VBoxLayoutRegistration } from "./vbox-layout";
-import { StackLayoutRegistration } from "./stack-layout";
+import { HBoxLayouter } from "./hbox-layout";
+import { VBoxLayouter } from "./vbox-layout";
+import { StackLayouter} from "./stack-layout";
 
 const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SetBoundsCommand);
@@ -31,9 +31,10 @@ const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.HiddenVNodePostprocessor).toService(HiddenBoundsUpdater);
     bind(TYPES.Layouter).to(Layouter).inSingletonScope();
     bind(TYPES.LayoutRegistry).to(LayoutRegistry).inSingletonScope();
-    bind(TYPES.LayoutRegistration).to(VBoxLayoutRegistration);
-    bind(TYPES.LayoutRegistration).to(HBoxLayoutRegistration);
-    bind(TYPES.LayoutRegistration).to(StackLayoutRegistration);
+
+    configureLayout({bind, isBound}, VBoxLayouter.KIND, VBoxLayouter);
+    configureLayout({bind, isBound}, HBoxLayouter.KIND, HBoxLayouter);
+    configureLayout({bind, isBound}, StackLayouter.KIND, StackLayouter);
 });
 
 export default boundsModule;

@@ -21,7 +21,7 @@ import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, HAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { LayoutContainer, isLayoutableChild } from './model';
-import { ILayout, LayoutRegistration, StatefulLayouter } from './layout';
+import { StatefulLayouter } from './layout';
 
 export interface VBoxLayoutOptions extends AbstractLayoutOptions {
     vGap: number
@@ -31,6 +31,7 @@ export interface VBoxLayoutOptions extends AbstractLayoutOptions {
 /**
  * Layouts children of a container in vertical (top->bottom) direction.
  */
+@injectable()
 export class VBoxLayouter extends AbstractLayout<VBoxLayoutOptions> {
 
     static KIND = 'vbox';
@@ -101,14 +102,5 @@ export class VBoxLayouter extends AbstractLayout<VBoxLayoutOptions> {
 
     protected spread(a: VBoxLayoutOptions, b: VBoxLayoutOptions): VBoxLayoutOptions {
         return { ...a, ...b };
-    }
-}
-
-@injectable()
-export class VBoxLayoutRegistration implements LayoutRegistration {
-    layoutKind = VBoxLayouter.KIND;
-
-    factory(): ILayout {
-        return new VBoxLayouter();
     }
 }

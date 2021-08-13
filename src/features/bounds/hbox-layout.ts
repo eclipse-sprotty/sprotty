@@ -21,7 +21,7 @@ import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { LayoutContainer, isLayoutableChild } from './model';
-import { ILayout, LayoutRegistration, StatefulLayouter } from './layout';
+import { StatefulLayouter } from './layout';
 
 export interface HBoxLayoutOptions extends AbstractLayoutOptions {
     hGap: number
@@ -31,6 +31,7 @@ export interface HBoxLayoutOptions extends AbstractLayoutOptions {
 /**
  * Layouts children of a container in horizontal (left->right) direction.
  */
+@injectable()
 export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
 
     static KIND = 'hbox';
@@ -103,13 +104,4 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
         return { ...a, ...b };
     }
 
-}
-
-@injectable()
-export class HBoxLayoutRegistration implements LayoutRegistration {
-    layoutKind = HBoxLayouter.KIND;
-
-    factory(): ILayout {
-        return new HBoxLayouter();
-    }
 }
