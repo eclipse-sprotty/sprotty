@@ -25,11 +25,14 @@ import { BoundsData } from "./hidden-bounds-updater";
 
 @injectable()
 export class LayoutRegistry extends InstanceRegistry<ILayout> {
+
+    @inject(TYPES.ILogger) logger: ILogger;
+
     constructor(@multiInject(TYPES.LayoutRegistration) @optional() layouts: (LayoutRegistration)[] = []) {
         super();
         layouts.forEach(layout => {
             if (this.hasKey(layout.layoutKind)) {
-                console.log('Layout kind is already defined: ', layout.layoutKind);
+                this.logger.warn('Layout kind is already defined: ', layout.layoutKind);
             } else {
                 this.register(layout.layoutKind, layout.factory());
             }

@@ -25,6 +25,10 @@ import { EMPTY_DIMENSION } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
 import { Dimension } from '../../utils/geometry';
 import { layoutableChildFeature } from './model';
+import { TYPES } from '../../base/types';
+import { Container } from 'inversify';
+import boundsModule from './di.config';
+import defaultModule from '../../base/di.config';
 
 describe('HBoxLayouter', () => {
 
@@ -63,7 +67,10 @@ describe('HBoxLayouter', () => {
     function layout(model: SNode) {
         map.clear();
         addToMap(model);
-        const layouter = new StatefulLayouter(map, new LayoutRegistry(), log);
+        const container = new Container();
+        container.load(defaultModule, boundsModule);
+        const layoutRegistry = container.get<LayoutRegistry>(TYPES.LayoutRegistry);
+        const layouter = new StatefulLayouter(map, layoutRegistry, log);
         layouter.layout();
     }
 
