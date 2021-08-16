@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Attrs } from "snabbdom/modules/attributes";
 import { VNode } from "snabbdom/vnode";
 import { SModelElement } from "../model/smodel";
 
@@ -68,7 +69,7 @@ export function on(vnode: VNode, event: string, listener: (model: SModelElement,
     (val as any)[event] = [listener, element];
 }
 
-export function getAttrs(vnode: VNode) {
+export function getAttrs(vnode: VNode):Attrs {
     const data = getData(vnode);
     if (!data.attrs)
         data.attrs = {};
