@@ -77,6 +77,10 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
+    get anchorKind():string|undefined{
+        return undefined;
+    }
+
     canConnect(routable: SRoutableElement, role: string) {
         return this.children.find(c => c instanceof SPort) === undefined;
     }
@@ -99,6 +103,10 @@ export interface SPortSchema extends SShapeElementSchema {
 export class SPort extends SConnectableElement implements Selectable, Fadeable, Hoverable {
     static readonly DEFAULT_FEATURES = [connectableFeature, selectFeature, boundsFeature, fadeFeature,
         hoverFeedbackFeature];
+
+    get anchorKind():string|undefined{
+        return undefined;
+    }
 
     selected: boolean = false;
     hoverFeedback: boolean = false;

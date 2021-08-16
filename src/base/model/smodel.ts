@@ -60,7 +60,7 @@ export class SModelElement {
         throw new Error("Element has no root");
     }
 
-    get index(): SModelIndex<SModelElement> {
+    get get_index(): SModelIndex<SModelElement> {
         return this.root.index;
     }
 
@@ -100,7 +100,7 @@ export class SParentElement extends SModelElement {
             children.splice(index, 0, child);
         }
         (child as {parent: SParentElement}).parent = this;
-        this.index.add(child);
+        this.get_index.add(child);
     }
 
     remove(child: SChildElement) {
@@ -110,8 +110,8 @@ export class SParentElement extends SModelElement {
             throw new Error(`No such child ${child.id}`);
         }
         children.splice(i, 1);
-        delete (child as {parent: SParentElement}).parent;
-        this.index.remove(child);
+        // delete (child as {parent: SParentElement}).parent; // parent löschen fraglich ob es nicht klüger ist das objekt zu löschen...
+        this.get_index.remove(child);
     }
 
     removeAll(filter?: (e: SChildElement) => boolean) {
@@ -120,14 +120,14 @@ export class SParentElement extends SModelElement {
             for (let i = children.length - 1; i >= 0; i--) {
                 if (filter(children[i])) {
                     const child = children.splice(i, 1)[0];
-                    delete (child as {parent: SParentElement}).parent;
-                    this.index.remove(child);
+                    // delete (child as {parent: SParentElement}).parent;
+                    this.get_index.remove(child);
                 }
             }
         } else {
             children.forEach(child => {
-                delete (child as {parent: SParentElement}).parent;
-                this.index.remove(child);
+                // delete (child as {parent: SParentElement}).parent;
+                this.get_index.remove(child);
             });
             children.splice(0, children.length);
         }

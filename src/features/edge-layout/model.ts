@@ -30,7 +30,7 @@ export function isEdgeLayoutable<T extends SModelElement>(element: T): element i
         && element.parent instanceof SRoutableElement
         && 'edgePlacement' in element
         && isBoundsAware(element)
-        && element.hasFeature(edgeLayoutFeature);
+        && (element as SChildElement).hasFeature(edgeLayoutFeature);
 }
 
 export type EdgeSide = 'left' | 'right' | 'top' | 'bottom' | 'on';

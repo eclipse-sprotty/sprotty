@@ -26,7 +26,7 @@ import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } fr
  * A node that is represented by a circle.
  */
 export class CircularNode extends SNode {
-    get anchorKind() {
+    get anchorKind():string|undefined {
         return ELLIPTIC_ANCHOR_KIND;
     }
 }
@@ -35,7 +35,7 @@ export class CircularNode extends SNode {
  * A node that is represented by a rectangle.
  */
 export class RectangularNode extends SNode {
-    get anchorKind() {
+    get anchorKind():string|undefined {
         return RECTANGULAR_ANCHOR_KIND;
     }
 }
@@ -44,7 +44,7 @@ export class RectangularNode extends SNode {
  * A node that is represented by a diamond.
  */
 export class DiamondNode extends SNode {
-    get anchorKind() {
+    get anchorKind():string|undefined {
         return DIAMOND_ANCHOR_KIND;
     }
 }
@@ -53,7 +53,7 @@ export class DiamondNode extends SNode {
  * A port that is represented by a circle.
  */
 export class CircularPort extends SPort {
-    get anchorKind() {
+    get anchorKind():string|undefined {
         return ELLIPTIC_ANCHOR_KIND;
     }
 }
@@ -62,7 +62,7 @@ export class CircularPort extends SPort {
  * A port that is represented by a rectangle.
  */
 export class RectangularPort extends SPort {
-    get anchorKind() {
+    get anchorKind():string|undefined {
         return RECTANGULAR_ANCHOR_KIND;
     }
 }

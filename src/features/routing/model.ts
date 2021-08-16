@@ -34,11 +34,11 @@ export abstract class SRoutableElement extends SChildElement {
     targetAnchorCorrection?: number;
 
     get source(): SConnectableElement | undefined {
-        return this.index.getById(this.sourceId) as SConnectableElement;
+        return this.get_index.getById(this.sourceId) as SConnectableElement;
     }
 
     get target(): SConnectableElement | undefined {
-        return this.index.getById(this.targetId) as SConnectableElement;
+        return this.get_index.getById(this.targetId) as SConnectableElement;
     }
 
     get bounds(): Bounds {
@@ -104,16 +104,18 @@ export function getRouteBounds(route: Point[]): Bounds {
  */
 export abstract class SConnectableElement extends SShapeElement implements Connectable {
 
-    anchorKind?: string;
+    // anchorKind?: string;
 
     strokeWidth: number = 0;
+
+    abstract get anchorKind():string|undefined;
 
     /**
      * The incoming edges of this connectable element. They are resolved by the index, which must
      * be an `SGraphIndex`.
      */
     get incomingEdges(): FluentIterable<SEdge> {
-        return (this.index as SGraphIndex).getIncomingEdges(this);
+        return (this.get_index as SGraphIndex).getIncomingEdges(this);
     }
 
     /**
@@ -121,7 +123,7 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
      * be an `SGraphIndex`.
      */
     get outgoingEdges(): FluentIterable<SEdge> {
-        return (this.index as SGraphIndex).getOutgoingEdges(this);
+        return (this.get_index as SGraphIndex).getOutgoingEdges(this);
     }
 
     canConnect(routable: SRoutableElement, role: 'source' | 'target') {
@@ -163,6 +165,10 @@ export class SDanglingAnchor extends SConnectableElement {
 
     original?: SModelElement;
     type = 'dangling-anchor';
+
+    get anchorKind(){
+        return undefined;
+    }
 
     constructor() {
         super();
