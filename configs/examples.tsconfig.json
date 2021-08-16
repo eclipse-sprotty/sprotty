@@ -7,6 +7,6 @@
   },
   "files": ["../examples/app.ts"],
   "exclude": [
-    "**/*.spec.ts", "**/*.spec.tsx", "src/util/test-heleper.ts"
+    "**/*.spec.ts", "**/*.spec.tsx", "src/util/test-helper.ts"
   ]
 }

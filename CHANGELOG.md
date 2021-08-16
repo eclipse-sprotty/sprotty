@@ -37,7 +37,7 @@ after
 import { svg } from 'sprotty';
 ```
 
-* The `on` function API of `vnode-utils` has been changed due to the API change of snabbdom's eventlistner. listners must `bind` elements. (see https://github.com/snabbdom/snabbdom/issues/802)
+* The `on` function API of `vnode-utils` has been changed due to the API change of snabbdom's event listner. Listners must `bind` elements. (see https://github.com/snabbdom/snabbdom/issues/802)
 
 ### v0.9.0 (Aug. 2020)
 
