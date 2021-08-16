@@ -131,13 +131,13 @@ describe("virtualize (bad path)", () => {
 
     it("should return parser error when given a single text node", () => {
         const actual = virtualize("Text content!");
-        expect(actual.sel).to.equal("parsererror");
+        expect(actual?.sel).to.equal("parsererror");
     });
 
     it("should return parser error when gives multiple top-level nodes", () => {
         const actual = virtualize(
             "<div><h1>Something</h1></div><span>Something more</span>"
         );
-        expect(actual.sel).to.equal("parsererror");
+        expect(actual?.sel).to.equal("parsererror");
     });
 });
