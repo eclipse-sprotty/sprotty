@@ -34,7 +34,7 @@ after
 
 ```ts
 /** @jsx svg */
-import { svg } from './lib/jsx';
+import { svg } from 'sprotty';
 ```
 
 * The `on` function API of `vnode-utils` has been changed due to the API change of snabbdom's eventlistner. listners must `bind` elements. (see https://github.com/snabbdom/snabbdom/issues/802)
