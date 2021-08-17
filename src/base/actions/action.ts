@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ export interface Action {
 }
 
 export function isAction(object?: unknown): object is Action {
-    return hasOwnProperty(object, 'kind') && typeof(object.kind) === 'string';
+    return hasOwnProperty<string, string>(object, 'kind', 'string');
 }
 
 /**
@@ -39,8 +39,7 @@ export interface RequestAction<Res extends ResponseAction> extends Action {
 }
 
 export function isRequestAction(object?: unknown): object is RequestAction<ResponseAction> {
-    return isAction(object) && hasOwnProperty(object, 'requestId')
-            && typeof(object.requestId) === 'string';
+    return isAction(object) && hasOwnProperty<string, string>(object, 'requestId', 'string');
 }
 
 let nextRequestId = 1;
@@ -61,8 +60,7 @@ export interface ResponseAction extends Action {
 }
 
 export function isResponseAction(object?: unknown): object is ResponseAction {
-    return isAction(object) && hasOwnProperty(object, 'responseId')
-            && typeof(object.responseId) === 'string'
+    return isAction(object) && hasOwnProperty<string, string>(object, 'responseId', 'string')
             && object.responseId !== '';
 }
 

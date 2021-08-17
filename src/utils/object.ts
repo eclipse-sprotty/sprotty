@@ -14,12 +14,31 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
- export function isNotNullish(data: unknown): data is Record<PropertyKey, unknown> {
-    return data !== null && data !== undefined;
+ export function isObject(data: unknown): data is Record<PropertyKey, unknown> {
+    return typeof data === 'object' && data !== null;
 }
 
-export function hasOwnProperty<K extends PropertyKey>(arg: unknown, key: K): arg is Record<K, unknown> {
-    return isNotNullish(arg) && Object.prototype.hasOwnProperty.call(arg, key);
+export type TypeOf<T> =
+    T extends number ? 'number'
+    : T extends string ? 'string'
+    : T extends boolean ? 'boolean'
+    : T extends bigint ? 'bigint'
+    : T extends symbol ? 'symbol'
+    : T extends Function ? 'function'
+    : T extends object ? 'object'
+    : 'undefined';
+
+export function hasOwnProperty<K extends PropertyKey, T>(arg: unknown, key: K, type?: TypeOf<T> | ((v: unknown) => v is T)): arg is Record<K, T> {
+    if (!(isObject(arg) && Object.prototype.hasOwnProperty.call(arg, key))) {
+        return false;
+    }
+    if (typeof type === 'string') {
+        return typeof arg[key] === type;
+    }
+    if (typeof type === 'function') {
+        return type(arg[key]);
+    }
+    return true;
 }
 
 export function safeAssign<T>(target: T, partial: Partial<T>): T {
