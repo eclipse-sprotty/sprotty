@@ -74,7 +74,7 @@ export function getAbsoluteRouteBounds(model: Readonly<SRoutableElement>, route:
 }
 
 export function getRouteBounds(route: Point[]): Bounds {
-    const bounds = { x: NaN, y: NaN, width: 0, height: 0};
+    const bounds = { x: NaN, y: NaN, width: 0, height: 0 };
     for (const point of route) {
         if (isNaN(bounds.x)) {
             bounds.x = point.x;

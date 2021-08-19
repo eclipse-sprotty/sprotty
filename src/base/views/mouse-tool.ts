@@ -33,6 +33,11 @@ export class MouseTool implements IVNodePostprocessor {
 
     constructor(@multiInject(TYPES.MouseListener) @optional() protected mouseListeners: MouseListener[] = []) { }
 
+    delay = (ms: number) => new Promise(res => { setTimeout(res, ms); });
+    delayed = false;
+    delayedWEvents: WheelEvent[] = [];
+    delayedWModels: SModelRoot[] = [];
+
     register(mouseListener: MouseListener) {
         this.mouseListeners.push(mouseListener);
     }
@@ -79,6 +84,32 @@ export class MouseTool implements IVNodePostprocessor {
         }
     }
 
+    protected handleEvents<K extends keyof MouseListener>(methodName: K, models: SModelRoot[], events: MouseEvent[]) {
+        let elements: (SModelElement | undefined)[] = [];
+        this.focusOnMouseEvent(methodName, models[0]);
+        for (let i = 0; i < events.length; i++) {
+            elements.push(this.getTargetElement(models[i], events[i]));
+        }
+
+        if (elements.length > 0) {
+            const actions = this.mouseListeners
+                .map(listener => listener[methodName].apply(listener, [elements, events]))
+                .reduce((a, b) => a.concat(b));
+            if (actions.length > 0) {
+                events[0].preventDefault();
+                for (const actionOrPromise of actions) {
+                    if (isAction(actionOrPromise)) {
+                        this.actionDispatcher.dispatch(actionOrPromise);
+                    } else {
+                        actionOrPromise.then((action: Action) => {
+                            this.actionDispatcher.dispatch(action);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
     protected focusOnMouseEvent<K extends keyof MouseListener>(methodName: K, model: SModelRoot) {
         if (document) {
             const domElement = document.getElementById(this.domHelper.createUniqueDOMElementId(model));
@@ -116,7 +147,24 @@ export class MouseTool implements IVNodePostprocessor {
     }
 
     wheel(model: SModelRoot, event: WheelEvent) {
-        this.handleEvent('wheel', model, event);
+        // add a leading trailing debounce
+        if (!this.delayed) {
+            this.delayed = true;
+            this.handleEvent('wheel', model, event);
+            // execute all pendup zoomactions 5ms later
+            this.delay(5).then(() => {
+                this.delayed = false;
+                if (this.delayedWEvents.length > 0) {
+                    this.handleEvents('wheels', this.delayedWModels, this.delayedWEvents as any);
+                    this.delayedWEvents = [];
+                    this.delayedWModels = [];
+                }
+            });
+        } else {
+            // array of wheelEvents and corresponding models
+            this.delayedWEvents.push(event);
+            this.delayedWModels.push(model);
+        }
     }
 
     doubleClick(model: SModelRoot, event: MouseEvent) {
@@ -187,6 +235,10 @@ export class MouseListener {
     }
 
     wheel(target: SModelElement, event: WheelEvent): (Action | Promise<Action>)[] {
+        return [];
+    }
+
+    wheels(target: SModelElement[], events: WheelEvent[]): (Action | Promise<Action>)[] {
         return [];
     }
 

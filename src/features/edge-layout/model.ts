@@ -30,7 +30,7 @@ export function isEdgeLayoutable<T extends SModelElement>(element: T): element i
         && element.parent instanceof SRoutableElement
         && checkEdgeLayoutable(element)
         && isBoundsAware(element)
-        && element.hasFeature(edgeLayoutFeature);
+        && (element as SChildElement).hasFeature(edgeLayoutFeature);
 }
 
 function checkEdgeLayoutable(element:SChildElement): element is SChildElement& EdgeLayoutable{

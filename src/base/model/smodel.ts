@@ -187,8 +187,8 @@ export class SModelRoot extends SParentElement {
 
     constructor(index = new SModelIndex<SModelElement>()) {
         super();
-          // Override the index property from SModelElement, which has a getter, with a data property
-          Object.defineProperty(this, 'index', {
+        // Override the index property from SModelElement, which has a getter, with a data property
+        Object.defineProperty(this, 'index', {
             value: index,
             writable: false
         });

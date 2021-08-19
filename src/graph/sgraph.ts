@@ -15,8 +15,10 @@
  ********************************************************************************/
 
 import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
-import { Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
-    ModelLayoutOptions, SShapeElement, SShapeElementSchema } from '../features/bounds/model';
+import {
+    Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    ModelLayoutOptions, SShapeElement, SShapeElementSchema
+} from '../features/bounds/model';
 import { edgeLayoutFeature, EdgePlacement } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
 import { editFeature } from '../features/edit/model';
@@ -174,7 +176,7 @@ export class SCompartment extends SShapeElement implements Fadeable {
 
     children: SChildElement[];
     layout?: string;
-    layoutOptions?: {[key: string]: string | number | boolean};
+    layoutOptions?: { [key: string]: string | number | boolean };
     opacity = 1;
 
 }
