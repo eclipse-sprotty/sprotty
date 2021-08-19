@@ -61,25 +61,25 @@ export class ZoomMouseListener extends MouseListener {
         return [];
     }
 
-    wheels(targets: SModelElement[], events: WheelEvent[]):Action[] {
-        let vpx,vpy,vpz,newZoom,offsetFactor, i = 0;
+    wheels(targets: SModelElement[], events: WheelEvent[]): Action[] {
+        let vpx, vpy, vpz, newZoom, offsetFactor, i = 0;
         let viewport;
         let viewportOffset;
-        do{
+        do {
             viewport = findParentByFeature(targets[i], isViewport);
             i++;
-        }while(!viewport && i < events.length);
-        if(!viewport)return[];
+        } while (!viewport && i < events.length);
+        if (!viewport) return [];
         vpx = viewport.scroll.x;
         vpy = viewport.scroll.y;
         vpz = viewport.zoom;
-        for (i = 0; i < events.length; i++){
+        for (i = 0; i < events.length; i++) {
             newZoom = this.getZoomFactor(events[i]);
-            viewportOffset = this.getViewportOffset(targets[i].root,events[i]);
-            offsetFactor =  1.0 / (newZoom * vpz) - 1.0 / vpz;
+            viewportOffset = this.getViewportOffset(targets[i].root, events[i]);
+            offsetFactor = 1.0 / (newZoom * vpz) - 1.0 / vpz;
             vpx = vpx - offsetFactor * viewportOffset.x;
             vpy = vpy - offsetFactor * viewportOffset.y;
-            vpz = vpz * newZoom;            
+            vpz = vpz * newZoom;
         }
         const newViewport: Viewport = {
             scroll: {

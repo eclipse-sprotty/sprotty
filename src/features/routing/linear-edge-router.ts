@@ -296,8 +296,8 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
         }
         if (hasChanged) {
             // reset attached elements in index
-            edge.get_index.remove(edge);
-            edge.get_index.add(edge);
+            edge.index.remove(edge);
+            edge.index.add(edge);
             if (this.getSelfEdgeIndex(edge) > -1) {
                 edge.routingPoints = [];
                 this.cleanupRoutingPoints(edge, edge.routingPoints, true, true);

@@ -34,11 +34,11 @@ export abstract class SRoutableElement extends SChildElement {
     targetAnchorCorrection?: number;
 
     get source(): SConnectableElement | undefined {
-        return this.get_index.getById(this.sourceId) as SConnectableElement;
+        return this.index.getById(this.sourceId) as SConnectableElement;
     }
 
     get target(): SConnectableElement | undefined {
-        return this.get_index.getById(this.targetId) as SConnectableElement;
+        return this.index.getById(this.targetId) as SConnectableElement;
     }
 
     get bounds(): Bounds {
@@ -74,7 +74,7 @@ export function getAbsoluteRouteBounds(model: Readonly<SRoutableElement>, route:
 }
 
 export function getRouteBounds(route: Point[]): Bounds {
-    const bounds = { x: NaN, y: NaN, width: 0, height: 0};
+    const bounds = { x: NaN, y: NaN, width: 0, height: 0 };
     for (const point of route) {
         if (isNaN(bounds.x)) {
             bounds.x = point.x;
@@ -104,18 +104,16 @@ export function getRouteBounds(route: Point[]): Bounds {
  */
 export abstract class SConnectableElement extends SShapeElement implements Connectable {
 
-    // anchorKind?: string;
-
     strokeWidth: number = 0;
 
-    abstract get anchorKind():string|undefined;
+    abstract get anchorKind(): string | undefined;
 
     /**
      * The incoming edges of this connectable element. They are resolved by the index, which must
      * be an `SGraphIndex`.
      */
     get incomingEdges(): FluentIterable<SEdge> {
-        return (this.get_index as SGraphIndex).getIncomingEdges(this);
+        return (this.index as SGraphIndex).getIncomingEdges(this);
     }
 
     /**
@@ -123,7 +121,7 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
      * be an `SGraphIndex`.
      */
     get outgoingEdges(): FluentIterable<SEdge> {
-        return (this.get_index as SGraphIndex).getOutgoingEdges(this);
+        return (this.index as SGraphIndex).getOutgoingEdges(this);
     }
 
     canConnect(routable: SRoutableElement, role: 'source' | 'target') {
@@ -131,7 +129,7 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
     }
 }
 
-export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%';
+export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%';
 
 export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {
     static readonly DEFAULT_FEATURES = [selectFeature, moveFeature, hoverFeedbackFeature];
@@ -166,7 +164,7 @@ export class SDanglingAnchor extends SConnectableElement {
     original?: SModelElement;
     type = 'dangling-anchor';
 
-    get anchorKind(){
+    get anchorKind() {
         return undefined;
     }
 

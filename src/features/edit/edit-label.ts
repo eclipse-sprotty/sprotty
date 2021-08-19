@@ -108,7 +108,7 @@ export class EditLabelMouseListener extends MouseListener {
 export class EditLabelKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'F2')) {
-            const editableLabels = toArray(element.get_index.all()
+            const editableLabels = toArray(element.index.all()
                 .filter(e => isSelectable(e) && e.selected)).map(getEditableLabel)
                 .filter((e): e is EditableLabel & SModelElement => e !== undefined);
             if (editableLabels.length === 1) {

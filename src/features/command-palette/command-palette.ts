@@ -235,7 +235,7 @@ export class CommandPaletteKeyListener extends KeyListener {
         if (matchesKeystroke(event, 'Escape')) {
             return [new SetUIExtensionVisibilityAction(CommandPalette.ID, false, [])];
         } else if (CommandPalette.isInvokePaletteKey(event)) {
-            const selectedElements = toArray(element.get_index.all().filter(e => isSelectable(e) && e.selected).map(e => e.id));
+            const selectedElements = toArray(element.index.all().filter(e => isSelectable(e) && e.selected).map(e => e.id));
             return [new SetUIExtensionVisibilityAction(CommandPalette.ID, true, selectedElements)];
         }
         return [];

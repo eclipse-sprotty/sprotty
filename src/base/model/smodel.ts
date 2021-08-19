@@ -60,7 +60,7 @@ export class SModelElement {
         throw new Error("Element has no root");
     }
 
-    get get_index(): SModelIndex<SModelElement> {
+    get index(): SModelIndex<SModelElement> {
         return this.root.index;
     }
 
@@ -100,7 +100,7 @@ export class SParentElement extends SModelElement {
             children.splice(index, 0, child);
         }
         (child as {parent: SParentElement}).parent = this;
-        this.get_index.add(child);
+        this.index.add(child);
     }
 
     remove(child: SChildElement) {
@@ -111,7 +111,7 @@ export class SParentElement extends SModelElement {
         }
         children.splice(i, 1);
         // delete (child as {parent: SParentElement}).parent; // parent löschen fraglich ob es nicht klüger ist das objekt zu löschen...
-        this.get_index.remove(child);
+        this.index.remove(child);
     }
 
     removeAll(filter?: (e: SChildElement) => boolean) {
@@ -121,13 +121,13 @@ export class SParentElement extends SModelElement {
                 if (filter(children[i])) {
                     const child = children.splice(i, 1)[0];
                     // delete (child as {parent: SParentElement}).parent;
-                    this.get_index.remove(child);
+                    this.index.remove(child);
                 }
             }
         } else {
             children.forEach(child => {
                 // delete (child as {parent: SParentElement}).parent;
-                this.get_index.remove(child);
+                this.index.remove(child);
             });
             children.splice(0, children.length);
         }
@@ -184,10 +184,14 @@ export class SChildElement extends SParentElement {
  * Base class for the root element of the diagram model tree.
  */
 export class SModelRoot extends SParentElement {
-    readonly index: SModelIndex<SModelElement>;
+    readonly my_index: SModelIndex<SModelElement>;
     revision?: number;
 
     canvasBounds: Bounds = EMPTY_BOUNDS;
+
+    get index(): SModelIndex<SModelElement> {
+        return this.my_index;
+    }
 
     constructor(index = new SModelIndex<SModelElement>()) {
         super();

@@ -58,7 +58,7 @@ export function copyClassesFromElement(element: HTMLElement, target: VNode) {
 }
 
 export function mergeStyle(vnode: VNode, style: any) {
-    getData(vnode).style = {...(getData(vnode).style || {}), ...style};
+    getData(vnode).style = { ...(getData(vnode).style || {}), ...style };
 }
 
 export function on(vnode: VNode, event: string, listener: (model: SModelElement, event: Event) => void, element: SModelElement) {
@@ -69,7 +69,7 @@ export function on(vnode: VNode, event: string, listener: (model: SModelElement,
     (val as any)[event] = [listener, element];
 }
 
-export function getAttrs(vnode: VNode):Attrs {
+export function getAttrs(vnode: VNode): Attrs {
     const data = getData(vnode);
     if (!data.attrs)
         data.attrs = {};

@@ -15,8 +15,10 @@
  ********************************************************************************/
 
 import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
-import { Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
-    ModelLayoutOptions, SShapeElement, SShapeElementSchema } from '../features/bounds/model';
+import {
+    Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    ModelLayoutOptions, SShapeElement, SShapeElementSchema
+} from '../features/bounds/model';
 import { edgeLayoutFeature, EdgePlacement } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
 import { editFeature } from '../features/edit/model';
@@ -77,7 +79,7 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    get anchorKind():string|undefined{
+    get anchorKind(): string | undefined {
         return undefined;
     }
 
@@ -104,7 +106,7 @@ export class SPort extends SConnectableElement implements Selectable, Fadeable, 
     static readonly DEFAULT_FEATURES = [connectableFeature, selectFeature, boundsFeature, fadeFeature,
         hoverFeedbackFeature];
 
-    get anchorKind():string|undefined{
+    get anchorKind(): string | undefined {
         return undefined;
     }
 
@@ -182,7 +184,7 @@ export class SCompartment extends SShapeElement implements Fadeable {
 
     children: SChildElement[];
     layout?: string;
-    layoutOptions?: {[key: string]: string | number | boolean};
+    layoutOptions?: { [key: string]: string | number | boolean };
     opacity = 1;
 
 }
