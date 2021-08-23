@@ -44,21 +44,7 @@ export function getZoom(label: SModelElement) {
 export class ZoomMouseListener extends MouseListener {
 
     wheel(target: SModelElement, event: WheelEvent): Action[] {
-        const viewport = findParentByFeature(target, isViewport);
-        if (viewport) {
-            const newZoom = this.getZoomFactor(event);
-            const viewportOffset = this.getViewportOffset(target.root, event);
-            const offsetFactor = 1.0 / (newZoom * viewport.zoom) - 1.0 / viewport.zoom;
-            const newViewport: Viewport = {
-                scroll: {
-                    x: viewport.scroll.x - offsetFactor * viewportOffset.x,
-                    y: viewport.scroll.y - offsetFactor * viewportOffset.y
-                },
-                zoom: viewport.zoom * newZoom
-            };
-            return [new SetViewportAction(viewport.id, newViewport, false)];
-        }
-        return [];
+        return this.wheels([target], [event]);
     }
 
     wheels(targets: SModelElement[], events: WheelEvent[]): Action[] {
