@@ -111,7 +111,7 @@
     "configs/.eslintrc.js",
     "configs/webpack.config.js",
     "src/**/*.spec.?(ts|tsx)",
-    "src/util/test-helper.ts",
+    "src/utils/test-helper.ts",
     "examples/**/*"
   ]
 }
