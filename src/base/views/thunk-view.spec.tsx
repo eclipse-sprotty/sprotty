@@ -15,14 +15,15 @@
  ********************************************************************************/
 
  /** @jsx svg */
-import { svg } from 'snabbdom-jsx';
+import { svg } from '../../lib/jsx';
 
-import "mocha";
+import { describe, it } from 'mocha';
 import { expect } from "chai";
 import { init } from "snabbdom";
 import { SModelElement } from "../model/smodel";
 import { ModelRenderer } from './viewer';
 import { ThunkView } from './thunk-view';
+import setup from '../../utils/test-helper';
 
 const toHTML = require('snabbdom-to-html');
 
@@ -30,13 +31,7 @@ const toHTML = require('snabbdom-to-html');
 describe('ThunkView', () => {
 
     before(function () {
-        // tslint:disable-next-line:no-invalid-this
-        this.jsdom = require('jsdom-global')();
-    });
-
-    after(function () {
-        // tslint:disable-next-line:no-invalid-this
-        this.jsdom();
+        setup();
     });
 
     let renderCount = 0;

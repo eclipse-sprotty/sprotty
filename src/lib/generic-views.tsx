@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
+import { svg } from './jsx';
 import { injectable } from "inversify";
-import { svg } from 'snabbdom-jsx';
-import virtualize from "snabbdom-virtualize/strings";
-import { VNode } from "snabbdom/vnode";
+import virtualize from "./virtualize";
+import { VNode } from "snabbdom";
 import { IView, RenderingContext } from "../base/views/view";
 import { setNamespace, setAttr } from "../base/views/vnode-utils";
 import { ShapeView } from "../features/bounds/views";
@@ -31,6 +31,7 @@ export class PreRenderedView extends ShapeView {
             return undefined;
         }
         const node = virtualize(model.code);
+        if (node === null) return undefined;
         this.correctNamespace(node);
         return node;
     }
@@ -39,7 +40,6 @@ export class PreRenderedView extends ShapeView {
         if (node.sel === 'svg' || node.sel === 'g')
             setNamespace(node, 'http://www.w3.org/2000/svg');
     }
-
 }
 
 /**
@@ -48,8 +48,9 @@ export class PreRenderedView extends ShapeView {
  */
 @injectable()
 export class ForeignObjectView implements IView {
-    render(model: ForeignObjectElement, context: RenderingContext): VNode {
+    render(model: ForeignObjectElement, context: RenderingContext): VNode | undefined{
         const foreignObjectContents = virtualize(model.code);
+        if (foreignObjectContents === null) return undefined;
         const node = <g>
             <foreignObject requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility'
                 height={model.bounds.height} width={model.bounds.width} x={0} y={0}>
