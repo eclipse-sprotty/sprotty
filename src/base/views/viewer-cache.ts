@@ -20,6 +20,7 @@ import { TYPES } from "../types";
 import { Action } from "../actions/action";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer } from "./viewer";
+import { SetViewportAction } from "../../features/viewport/viewport";
 
 /**
  * Updating the view is rather expensive, and it doesn't make sense to calculate
@@ -36,7 +37,7 @@ export class ViewerCache implements IViewer {
     protected cachedModel?: SModelRoot;
 
     update(model: SModelRoot, cause?: Action): void {
-        if (cause !== undefined) {
+        if (cause !== undefined && cause.kind !== SetViewportAction.KIND) {
             // Forward the update immediately in order to pass the cause action
             this.delegate.update(model, cause);
             this.cachedModel = undefined;
