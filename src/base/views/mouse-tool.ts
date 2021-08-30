@@ -63,7 +63,25 @@ export class MouseTool implements IVNodePostprocessor {
     }
 
     protected handleEvent<K extends keyof MouseListener>(methodName: K, model: SModelRoot, event: MouseEvent) {
-        this.handleEvents(methodName, [model], [event]);
+        this.focusOnMouseEvent(methodName, model);
+        const element = this.getTargetElement(model, event);
+        if (!element)
+            return;
+        const actions = this.mouseListeners
+            .map(listener => listener[methodName].apply(listener, [element, event]))
+            .reduce((a, b) => a.concat(b));
+        if (actions.length > 0) {
+            event.preventDefault();
+            for (const actionOrPromise of actions) {
+                if (isAction(actionOrPromise)) {
+                    this.actionDispatcher.dispatch(actionOrPromise);
+                } else {
+                    actionOrPromise.then((action: Action) => {
+                        this.actionDispatcher.dispatch(action);
+                    });
+                }
+            }
+        }
     }
 
     protected handleEvents<K extends keyof MouseListener>(methodName: K, models: SModelRoot[], events: MouseEvent[]) {
@@ -132,7 +150,7 @@ export class MouseTool implements IVNodePostprocessor {
         // add a leading trailing debounce
         if (!this.delayed) {
             this.delayed = true;
-            this.handleEvents('wheels', [model], [event]);
+            this.handleEvent('wheel', model, event);
             // execute all pendup zoomactions 5ms later
             this.delay(5).then(() => {
                 this.delayed = false;
@@ -220,12 +238,8 @@ export class MouseListener {
         return [];
     }
 
-    wheels(targets: SModelElement[], events: WheelEvent[]): (Action | Promise<Action>)[] {
-        let ret: (Action | Promise<Action>)[] = [];
-        for (let i = 0; i < targets.length && i < events.length; i++){
-            ret.concat(this.wheel(targets[i], events[i]));
-        }
-        return ret;
+    wheels(target: SModelElement[], events: WheelEvent[]): (Action | Promise<Action>)[] {
+        return [];
     }
 
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
