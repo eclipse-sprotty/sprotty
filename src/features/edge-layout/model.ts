@@ -33,7 +33,7 @@ export function isEdgeLayoutable<T extends SModelElement>(element: T): element i
         && element.hasFeature(edgeLayoutFeature);
 }
 
-function checkEdgeLayoutable(element:SChildElement): element is SChildElement& EdgeLayoutable{
+function checkEdgeLayoutable(element: SChildElement): element is SChildElement& EdgeLayoutable{
     return 'edgePlacement' in element;
 }
 

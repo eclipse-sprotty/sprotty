@@ -215,10 +215,10 @@ export function containsEdgeRoutes(args?: object): args is object & EdgeRoutingC
  */
 export class EdgeRouting {
 
-    protected _routes = new Map<string, RoutedPoint[]>();
+    protected routesMap = new Map<string, RoutedPoint[]>();
 
     set(routableId: string, route: RoutedPoint[]): void {
-        this._routes.set(routableId, route);
+        this.routesMap.set(routableId, route);
     }
 
     setAll(otherRoutes: EdgeRouting): void {
@@ -226,11 +226,11 @@ export class EdgeRouting {
     }
 
     get(routableId: string): RoutedPoint[] | undefined {
-        return this._routes.get(routableId);
+        return this.routesMap.get(routableId);
     }
 
     get routes() {
-        return this._routes;
+        return this.routesMap;
     }
 
 }
