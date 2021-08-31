@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,7 @@ export interface MatchResult {
 }
 
 export function forEachMatch(matchResult: MatchResult, callback: (id: string, match: Match) => void): void {
-    for (const id in matchResult) {
-        if (matchResult.hasOwnProperty(id))
-            callback(id, matchResult[id]);
-    }
+    Object.keys(matchResult).forEach(id => callback(id, matchResult[id]));
 }
 
 export class ModelMatcher {

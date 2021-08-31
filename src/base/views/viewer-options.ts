@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
  ********************************************************************************/
 
 import { Container, interfaces } from "inversify";
+import { safeAssign } from "../../utils/object";
 import { TYPES } from "../types";
 
 export interface ViewerOptions {
@@ -66,9 +67,6 @@ export function configureViewerOptions(context: { bind: interfaces.Bind, isBound
  */
 export function overrideViewerOptions(container: Container, options: Partial<ViewerOptions>): ViewerOptions {
     const opt = container.get<ViewerOptions>(TYPES.ViewerOptions);
-    for (const p in options) {
-        if (options.hasOwnProperty(p))
-            (opt as any)[p] = (options as any)[p];
-    }
+    safeAssign(opt, options);
     return opt;
 }

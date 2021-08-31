@@ -18,6 +18,7 @@ import { matchesKeystroke } from "../../utils/keyboard";
 import { Action } from "../../base/actions/action";
 import { KeyListener } from "../../base/views/key-tool";
 import { SModelElement } from "../../base/model/smodel";
+import { isMac } from "../../utils/browser";
 
 export class UndoAction implements Action {
     static readonly KIND = 'undo';
@@ -33,7 +34,7 @@ export class UndoRedoKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
             return [new UndoAction];
-        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift'))
+        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))
             return [new RedoAction];
         return [];
     }

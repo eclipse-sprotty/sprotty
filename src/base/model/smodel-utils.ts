@@ -17,7 +17,7 @@
 import { interfaces } from "inversify";
 import { TYPES } from "../types";
 import { Point, Bounds } from "../../utils/geometry";
-import { SChildElement, SModelElement, SModelElementSchema } from "./smodel";
+import { SChildElement, SModelElement, SModelElementSchema, SModelRoot } from "./smodel";
 import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
 
 /**
@@ -148,4 +148,13 @@ export function translateBounds(bounds: Bounds, source: SModelElement, target: S
         width: lowerRight.x - upperLeft.x,
         height: lowerRight.y - upperLeft.y
     };
+}
+
+/**
+ * Tests if the given model contains an id of then given element or one of its descendants.
+ */
+export function containsSome(root: SModelRoot, element: SChildElement): boolean {
+    const test = (el: SChildElement) => root.index.getById(el.id) !== undefined;
+    const find = (elements: readonly SChildElement[]): boolean => elements.some(el => test(el) || find(el.children));
+    return find([element]);
 }

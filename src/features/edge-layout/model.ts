@@ -28,9 +28,13 @@ export interface EdgeLayoutable extends SModelExtension {
 export function isEdgeLayoutable<T extends SModelElement>(element: T): element is T & SChildElement & BoundsAware & EdgeLayoutable {
     return element instanceof SChildElement
         && element.parent instanceof SRoutableElement
-        && 'edgePlacement' in element
+        && checkEdgeLayoutable(element)
         && isBoundsAware(element)
         && element.hasFeature(edgeLayoutFeature);
+}
+
+function checkEdgeLayoutable(element:SChildElement): element is SChildElement& EdgeLayoutable{
+    return 'edgePlacement' in element;
 }
 
 export type EdgeSide = 'left' | 'right' | 'top' | 'bottom' | 'on';

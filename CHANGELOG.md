@@ -6,12 +6,49 @@ This change log covers only the client part of Sprotty. See also the change logs
 
 New features:
  * Line jumps to visually clarify intersecting lines ([#226](https://github.com/eclipse/sprotty/pull/226))
+
  * `TYPES.IEdgeRoutePostprocessor` can be registered to analyse and/or change computed routes ([#226](https://github.com/eclipse/sprotty/pull/226))
+
  * `EdgeRouterRegistry` can route all edges contained in a parent element at once. These pre-computed routes are then usually added to the `args` that are passed on to the views. This allows `IView` and `IEdgeRoutePostprocessor` implementations to consider all computed routes before the routed edges have been rendered. ([#226](https://github.com/eclipse/sprotty/pull/226))
 
 Breaking API changes:
  * It is recommended that implementations of the `IView` for `SGraph` instances compute the routes of its children with `edgeRouterRegistry.routeAllChildren(model)` and pass on the routes as arguments to its child views. See implementation of `SGraphView` ([#226](https://github.com/eclipse/sprotty/pull/226))
+
  * It is recommended that all implementations of `IView` pass the received `args` on to its child views via `renderChildren()` so that, e.g., pre-computed routes are available to them by default ([#226](https://github.com/eclipse/sprotty/pull/226))
+Breaking API changes:
+
+* Upgrade to snabbdom 3.0.3. The imports of snabbdom functions have changed. The main snabbdom package exports all of the public API.This means consumers of the snabbdom package need to update their imports.
+
+before
+
+```ts
+import { h } from 'snabbdom/h'
+import { VNode } from 'snabbdom/vnode'
+```
+
+after
+
+```ts
+import { h, VNode } from 'snabbdom'
+```
+
+* snabbdom now supports jsx, so snabbdom-jsx has been removed. On the other hand, to maintain the ability to treat attribute prefixes as data keys, it is used via a wrapper called lib/jsx.
+
+before
+
+```ts
+/** @jsx svg */
+import { svg } from 'snabbdom-jsx';
+```
+
+after
+
+```ts
+/** @jsx svg */
+import { svg } from 'sprotty';
+```
+
+* The `on` function API of `vnode-utils` has been changed due to the API change of snabbdom's event listner. Listners must `bind` elements. (see https://github.com/snabbdom/snabbdom/issues/802)
 
 ### v0.9.0 (Aug. 2020)
 

@@ -192,6 +192,7 @@ export * from "./graph/views";
 export * from "./lib/modules";
 export * from "./lib/generic-views";
 export * from "./lib/html-views";
+export * from "./lib/jsx";
 export * from "./lib/model";
 export * from "./lib/svg-views";
 

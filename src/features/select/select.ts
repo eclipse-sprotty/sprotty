@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable, optional } from 'inversify';
-import { VNode } from "snabbdom/vnode";
+import { VNode } from "snabbdom";
 import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
 import { Command, CommandExecutionContext } from "../../base/commands/command";
 import { ModelRequestCommand } from '../../base/commands/request-command';
@@ -164,13 +164,11 @@ export class SelectAllCommand extends Command {
 
     undo(context: CommandExecutionContext): SModelRoot {
         const index = context.root.index;
-        for (const id in this.previousSelection) {
-            if (this.previousSelection.hasOwnProperty(id)) {
-                const element = index.getById(id);
-                if (element !== undefined && isSelectable(element))
-                    element.selected = this.previousSelection[id];
-            }
-        }
+        Object.keys(this.previousSelection).forEach(id => {
+            const element = index.getById(id);
+            if (element !== undefined && isSelectable(element))
+                element.selected = this.previousSelection[id];
+        });
         return context.root;
     }
 
