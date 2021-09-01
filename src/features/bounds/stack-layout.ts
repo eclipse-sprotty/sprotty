@@ -14,13 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { injectable } from 'inversify';
 import { Bounds, Point, isValidDimension } from '../../utils/geometry';
 import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { LayoutContainer, isLayoutableChild } from './model';
-import { StatefulLayouter } from './layout';
+import { StatefulLayouter } from './layout';
 
 export interface StackLayoutOptions extends AbstractLayoutOptions {
     paddingFactor: number
@@ -28,6 +29,7 @@ export interface StackLayoutOptions extends AbstractLayoutOptions {
     hAlign: HAlignment
 }
 
+@injectable()
 export class StackLayouter extends AbstractLayout<StackLayoutOptions> {
 
     static KIND = 'stack';

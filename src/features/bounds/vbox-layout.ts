@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { injectable } from 'inversify';
 import { Bounds, Point, isValidDimension } from '../../utils/geometry';
 import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
@@ -30,6 +31,7 @@ export interface VBoxLayoutOptions extends AbstractLayoutOptions {
 /**
  * Layouts children of a container in vertical (top->bottom) direction.
  */
+@injectable()
 export class VBoxLayouter extends AbstractLayout<VBoxLayoutOptions> {
 
     static KIND = 'vbox';

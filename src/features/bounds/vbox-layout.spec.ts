@@ -24,6 +24,10 @@ import { BoundsData } from './hidden-bounds-updater';
 import { EMPTY_DIMENSION } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
 import { Dimension } from '../../utils/geometry';
+import { Container } from 'inversify';
+import boundsModule from './di.config';
+import { TYPES } from '../../base/types';
+import defaultModule from '../../base/di.config';
 
 describe('VBoxLayouter', () => {
 
@@ -73,7 +77,10 @@ describe('VBoxLayouter', () => {
     function layout(model: SNode) {
         map.clear();
         addToMap(model);
-        const layouter = new StatefulLayouter(map, new LayoutRegistry(), log);
+        const container = new Container();
+        container.load(defaultModule, boundsModule);
+        const layoutRegistry = container.get<LayoutRegistry>(TYPES.LayoutRegistry);
+        const layouter = new StatefulLayouter(map, layoutRegistry, log);
         layouter.layout();
     }
 
