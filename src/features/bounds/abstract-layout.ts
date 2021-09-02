@@ -20,7 +20,9 @@ import { isLayoutContainer, isLayoutableChild, LayoutContainer, isBoundsAware } 
 import { ILayout, StatefulLayouter } from './layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
+import { injectable } from "inversify";
 
+@injectable()
 export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements ILayout {
 
     layout(container: SParentElement & LayoutContainer,

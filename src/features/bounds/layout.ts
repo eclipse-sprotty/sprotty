@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
+import { inject, injectable, interfaces, multiInject, optional } from "inversify";
 import { TYPES } from "../../base/types";
 import { ILogger } from '../../utils/logging';
 import { InstanceRegistry } from "../../utils/registry";
@@ -22,17 +22,28 @@ import { Bounds, EMPTY_BOUNDS } from "../../utils/geometry";
 import { SParentElement, SModelElement } from "../../base/model/smodel";
 import { isLayoutContainer, LayoutContainer } from "./model";
 import { BoundsData } from "./hidden-bounds-updater";
-import { VBoxLayouter } from "./vbox-layout";
-import { HBoxLayouter } from "./hbox-layout";
-import { StackLayouter } from "./stack-layout";
+import { isInjectable } from "../../utils/inversify";
 
+@injectable()
 export class LayoutRegistry extends InstanceRegistry<ILayout> {
-    constructor() {
+
+    @inject(TYPES.ILogger) logger: ILogger;
+
+    constructor(@multiInject(TYPES.LayoutRegistration) @optional() layouts: (LayoutRegistration)[] = []) {
         super();
-        this.register(VBoxLayouter.KIND, new VBoxLayouter());
-        this.register(HBoxLayouter.KIND, new HBoxLayouter());
-        this.register(StackLayouter.KIND, new StackLayouter());
+        layouts.forEach(layout => {
+            if (this.hasKey(layout.layoutKind)) {
+                this.logger.warn('Layout kind is already defined: ', layout.layoutKind);
+            } else {
+                this.register(layout.layoutKind, layout.factory());
+            }
+        });
     }
+}
+
+export interface LayoutRegistration {
+    layoutKind: string;
+    factory: () => ILayout;
 }
 
 @injectable()
@@ -105,4 +116,22 @@ export class StatefulLayouter {
 export interface ILayout {
     layout(container: SParentElement & LayoutContainer,
            layouter: StatefulLayouter): void
+}
+
+
+export function configureLayout(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+    kind: string, constr: interfaces.ServiceIdentifier<ILayout>) {
+
+    if (typeof constr === 'function') {
+        if (!isInjectable(constr)) {
+            throw new Error(`Layouts be @injectable: ${constr.name}`);
+        }
+        if (!context.isBound(constr)) {
+            context.bind(constr).toSelf();
+        }
+    }
+    context.bind(TYPES.LayoutRegistration).toDynamicValue(ctx => ({
+        layoutKind: kind,
+        factory: () => ctx.container.get(constr)
+    }));
 }

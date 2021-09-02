@@ -2,6 +2,43 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-layout](https://github.com/eclipse/sprotty-layout/blob/master/CHANGELOG.md).
 
+### v0.10.0 (upcoming)
+
+Breaking API changes:
+
+* Upgrade to snabbdom 3.0.3. The imports of snabbdom functions have changed. The main snabbdom package exports all of the public API.This means consumers of the snabbdom package need to update their imports.
+
+before
+
+```ts
+import { h } from 'snabbdom/h'
+import { VNode } from 'snabbdom/vnode'
+```
+
+after
+
+```ts
+import { h, VNode } from 'snabbdom'
+```
+
+* snabbdom now supports jsx, so snabbdom-jsx has been removed. On the other hand, to maintain the ability to treat attribute prefixes as data keys, it is used via a wrapper called lib/jsx.
+
+before
+
+```ts
+/** @jsx svg */
+import { svg } from 'snabbdom-jsx';
+```
+
+after
+
+```ts
+/** @jsx svg */
+import { svg } from 'sprotty';
+```
+
+* The `on` function API of `vnode-utils` has been changed due to the API change of snabbdom's event listner. Listners must `bind` elements. (see https://github.com/snabbdom/snabbdom/issues/802)
+
 ### v0.9.0 (Aug. 2020)
 
 New features:

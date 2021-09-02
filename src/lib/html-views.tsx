@@ -15,9 +15,9 @@
  ********************************************************************************/
 
  /** @jsx html */
-import { html } from 'snabbdom-jsx';
+import { html } from './jsx';
 
-import { VNode } from "snabbdom/vnode";
+import { VNode } from "snabbdom";
 import { IView, RenderingContext } from "../base/views/view";
 import { setClass } from "../base/views/vnode-utils";
 import { HtmlRoot } from "./model";

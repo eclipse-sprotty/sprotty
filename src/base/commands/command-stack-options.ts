@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
  ********************************************************************************/
 
 import { Container } from "inversify";
+import { safeAssign } from "../../utils/object";
 import { TYPES } from '../types';
 
 /**
@@ -38,9 +39,6 @@ export interface CommandStackOptions {
 
 export function overrideCommandStackOptions(container: Container, options: Partial<CommandStackOptions>): CommandStackOptions {
     const defaultOptions = container.get<CommandStackOptions>(TYPES.CommandStackOptions);
-    for (const p in options) {
-        if (options.hasOwnProperty(p))
-            (defaultOptions as any)[p] = (options as any)[p];
-    }
+    safeAssign(defaultOptions, options);
     return defaultOptions;
 }
