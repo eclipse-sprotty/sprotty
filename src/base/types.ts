@@ -45,6 +45,7 @@ export const TYPES = {
     HiddenVNodePostprocessor: Symbol('HiddenVNodeDecorator'),
     HoverState: Symbol('HoverState'),
     KeyListener: Symbol('KeyListener'),
+    LayoutRegistration: Symbol('LayoutRegistration'),
     LayoutRegistry: Symbol('LayoutRegistry'),
     Layouter: Symbol('Layouter'),
     LogLevel: Symbol('LogLevel'),

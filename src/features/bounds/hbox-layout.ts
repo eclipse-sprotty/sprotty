@@ -14,13 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { injectable } from 'inversify';
 import { Bounds, Point, isValidDimension } from '../../utils/geometry';
 import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { LayoutContainer, isLayoutableChild } from './model';
-import { StatefulLayouter } from './layout';
+import { StatefulLayouter } from './layout';
 
 export interface HBoxLayoutOptions extends AbstractLayoutOptions {
     hGap: number
@@ -30,6 +31,7 @@ export interface HBoxLayoutOptions extends AbstractLayoutOptions {
 /**
  * Layouts children of a container in horizontal (left->right) direction.
  */
+@injectable()
 export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
 
     static KIND = 'hbox';
