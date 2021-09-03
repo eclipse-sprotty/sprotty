@@ -16,17 +16,17 @@
 
 /** @jsx svg */
 import { inject, injectable } from 'inversify';
-import { svg } from '../lib/jsx';
 import { VNode } from "snabbdom";
 import { getSubType } from "../base/model/smodel-utils";
-import { IView, RenderingContext } from "../base/views/view";
+import { IViewArgs, IView, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
 import { ShapeView } from '../features/bounds/views';
 import { BY_X_THEN_Y, IntersectingRoutedPoint, Intersection, isIntersectingRoutedPoint } from '../features/edge-intersection/intersection-finder';
 import { isEdgeLayoutable } from '../features/edge-layout/model';
-import { SRoutingHandle, SRoutableElement } from '../features/routing/model';
+import { SRoutableElement, SRoutingHandle } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
 import { RoutableView } from '../features/routing/views';
+import { svg } from '../lib/jsx';
 import { Point, PointToPointLine, shiftTowards } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
 
@@ -34,16 +34,16 @@ import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.
  */
 @injectable()
-export class SGraphView implements IView {
+export class SGraphView<IRenderingArgs> implements IView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(model: Readonly<SGraph>, context: RenderingContext, args?: object): VNode {
+    render(model: Readonly<SGraph>, context: RenderingContext, args?: IRenderingArgs): VNode {
         const edgeRouting = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg class-sprotty-graph={true}>
             <g transform={transform}>
-                {context.renderChildren(model, { ...args, edgeRouting })}
+                {context.renderChildren(model, { edgeRouting })}
             </g>
         </svg>;
     }
@@ -55,7 +55,7 @@ export class PolylineEdgeView extends RoutableView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(edge: Readonly<SEdge>, context: RenderingContext, args?: object): VNode | undefined {
+    render(edge: Readonly<SEdge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const route = this.edgeRouterRegistry.route(edge, args);
         if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
@@ -66,17 +66,17 @@ export class PolylineEdgeView extends RoutableView {
             }
             // The children of an edge are not necessarily inside the bounding box of the route,
             // so we need to render a group to ensure the children have a chance to be rendered.
-            return <g>{context.renderChildren(edge, { ...args, route })}</g>;
+            return <g>{context.renderChildren(edge, { route })}</g>;
         }
 
         return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
             {this.renderLine(edge, route, context, args)}
             {this.renderAdditionals(edge, route, context)}
-            {context.renderChildren(edge, { ...args, route })}
+            {context.renderChildren(edge, { route })}
         </g>;
     }
 
-    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: object): VNode {
+    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
         const firstPoint = segments[0];
         let path = `M ${firstPoint.x},${firstPoint.y}`;
         for (let i = 1; i < segments.length; i++) {
@@ -113,7 +113,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     protected skipOffsetBefore = 3;
     protected skipOffsetAfter = 2;
 
-    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: object): VNode {
+    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
         let path = '';
         for (let i = 0; i < segments.length; i++) {
             const p = segments[i];
@@ -130,7 +130,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return <path d={path} />;
     }
 
-    protected intersectionPath(edge: SEdge, segments: Point[], intersectingPoint: IntersectingRoutedPoint, args?: object): string {
+    protected intersectionPath(edge: SEdge, segments: Point[], intersectingPoint: IntersectingRoutedPoint, args?: IViewArgs): string {
         let path = '';
         for (const intersection of intersectingPoint.intersections.sort(BY_X_THEN_Y)) {
             const otherLineSegment = this.getOtherLineSegment(edge, intersection, args);
@@ -148,7 +148,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return path;
     }
 
-    protected getOtherLineSegment(currentEdge: SEdge, intersection: Intersection, args?: object): PointToPointLine | undefined {
+    protected getOtherLineSegment(currentEdge: SEdge, intersection: Intersection, args?: IViewArgs): PointToPointLine | undefined {
         const otherEdgeId = intersection.routable1 === currentEdge.id ? intersection.routable2 : intersection.routable1;
         const otherEdge = currentEdge.index.getById(otherEdgeId);
         if (!(otherEdge instanceof SRoutableElement)) {
@@ -157,7 +157,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return this.getLineSegment(otherEdge, intersection, args);
     }
 
-    protected getLineSegment(edge: SRoutableElement, intersection: Intersection, args?: object, segments?: Point[]): PointToPointLine {
+    protected getLineSegment(edge: SRoutableElement, intersection: Intersection, args?: IViewArgs, segments?: Point[]): PointToPointLine {
         const route = segments ? segments : this.edgeRouterRegistry.route(edge, args);
         const index = intersection.routable1 === edge.id ? intersection.segmentIndex1 : intersection.segmentIndex2;
         return new PointToPointLine(route[index], route[index + 1]);
@@ -186,6 +186,34 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     }
 
 }
+
+/**
+ * A `PolylineEdgeView` that renders gaps on intersections.
+ *
+ * In order to find intersections, `IntersectionFinder` needs to be configured as a `TYPES.IEdgeRoutePostprocessor`
+ * so that that intersections are declared as `IntersectingRoutedPoint` in the computed routes.
+ *
+ * @see IntersectionFinder
+ * @see IntersectingRoutedPoint
+ * @see EdgeRouterRegistry
+ */
+ @injectable()
+ export class PolylineEdgeViewWithGapsOnIntersections extends JumpingPolylineEdgeView {
+
+    protected skipOffsetBefore = 3;
+    protected skipOffsetAfter = 3;
+
+    protected createJumpPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+        return "";
+    }
+
+    protected createSkipPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+        const anchorBefore = shiftTowards(intersectionPoint, lineSegment.p1, this.skipOffsetBefore);
+        const anchorAfter = shiftTowards(intersectionPoint, lineSegment.p2, this.skipOffsetAfter);
+        return ` L ${anchorBefore.x},${anchorBefore.y} M ${anchorAfter.x},${anchorAfter.y}`;
+    }
+
+ }
 
 @injectable()
 export class SRoutingHandleView implements IView {
@@ -235,10 +263,10 @@ export class SLabelView extends ShapeView {
 
 @injectable()
 export class SCompartmentView implements IView {
-    render(compartment: Readonly<SCompartment>, context: RenderingContext, args?: object): VNode | undefined {
+    render(compartment: Readonly<SCompartment>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const translate = `translate(${compartment.bounds.x}, ${compartment.bounds.y})`;
         const vnode = <g transform={translate} class-sprotty-comp="{true}">
-            {context.renderChildren(compartment, args)}
+            {context.renderChildren(compartment)}
         </g>;
         const subType = getSubType(compartment);
         if (subType)

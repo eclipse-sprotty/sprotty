@@ -16,7 +16,7 @@
 
 import 'mocha';
 import { expect } from "chai";
-import { RenderingContext } from '../../base/views/view';
+import { IRenderingArgs, RenderingContext } from '../../base/views/view';
 import { ViewportRootElement } from '../viewport/viewport-root';
 import { SShapeElement } from './model';
 import { ShapeView } from './views';
@@ -28,7 +28,7 @@ describe('ShapeView.isVisible', () => {
     }
 
     class TestView extends ShapeView {
-        render(model: Readonly<SShapeElement>, context: RenderingContext, args?: object): VNode | undefined {
+        render(model: Readonly<SShapeElement>, context: RenderingContext, args?: IRenderingArgs): VNode | undefined {
             return undefined;
         }
     }

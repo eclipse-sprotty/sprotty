@@ -17,6 +17,7 @@
 import { injectable, multiInject, optional } from "inversify";
 import { SParentElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
+import { findArgValue, IViewArgs } from "../../base/views/view";
 import { Point } from "../../utils/geometry";
 import { InstanceRegistry } from "../../utils/registry";
 import { ResolvedHandleMove } from "../move/move";
@@ -187,9 +188,10 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
      * @param args arguments that may contain an `EdgeRouting` already
      * @returns the route of the specified `edge`
      */
-    route(edge: Readonly<SRoutableElement>, args?: object): RoutedPoint[] {
-        if (containsEdgeRoutes(args)) {
-            const route = args.edgeRouting.get(edge.id);
+    route(edge: Readonly<SRoutableElement>, args?: IViewArgs): RoutedPoint[] {
+        const edgeRouting = findArgValue<EdgeRouting>(args, 'edgeRouting');
+        if (edgeRouting) {
+            const route = edgeRouting.get(edge.id);
             if (route) {
                 return route;
             }
@@ -203,11 +205,6 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
 /** Any object that contains a routing, such as an argument object passed to views for rendering. */
 export interface EdgeRoutingContainer {
     edgeRouting: EdgeRouting;
-}
-
-/** Specifies whether `args` contains edge routes. */
-export function containsEdgeRoutes(args?: object): args is object & EdgeRoutingContainer {
-    return args !== undefined && 'edgeRouting' in args;
 }
 
 /**

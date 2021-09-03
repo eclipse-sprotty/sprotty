@@ -18,7 +18,7 @@
 import { svg } from './jsx';
 
 import { VNode } from "snabbdom";
-import { IView, RenderingContext } from "../base/views/view";
+import { IView, IViewArgs, RenderingContext } from "../base/views/view";
 import { SNode, SPort } from "../graph/sgraph";
 import { ViewportRootElement } from "../features/viewport/viewport-root";
 import { SShapeElement } from '../features/bounds/model';
@@ -31,7 +31,7 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class SvgViewportView implements IView {
-    render(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: object): VNode {
+    render(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg>
             <g transform={transform}>
@@ -43,7 +43,7 @@ export class SvgViewportView implements IView {
 
 @injectable()
 export class CircularNodeView extends ShapeView {
-    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: object): VNode | undefined {
+    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
@@ -64,7 +64,7 @@ export class CircularNodeView extends ShapeView {
 
 @injectable()
 export class RectangularNodeView extends ShapeView {
-    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: object): VNode | undefined {
+    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
@@ -79,7 +79,7 @@ export class RectangularNodeView extends ShapeView {
 
 @injectable()
 export class DiamondNodeView extends ShapeView {
-    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: object): VNode | undefined {
+    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }

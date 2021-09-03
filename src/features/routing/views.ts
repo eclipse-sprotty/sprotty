@@ -17,7 +17,7 @@
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
 import { Point } from '../../utils/geometry';
-import { IView, RenderingContext } from '../../base/views/view';
+import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
 import { SRoutableElement, getAbsoluteRouteBounds } from './model';
 
 @injectable()
@@ -44,5 +44,5 @@ export abstract class RoutableView implements IView {
             && ab.y + ab.height >= 0;
     }
 
-    abstract render(model: Readonly<SRoutableElement>, context: RenderingContext, args?: object): VNode | undefined;
+    abstract render(model: Readonly<SRoutableElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
 }

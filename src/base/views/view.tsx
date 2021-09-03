@@ -28,10 +28,33 @@ import { EMPTY_ROOT, CustomFeatures } from "../model/smodel-factory";
 import { registerModelElement } from '../model/smodel-utils';
 
 /**
+ * Arguments for `IView` rendering.
+ */
+export interface IViewArgs {
+    parentArgs?: IViewArgs;
+    [key: string]: any;
+}
+
+/**
+ * Searches for the property specified in `key` in the specified `args`,
+ * including its direct or indirect `IRenderingArgs#parentArgs`.
+ *
+ * @param arg the rendering arguments.
+ * @param key the key to search for.
+ * @returns the found value or `undefined.
+ */
+export function findArgValue<T>(arg: IViewArgs | undefined, key: string): T | undefined {
+    while (arg !== undefined && !(key in arg) && arg.parentArgs) {
+        arg = arg.parentArgs;
+    }
+    return arg ? arg[key] : undefined;
+}
+
+/**
  * Base interface for the components that turn GModelElements into virtual DOM elements.
  */
-export interface IView {
-    render(model: Readonly<SModelElement>, context: RenderingContext, args?: object): VNode | undefined
+export interface IView<A extends IViewArgs = {}> {
+    render(model: Readonly<SModelElement>, context: RenderingContext, args?: A): VNode | undefined
 }
 
 export type RenderingTargetKind = 'main' | 'popup' | 'hidden';
@@ -42,12 +65,13 @@ export type RenderingTargetKind = 'main' | 'popup' | 'hidden';
 export interface RenderingContext {
     readonly viewRegistry: ViewRegistry
     readonly targetKind: RenderingTargetKind;
+    readonly parentArgs?: IViewArgs;
 
     decorate(vnode: VNode, element: Readonly<SModelElement>): VNode
 
-    renderElement(element: Readonly<SModelElement>, args?: object): VNode | undefined
+    renderElement(element: Readonly<SModelElement>, args?: IViewArgs): VNode | undefined
 
-    renderChildren(element: Readonly<SParentElement>, args?: object): VNode[]
+    renderChildren(element: Readonly<SParentElement>, args?: IViewArgs): VNode[]
 }
 
 /**

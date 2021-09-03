@@ -17,15 +17,14 @@
 /** @jsx svg */
 import { svg } from '../../../src/lib/jsx';
 
-
-import { RenderingContext, IView, RectangularNodeView, SNode } from "../../../src";
+import { RenderingContext, IView, RectangularNodeView, SNode, IViewArgs } from "../../../src";
 import { VNode } from "snabbdom";
 import { Icon } from './model';
 import { injectable } from 'inversify';
 
 @injectable()
 export class NodeView extends RectangularNodeView {
-    render(node: Readonly<SNode>, context: RenderingContext, args?: object): VNode | undefined {
+    render(node: Readonly<SNode>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
@@ -35,7 +34,7 @@ export class NodeView extends RectangularNodeView {
                   class-node-class={node.type === 'node:class'}
                   class-mouseover={node.hoverFeedback} class-selected={node.selected}
                   x="0" y="0" width={Math.max(node.size.width, 0)} height={Math.max(node.size.height, 0)}></rect>
-            {context.renderChildren(node, args)}
+            {context.renderChildren(node)}
         </g>;
     }
 }
@@ -43,11 +42,11 @@ export class NodeView extends RectangularNodeView {
 @injectable()
 export class IconView implements IView {
 
-    render(element: Icon, context: RenderingContext, args?: object): VNode {
+    render(element: Icon, context: RenderingContext, args?: IViewArgs): VNode {
         const radius = this.getRadius();
         return <g>
             <circle class-sprotty-icon={true} r={radius} cx={radius} cy={radius}></circle>
-            {context.renderChildren(element, args)}
+            {context.renderChildren(element)}
         </g>;
     }
 

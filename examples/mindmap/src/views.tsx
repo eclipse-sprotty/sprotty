@@ -15,22 +15,21 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../../src/lib/jsx';
-
-import { VNode } from "snabbdom";
-import { IView, RectangularNodeView, RenderingContext, SNode } from "../../../src";
-import { PopupButton } from "./model";
 import { injectable } from "inversify";
+import { VNode } from "snabbdom";
+import { IViewArgs, IView, RectangularNodeView, RenderingContext, SNode } from "../../../src";
+import { svg } from '../../../src/lib/jsx';
+import { PopupButton } from "./model";
 
 @injectable()
 export class MindmapNodeView extends RectangularNodeView {
-    render(node: SNode, context: RenderingContext, args?: object): VNode {
+    render(node: SNode, context: RenderingContext, args?: IViewArgs): VNode {
         return <g class-node={true}>
             <rect class-sprotty-node={true} class-selected={node.selected} class-mouseover={node.hoverFeedback}
                   x={0} y={0} rx={10} ry={10}
                   width={Math.max(0, node.bounds.width)} height={Math.max(0, node.bounds.height)}>
             </rect>
-            {context.renderChildren(node, args)}
+            {context.renderChildren(node)}
         </g>;
     }
 }
