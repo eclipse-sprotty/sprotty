@@ -69,7 +69,7 @@ export interface RenderingContext {
 
     decorate(vnode: VNode, element: Readonly<SModelElement>): VNode
 
-    renderElement(element: Readonly<SModelElement>, args?: IViewArgs): VNode | undefined
+    renderElement(element: Readonly<SModelElement>): VNode | undefined
 
     renderChildren(element: Readonly<SParentElement>, args?: IViewArgs): VNode[]
 }
