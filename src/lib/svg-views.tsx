@@ -35,7 +35,7 @@ export class SvgViewportView implements IView {
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg>
             <g transform={transform}>
-                {context.renderChildren(model, args)}
+                {context.renderChildren(model)}
             </g>
         </svg>;
     }
@@ -52,7 +52,7 @@ export class CircularNodeView extends ShapeView {
             <circle class-sprotty-node={node instanceof SNode} class-sprotty-port={node instanceof SPort}
                     class-mouseover={node.hoverFeedback} class-selected={node.selected}
                     r={radius} cx={radius} cy={radius}></circle>
-            {context.renderChildren(node, args)}
+            {context.renderChildren(node)}
         </g>;
     }
 
@@ -72,7 +72,7 @@ export class RectangularNodeView extends ShapeView {
             <rect class-sprotty-node={node instanceof SNode} class-sprotty-port={node instanceof SPort}
                   class-mouseover={node.hoverFeedback} class-selected={node.selected}
                   x="0" y="0" width={Math.max(node.size.width, 0)} height={Math.max(node.size.height, 0)}></rect>
-            {context.renderChildren(node, args)}
+            {context.renderChildren(node)}
         </g>;
     }
 }
@@ -89,7 +89,7 @@ export class DiamondNodeView extends ShapeView {
             <polygon class-sprotty-node={node instanceof SNode} class-sprotty-port={node instanceof SPort}
                   class-mouseover={node.hoverFeedback} class-selected={node.selected}
                   points={points} />
-            {context.renderChildren(node, args)}
+            {context.renderChildren(node)}
         </g>;
     }
 }

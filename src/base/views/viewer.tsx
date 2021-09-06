@@ -62,7 +62,7 @@ export class ModelRenderer implements RenderingContext {
 
     renderElement(element: Readonly<SModelElement>, args?: IViewArgs): VNode | undefined {
         const view = this.viewRegistry.get(element.type);
-        const vnode = view.render(element, this, {...args, ...this.args});
+        const vnode = view.render(element, this, { ...args, ...this.args });
         if (vnode) {
             return this.decorate(vnode, element);
         } else {
@@ -71,10 +71,15 @@ export class ModelRenderer implements RenderingContext {
     }
 
     renderChildren(element: Readonly<SParentElement>, args?: IViewArgs): VNode[] {
-        const childArgs = args ? { ...args, parentArgs: this.args } : this.args;
-        const context = new ModelRenderer(this.viewRegistry, this.targetKind, this.postprocessors, childArgs);
+        const context = args ?
+            new ModelRenderer(
+                this.viewRegistry,
+                this.targetKind,
+                this.postprocessors,
+                { ...args, parentArgs: this.args }
+            ) : this;
         return element.children
-            .map(child => context.renderElement(child, childArgs))
+            .map(child => context.renderElement(child))
             .filter(vnode => vnode !== undefined) as VNode[];
     }
 
@@ -220,7 +225,7 @@ export class HiddenModelViewer implements IViewer {
     constructor(@inject(TYPES.ModelRendererFactory) modelRendererFactory: ModelRendererFactory,
         @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
         @multiInject(TYPES.HiddenVNodePostprocessor) @optional() hiddenPostprocessors: IVNodePostprocessor[]) {
-        this.hiddenRenderer = modelRendererFactory('hidden', hiddenPostprocessors, { root: true, hidden: true });
+        this.hiddenRenderer = modelRendererFactory('hidden', hiddenPostprocessors, { root: true });
         this.patcher = patcherProvider.patcher;
     }
 
@@ -274,7 +279,7 @@ export class PopupModelViewer implements IViewer {
     constructor(@inject(TYPES.ModelRendererFactory) protected readonly modelRendererFactory: ModelRendererFactory,
         @inject(TYPES.PatcherProvider) patcherProvider: PatcherProvider,
         @multiInject(TYPES.PopupVNodePostprocessor) @optional() popupPostprocessors: IVNodePostprocessor[]) {
-        this.popupRenderer = this.modelRendererFactory('popup', popupPostprocessors, { root: true, popup: true });
+        this.popupRenderer = this.modelRendererFactory('popup', popupPostprocessors, { root: true });
         this.patcher = patcherProvider.patcher;
     }
 
