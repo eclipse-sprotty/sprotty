@@ -21,7 +21,7 @@ import { Container } from 'inversify';
 import { TYPES } from '../types';
 import { EMPTY_ROOT, SModelFactory } from '../model/smodel-factory';
 import { SNode } from "../../graph/sgraph";
-import { EmptyView, MissingView } from "./view";
+import { EmptyView, findArgValue, MissingView } from "./view";
 import { ModelRenderer } from "./viewer";
 import defaultModule from "../di.config";
 
@@ -59,4 +59,54 @@ describe('base views', () => {
         const vnode1 = missingView.render(model, context);
         expect(toHTML(vnode1)).to.be.equal('<text class="sprotty-missing" x="42" y="41">?foo?</text>');
     });
+});
+
+describe('findArgValue', () => {
+
+    interface TestType {
+        value: string;
+    }
+
+    const arg = {
+        foo: 'foo',
+        parentArgs: {
+            bar: true,
+            parentArgs: {
+                fooBar: <TestType>{
+                    value: 'value'
+                }
+            }
+        }
+    };
+
+    it('returns undefined for missing keys', () => {
+        expect(findArgValue(arg, 'missing')).to.be.undefined;
+    });
+
+    it('returns the value if found on first level', () => {
+        expect(findArgValue(arg, 'foo')).to.equal('foo');
+    });
+
+    it('returns the value if found on second level', () => {
+        expect(findArgValue(arg, 'bar')).to.equal(true);
+    });
+
+    it('returns the value if found on third level', () => {
+        expect(findArgValue(arg, 'fooBar')).to.deep.equal({ value: 'value' });
+    });
+
+    it('returns the complex value if found on third level', () => {
+        const myObject = findArgValue<TestType>(arg, 'fooBar');
+        expect(myObject?.value).to.equal('value');
+    });
+
+    it('returns undefined for a type if missing', () => {
+        const myObject = findArgValue<TestType>(arg, 'missing');
+        expect(myObject).to.be.undefined;
+    });
+
+    it('should return undefined if args are undefined', () => {
+        expect(findArgValue(undefined, 'whatever')).to.be.undefined;
+    });
+
 });
