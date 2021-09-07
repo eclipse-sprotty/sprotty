@@ -43,7 +43,8 @@ import { isLocateable, isMoveable, Locateable } from './model';
 import { ISnapper } from "./snap";
 
 export class MoveAction implements Action {
-    kind = MoveCommand.KIND;
+    static readonly KIND = 'move';
+    kind = MoveAction.KIND;
 
     constructor(public readonly moves: ElementMove[],
                 public readonly animate: boolean = true,
@@ -71,7 +72,7 @@ export interface ResolvedHandleMove {
 
 @injectable()
 export class MoveCommand extends MergeableCommand {
-    static readonly KIND = 'move';
+    static readonly KIND = MoveAction.KIND;
 
     @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 

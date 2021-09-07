@@ -1,0 +1,151 @@
+/********************************************************************************
+ * Copyright (c) 2017-2018 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/** @jsx html */
+import { html } from '../../lib/jsx';
+
+import { injectable } from 'inversify';
+import { VNode, VNodeStyle, h } from 'snabbdom';
+import { IView, IViewArgs, RenderingContext, ViewProjection } from '../../base/views/view';
+import { ViewportRootElement } from '../viewport/viewport-root';
+import { ShapeView } from '../bounds/views';
+
+/**
+ * Special viewport root view that renders horizontal and vertical projection bars for quick navigation.
+ */
+@injectable()
+export class ProjectedViewportView implements IView {
+
+    render(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
+        return <div class-sprotty-root={true}>
+            {this.renderSvg(model, context, args)}
+            {this.renderProjections(model, context, args)}
+        </div>;
+    }
+
+    protected renderSvg(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
+        const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
+        const ns = 'http://www.w3.org/2000/svg';
+        return h('svg', { ns }, h('g', { ns, attrs: { transform } }, context.renderChildren(model)));
+    }
+
+    protected renderProjections(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode[] {
+        if (model.bounds.width <= 0 || model.bounds.height <= 0 || model.zoom <= 0) {
+            return [];
+        }
+        const projections = context.getProjections(model) ?? [];
+        return [
+            this.renderProjectionBar(projections, model, 'vertical'),
+            this.renderProjectionBar(projections, model, 'horizontal')
+        ];
+    }
+
+    protected renderProjectionBar(projections: ViewProjection[], model: Readonly<ViewportRootElement>, orientation: 'horizontal' | 'vertical'): VNode {
+        const params: ProjectionParams = { orientation } as ProjectionParams;
+        // NOTE: Here we assume that the projection bars have the same size as the diagram canvas, i.e. they are drawn as overlay above the canvas.
+        params.factor = orientation === 'horizontal' ? model.canvasBounds.width / model.bounds.width : model.canvasBounds.height / model.bounds.height;
+        params.zoomedFactor = params.factor / model.zoom;
+        return <div
+                class-sprotty-projection-bar={true}
+                class-horizontal={orientation === 'horizontal'}
+                class-vertical={orientation === 'vertical'} >
+            {this.renderViewport(model, params)}
+            {projections.map(p => this.renderProjection(p, model, params))}
+        </div>;
+    }
+
+    protected renderViewport(model: Readonly<ViewportRootElement>, params: ProjectionParams): VNode {
+        let canvasSize, viewportPos: number;
+        if (params.orientation === 'horizontal') {
+            canvasSize = model.canvasBounds.width;
+            viewportPos = (model.scroll.x - model.bounds.x) * params.factor;
+        } else {
+            canvasSize = model.canvasBounds.height;
+            viewportPos = (model.scroll.y - model.bounds.y) * params.factor;
+        }
+        let viewportSize = canvasSize * params.zoomedFactor;
+        if (viewportPos < 0) {
+            viewportSize += viewportPos;
+            viewportPos = 0;
+        } else if (viewportPos > canvasSize) {
+            viewportPos = canvasSize;
+        }
+        if (viewportSize < 0) {
+            viewportSize = 0;
+        } else if (viewportPos + viewportSize > canvasSize) {
+            viewportSize = canvasSize - viewportPos;
+        }
+        const style: VNodeStyle = params.orientation === 'horizontal' ? {
+            left: `${viewportPos}px`,
+            width: `${viewportSize}px`
+        } : {
+            top: `${viewportPos}px`,
+            height: `${viewportSize}px`
+        };
+        return <div class-sprotty-viewport={true} style={style} />;
+    }
+
+    protected renderProjection(projection: ViewProjection, model: Readonly<ViewportRootElement>, params: ProjectionParams): VNode {
+        let canvasSize, projPos, projSize: number;
+        if (params.orientation === 'horizontal') {
+            canvasSize = model.canvasBounds.width;
+            projPos = (projection.projectedBounds.x - model.bounds.x) * params.factor;
+            projSize = projection.projectedBounds.width * params.factor;
+        } else {
+            canvasSize = model.canvasBounds.height;
+            projPos = (projection.projectedBounds.y - model.bounds.y) * params.factor;
+            projSize = projection.projectedBounds.height * params.factor;
+        }
+        if (projPos < 0) {
+            projSize += projPos;
+            projPos = 0;
+        } else if (projPos > canvasSize) {
+            projPos = canvasSize;
+        }
+        if (projSize < 0) {
+            projSize = 0;
+        } else if (projPos + projSize > canvasSize) {
+            projSize = canvasSize - projPos;
+        }
+        const style: VNodeStyle = params.orientation === 'horizontal' ? {
+            left: `${projPos}px`,
+            width: `${projSize}px`,
+            backgroundColor: projection.color
+        } : {
+            top: `${projPos}px`,
+            height: `${projSize}px`,
+            backgroundColor: projection.color
+        };
+        return <div class-sprotty-projection={true} style={style} />;
+    }
+
+}
+
+export type ProjectionParams = {
+    orientation: 'horizontal' | 'vertical'
+    factor: number
+    zoomedFactor: number
+};
+
+/**
+ * Use this as `viewInit` when configuring a model element and view with `configureModelElement`
+ * to enable projection for the view.
+ */
+ export function setProjection(color: string): (view: ShapeView) => void {
+    return view => {
+        view.projectionColor = color;
+    };
+}

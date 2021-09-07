@@ -14,8 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LocalModelSource, TYPES, SModelRootSchema, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema } from "../../../src";
-import createContainer from "./di.config";
+import {
+    TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema
+} from '../../../src';
+import createContainer, { SVGModelSource } from './di.config';
 
 function loadFile(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -31,60 +33,59 @@ function loadFile(path: string): Promise<string> {
     });
 }
 
-export default function runMulticore() {
-    const p1 = loadFile('images/SVG_logo.svg');
-    const p2 = loadFile('images/Ghostscript_Tiger.svg');
-    Promise.all([p1, p2]).then(([svgLogo, tiger]) => {
-        const container = createContainer();
+export default async function runSVG() {
+    const svgLogo = await loadFile('images/SVG_logo.svg');
+    const tiger = await loadFile('images/Ghostscript_Tiger.svg');
+    const container = createContainer();
 
-        // Initialize model
-        const model: SModelRootSchema = {
-            type: 'svg',
-            id: 'root',
-            children: [
-                {
-                    type: 'pre-rendered',
-                    id: 'logo',
-                    position: { x: 200, y: 200 },
-                    code: svgLogo
-                } as ShapedPreRenderedElementSchema,
-                {
-                    type: 'pre-rendered',
-                    id: 'tiger',
-                    position: { x: 400, y: 0 },
-                    code: tiger
-                } as ShapedPreRenderedElementSchema,
-                {
-                    type: 'foreign-object',
-                    id: 'direct-html',
-                    position: { x: 50, y: 350 },
-                    size: { height: 50, width: 190 },
-                    code: "<p>This is a free-floating HTML paragraph!</p>"
-                } as ForeignObjectElementSchema,
-                {
-                    id: 'foreign-object-in-shape',
-                    type: 'node',
-                    position: {
-                        x: 50,
-                        y: 90
-                    },
-                    size: {
-                        height: 60,
-                        width: 160
-                    },
-                    children: [
-                        {
-                            type: 'child-foreign-object',
-                            id: 'foreign-object-in-shape-contents',
-                            code: "<div>This is <em>HTML</em> within <u>an SVG rectangle</u>!</div>"
-                        } as ForeignObjectElementSchema
-                    ]
-                } as SShapeElementSchema
-            ]
-        };
+    // Initialize model
+    const model: ViewportRootElementSchema = {
+        type: 'svg',
+        id: 'root',
+        children: [
+            {
+                type: 'pre-logo',
+                id: 'logo',
+                position: { x: 200, y: 200 },
+                code: svgLogo
+            } as ShapedPreRenderedElementSchema,
+            {
+                type: 'pre-tiger',
+                id: 'tiger',
+                position: { x: 400, y: 50 },
+                code: tiger
+            } as ShapedPreRenderedElementSchema,
+            {
+                type: 'foreign-object',
+                id: 'direct-html',
+                position: { x: 50, y: 350 },
+                size: { height: 50, width: 190 },
+                code: '<p>This is a free-floating HTML paragraph!</p>'
+            } as ForeignObjectElementSchema,
+            {
+                id: 'foreign-object-in-shape',
+                type: 'node',
+                position: {
+                    x: 50,
+                    y: 90
+                },
+                size: {
+                    height: 60,
+                    width: 160
+                },
+                children: [
+                    {
+                        type: 'child-foreign-object',
+                        id: 'foreign-object-in-shape-contents',
+                        code: '<div>This is <em>HTML</em> within <u>an SVG rectangle</u>!</div>'
+                    } as ForeignObjectElementSchema
+                ]
+            } as SShapeElementSchema
+        ]
+    };
 
-        // Run
-        const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-        modelSource.setModel(model);
-    });
+    // Run
+    const modelSource = container.get<SVGModelSource>(TYPES.ModelSource);
+    await modelSource.setModel(model);
+    await modelSource.updateModelBounds();
 }

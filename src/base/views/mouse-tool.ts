@@ -57,13 +57,13 @@ export class MouseTool implements IVNodePostprocessor {
         return undefined;
     }
 
-    protected handleEvent<K extends keyof MouseListener>(methodName: K, model: SModelRoot, event: MouseEvent) {
+    protected handleEvent(methodName: MouseEventKind, model: SModelRoot, event: MouseEvent) {
         this.focusOnMouseEvent(methodName, model);
         const element = this.getTargetElement(model, event);
         if (!element)
             return;
         const actions = this.mouseListeners
-            .map(listener => listener[methodName].apply(listener, [element, event]))
+            .map(listener => listener[methodName](element, event as WheelEvent))
             .reduce((a, b) => a.concat(b));
         if (actions.length > 0) {
             event.preventDefault();
@@ -154,6 +154,8 @@ export class PopupMouseTool extends MouseTool {
         super(mouseListeners);
     }
 }
+
+export type MouseEventKind = 'mouseOver' | 'mouseOut' | 'mouseEnter' | 'mouseLeave' | 'mouseDown' | 'mouseMove' | 'mouseUp' | 'wheel' | 'doubleClick';
 
 @injectable()
 export class MouseListener {

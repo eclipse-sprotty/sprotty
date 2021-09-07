@@ -16,13 +16,19 @@
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { isValidDimension } from '../../utils/geometry';
-import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
-import { getAbsoluteBounds, BoundsAware } from './model';
+import { Bounds, isValidDimension } from '../../utils/geometry';
+import { IViewArgs, IView, RenderingContext, ViewProjection } from '../../base/views/view';
+import { getAbsoluteBounds, BoundsAware, isBoundsAware } from './model';
 import { SChildElement } from '../../base/model/smodel';
 
 @injectable()
 export abstract class ShapeView implements IView {
+
+    /**
+     * Set this property to enable a projection for this view instance.
+     */
+    projectionColor?: string;
+
     /**
      * Check whether the given model element is in the current viewport. Use this method
      * in your `render` implementation to skip rendering in case the element is not visible.
@@ -46,4 +52,25 @@ export abstract class ShapeView implements IView {
     }
 
     abstract render(model: Readonly<SChildElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
+
+    getProjection(model: Readonly<SChildElement>, context: RenderingContext, args?: IViewArgs): ViewProjection | undefined {
+        if (!this.projectionColor || !isBoundsAware(model)) {
+            return undefined;
+        }
+        return {
+            projectedBounds: this.getProjectedBounds(model),
+            color: this.projectionColor
+        };
+    }
+
+    protected getProjectedBounds(model: Readonly<SChildElement & BoundsAware>): Bounds {
+        let bounds = model.bounds;
+        let parent = model.parent;
+        while (parent instanceof SChildElement) {
+            bounds = parent.localToParent(bounds);
+            parent = parent.parent;
+        }
+        return bounds;
+    }
+
 }

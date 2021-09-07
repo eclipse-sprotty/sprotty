@@ -17,12 +17,15 @@
  /** @jsx html */
 import { html } from './jsx';
 
-import { VNode } from "snabbdom";
-import { IView, RenderingContext } from "../base/views/view";
-import { setClass } from "../base/views/vnode-utils";
-import { HtmlRoot } from "./model";
 import { injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { IView, RenderingContext } from '../base/views/view';
+import { setClass } from '../base/views/vnode-utils';
+import { HtmlRoot } from './model';
 
+/**
+ * View for `HtmlRoot` elements. Typically this is used in hover popup boxes.
+ */
 @injectable()
 export class HtmlRootView implements IView {
     render(model: HtmlRoot, context: RenderingContext): VNode {
