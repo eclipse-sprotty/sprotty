@@ -51,7 +51,8 @@
     "autocompleter": "5.1.0",
     "file-saver": "2.0.2",
     "inversify": "^5.0.1",
-    "snabbdom": "^3.0.3"
+    "snabbdom": "^3.0.3",
+    "tinyqueue": "^2.0.3"
   },
   "devDependencies": {
     "@types/chai": "^4.2.2",

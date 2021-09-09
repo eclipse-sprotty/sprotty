@@ -29,7 +29,7 @@ import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options";
 import { MouseTool, PopupMouseTool, MousePositionTracker } from "./views/mouse-tool";
 import { KeyTool } from "./views/key-tool";
 import { FocusFixPostprocessor, IVNodePostprocessor } from "./views/vnode-postprocessor";
-import { ViewRegistry, RenderingTargetKind } from "./views/view";
+import { ViewRegistry, RenderingTargetKind, IViewArgs } from "./views/view";
 import { ViewerCache } from "./views/viewer-cache";
 import { DOMHelper } from "./views/dom-helper";
 import { IdPostprocessor } from "./views/id-postprocessor";
@@ -123,9 +123,9 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.PatcherProvider).to(PatcherProvider).inSingletonScope();
     bind(TYPES.DOMHelper).to(DOMHelper).inSingletonScope();
     bind(TYPES.ModelRendererFactory).toFactory<ModelRenderer>(ctx => {
-        return (targetKind: RenderingTargetKind, processors: IVNodePostprocessor[]) => {
+        return (targetKind: RenderingTargetKind, processors: IVNodePostprocessor[], args: IViewArgs = {}) => {
             const viewRegistry = ctx.container.get<ViewRegistry>(TYPES.ViewRegistry);
-            return new ModelRenderer(viewRegistry, targetKind, processors);
+            return new ModelRenderer(viewRegistry, targetKind, processors, args);
         };
     });
 

@@ -17,7 +17,7 @@
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
 import { isValidDimension } from '../../utils/geometry';
-import { IView, RenderingContext } from '../../base/views/view';
+import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
 import { getAbsoluteBounds, BoundsAware } from './model';
 import { SChildElement } from '../../base/model/smodel';
 
@@ -45,5 +45,5 @@ export abstract class ShapeView implements IView {
             && ab.y + ab.height >= 0;
     }
 
-    abstract render(model: Readonly<SChildElement>, context: RenderingContext, args?: object): VNode | undefined;
+    abstract render(model: Readonly<SChildElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
 }

@@ -16,7 +16,7 @@
 
 import 'mocha';
 import { expect } from "chai";
-import { RenderingContext } from '../../base/views/view';
+import { IViewArgs, RenderingContext } from '../../base/views/view';
 import { SShapeElement } from '../bounds/model';
 import { ViewportRootElement } from '../viewport/viewport-root';
 import { SRoutableElement } from './model';
@@ -32,7 +32,7 @@ describe('RoutableView.isVisible', () => {
     }
 
     class TestView extends RoutableView {
-        render(model: Readonly<SRoutableElement>, context: RenderingContext, args?: object): VNode | undefined {
+        render(model: Readonly<SRoutableElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
             return undefined;
         }
     }
