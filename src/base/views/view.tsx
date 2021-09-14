@@ -21,7 +21,7 @@ import { injectable, multiInject, optional, interfaces } from 'inversify';
 import { VNode } from 'snabbdom';
 import { TYPES } from '../types';
 import { InstanceRegistry } from '../../utils/registry';
-import { Point, ORIGIN_POINT, Bounds } from '../../utils/geometry';
+import { Point, ORIGIN_POINT } from '../../utils/geometry';
 import { isInjectable } from '../../utils/inversify';
 import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
 import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory';
@@ -54,11 +54,7 @@ export function findArgValue<T>(arg: IViewArgs | undefined, key: string): T | un
  * Base interface for the components that turn GModelElements into virtual DOM elements.
  */
 export interface IView<A extends IViewArgs = {}> {
-
     render(model: Readonly<SModelElement>, context: RenderingContext, args?: A): VNode | undefined
-
-    getProjection?(model: Readonly<SModelElement>, context: RenderingContext, args?: A): ViewProjection | undefined
-
 }
 
 /**
@@ -67,14 +63,6 @@ export interface IView<A extends IViewArgs = {}> {
  * to the main rendering.
  */
 export type RenderingTargetKind = 'main' | 'popup' | 'hidden';
-
-/**
- * A projection can be shown in a horizontal or vertical bar to display an overview of the diagram.
- */
-export interface ViewProjection {
-    projectedBounds: Bounds;
-    color: string;
-}
 
 /**
  * Bundles additional data that is passed to views for VNode creation.
@@ -89,8 +77,6 @@ export interface RenderingContext {
     renderElement(element: Readonly<SModelElement>): VNode | undefined
 
     renderChildren(element: Readonly<SParentElement>, args?: IViewArgs): VNode[]
-
-    getProjections(element: Readonly<SParentElement>): ViewProjection[] | undefined
 }
 
 /**
@@ -128,20 +114,18 @@ export class ViewRegistry extends InstanceRegistry<IView> {
 /**
  * Combines `registerModelElement` and `configureView`.
  */
-export function configureModelElement<E extends SModelElement, V extends IView>(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, modelConstr: new () => E, viewConstr: interfaces.ServiceIdentifier<V>,
-        options?: ModelElementOptions<E, V>): void {
-    registerModelElement(context, type, modelConstr, options);
-    configureView(context, type, viewConstr, options);
+export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        type: string, modelConstr: new () => SModelElement, viewConstr: interfaces.ServiceIdentifier<IView>,
+        features?: CustomFeatures): void {
+    registerModelElement(context, type, modelConstr, features);
+    configureView(context, type, viewConstr);
 }
-
-export type ModelElementOptions<E extends SModelElement, V extends IView> = CustomFeatures & ViewOptions<V>;
 
 /**
  * Utility function to register a view for a model element type.
  */
-export function configureView<V extends IView>(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, constr: interfaces.ServiceIdentifier<V>, options?: ViewOptions<V>): void {
+export function configureView(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        type: string, constr: interfaces.ServiceIdentifier<IView>): void {
     if (typeof constr === 'function') {
         if (!isInjectable(constr)) {
             throw new Error(`Views should be @injectable: ${constr.name}`);
@@ -150,18 +134,10 @@ export function configureView<V extends IView>(context: { bind: interfaces.Bind,
             context.bind(constr).toSelf();
         }
     }
-    context.bind(TYPES.ViewRegistration).toDynamicValue(ctx => {
-        const factory = options && options.viewInit ? () => {
-            const view = ctx.container.get(constr);
-            options.viewInit!(view);
-            return view;
-        } : () => ctx.container.get(constr);
-        return { type, factory };
-    });
-}
-
-export interface ViewOptions<V> {
-    viewInit?: (view: V) => void
+    context.bind(TYPES.ViewRegistration).toDynamicValue(ctx => ({
+        type,
+        factory: () => ctx.container.get(constr)
+    }));
 }
 
 /**

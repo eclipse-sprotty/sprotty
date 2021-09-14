@@ -27,7 +27,7 @@ import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { TYPES } from '../types';
 import { isThunk } from './thunk-view';
-import { IViewArgs, RenderingContext, RenderingTargetKind, ViewProjection, ViewRegistry } from './view';
+import { IViewArgs, RenderingContext, RenderingTargetKind, ViewRegistry } from './view';
 import { ViewerOptions } from './viewer-options';
 import { IVNodePostprocessor } from './vnode-postprocessor';
 import { copyClassesFromElement, copyClassesFromVNode, setAttr, setClass } from './vnode-utils';
@@ -81,34 +81,6 @@ export class ModelRenderer implements RenderingContext {
         return element.children
             .map(child => context.renderElement(child))
             .filter(vnode => vnode !== undefined) as VNode[];
-    }
-
-    getProjections(element: Readonly<SParentElement>): ViewProjection[] | undefined {
-        let result: ViewProjection[] | undefined;
-        for (const child of element.children) {
-            const view = this.viewRegistry.get(child.type);
-            if (view.getProjection) {
-                const p = view.getProjection(child, this);
-                if (p) {
-                    if (result) {
-                        result.push(p);
-                    } else {
-                        result = [p];
-                    }
-                }
-            }
-            if (child.children.length > 0) {
-                const childProj = this.getProjections(child);
-                if (childProj) {
-                    if (result) {
-                        result.push(...childProj);
-                    } else {
-                        result = childProj;
-                    }
-                }
-            }
-        }
-        return result;
     }
 
     postUpdate(cause?: Action) {

@@ -19,9 +19,10 @@ import { html } from '../../lib/jsx';
 
 import { injectable } from 'inversify';
 import { VNode, VNodeStyle, h } from 'snabbdom';
-import { IView, IViewArgs, RenderingContext, ViewProjection } from '../../base/views/view';
+import { IView, IViewArgs, RenderingContext } from '../../base/views/view';
+import { setClass } from '../../base/views/vnode-utils';
 import { ViewportRootElement } from '../viewport/viewport-root';
-import { ShapeView } from '../bounds/views';
+import { getProjections, ViewProjection } from './model';
 
 /**
  * Special viewport root view that renders horizontal and vertical projection bars for quick navigation.
@@ -46,7 +47,7 @@ export class ProjectedViewportView implements IView {
         if (model.bounds.width <= 0 || model.bounds.height <= 0 || model.zoom <= 0) {
             return [];
         }
-        const projections = context.getProjections(model) ?? [];
+        const projections = getProjections(model) ?? [];
         return [
             this.renderProjectionBar(projections, model, 'vertical'),
             this.renderProjectionBar(projections, model, 'horizontal')
@@ -122,14 +123,14 @@ export class ProjectedViewportView implements IView {
         }
         const style: VNodeStyle = params.orientation === 'horizontal' ? {
             left: `${projPos}px`,
-            width: `${projSize}px`,
-            backgroundColor: projection.color
+            width: `${projSize}px`
         } : {
             top: `${projPos}px`,
-            height: `${projSize}px`,
-            backgroundColor: projection.color
+            height: `${projSize}px`
         };
-        return <div class-sprotty-projection={true} style={style} />;
+        const result = <div class-sprotty-projection={true} style={style} />;
+        projection.cssClasses.forEach(cl => setClass(result, cl, true));
+        return result;
     }
 
 }
@@ -139,13 +140,3 @@ export type ProjectionParams = {
     factor: number
     zoomedFactor: number
 };
-
-/**
- * Use this as `viewInit` when configuring a model element and view with `configureModelElement`
- * to enable projection for the view.
- */
- export function setProjection(color: string): (view: ShapeView) => void {
-    return view => {
-        view.projectionColor = color;
-    };
-}

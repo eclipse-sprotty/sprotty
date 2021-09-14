@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import {
-    TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema
+    TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema, Projectable
 } from '../../../src';
 import createContainer, { SVGModelSource } from './di.config';
 
@@ -44,17 +44,19 @@ export default async function runSVG() {
         id: 'root',
         children: [
             {
-                type: 'pre-logo',
+                type: 'pre-rendered',
                 id: 'logo',
                 position: { x: 200, y: 200 },
-                code: svgLogo
-            } as ShapedPreRenderedElementSchema,
+                code: svgLogo,
+                projectionCssClasses: ['logo-projection']
+            } as ShapedPreRenderedElementSchema & Projectable,
             {
-                type: 'pre-tiger',
+                type: 'pre-rendered',
                 id: 'tiger',
                 position: { x: 400, y: 50 },
-                code: tiger
-            } as ShapedPreRenderedElementSchema,
+                code: tiger,
+                projectionCssClasses: ['tiger-projection']
+            } as ShapedPreRenderedElementSchema & Projectable,
             {
                 type: 'foreign-object',
                 id: 'direct-html',
@@ -79,8 +81,9 @@ export default async function runSVG() {
                         id: 'foreign-object-in-shape-contents',
                         code: '<div>This is <em>HTML</em> within <u>an SVG rectangle</u>!</div>'
                     } as ForeignObjectElementSchema
-                ]
-            } as SShapeElementSchema
+                ],
+                projectionCssClasses: ['node-projection']
+            } as SShapeElementSchema & Projectable
         ]
     };
 

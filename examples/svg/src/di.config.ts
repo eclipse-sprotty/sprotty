@@ -20,7 +20,8 @@ import {
     ProjectedViewportView, ViewportRootElement, ShapedPreRenderedElement, configureModelElement,
     ForeignObjectElement, ForeignObjectView, RectangularNode, RectangularNodeView, moveFeature,
     selectFeature, EditableLabel, editLabelFeature, WithEditableLabel, withEditLabelFeature,
-    isEditableLabel, setProjection, Action, MoveAction, SShapeElementSchema, ViewportRootElementSchema, ActionHandlerRegistry, SetBoundsAction
+    isEditableLabel, Action, MoveAction, SShapeElementSchema, ViewportRootElementSchema,
+    ActionHandlerRegistry, SetBoundsAction
 } from '../../../src';
 
 export default () => {
@@ -34,16 +35,10 @@ export default () => {
         bind(TYPES.ModelSource).to(SVGModelSource).inSingletonScope();
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'svg', ViewportRootElement, ProjectedViewportView);
-        configureModelElement(context, 'pre-logo', ShapedPreRenderedElement, PreRenderedView, {
-            viewInit: setProjection('rgba(255, 153, 0, 0.5)')
-        });
-        configureModelElement(context, 'pre-tiger', ShapedPreRenderedElement, PreRenderedView, {
-            viewInit: setProjection('rgba(204, 114, 38, 0.5)')
-        });
+        configureModelElement(context, 'pre-rendered', ShapedPreRenderedElement, PreRenderedView);
         configureModelElement(context, 'foreign-object', ForeignObjectElement, ForeignObjectView);
         configureModelElement(context, 'node', RectangleWithEditableLabel, RectangularNodeView, {
-            enable: [withEditLabelFeature],
-            viewInit: setProjection('rgba(255, 140, 0, 0.2)')
+            enable: [withEditLabelFeature]
         });
         configureModelElement(context, 'child-foreign-object', EditableForeignObjectElement, ForeignObjectView, {
             disable: [moveFeature, selectFeature], // disable move/select as we want the parent node to react to select/move
