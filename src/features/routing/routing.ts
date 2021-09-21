@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional } from "inversify";
-import { SParentElement, SChildElement } from "../../base/model/smodel";
+import { SParentElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { findArgValue, IViewArgs } from "../../base/views/view";
 import { Point } from "../../utils/geometry";
@@ -123,11 +123,10 @@ export interface IEdgeRouter {
     applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
 }
 
-export interface IEdgeRouterAll extends IEdgeRouter {
-    readonly canRouteAll: boolean;
+export interface IMultipleEdgesRouter extends IEdgeRouter {
     routeAll(
         edges: SRoutableElement[],
-        allElements: readonly SChildElement[]
+        context: SParentElement,
     ): EdgeRouting;
 }
 
@@ -136,24 +135,23 @@ export interface IEdgeRoutePostprocessor {
     apply(routing: EdgeRouting): void;
 }
 
-type ElementsOfRoutersAll = Record<string, SRoutableElement[]>;
+type ElementsOfMultipleRouters = Record<string, SRoutableElement[]>;
 
 interface DoRouteAllChildrenResult {
     routing: EdgeRouting;
-    elementsOfRoutersAll: ElementsOfRoutersAll;
-    allElements: SChildElement[];
+    multipleRoutersEdges: ElementsOfMultipleRouters;
 }
 
-function isRouterAll(
-    router: IEdgeRouter | IEdgeRouterAll
-): router is IEdgeRouterAll {
-    return (router as IEdgeRouterAll).canRouteAll !== undefined;
+function isMultipleEdgesRouter(
+    router: IEdgeRouter | IMultipleEdgesRouter
+): router is IMultipleEdgesRouter {
+    return (router as IMultipleEdgesRouter).routeAll !== undefined;
 }
 
 /* Merges two objects with elements in first one(in-place) */
 function mergeElementsOfRoutersAll(
-    elements1: ElementsOfRoutersAll,
-    elements2: ElementsOfRoutersAll
+    elements1: ElementsOfMultipleRouters,
+    elements2: ElementsOfMultipleRouters
 ) {
     for (const routerKey in elements2) {
         if (routerKey in elements1) {
@@ -190,13 +188,13 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
      * @returns the routes of all edges that are children of `parent`
      */
     routeAllChildren(parent: Readonly<SParentElement>): EdgeRouting {
-        const { routing, elementsOfRoutersAll, allElements } =
+        const { routing, multipleRoutersEdges } =
             this.doRouteAllChildren(parent);
-        for (const routerKind of Object.keys(elementsOfRoutersAll)) {
+        for (const routerKind of Object.keys(multipleRoutersEdges)) {
             const router = this.get(routerKind);
-            const elementsRouting = (router as IEdgeRouterAll).routeAll(
-                elementsOfRoutersAll[routerKind],
-                allElements
+            const elementsRouting = (router as IMultipleEdgesRouter).routeAll(
+                multipleRoutersEdges[routerKind],
+                parent
             );
             routing.setAll(elementsRouting);
         }
@@ -208,7 +206,7 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
 
     /**
      * Recursively traverses the children of `parent`, computes routes for child of route IEdgeRoute
-     * and collects children of IEdgeRouterAll-based routers.
+     * and collects children of IMultipleEdgesRouter-based routers.
      * @param parent the parent to traverse for edges
      * @returns the routes of all edges that are children of `parent`
      */
@@ -216,12 +214,12 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
         parent: Readonly<SParentElement>
     ): DoRouteAllChildrenResult {
         const routing = new EdgeRouting();
-        const newChildrenOfRoutesAll: ElementsOfRoutersAll = {};
-        const allElements: SChildElement[] = [...parent.children];
+        const newChildrenOfRoutesAll: ElementsOfMultipleRouters = {};
+
         for (const child of parent.children) {
             if (child instanceof SRoutableElement) {
                 const childRouter = this.get(child.routerKind);
-                if (isRouterAll(childRouter)) {
+                if (isMultipleEdgesRouter(childRouter)) {
                     if (childRouter.kind in newChildrenOfRoutesAll) {
                         newChildrenOfRoutesAll[childRouter.kind].push(child);
                     } else {
@@ -234,18 +232,15 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
             if (child instanceof SParentElement) {
                 const {
                     routing: childRouting,
-                    elementsOfRoutersAll,
-                    allElements: childAllElements,
+                    multipleRoutersEdges,
                 } = this.doRouteAllChildren(child);
-                mergeElementsOfRoutersAll(newChildrenOfRoutesAll, elementsOfRoutersAll);
-                allElements.push(...childAllElements);
+                mergeElementsOfRoutersAll(newChildrenOfRoutesAll, multipleRoutersEdges);
                 routing.setAll(childRouting);
             }
         }
         return {
             routing,
-            elementsOfRoutersAll: newChildrenOfRoutesAll,
-            allElements,
+            multipleRoutersEdges: newChildrenOfRoutesAll,
         };
     }
 
