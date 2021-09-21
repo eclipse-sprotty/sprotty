@@ -35,14 +35,14 @@ import { PolylineEdgeRouter } from "./polyline-edge-router";
  * the constraints of the routing algorithm or in order to to filter out points which are
  * obsolete, e.g. to close to each other.
  */
- export interface RoutedPoint extends Point {
+export interface RoutedPoint extends Point {
     kind: 'source' | 'target' | 'linear'
     pointIndex?: number
 }
 
 /**
-* Stores the state of an edge at a specific time.
-*/
+ * Stores the state of an edge at a specific time.
+ */
 export interface EdgeSnapshot {
     routingHandles: SRoutingHandle[]
     routingPoints: Point[]
@@ -59,9 +59,9 @@ export interface EdgeMemento {
 }
 
 /**
-* Encapsulates the logic of how the actual shape of an edge is derived from its routing points,
-* and how the user can modify it.
-*/
+ * Encapsulates the logic of how the actual shape of an edge is derived from its routing points,
+ * and how the user can modify it.
+ */
 export interface IEdgeRouter {
 
     readonly kind: string;
@@ -171,8 +171,8 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
     protected postProcessors: IEdgeRoutePostprocessor[];
 
     constructor(@multiInject(TYPES.IEdgeRouter) edgeRouters: IEdgeRouter[]) {
-            super();
-            edgeRouters.forEach(router => this.register(router.kind, router));
+        super();
+        edgeRouters.forEach(router => this.register(router.kind, router));
     }
 
     protected get defaultKind() {
@@ -275,8 +275,8 @@ export interface EdgeRoutingContainer {
 }
 
 /**
-* Map of edges and their computed routes.
-*/
+ * Map of edges and their computed routes.
+ */
 export class EdgeRouting {
 
     protected routesMap = new Map<string, RoutedPoint[]>();
