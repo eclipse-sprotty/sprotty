@@ -149,15 +149,15 @@ function isMultipleEdgesRouter(
 }
 
 /* Merges two objects with elements in first one(in-place) */
-function mergeElementsOfRoutersAll(
-    elements1: ElementsOfMultipleRouters,
-    elements2: ElementsOfMultipleRouters
+function mergeEdgesOfMultipleRouters(
+    edges1: ElementsOfMultipleRouters,
+    edges2: ElementsOfMultipleRouters
 ) {
-    for (const routerKey in elements2) {
-        if (routerKey in elements1) {
-            elements1[routerKey] = elements1[routerKey].concat(elements2[routerKey]);
+    for (const routerKey in edges2) {
+        if (routerKey in edges1) {
+            edges1[routerKey] = edges2[routerKey].concat(edges2[routerKey]);
         } else {
-            elements1[routerKey] = elements2[routerKey];
+            edges1[routerKey] = edges2[routerKey];
         }
     }
 }
@@ -214,16 +214,16 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
         parent: Readonly<SParentElement>
     ): DoRouteAllChildrenResult {
         const routing = new EdgeRouting();
-        const newChildrenOfRoutesAll: ElementsOfMultipleRouters = {};
+        const multipleRoutersEdges: ElementsOfMultipleRouters = {};
 
         for (const child of parent.children) {
             if (child instanceof SRoutableElement) {
                 const childRouter = this.get(child.routerKind);
                 if (isMultipleEdgesRouter(childRouter)) {
-                    if (childRouter.kind in newChildrenOfRoutesAll) {
-                        newChildrenOfRoutesAll[childRouter.kind].push(child);
+                    if (childRouter.kind in multipleRoutersEdges) {
+                        multipleRoutersEdges[childRouter.kind].push(child);
                     } else {
-                        newChildrenOfRoutesAll[childRouter.kind] = [child];
+                        multipleRoutersEdges[childRouter.kind] = [child];
                     }
                 } else {
                     routing.set(child.id, this.route(child));
@@ -232,15 +232,15 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
             if (child instanceof SParentElement) {
                 const {
                     routing: childRouting,
-                    multipleRoutersEdges,
+                    multipleRoutersEdges: childMultipleRoutersEdges,
                 } = this.doRouteAllChildren(child);
-                mergeElementsOfRoutersAll(newChildrenOfRoutesAll, multipleRoutersEdges);
+                mergeEdgesOfMultipleRouters(multipleRoutersEdges, childMultipleRoutersEdges);
                 routing.setAll(childRouting);
             }
         }
         return {
             routing,
-            multipleRoutersEdges: newChildrenOfRoutesAll,
+            multipleRoutersEdges: multipleRoutersEdges,
         };
     }
 
