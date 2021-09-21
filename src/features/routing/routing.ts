@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional } from "inversify";
-import { SParentElement } from "../../base/model/smodel";
+import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { findArgValue, IViewArgs } from "../../base/views/view";
 import { Point } from "../../utils/geometry";
@@ -35,199 +35,266 @@ import { PolylineEdgeRouter } from "./polyline-edge-router";
  * the constraints of the routing algorithm or in order to to filter out points which are
  * obsolete, e.g. to close to each other.
  */
-export interface RoutedPoint extends Point {
-    kind: 'source' | 'target' | 'linear'
-    pointIndex?: number
+ export interface RoutedPoint extends Point {
+  kind: 'source' | 'target' | 'linear'
+  pointIndex?: number
 }
 
 /**
- * Stores the state of an edge at a specific time.
- */
+* Stores the state of an edge at a specific time.
+*/
 export interface EdgeSnapshot {
-    routingHandles: SRoutingHandle[]
-    routingPoints: Point[]
-    routedPoints: RoutedPoint[]
-    router: IEdgeRouter
-    source?: SConnectableElement
-    target?: SConnectableElement
+  routingHandles: SRoutingHandle[]
+  routingPoints: Point[]
+  routedPoints: RoutedPoint[]
+  router: IEdgeRouter
+  source?: SConnectableElement
+  target?: SConnectableElement
 }
 
 export interface EdgeMemento {
-    edge: SRoutableElement
-    before: EdgeSnapshot
-    after: EdgeSnapshot
+  edge: SRoutableElement
+  before: EdgeSnapshot
+  after: EdgeSnapshot
 }
 
 /**
- * Encapsulates the logic of how the actual shape of an edge is derived from its routing points,
- * and how the user can modify it.
- */
+* Encapsulates the logic of how the actual shape of an edge is derived from its routing points,
+* and how the user can modify it.
+*/
 export interface IEdgeRouter {
 
-    readonly kind: string;
+  readonly kind: string;
 
-    /**
-     * Calculates the route of the given edge.
-     */
-    route(edge: SRoutableElement): RoutedPoint[]
+  /**
+   * Calculates the route of the given edge.
+   */
+  route(edge: SRoutableElement): RoutedPoint[]
 
-    /**
-     * Calculates a point on the edge
-     *
-     * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
-     * @returns the point or undefined if t is out of bounds or it cannot be computed
-     */
-    pointAt(edge: SRoutableElement, t: number): Point | undefined
+  /**
+   * Calculates a point on the edge
+   *
+   * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
+   * @returns the point or undefined if t is out of bounds or it cannot be computed
+   */
+  pointAt(edge: SRoutableElement, t: number): Point | undefined
 
-    /**
-     * Calculates the derivative at a point on the edge.
-     *
-     * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
-     * @returns the point or undefined if t is out of bounds or it cannot be computed
-     */
-    derivativeAt(edge: SRoutableElement, t: number): Point | undefined
+  /**
+   * Calculates the derivative at a point on the edge.
+   *
+   * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
+   * @returns the point or undefined if t is out of bounds or it cannot be computed
+   */
+  derivativeAt(edge: SRoutableElement, t: number): Point | undefined
 
-    /**
-     * Retuns the position of the given handle based on the routing points of the edge.
-     */
-    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
+  /**
+   * Retuns the position of the given handle based on the routing points of the edge.
+   */
+  getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
 
-    /**
-     * Creates the routing handles for the given target.
-     */
-    createRoutingHandles(edge: SRoutableElement): void
+  /**
+   * Creates the routing handles for the given target.
+   */
+  createRoutingHandles(edge: SRoutableElement): void
 
-    /**
-     * Updates the routing points and handles of the given edge with regard to the given moves.
-     */
-    applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void
+  /**
+   * Updates the routing points and handles of the given edge with regard to the given moves.
+   */
+  applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void
 
-    /**
-     * Updates the routing points and handles of the given edge with regard to the given moves.
-     */
-    applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string): void
+  /**
+   * Updates the routing points and handles of the given edge with regard to the given moves.
+   */
+  applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string): void
 
-    /**
-     * Remove/add points in order to keep routing constraints consistent, or reset RPs on reconnect.
-     */
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean): void;
+  /**
+   * Remove/add points in order to keep routing constraints consistent, or reset RPs on reconnect.
+   */
+  cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean): void;
+  /**
+   * Creates a snapshot of the given edge, storing all the data needed to restore it to
+   * its current state.
+   */
+  takeSnapshot(edge: SRoutableElement): EdgeSnapshot;
 
-    /**
-     * Creates a snapshot of the given edge, storing all the data needed to restore it to
-     * its current state.
-     */
-    takeSnapshot(edge: SRoutableElement): EdgeSnapshot;
+  /**
+   * Applies a snapshot to the current edge.
+   */
+  applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
+}
 
-    /**
-     * Applies a snapshot to the current edge.
-     */
-    applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
+export interface IEdgeRouterAll extends IEdgeRouter {
+  readonly canRouteAll: boolean;
+  routeAll(
+    edges: SRoutableElement[],
+    allElements: readonly SChildElement[]
+  ): EdgeRouting;
 }
 
 /** A postprocessor that is applied to all routes, once they are computed. */
 export interface IEdgeRoutePostprocessor {
-    apply(routing: EdgeRouting): void;
+  apply(routing: EdgeRouting): void;
 }
 
+type ElementsOfRoutersAll = Record<string, SRoutableElement[]>;
+
+interface DoRouteAllChildrenResult {
+  routing: EdgeRouting;
+  elementsOfRoutersAll: ElementsOfRoutersAll;
+  allElements: SChildElement[];
+}
+
+function isRouterAll(
+  router: IEdgeRouter | IEdgeRouterAll
+): router is IEdgeRouterAll {
+  return (router as IEdgeRouterAll).canRouteAll !== undefined;
+}
+
+/* Merges two objects with elements in first one(in-place) */
+function mergeElementsOfRoutersAll(
+  elements1: ElementsOfRoutersAll,
+  elements2: ElementsOfRoutersAll
+) {
+  for (const routerKey in elements2) {
+    if (routerKey in elements1) {
+      elements1[routerKey] = elements1[routerKey].concat(elements2[routerKey]);
+    } else {
+      elements1[routerKey] = elements2[routerKey];
+    }
+  }
+}
 
 @injectable()
 export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
 
-    @multiInject(TYPES.IEdgeRoutePostprocessor) @optional()
-    protected postProcessors: IEdgeRoutePostprocessor[];
+  @multiInject(TYPES.IEdgeRoutePostprocessor) @optional()
+  protected postProcessors: IEdgeRoutePostprocessor[];
 
-    constructor(@multiInject(TYPES.IEdgeRouter) edgeRouters: IEdgeRouter[]) {
-        super();
-        edgeRouters.forEach(router => this.register(router.kind, router));
+  constructor(@multiInject(TYPES.IEdgeRouter) edgeRouters: IEdgeRouter[]) {
+      super();
+      edgeRouters.forEach(router => this.register(router.kind, router));
+  }
+
+  protected get defaultKind() {
+    return PolylineEdgeRouter.KIND;
+  }
+
+  get(kind: string | undefined): IEdgeRouter {
+    return super.get(kind || this.defaultKind);
+  }
+
+  /**
+   * Computes the routes of all edges contained by the specified `parent`.
+   * After all routes are available, it'll apply the registered `EdgeRoutePostProcessors`.
+   * @param parent the parent to traverse for edges
+   * @returns the routes of all edges that are children of `parent`
+   */
+  routeAllChildren(parent: Readonly<SParentElement>): EdgeRouting {
+    const { routing, elementsOfRoutersAll, allElements } =
+      this.doRouteAllChildren(parent);
+    for (const routerKind of Object.keys(elementsOfRoutersAll)) {
+      const router = this.get(routerKind);
+      const elementsRouting = (router as IEdgeRouterAll).routeAll(
+        elementsOfRoutersAll[routerKind],
+        allElements
+      );
+      routing.setAll(elementsRouting);
     }
-
-    protected get defaultKind() {
-        return PolylineEdgeRouter.KIND;
+    for (const postProcessor of this.postProcessors) {
+      postProcessor.apply(routing);
     }
+    return routing;
+  }
 
-    get(kind: string | undefined): IEdgeRouter {
-        return super.get(kind || this.defaultKind);
-    }
-
-    /**
-     * Computes the routes of all edges contained by the specified `parent`.
-     * After all routes are available, it'll apply the registered `EdgeRoutePostProcessors`.
-     * @param parent the parent to traverse for edges
-     * @returns the routes of all edges that are children of `parent`
-     */
-    routeAllChildren(parent: Readonly<SParentElement>): EdgeRouting {
-        const routing = this.doRouteAllChildren(parent);
-        for (const postProcessor of this.postProcessors) {
-            postProcessor.apply(routing);
+  /**
+   * Recursively traverses the children of `parent`, computes routes for child of route IEdgeRoute
+   * and collects children of IEdgeRouterAll-based routers.
+   * @param parent the parent to traverse for edges
+   * @returns the routes of all edges that are children of `parent`
+   */
+  protected doRouteAllChildren(
+    parent: Readonly<SParentElement>
+  ): DoRouteAllChildrenResult {
+    const routing = new EdgeRouting();
+    const newChildrenOfRoutesAll: ElementsOfRoutersAll = {};
+    const allElements: SChildElement[] = [...parent.children];
+    for (const child of parent.children) {
+      if (child instanceof SRoutableElement) {
+        const childRouter = this.get(child.routerKind);
+        if (isRouterAll(childRouter)) {
+          if (childRouter.kind in newChildrenOfRoutesAll) {
+            newChildrenOfRoutesAll[childRouter.kind].push(child);
+          } else {
+            newChildrenOfRoutesAll[childRouter.kind] = [child];
+          }
+        } else {
+          routing.set(child.id, this.route(child));
         }
-        return routing;
+      }
+      if (child instanceof SParentElement) {
+        const {
+          routing: childRouting,
+          elementsOfRoutersAll,
+          allElements: childAllElements,
+        } = this.doRouteAllChildren(child);
+        mergeElementsOfRoutersAll(newChildrenOfRoutesAll, elementsOfRoutersAll);
+        allElements.push(...childAllElements);
+        routing.setAll(childRouting);
+      }
     }
+    return {
+      routing,
+      elementsOfRoutersAll: newChildrenOfRoutesAll,
+      allElements,
+    };
+  }
 
-    /**
-     * Recursively traverses the children of `parent` and compute the routes for each found edge.
-     * @param parent the parent to traverse for edges
-     * @returns the routes of all edges that are children of `parent`
-     */
-    protected doRouteAllChildren(parent: Readonly<SParentElement>) {
-        const routing = new EdgeRouting();
-        for (const child of parent.children) {
-            if (child instanceof SRoutableElement) {
-                routing.set(child.id, this.route(child));
-            }
-            if (child instanceof SParentElement) {
-                const childRoutes = this.doRouteAllChildren(child);
-                routing.setAll(childRoutes);
-            }
-        }
-        return routing;
+  /**
+   * Computes or obtains the route of a single edge.
+   * @param edge the edge to be routed
+   * @param args arguments that may contain an `EdgeRouting` already
+   * @returns the route of the specified `edge`
+   */
+  route(edge: Readonly<SRoutableElement>, args?: IViewArgs): RoutedPoint[] {
+    const edgeRouting = findArgValue<EdgeRouting>(args, 'edgeRouting');
+    if (edgeRouting) {
+      const route = edgeRouting.get(edge.id);
+      if (route) {
+        return route;
+      }
     }
-
-    /**
-     * Computes or obtains the route of a single edge.
-     * @param edge the edge to be routed
-     * @param args arguments that may contain an `EdgeRouting` already
-     * @returns the route of the specified `edge`
-     */
-    route(edge: Readonly<SRoutableElement>, args?: IViewArgs): RoutedPoint[] {
-        const edgeRouting = findArgValue<EdgeRouting>(args, 'edgeRouting');
-        if (edgeRouting) {
-            const route = edgeRouting.get(edge.id);
-            if (route) {
-                return route;
-            }
-        }
-        const router = this.get(edge.routerKind);
-        return router.route(edge);
-    }
+    const router = this.get(edge.routerKind);
+    return router.route(edge);
+  }
 
 }
 
 /** Any object that contains a routing, such as an argument object passed to views for rendering. */
 export interface EdgeRoutingContainer {
-    edgeRouting: EdgeRouting;
+  edgeRouting: EdgeRouting;
 }
 
 /**
- * Map of edges and their computed routes.
- */
+* Map of edges and their computed routes.
+*/
 export class EdgeRouting {
 
-    protected routesMap = new Map<string, RoutedPoint[]>();
+  protected routesMap = new Map<string, RoutedPoint[]>();
 
-    set(routableId: string, route: RoutedPoint[]): void {
-        this.routesMap.set(routableId, route);
-    }
+  set(routableId: string, route: RoutedPoint[]): void {
+      this.routesMap.set(routableId, route);
+  }
 
-    setAll(otherRoutes: EdgeRouting): void {
-        otherRoutes.routes.forEach((route, routableId) => this.set(routableId, route));
-    }
+  setAll(otherRoutes: EdgeRouting): void {
+      otherRoutes.routes.forEach((route, routableId) => this.set(routableId, route));
+  }
 
-    get(routableId: string): RoutedPoint[] | undefined {
-        return this.routesMap.get(routableId);
-    }
+  get(routableId: string): RoutedPoint[] | undefined {
+      return this.routesMap.get(routableId);
+  }
 
-    get routes() {
-        return this.routesMap;
-    }
+  get routes() {
+      return this.routesMap;
+  }
 
 }
