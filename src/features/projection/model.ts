@@ -14,11 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SChildElement, SParentElement } from '../../base/model/smodel';
+import { SChildElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { Bounds } from '../../utils/geometry';
+import { Bounds, isValidDimension } from '../../utils/geometry';
 import { hasOwnProperty } from '../../utils/object';
 import { BoundsAware, isBoundsAware } from '../bounds/model';
+import { Viewport } from '../viewport/model';
 
 /**
  * Model elements implementing this interface can be displayed on a projection bar.
@@ -82,4 +83,54 @@ export function getProjectedBounds(model: Readonly<SChildElement & BoundsAware>)
         parent = parent.parent;
     }
     return bounds;
+}
+
+const MAX_COORD = 1_000_000_000;
+
+/**
+ * Determine the total bounds of a model; this takes the viewport into consideration
+ * so it can be shown in the projections.
+ */
+export function getModelBounds(model: SModelRoot & Viewport): Bounds | undefined {
+    let minX = MAX_COORD;
+    let minY = MAX_COORD;
+    let maxX = -MAX_COORD;
+    let maxY = -MAX_COORD;
+
+    const bounds = isBoundsAware(model) ? model.bounds : undefined;
+    if (bounds && isValidDimension(bounds)) {
+        // Get the bounds directly from the model if it returns a valid size
+        minX = bounds.x;
+        minY = bounds.y;
+        maxX = minX + bounds.width;
+        maxY = minY + bounds.height;
+    } else {
+        // Determine the min. / max coordinates of top-level model elements
+        // Note that this approach is slower, so provide valid bounds to speed up the process.
+        for (const element of model.children) {
+            if (isBoundsAware(element)) {
+                const b = element.bounds;
+                minX = Math.min(minX, b.x);
+                minY = Math.min(minY, b.y);
+                maxX = Math.max(maxX, b.x + b.width);
+                maxY = Math.max(maxY, b.y + b.height);
+            }
+        }
+    }
+
+    // Enlarge the bounds by the current viewport to ensure it always fits into the projection
+    minX = Math.min(minX, model.scroll.x);
+    minY = Math.min(minY, model.scroll.y);
+    maxX = Math.max(maxX, model.scroll.x + model.canvasBounds.width / model.zoom);
+    maxY = Math.max(maxY, model.scroll.y + model.canvasBounds.height / model.zoom);
+
+    if (minX < maxX && minY < maxY) {
+        return {
+            x: minX,
+            y: minY,
+            width: maxX - minX,
+            height: maxY - minY
+        };
+    }
+    return undefined;
 }

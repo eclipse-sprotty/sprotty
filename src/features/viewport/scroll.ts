@@ -24,7 +24,7 @@ import { SetViewportAction } from './viewport';
 import { isViewport, Viewport } from './model';
 import { isMoveable } from '../move/model';
 import { SRoutingHandle } from '../routing/model';
-import { BoundsAware, isBoundsAware } from '../bounds/model';
+import { getModelBounds } from '../projection/model';
 
 export interface Scrollable extends SModelExtension {
     scroll: Point
@@ -45,11 +45,9 @@ export class ScrollMouseListener extends MouseListener {
             const viewport = findParentByFeature(target, isViewport);
             if (viewport) {
                 this.lastScrollPosition = { x: event.pageX, y: event.pageY };
-                if (isBoundsAware(viewport)) {
-                    this.scrollbar = this.getScrollbar(event);
-                    if (this.scrollbar) {
-                        return this.moveScrollBar(viewport, event, this.scrollbar);
-                    }
+                this.scrollbar = this.getScrollbar(event);
+                if (this.scrollbar) {
+                    return this.moveScrollBar(viewport, event, this.scrollbar);
                 }
             } else {
                 this.lastScrollPosition = undefined;
@@ -65,7 +63,7 @@ export class ScrollMouseListener extends MouseListener {
         }
         if (this.scrollbar) {
             const viewport = findParentByFeature(target, isViewport);
-            if (viewport && isBoundsAware(viewport)) {
+            if (viewport) {
                 return this.moveScrollBar(viewport, event, this.scrollbar);
             }
         }
@@ -105,12 +103,15 @@ export class ScrollMouseListener extends MouseListener {
         return [new SetViewportAction(viewport.id, newViewport, false)];
     }
 
-    protected moveScrollBar(model: SModelRoot & Viewport & BoundsAware, event: MouseEvent, scrollbar: HTMLElement): Action[] {
-        const modelBounds = model.bounds;
+    protected moveScrollBar(model: SModelRoot & Viewport, event: MouseEvent, scrollbar: HTMLElement): Action[] {
+        const modelBounds = getModelBounds(model);
+        if (!modelBounds || model.zoom <= 0) {
+            return [];
+        }
         const scrollbarRect = scrollbar.getBoundingClientRect();
         let newScroll: Point;
         if (this.getScrollbarOrientation(scrollbar) === 'horizontal') {
-            if (modelBounds.width <= 0 || model.zoom <= 0 || scrollbarRect.width <= 0) {
+            if (scrollbarRect.width <= 0) {
                 return [];
             }
             const viewportSize = (model.canvasBounds.width / (model.zoom * modelBounds.width)) * scrollbarRect.width;
@@ -125,7 +126,7 @@ export class ScrollMouseListener extends MouseListener {
                 y: model.scroll.y
             };
         } else {
-            if (modelBounds.height <= 0 || model.zoom <= 0 || scrollbarRect.height <= 0) {
+            if (scrollbarRect.height <= 0) {
                 return [];
             }
             const viewportSize = (model.canvasBounds.height / (model.zoom * modelBounds.height)) * scrollbarRect.height;

@@ -19,10 +19,11 @@ import { html } from '../../lib/jsx';
 
 import { injectable } from 'inversify';
 import { VNode, VNodeStyle, h } from 'snabbdom';
+import { Bounds } from '../../utils/geometry';
 import { IView, IViewArgs, RenderingContext } from '../../base/views/view';
 import { setClass } from '../../base/views/vnode-utils';
 import { ViewportRootElement } from '../viewport/viewport-root';
-import { getProjections, ViewProjection } from './model';
+import { getModelBounds, getProjections, ViewProjection } from './model';
 
 /**
  * Special viewport root view that renders horizontal and vertical projection bars for quick navigation.
@@ -44,20 +45,24 @@ export class ProjectedViewportView implements IView {
     }
 
     protected renderProjections(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode[] {
-        if (model.bounds.width <= 0 || model.bounds.height <= 0 || model.zoom <= 0) {
+        if (model.zoom <= 0) {
+            return [];
+        }
+        const modelBounds = getModelBounds(model);
+        if (!modelBounds) {
             return [];
         }
         const projections = getProjections(model) ?? [];
         return [
-            this.renderProjectionBar(projections, model, 'vertical'),
-            this.renderProjectionBar(projections, model, 'horizontal')
+            this.renderProjectionBar(projections, model, modelBounds, 'vertical'),
+            this.renderProjectionBar(projections, model, modelBounds, 'horizontal')
         ];
     }
 
-    protected renderProjectionBar(projections: ViewProjection[], model: Readonly<ViewportRootElement>, orientation: 'horizontal' | 'vertical'): VNode {
-        const params: ProjectionParams = { orientation } as ProjectionParams;
+    protected renderProjectionBar(projections: ViewProjection[], model: Readonly<ViewportRootElement>, modelBounds: Bounds, orientation: 'horizontal' | 'vertical'): VNode {
+        const params: ProjectionParams = { modelBounds, orientation } as ProjectionParams;
         // NOTE: Here we assume that the projection bars have the same size as the diagram canvas, i.e. they are drawn as overlay above the canvas.
-        params.factor = orientation === 'horizontal' ? model.canvasBounds.width / model.bounds.width : model.canvasBounds.height / model.bounds.height;
+        params.factor = orientation === 'horizontal' ? model.canvasBounds.width / modelBounds.width : model.canvasBounds.height / modelBounds.height;
         params.zoomedFactor = params.factor / model.zoom;
         return <div
                 class-sprotty-projection-bar={true}
@@ -72,10 +77,10 @@ export class ProjectedViewportView implements IView {
         let canvasSize, viewportPos: number;
         if (params.orientation === 'horizontal') {
             canvasSize = model.canvasBounds.width;
-            viewportPos = (model.scroll.x - model.bounds.x) * params.factor;
+            viewportPos = (model.scroll.x - params.modelBounds.x) * params.factor;
         } else {
             canvasSize = model.canvasBounds.height;
-            viewportPos = (model.scroll.y - model.bounds.y) * params.factor;
+            viewportPos = (model.scroll.y - params.modelBounds.y) * params.factor;
         }
         let viewportSize = canvasSize * params.zoomedFactor;
         if (viewportPos < 0) {
@@ -103,11 +108,11 @@ export class ProjectedViewportView implements IView {
         let canvasSize, projPos, projSize: number;
         if (params.orientation === 'horizontal') {
             canvasSize = model.canvasBounds.width;
-            projPos = (projection.projectedBounds.x - model.bounds.x) * params.factor;
+            projPos = (projection.projectedBounds.x - params.modelBounds.x) * params.factor;
             projSize = projection.projectedBounds.width * params.factor;
         } else {
             canvasSize = model.canvasBounds.height;
-            projPos = (projection.projectedBounds.y - model.bounds.y) * params.factor;
+            projPos = (projection.projectedBounds.y - params.modelBounds.y) * params.factor;
             projSize = projection.projectedBounds.height * params.factor;
         }
         if (projPos < 0) {
@@ -136,6 +141,7 @@ export class ProjectedViewportView implements IView {
 }
 
 export type ProjectionParams = {
+    modelBounds: Bounds
     orientation: 'horizontal' | 'vertical'
     factor: number
     zoomedFactor: number

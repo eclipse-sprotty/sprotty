@@ -15,9 +15,10 @@
  ********************************************************************************/
 
 import {
-    TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema, Projectable
+    TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema,
+    Projectable, LocalModelSource
 } from '../../../src';
-import createContainer, { SVGModelSource } from './di.config';
+import createContainer from './di.config';
 
 function loadFile(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -88,7 +89,6 @@ export default async function runSVG() {
     };
 
     // Run
-    const modelSource = container.get<SVGModelSource>(TYPES.ModelSource);
+    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
     await modelSource.setModel(model);
-    await modelSource.updateModelBounds();
 }
