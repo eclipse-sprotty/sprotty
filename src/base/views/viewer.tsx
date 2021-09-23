@@ -15,22 +15,22 @@
  ********************************************************************************/
 
 /** @jsx html */
-import { inject, injectable, multiInject, optional } from "inversify";
-import { attributesModule, classModule, eventListenersModule, init, Module, propsModule, styleModule, VNode } from "snabbdom";
+import { inject, injectable, multiInject, optional } from 'inversify';
+import { attributesModule, classModule, eventListenersModule, init, Module, propsModule, styleModule, VNode } from 'snabbdom';
 import { html } from '../../lib/jsx'; // must be html here, as we're creating a div
 import { getWindowScroll } from '../../utils/browser';
-import { ILogger } from "../../utils/logging";
+import { ILogger } from '../../utils/logging';
 import { Action } from '../actions/action';
-import { IActionDispatcher } from "../actions/action-dispatcher";
-import { InitializeCanvasBoundsAction } from "../features/initialize-canvas";
-import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
-import { EMPTY_ROOT } from "../model/smodel-factory";
-import { TYPES } from "../types";
-import { isThunk } from "./thunk-view";
-import { IViewArgs, RenderingContext, RenderingTargetKind, ViewRegistry } from "./view";
-import { ViewerOptions } from "./viewer-options";
-import { IVNodePostprocessor } from "./vnode-postprocessor";
-import { copyClassesFromElement, copyClassesFromVNode, setAttr, setClass } from "./vnode-utils";
+import { IActionDispatcher } from '../actions/action-dispatcher';
+import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
+import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
+import { EMPTY_ROOT } from '../model/smodel-factory';
+import { TYPES } from '../types';
+import { isThunk } from './thunk-view';
+import { IViewArgs, RenderingContext, RenderingTargetKind, ViewRegistry } from './view';
+import { ViewerOptions } from './viewer-options';
+import { IVNodePostprocessor } from './vnode-postprocessor';
+import { copyClassesFromElement, copyClassesFromVNode, setAttr, setClass } from './vnode-utils';
 
 
 export interface IViewer {
@@ -62,7 +62,7 @@ export class ModelRenderer implements RenderingContext {
 
     renderElement(element: Readonly<SModelElement>): VNode | undefined {
         const view = this.viewRegistry.get(element.type);
-        const vnode = view.render(element, this, { ...this.args });
+        const vnode = view.render(element, this, this.args);
         if (vnode) {
             return this.decorate(vnode, element);
         } else {
@@ -256,7 +256,7 @@ export class HiddenModelViewer implements IViewer {
         } else {
             let placeholder = document.getElementById(this.options.hiddenDiv);
             if (placeholder === null) {
-                placeholder = document.createElement("div");
+                placeholder = document.createElement('div');
                 document.body.appendChild(placeholder);
             } else {
                 copyClassesFromElement(placeholder, newVDOM);
@@ -313,7 +313,7 @@ export class PopupModelViewer implements IViewer {
         } else if (typeof document !== 'undefined') {
             let placeholder = document.getElementById(this.options.popupDiv);
             if (placeholder === null) {
-                placeholder = document.createElement("div");
+                placeholder = document.createElement('div');
                 document.body.appendChild(placeholder);
             } else {
                 copyClassesFromElement(placeholder, newVDOM);

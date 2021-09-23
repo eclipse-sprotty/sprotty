@@ -55,3 +55,12 @@ export function getWindowScroll(): Point {
         y: window.pageYOffset
     };
 }
+
+/**
+ * Checks whether the given mouse event hits the given DOM element.
+ */
+export function hitsMouseEvent(child: Element, event: MouseEvent): boolean {
+    const clientRect = child.getBoundingClientRect();
+    return event.clientX >= clientRect.left && event.clientX <= clientRect.right
+        && event.clientY >= clientRect.top && event.clientY <= clientRect.bottom;
+}

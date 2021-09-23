@@ -17,14 +17,14 @@
 /** @jsx svg */
 import { svg } from '../../lib/jsx';
 
-import { injectable, multiInject, optional, interfaces } from "inversify";
-import { VNode } from "snabbdom";
-import { TYPES } from "../types";
-import { InstanceRegistry } from "../../utils/registry";
-import { Point, ORIGIN_POINT } from "../../utils/geometry";
+import { injectable, multiInject, optional, interfaces } from 'inversify';
+import { VNode } from 'snabbdom';
+import { TYPES } from '../types';
+import { InstanceRegistry } from '../../utils/registry';
+import { Point, ORIGIN_POINT } from '../../utils/geometry';
 import { isInjectable } from '../../utils/inversify';
-import { SModelElement, SModelRoot, SParentElement } from "../model/smodel";
-import { EMPTY_ROOT, CustomFeatures } from "../model/smodel-factory";
+import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
+import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory';
 import { registerModelElement } from '../model/smodel-utils';
 
 /**
@@ -57,6 +57,11 @@ export interface IView<A extends IViewArgs = {}> {
     render(model: Readonly<SModelElement>, context: RenderingContext, args?: A): VNode | undefined
 }
 
+/**
+ * Indicates the target of the view rendering. `main` is the actually visible diagram,
+ * `popup` is the mouse hover popup, and `hidden` is for computing element bounds prior
+ * to the main rendering.
+ */
 export type RenderingTargetKind = 'main' | 'popup' | 'hidden';
 
 /**

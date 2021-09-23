@@ -23,6 +23,7 @@ import { SChildElement } from '../../base/model/smodel';
 
 @injectable()
 export abstract class ShapeView implements IView {
+
     /**
      * Check whether the given model element is in the current viewport. Use this method
      * in your `render` implementation to skip rendering in case the element is not visible.
@@ -46,4 +47,5 @@ export abstract class ShapeView implements IView {
     }
 
     abstract render(model: Readonly<SChildElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
+
 }

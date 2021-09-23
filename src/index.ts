@@ -125,6 +125,9 @@ export * from "./features/nameable/model";
 export * from "./features/open/open";
 export * from "./features/open/model";
 
+export * from "./features/projection/model";
+export * from "./features/projection/views";
+
 export * from "./features/routing/anchor";
 export * from "./features/routing/linear-edge-router";
 export * from "./features/routing/manhattan-anchors";
