@@ -133,7 +133,7 @@ export class ProjectedViewportView implements IView {
             top: `${projPos}px`,
             height: `${projSize}px`
         };
-        const result = <div class-sprotty-projection={true} style={style} />;
+        const result = <div id={`${params.orientation}-projection:${projection.elementId}`} class-sprotty-projection={true} style={style} />;
         projection.cssClasses.forEach(cl => setClass(result, cl, true));
         return result;
     }

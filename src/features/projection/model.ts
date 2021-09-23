@@ -37,6 +37,7 @@ export function isProjectable(arg: unknown): arg is Projectable {
  * A projection can be shown in a horizontal or vertical bar to display an overview of the diagram.
  */
 export interface ViewProjection {
+    elementId: string;
     projectedBounds: Bounds;
     cssClasses: string[];
 }
@@ -49,6 +50,7 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
     for (const child of parent.children) {
         if (isProjectable(child) && isBoundsAware(child) && child.projectionCssClasses.length > 0) {
             const projection: ViewProjection = {
+                elementId: child.id,
                 projectedBounds: getProjectedBounds(child),
                 cssClasses: child.projectionCssClasses
             };

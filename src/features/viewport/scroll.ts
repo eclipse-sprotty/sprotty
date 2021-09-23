@@ -25,6 +25,8 @@ import { isViewport, Viewport } from './model';
 import { isMoveable } from '../move/model';
 import { SRoutingHandle } from '../routing/model';
 import { getModelBounds } from '../projection/model';
+import { CenterAction } from './center-fit';
+import { hitsMouseEvent } from '../../utils/browser';
 
 export interface Scrollable extends SModelExtension {
     scroll: Point
@@ -36,10 +38,12 @@ export function isScrollable(element: SModelElement | Scrollable): element is Sc
 
 export class ScrollMouseListener extends MouseListener {
 
-    lastScrollPosition: Point |undefined;
-    scrollbar: HTMLElement | undefined;
+    protected lastScrollPosition: Point |undefined;
+    protected scrollbar: HTMLElement | undefined;
+    protected scrollbarMouseDownTimeout: number | undefined;
+    protected scrollbarMouseDownDelay = 200;
 
-    mouseDown(target: SModelElement, event: MouseEvent): Action[] {
+    mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const moveable = findParentByFeature(target, isMoveable);
         if (moveable === undefined && !(target instanceof SRoutingHandle)) {
             const viewport = findParentByFeature(target, isViewport);
@@ -47,7 +51,11 @@ export class ScrollMouseListener extends MouseListener {
                 this.lastScrollPosition = { x: event.pageX, y: event.pageY };
                 this.scrollbar = this.getScrollbar(event);
                 if (this.scrollbar) {
-                    return this.moveScrollBar(viewport, event, this.scrollbar);
+                    window.clearTimeout(this.scrollbarMouseDownTimeout);
+                    return this.moveScrollBar(viewport, event, this.scrollbar, true)
+                        .map(action => new Promise(resolve => {
+                            this.scrollbarMouseDownTimeout = window.setTimeout(() => resolve(action), this.scrollbarMouseDownDelay);
+                        }));
                 }
             } else {
                 this.lastScrollPosition = undefined;
@@ -62,6 +70,7 @@ export class ScrollMouseListener extends MouseListener {
             return this.mouseUp(target, event);
         }
         if (this.scrollbar) {
+            window.clearTimeout(this.scrollbarMouseDownTimeout);
             const viewport = findParentByFeature(target, isViewport);
             if (viewport) {
                 return this.moveScrollBar(viewport, event, this.scrollbar);
@@ -89,6 +98,27 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
+    doubleClick(target: SModelElement, event: MouseEvent): Action[] {
+        const viewport = findParentByFeature(target, isViewport);
+        if (viewport) {
+            const scrollbar = this.getScrollbar(event);
+            if (scrollbar) {
+                window.clearTimeout(this.scrollbarMouseDownTimeout);
+                const targetElement = this.findClickTarget(scrollbar, event);
+                let elementId: string | undefined;
+                if (targetElement && targetElement.id.startsWith('horizontal-projection:')) {
+                    elementId = targetElement.id.substring('horizontal-projection:'.length);
+                } else if (targetElement && targetElement.id.startsWith('vertical-projection:')) {
+                    elementId = targetElement.id.substring('vertical-projection:'.length);
+                }
+                if (elementId) {
+                    return [new CenterAction([elementId], true, true)];
+                }
+            }
+        }
+        return [];
+    }
+
     protected dragCanvas(viewport: SModelRoot & Viewport, event: MouseEvent, lastScrollPosition: Point): Action[] {
         const dx = (event.pageX - lastScrollPosition.x) / viewport.zoom;
         const dy = (event.pageY - lastScrollPosition.y) / viewport.zoom;
@@ -103,7 +133,7 @@ export class ScrollMouseListener extends MouseListener {
         return [new SetViewportAction(viewport.id, newViewport, false)];
     }
 
-    protected moveScrollBar(model: SModelRoot & Viewport, event: MouseEvent, scrollbar: HTMLElement): Action[] {
+    protected moveScrollBar(model: SModelRoot & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
         const modelBounds = getModelBounds(model);
         if (!modelBounds || model.zoom <= 0) {
             return [];
@@ -141,7 +171,7 @@ export class ScrollMouseListener extends MouseListener {
                 y: modelBounds.y + (position / scrollbarRect.height) * modelBounds.height
             };
         }
-        return [new SetViewportAction(model.id, { scroll: newScroll, zoom: model.zoom }, false)];
+        return [new SetViewportAction(model.id, { scroll: newScroll, zoom: model.zoom }, animate)];
     }
 
     protected getScrollbar(event: MouseEvent): HTMLElement | undefined {
@@ -161,6 +191,16 @@ export class ScrollMouseListener extends MouseListener {
         } else {
             return 'vertical';
         }
+    }
+
+    protected findClickTarget(scrollbar: HTMLElement, event: MouseEvent): HTMLElement | undefined {
+        const matching = Array.from(scrollbar.children).filter(child =>
+            child.id && child.classList.contains('sprotty-projection') && hitsMouseEvent(child, event)
+        ) as HTMLElement[];
+        if (matching.length > 0) {
+            return matching[matching.length - 1];
+        }
+        return undefined;
     }
 
 }
