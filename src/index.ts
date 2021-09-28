@@ -113,7 +113,6 @@ export * from "./features/decoration/model";
 export * from "./features/decoration/views";
 export * from "./features/decoration/decoration-placer";
 
-export * from "./features/edge-intersection/di.config";
 export * from "./features/edge-intersection/intersection-finder";
 export * from "./features/edge-intersection/sweepline";
 
@@ -125,6 +124,9 @@ export * from "./features/nameable/model";
 
 export * from "./features/open/open";
 export * from "./features/open/model";
+
+export * from "./features/projection/model";
+export * from "./features/projection/views";
 
 export * from "./features/routing/anchor";
 export * from "./features/routing/linear-edge-router";
@@ -160,6 +162,7 @@ import buttonModule from "./features/button/di.config";
 import commandPaletteModule from "./features/command-palette/di.config";
 import contextMenuModule from "./features/context-menu/di.config";
 import decorationModule from "./features/decoration/di.config";
+import edgeIntersectionModule from "./features/edge-intersection/di.config";
 import edgeLayoutModule from "./features/edge-layout/di.config";
 import expandModule from "./features/expand/di.config";
 import exportModule from "./features/export/di.config";
@@ -176,8 +179,8 @@ import zorderModule from './features/zorder/di.config';
 
 export {
     graphModule, boundsModule, buttonModule, commandPaletteModule, contextMenuModule, decorationModule,
-    edgeLayoutModule, expandModule, exportModule, fadeModule, hoverModule, moveModule, openModule,
-    routingModule, selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
+    edgeIntersectionModule, edgeLayoutModule, expandModule, exportModule, fadeModule, hoverModule, moveModule,
+    openModule, routingModule, selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
 };
 
 // ------------------ Graph ------------------

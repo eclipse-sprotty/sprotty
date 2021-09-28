@@ -36,3 +36,15 @@
 .foreign-object {
     user-select: none;
 }
+
+.logo-projection {
+    background-color: rgba(255, 153, 0, 0.5);
+}
+
+.tiger-projection {
+    background-color: rgba(204, 114, 38, 0.5);
+}
+
+.node-projection {
+    background-color: rgba(255, 140, 0, 0.2);
+}

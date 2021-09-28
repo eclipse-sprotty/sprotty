@@ -85,3 +85,14 @@ export function configureActionHandler(context: { bind: interfaces.Bind, isBound
         factory: () => ctx.container.get(constr)
     }));
 }
+
+/**
+ * Utility function to register an action handler for an action kind.
+ */
+export function onAction(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+        kind: string, handle: (action: Action) => ICommand | Action | void): void {
+    context.bind(TYPES.ActionHandlerRegistration).toConstantValue({
+        actionKind: kind,
+        factory: () => ({ handle })
+    });
+}
