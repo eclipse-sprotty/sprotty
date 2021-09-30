@@ -87,6 +87,7 @@ export class PolylineEdgeView extends RoutableView {
     }
 
     protected renderAdditionals(edge: SEdge, segments: Point[], context: RenderingContext): VNode[] {
+        // here we need to render the control points?
         return [];
     }
 
@@ -214,6 +215,57 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     }
 
  }
+
+@injectable()
+export class BezierCurveEdgeView extends RoutableView {
+
+    @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+
+    render(edge: Readonly<SEdge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+        const route = this.edgeRouterRegistry.route(edge, args);
+        if (route.length === 0) {
+            return this.renderDanglingEdge("Cannot compute route", edge, context);
+        }
+        if (!this.isVisible(edge, route, context)) {
+            if (edge.children.length === 0) {
+                return undefined;
+            }
+            // The children of an edge are not necessarily inside the bounding box of the route,
+            // so we need to render a group to ensure the children have a chance to be rendered.
+            return <g>{context.renderChildren(edge, { route })}</g>;
+        }
+
+        return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
+            {this.renderLine(edge, route, context, args)}
+            {this.renderAdditionals(edge, route, context)}
+            {context.renderChildren(edge, { route })}
+        </g>;
+    }
+
+    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
+        // Example: <path d="M100,250 C100,100 400,100 400,250 S700,400 700,250" />
+        let path = '';
+        if (segments.length === 4) {
+            const s = segments[0];
+            const h1 = segments[1];
+            const h2 = segments[2];
+            const t = segments[3];
+            path = `M${s.x},${s.y} C${h1.x},${h1.y} ${h2.x},${h2.y} ${t.x},${t.y}`;
+        }
+        else if (segments.length > 4) {
+
+        }
+        return <path d={path} />;
+    }
+
+    protected renderAdditionals(edge: SEdge, segments: Point[], context: RenderingContext): VNode[] {
+        return [];
+    }
+
+    protected renderDanglingEdge(message: string, edge: SEdge, context: RenderingContext): VNode {
+        return <text class-sprotty-edge-dangling={true} title={message}>?</text>;
+    }
+}
 
 @injectable()
 export class SRoutingHandleView implements IView {

@@ -276,6 +276,50 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 }
             ]
         };
+        const node3: SNodeSchema & Expandable = {
+            id: 'node3',
+            type: 'node:class',
+            expanded: false,
+            position: {
+                x: 500,
+                y: 50
+            },
+            layout: 'vbox',
+            children: [
+                <SCompartmentSchema>{
+                    id: 'node3_header',
+                    type: 'comp:header',
+                    layout: 'hbox',
+                    children: [
+                        {
+                            id: 'node3_icon',
+                            type: 'icon',
+                            layout: 'stack',
+                            layoutOptions: {
+                                hAlign: 'center',
+                                resizeContainer: false
+                            },
+                            children: [
+                                <SLabelSchema>{
+                                    id: 'node3_ticon',
+                                    type: 'label:icon',
+                                    text: 'C'
+                                },
+                            ]
+                        },
+                        <SLabelSchema>{
+                            id: 'node3_classname',
+                            type: 'label:heading',
+                            text: 'Ada'
+                        },
+                        {
+                            id: 'node3_expand',
+                            type: 'button:expand'
+                        }
+                    ]
+                }
+            ]
+        };
         const package0: SNodeSchema = {
             id: 'package0',
             type: 'node:package',
@@ -306,14 +350,14 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 }
             ]
         }
-        const edge = {
-            id: 'edge',
+        const edge0 = {
+            id: 'edge0',
             type: 'edge:straight',
             sourceId: node0.id,
             targetId: node1.id,
             children: [
                 <SLabelSchema> {
-                    id: 'edge_label_on',
+                    id: 'edge0_label_on',
                     type: 'label:text',
                     text: 'on',
                     edgePlacement:  {
@@ -323,7 +367,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabelSchema> {
-                    id: 'edge_label_top',
+                    id: 'edge0_label_top',
                     type: 'label:text',
                     text: 'top',
                     edgePlacement:  {
@@ -333,7 +377,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabelSchema> {
-                    id: 'edge_label_bottom',
+                    id: 'edge0_label_bottom',
                     type: 'label:text',
                     text: 'bottom',
                     edgePlacement:  {
@@ -343,7 +387,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabelSchema> {
-                    id: 'edge_label_left',
+                    id: 'edge0_label_left',
                     type: 'label:text',
                     text: 'left',
                     edgePlacement:  {
@@ -353,7 +397,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabelSchema> {
-                    id: 'edge_label_right',
+                    id: 'edge0_label_right',
                     type: 'label:text',
                     text: 'right',
                     edgePlacement:  {
@@ -419,10 +463,18 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 }
             ]
         } as SEdgeSchema;
+        const edge2 = {
+            id: 'edge2',
+            type: 'edge:bezier',
+            sourceId: node0.id,
+            targetId: node3.id,
+            routerKind: 'bezier',
+            children: []
+        } as SEdgeSchema;
         const graph: SGraphSchema = {
             id: 'graph',
             type: 'graph',
-            children: [node0, node2, package0, edge, edge1 ],
+            children: [node0, node2, node3, package0, edge0, edge1, edge2 ],
             layoutOptions: {
                 hGap: 5,
                 hAlign: 'left',

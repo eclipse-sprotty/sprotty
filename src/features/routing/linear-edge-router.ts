@@ -374,4 +374,11 @@ export abstract class LinearEdgeRouter implements IEdgeRouter {
             .filter(otherEdge => otherEdge.target === edge.source)
             .indexOf(edge);
     }
+
+    protected commitRoute(edge: SRoutableElement, routedPoints: RoutedPoint[]) {
+        const newRoutingPoints: Point[] = [];
+        for (let i = 1; i < routedPoints.length - 1; ++i)
+            newRoutingPoints.push({ x: routedPoints[i].x, y: routedPoints[i].y });
+        edge.routingPoints = newRoutingPoints;
+    }
 }

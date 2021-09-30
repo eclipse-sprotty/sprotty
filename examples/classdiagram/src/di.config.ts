@@ -21,7 +21,7 @@ import {
     SRoutingHandleView, PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel,
     SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
-    RectangularNode
+    RectangularNode, BezierCurveEdgeView
 } from "../../../src";
 import edgeIntersectionModule from "../../../src/features/edge-intersection/di.config";
 import { IconView, NodeView} from "./views";
@@ -64,6 +64,7 @@ export default (containerId: string) => {
         configureModelElement(context, 'icon', Icon, IconView);
         configureModelElement(context, 'label:icon', SLabel, SLabelView);
         configureModelElement(context, 'edge:straight', SEdge, JumpingPolylineEdgeView);
+        configureModelElement(context, 'edge:bezier', SEdge, BezierCurveEdgeView);
         configureModelElement(context, 'html', HtmlRoot, HtmlRootView);
         configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView);
         configureModelElement(context, 'button:expand', SButton, ExpandButtonView);
