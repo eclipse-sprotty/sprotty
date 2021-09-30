@@ -26,6 +26,7 @@ export interface ManhattanRouterOptions extends LinearRouteOptions {
 }
 
 export class ManhattanEdgeRouter extends LinearEdgeRouter {
+
     static readonly KIND = 'manhattan';
 
     get kind() {
@@ -103,13 +104,6 @@ export class ManhattanEdgeRouter extends LinearEdgeRouter {
             case 'manhattan-50%': return 0.5;
             default: return undefined;
         }
-    }
-
-    protected commitRoute(edge: SRoutableElement, routedPoints: RoutedPoint[]) {
-        const newRoutingPoints: Point[] = [];
-        for (let i = 1; i < routedPoints.length - 1; ++i)
-            newRoutingPoints.push({ x: routedPoints[i].x, y: routedPoints[i].y });
-        edge.routingPoints = newRoutingPoints;
     }
 
     protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]) {
