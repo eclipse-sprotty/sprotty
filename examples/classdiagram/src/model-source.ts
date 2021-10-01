@@ -282,7 +282,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             expanded: false,
             position: {
                 x: 500,
-                y: 50
+                y: 25
             },
             layout: 'vbox',
             children: [
@@ -469,6 +469,13 @@ export class ClassDiagramModelSource extends LocalModelSource {
             sourceId: node0.id,
             targetId: node3.id,
             routerKind: 'bezier',
+            routingPoints: [
+                { x: 260, y: 140 },
+                { x: 290, y: 80 },
+                { x: 350, y: 100 },
+                { x: 390, y: 120 },
+                { x: 450, y: 40 }
+            ],
             children: []
         } as SEdgeSchema;
         const graph: SGraphSchema = {

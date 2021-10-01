@@ -243,19 +243,46 @@ export class BezierCurveEdgeView extends RoutableView {
     }
 
     protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
-        // Example: <path d="M100,250 C100,100 400,100 400,250 S700,400 700,250" />
+        /**
+         * Example for two splines:
+         * SVG:
+         * <path d="M0,300 C0,150 300,150 300,300 S600,450 600,300" />
+         *
+         * Segments input layout:
+         * routingPoints[0] = source;
+         * routingPoints[1] = controlForSource;
+         * routingPoints[2] = controlForSegment1;
+         * routingPoints[3] = segment;
+         * routingPoints[4] = controlForSegment2;
+         * routingPoints[5] = controlForTarget;
+         * routingPoints[6] = target;
+         */
         let path = '';
-        if (segments.length === 4) {
-            const s = segments[0];
-            const h1 = segments[1];
-            const h2 = segments[2];
-            const t = segments[3];
-            path = `M${s.x},${s.y} C${h1.x},${h1.y} ${h2.x},${h2.y} ${t.x},${t.y}`;
-        }
-        else if (segments.length > 4) {
-
+        if (segments.length >= 4) {
+            path += this.buildMainSegment(segments);
+            const pointsLeft = segments.length - 4;
+            if (pointsLeft > 0 && pointsLeft % 3 === 0) {
+                for (let i = 4; i < segments.length; i += 3) {
+                    path += this.addSpline(segments, i);
+                }
+            }
         }
         return <path d={path} />;
+    }
+
+    private buildMainSegment(segments: Point[]) {
+        const s = segments[0];
+        const h1 = segments[1];
+        const h2 = segments[2];
+        const t = segments[3];
+        return `M${s.x},${s.y} C${h1.x},${h1.y} ${h2.x},${h2.y} ${t.x},${t.y}`;
+    }
+
+    private addSpline(segments: Point[], index: number) {
+        // We have two controls for each junction, but SVG does not therefore index is jumped over
+        const c = segments[index + 1];
+        const p = segments[index + 2];
+        return ` S${c.x},${c.y} ${p.x},${p.y}`;
     }
 
     protected renderAdditionals(edge: SEdge, segments: Point[], context: RenderingContext): VNode[] {

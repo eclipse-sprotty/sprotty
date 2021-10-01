@@ -158,8 +158,8 @@ export class PolylineEdgeRouter extends LinearEdgeRouter {
                         child.pointIndex++;
                 });
                 this.addHandle(edge, 'line', 'volatile-routing-point', index);
-                this.addHandle(edge, 'line', 'volatile-routing-point', index + 1);
                 index++;
+                this.addHandle(edge, 'line', 'volatile-routing-point', index);
             }
             if (index >= 0 && index < points.length) {
                 points[index] = move.toPosition;
