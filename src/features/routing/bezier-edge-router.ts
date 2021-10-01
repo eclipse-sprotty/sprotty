@@ -16,7 +16,7 @@
 
 import { injectable } from 'inversify';
 import { ResolvedHandleMove } from '../move/move';
-import { center, centerOfLine } from '../../utils/geometry';
+import { center, centerOfLine, Point } from '../../utils/geometry';
 import { SRoutableElement, SRoutingHandle } from './model';
 import { RoutedPoint } from './routing';
 import { LinearEdgeRouter } from './linear-edge-router';
@@ -25,6 +25,7 @@ import { LinearEdgeRouter } from './linear-edge-router';
 export abstract class BezierEdgeRouter extends LinearEdgeRouter {
 
     static readonly KIND = 'bezier';
+    static readonly DEFAULT_BEZIER_HANDLE_OFFSET = 25;
 
     get kind() {
         return BezierEdgeRouter.KIND;
@@ -46,8 +47,11 @@ export abstract class BezierEdgeRouter extends LinearEdgeRouter {
         result.push({ kind: 'source', x: sourceAnchor.x, y: sourceAnchor.y });
         if (rpCount === 0) {
             // initial values
-            result.push({ kind: 'bezier-control', x: sourceAnchor.x + 25, y: sourceAnchor.y - 25, pointIndex: 0 });
-            result.push({ kind: 'bezier-control', x: targetAnchor.x - 25, y: targetAnchor.y + 25, pointIndex: 1 });
+            const { h1, h2 } = this.createDefaultBezierHandles(sourceAnchor, targetAnchor);
+            result.push( { kind: 'bezier-control', x: h1.x, y: h1.y, pointIndex: 0 } );
+            result.push( { kind: 'bezier-control', x: h2.x, y: h2.y, pointIndex: 1 } );
+            edge.routingPoints.push(h1);
+            edge.routingPoints.push(h2);
         }
         else if (rpCount >= 2) {
             for (let i = 0; i < rpCount; i++) {
@@ -64,30 +68,47 @@ export abstract class BezierEdgeRouter extends LinearEdgeRouter {
         return result;
     }
 
+    private createDefaultBezierHandles(relH1: Point, relH2: Point): { h1: Point, h2: Point } {
+        const h1 = {
+            x: relH1.x + BezierEdgeRouter.DEFAULT_BEZIER_HANDLE_OFFSET,
+            y: relH1.y - BezierEdgeRouter.DEFAULT_BEZIER_HANDLE_OFFSET
+        };
+        const h2 = {
+            x: relH2.x - BezierEdgeRouter.DEFAULT_BEZIER_HANDLE_OFFSET,
+            y: relH2.y + BezierEdgeRouter.DEFAULT_BEZIER_HANDLE_OFFSET
+        };
+        return { h1: h1, h2: h2 };
+    }
+
     createRoutingHandles(edge: SRoutableElement): void {
         // route ensure there are at least 2 routed points
-        const routedPoints = this.route(edge);
-        this.commitRoute(edge, routedPoints);
+        this.route(edge);
         const rpCount = edge.routingPoints.length;
 
-        this.addHandle(edge, 'source', 'routing-point', 0);
+        // New: idea: Add two circle for add/remove segments
+        this.rebuildHandles(edge, rpCount);
+    }
+
+    private rebuildHandles(edge: SRoutableElement, rpCount: number) {
+        this.addHandle(edge, 'source', 'routing-point', -2);
+        this.addHandle(edge, 'bezier-control', 'volatile-routing-point', 0);
         this.addHandle(edge, 'line', 'volatile-routing-point', 0);
 
-        this.addHandle(edge, 'bezier-control', 'volatile-routing-point', 0);
         if (rpCount > 2) {
-            for (let i = 1; i < rpCount - 1; i++) {
+            for (let i = 1; i < rpCount - 1; i += 3) {
                 this.addHandle(edge, 'bezier-control', 'volatile-routing-point', i);
-                this.addHandle(edge, 'bezier-segment', 'volatile-routing-point', i);
-                this.addHandle(edge, 'bezier-control', 'volatile-routing-point', i);
+                this.addHandle(edge, 'bezier-junction', 'volatile-routing-point', i + 1);
+                this.addHandle(edge, 'bezier-control', 'volatile-routing-point', i + 2);
+                this.addHandle(edge, 'line', 'volatile-routing-point', i + 2);
             }
         }
         this.addHandle(edge, 'bezier-control', 'volatile-routing-point', rpCount - 1);
-        this.addHandle(edge, 'target', 'routing-point', rpCount - 1);
+        this.addHandle(edge, 'target', 'routing-point', -1);
     }
 
     getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle) {
         console.log(handle.kind);
-       if (handle.kind === 'bezier-control') {
+       if (handle.kind === 'bezier-control' || handle.kind === 'bezier-junction') {
             for (let i = 0; i < route.length; i++) {
                 const p = route[i];
                 if (p.pointIndex === handle.pointIndex)
@@ -106,12 +127,72 @@ export abstract class BezierEdgeRouter extends LinearEdgeRouter {
         moves.forEach(move => {
             const handle = move.handle;
             if (handle.kind === 'bezier-control') {
-                const points = edge.routingPoints;
+                // find potential other handle/rp and move
+                this.moveBezierControlPair(move.toPosition, move.handle.pointIndex, edge);
+            }
+            if (handle.kind === 'bezier-junction') {
                 const index = handle.pointIndex;
-                if (index >= 0 && index < points.length) {
-                    points[index] = move.toPosition;
+                if (index >= 0 && index < edge.routingPoints.length) {
+                    edge.routingPoints[index] = move.toPosition;
+                    this.moveBezierControlPair(edge.routingPoints[index - 1], index - 1, edge);
                 }
             }
+            else if (handle.kind === 'line') {
+                this.createNewBezierSegment(move, edge);
+            }
         });
+    }
+
+    private createNewBezierSegment(move: ResolvedHandleMove, edge: SRoutableElement): void {
+        const handle = move.handle;
+        const bezierJunctionPos = move.fromPosition;
+        handle.kind = 'bezier-junction';
+        handle.type = 'routing-point';
+
+        const index = handle.pointIndex;
+        const routingPoints = edge.routingPoints;
+        const { h1, h2 } = this.createDefaultBezierHandles(bezierJunctionPos, bezierJunctionPos);
+
+        routingPoints.splice(index + 1, 0, h1);
+        routingPoints.splice(index + 2, 0, bezierJunctionPos);
+        routingPoints.splice(index + 3, 0, h2);
+        // ensure handles are correctly positioned
+        this.moveBezierControlPair(h1, index + 1, edge);
+
+        // simple solution for now: just rebuildHandles
+        edge.removeAll(c => c instanceof SRoutingHandle);
+        this.rebuildHandles(edge, routingPoints.length);
+    }
+
+    private moveBezierControlPair(newPos: Point, pointIndex: number, edge: SRoutableElement) {
+        if (pointIndex >= 0 && pointIndex < edge.routingPoints.length) {
+            // find neighbors
+            const before = pointIndex - 1;
+            const after = pointIndex + 1;
+
+            // this is the first control or the last control => nothing to do further
+            if (before < 0 || after === edge.routingPoints.length) {
+                edge.routingPoints[pointIndex] = newPos;
+            }
+            else  {
+                // behind bezier-junction
+                if (pointIndex % 3 === 0) {
+                    this.setBezierMirror(edge, newPos, pointIndex, false);
+                }
+                // before bezier-junction
+                else if ((pointIndex + 2) % 3 === 0) {
+                    this.setBezierMirror(edge, newPos, pointIndex, true);
+                }
+            }
+        }
+    }
+
+    private setBezierMirror(edge: SRoutableElement, newPos: Point, pointIndex: number, before: boolean) {
+        edge.routingPoints[pointIndex] = newPos;
+        const jct = edge.routingPoints[before ? (pointIndex + 1) : (pointIndex - 1)];
+        edge.routingPoints[before ? (pointIndex + 2) : (pointIndex - 2)] = {
+            x: jct.x - (newPos.x - jct.x),
+            y: jct.y - (newPos.y - jct.y)
+        };
     }
 }

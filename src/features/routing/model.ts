@@ -131,7 +131,7 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
     }
 }
 
-export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%' | 'bezier-control' | 'bezier-segment';
+export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%' | 'bezier-control' | 'bezier-junction';
 
 export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {
     static readonly DEFAULT_FEATURES = [selectFeature, moveFeature, hoverFeedbackFeature];
