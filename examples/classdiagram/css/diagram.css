@@ -98,6 +98,22 @@
     opacity: 0.35;
 }
 
+.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-add'] {
+    fill: #2B2;
+}
+
+.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-remove'] {
+    fill: #B00;
+}
+
+.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-control-before'] {
+    fill: #44E;
+}
+
+.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-control-after'] {
+    fill: #44E;
+}
+
 .sprotty-edge > .sprotty-routing-handle.selected {
     fill: #66a;
 }

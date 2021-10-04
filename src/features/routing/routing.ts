@@ -36,7 +36,7 @@ import { PolylineEdgeRouter } from "./polyline-edge-router";
  * obsolete, e.g. to close to each other.
  */
 export interface RoutedPoint extends Point {
-    kind: 'source' | 'target' | 'linear' | 'bezier-segment' | 'bezier-control'
+    kind: 'source' | 'target' | 'linear' | 'bezier-control-before' | 'bezier-junction' | 'bezier-control-after'
     pointIndex?: number
 }
 
