@@ -55,6 +55,6 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
     createSelectActions(modelRoot: SModelRoot): LabeledAction[] {
         const nameables = toArray(modelRoot.index.all().filter(element => isNameable(element)));
         return nameables.map(nameable => new LabeledAction(`Reveal ${name(nameable)}`,
-            [new SelectAction([nameable.id]), new CenterAction([nameable.id])], 'fa-eye'));
+            [new SelectAction([nameable.id]), new CenterAction([nameable.id])], 'eye'));
     }
 }

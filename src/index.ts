@@ -216,6 +216,7 @@ export { modelSourceModule };
 // ------------------ Utilities ------------------
 
 export * from "./utils/browser";
+export * from "./utils/codicon";
 export * from "./utils/color";
 export * from "./utils/geometry";
 export * from "./utils/inversify";
