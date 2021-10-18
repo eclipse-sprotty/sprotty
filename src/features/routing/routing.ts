@@ -111,7 +111,6 @@ export interface IEdgeRouter {
      * Remove/add points in order to keep routing constraints consistent, or reset RPs on reconnect.
      */
     cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean): void;
-
     /**
      * Creates a snapshot of the given edge, storing all the data needed to restore it to
      * its current state.
@@ -124,11 +123,23 @@ export interface IEdgeRouter {
     applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
 }
 
+export interface IMultipleEdgesRouter extends IEdgeRouter {
+    routeAll(
+        edges: SRoutableElement[],
+        parent: Readonly<SParentElement>
+    ): EdgeRouting;
+}
+
+function isMultipleEdgesRouter(
+    router: IEdgeRouter | IMultipleEdgesRouter
+): router is IMultipleEdgesRouter {
+    return (router as IMultipleEdgesRouter).routeAll !== undefined;
+}
+
 /** A postprocessor that is applied to all routes, once they are computed. */
 export interface IEdgeRoutePostprocessor {
     apply(routing: EdgeRouting): void;
 }
-
 
 @injectable()
 export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
@@ -164,21 +175,44 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
     }
 
     /**
-     * Recursively traverses the children of `parent` and compute the routes for each found edge.
+     * Recursively traverses the children of `parent`, collects children grouped by router kind,
+     * and then routes them either.
      * @param parent the parent to traverse for edges
      * @returns the routes of all edges that are children of `parent`
      */
     protected doRouteAllChildren(parent: Readonly<SParentElement>) {
         const routing = new EdgeRouting();
-        for (const child of parent.children) {
-            if (child instanceof SRoutableElement) {
-                routing.set(child.id, this.route(child));
-            }
-            if (child instanceof SParentElement) {
-                const childRoutes = this.doRouteAllChildren(child);
-                routing.setAll(childRoutes);
+        const routersEdges = new Map<string, SRoutableElement[]>();
+
+        const elementsToProcess = [parent];
+        while (elementsToProcess.length > 0) {
+            const element = elementsToProcess.shift() as SParentElement;
+            for (const child of element.children) {
+                if (child instanceof SRoutableElement) {
+                    const routerKind = child.routerKind || this.defaultKind;
+                    if (routersEdges.has(routerKind)) {
+                        (routersEdges.get(routerKind) as SRoutableElement[]).push(child);
+                    } else {
+                        routersEdges.set(routerKind, [child]);
+                    }
+                }
+                if (child instanceof SParentElement) {
+                    elementsToProcess.push(child);
+                }
             }
         }
+
+        routersEdges.forEach((edges, routerKind) => {
+            const childRouter = this.get(routerKind);
+            if (isMultipleEdgesRouter(childRouter)) {
+                routing.setAll(childRouter.routeAll(edges, parent));
+            } else {
+                for (const edge of  edges) {
+                    routing.set(edge.id, this.route(edge));
+                }
+            }
+        });
+
         return routing;
     }
 
