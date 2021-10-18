@@ -353,3 +353,84 @@ export class SCompartmentView implements IView {
         return vnode;
     }
 }
+
+@injectable()
+export class SBezierCreateHandleView extends SRoutingHandleView {
+
+    render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+        if (args) {
+            const theRoute = args.route;
+            if (theRoute && handle.parent instanceof SRoutableElement) {
+                const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
+                const position = router.getHandlePosition(handle.parent, theRoute, handle);
+                if (position !== undefined) {
+
+                    const translation = "translate(" + position.x + ", " + position.y + ")";
+                    const textOffsetX = -5.5;
+                    const textOffsetY = 5.5;
+                    const text = (handle.kind === "bezier-add") ? "+" : "-";
+                    const node =
+                        <g transform={translation} class-sprotty-routing-handle={true}
+                                class-selected={handle.selected} class-mouseover={handle.hoverFeedback}>
+                            <circle r={this.getRadius()} />
+                            <text x={textOffsetX} y={textOffsetY} attrs-text-align="middle"
+                                style-font-family="monospace" style-pointer-events="none" style-fill="white">{text}</text>
+                        </g>;
+                    setAttr(node, 'data-kind', handle.kind);
+                    return node;
+                }
+            }
+        }
+        // Fallback: Create an empty group
+        return <g />;
+    }
+}
+
+@injectable()
+export class SBezierControlHandleView extends SRoutingHandleView {
+
+    render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+        if (args) {
+            const theRoute = args.route;
+            if (theRoute && handle.parent instanceof SRoutableElement) {
+                const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
+                const position = router.getHandlePosition(handle.parent, theRoute, handle) as any;
+                if (position !== undefined) {
+
+                    let pathEndPos: Point | undefined;
+                    for (let i = 0; i < theRoute.length; i++) {
+                        const elem = theRoute[i];
+                        if (elem.kind === position.kind && elem.pointIndex === position.pointIndex) {
+                            if (handle.kind === 'bezier-control-before') {
+                                pathEndPos = theRoute[i + 1];
+                            }
+                            else {
+                                pathEndPos = theRoute[i - 1];
+                            }
+                            break;
+                        }
+                    }
+
+                    let node;
+                    if (pathEndPos) {
+                        const coords = `M ${position.x}, ${position.y} L ${pathEndPos.x}, ${pathEndPos.y}`;
+                        node =
+                            <g class-sprotty-routing-handle={true} class-selected={handle.selected} class-mouseover={handle.hoverFeedback}>
+                                <path d={coords} stroke="grey" style-stroke-width="2px"></path>
+                                <circle cx={position.x} cy={position.y} r={this.getRadius()} />
+                            </g>;
+                    }
+                    else {
+                        node = <circle class-sprotty-routing-handle={true} class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
+                                cx={position.x} cy={position.y} r={this.getRadius()} />;
+                    }
+
+                    setAttr(node, 'data-kind', handle.kind);
+                    return node;
+                }
+            }
+        }
+        // Fallback: Create an empty group
+        return <g />;
+    }
+}
