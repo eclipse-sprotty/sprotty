@@ -36,7 +36,7 @@ export class PopupModelProvider implements IPopupModelProvider {
                     <PreRenderedElementSchema> {
                         type: 'pre-rendered',
                         id: 'popup-title',
-                        code: `<div class="sprotty-popup-title">Class ${node.name}</div>`
+                        code: `<div class="sprotty-popup-title"><span class="fa fa-info-circle"/> Class ${node.name}</div>`
                     },
                     <PreRenderedElementSchema> {
                         type: 'pre-rendered',

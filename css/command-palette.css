@@ -16,6 +16,18 @@
 .command-palette {
     transition: opacity 0.3s linear;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    display: flex;
+    align-items: center;
+}
+
+.command-palette input {
+    width: 100%;
+    display: flex;
+}
+
+.command-palette span.loading {
+    position: absolute;
+    right: 5px;
 }
 
 .command-palette-suggestions {
@@ -29,6 +41,8 @@
 
 .command-palette-suggestions .icon {
     padding-right: 0.3em;
+    display: flex;
+    align-self: center;
 }
 
 .command-palette-suggestions em {
@@ -38,6 +52,7 @@
 
 .command-palette-suggestions > div {
     padding: 0 4px;
+    display: flex;
 }
 
 .command-palette-suggestions .group {

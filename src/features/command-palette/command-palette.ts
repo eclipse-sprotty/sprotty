@@ -24,6 +24,7 @@ import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-exte
 import { DOMHelper } from "../../base/views/dom-helper";
 import { KeyListener } from "../../base/views/key-tool";
 import { ViewerOptions } from "../../base/views/viewer-options";
+import { codiconCSSClasses, codiconCSSString } from "../../utils/codicon";
 import { toArray } from "../../utils/iterable";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { getAbsoluteClientBounds } from "../bounds/model";
@@ -42,7 +43,7 @@ export class CommandPalette extends AbstractUIExtension {
     static readonly ID = "command-palette";
     static readonly isInvokePaletteKey = (event: KeyboardEvent) => matchesKeystroke(event, 'Space', 'ctrl');
 
-    protected loadingIndicatorClasses = ['loading'];
+    protected loadingIndicatorClasses = codiconCSSClasses('loading', false, true, ['loading']);
     protected xOffset = 20;
     protected yOffset = 20;
     protected defaultWidth = 400;
@@ -184,8 +185,16 @@ export class CommandPalette extends AbstractUIExtension {
         return itemElement;
     }
 
-    protected renderIcon(itemElement: HTMLDivElement, icon: string) {
-        itemElement.innerHTML += `<span class="icon fa ${icon}"></span>`;
+    protected renderIcon(itemElement: HTMLDivElement, iconId: string) {
+        itemElement.innerHTML += `<span class="icon ${this.getCodicon(iconId)}"></span>`;
+    }
+
+    protected getFontAwesomeIcon(iconId: string) {
+        return `fa fa-${iconId}`;
+    }
+
+    protected getCodicon(iconId: string) {
+        return codiconCSSString(iconId);
     }
 
     protected filterActions(filterText: string, actions: LabeledAction[]): LabeledAction[] {

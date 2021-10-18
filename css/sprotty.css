@@ -83,3 +83,13 @@
     width: 100%;
     left: 0;
 }
+
+@keyframes spin {
+	100% {
+		transform:rotate(360deg);
+	}
+}
+
+.animation-spin {
+	animation: spin 1.5s linear infinite;
+}
