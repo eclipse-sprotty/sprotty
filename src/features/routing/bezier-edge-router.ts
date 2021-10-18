@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019-2020 TypeFox and others.
+ * Copyright (c) 2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ export abstract class BezierEdgeRouter extends LinearEdgeRouter {
             for (let i = 0; i < rpCount; i++) {
                 const p = edge.routingPoints[i];
                 if (i % 3 === 0) {
-                    result.push({ kind: 'bezier-control-before', x: p.x, y: p.y, pointIndex: i });
+                    result.push({ kind: 'bezier-control-after', x: p.x, y: p.y, pointIndex: i });
                 }
                 if ((i + 1) % 3 === 0) {
                     result.push({ kind: 'bezier-junction', x: p.x, y: p.y, pointIndex: i });
@@ -94,19 +94,19 @@ export abstract class BezierEdgeRouter extends LinearEdgeRouter {
 
     private rebuildHandles(edge: SRoutableElement, rpCount: number) {
         this.addHandle(edge, 'source', 'routing-point', -2);
-        this.addHandle(edge, 'bezier-control-after', 'volatile-routing-point', 0);
-        this.addHandle(edge, 'bezier-add', 'volatile-routing-point', 0);
+        this.addHandle(edge, 'bezier-control-after', 'bezier-routing-point', 0);
+        this.addHandle(edge, 'bezier-add', 'bezier-create-routing-point', 0);
 
         if (rpCount > 2) {
             for (let i = 1; i < rpCount - 1; i += 3) {
-                this.addHandle(edge, 'bezier-control-before', 'routing-point', i);
-                this.addHandle(edge, 'bezier-add', 'volatile-routing-point', i + 1);
+                this.addHandle(edge, 'bezier-control-before', 'bezier-routing-point', i);
+                this.addHandle(edge, 'bezier-add', 'bezier-create-routing-point', i + 1);
                 this.addHandle(edge, 'bezier-junction', 'routing-point', i + 1);
-                this.addHandle(edge, 'bezier-remove', 'volatile-routing-point', i + 1);
-                this.addHandle(edge, 'bezier-control-after', 'routing-point', i + 2);
+                this.addHandle(edge, 'bezier-remove', 'bezier-create-routing-point', i + 1);
+                this.addHandle(edge, 'bezier-control-after', 'bezier-routing-point', i + 2);
             }
         }
-        this.addHandle(edge, 'bezier-control-before', 'volatile-routing-point', rpCount - 1);
+        this.addHandle(edge, 'bezier-control-before', 'bezier-routing-point', rpCount - 1);
         this.addHandle(edge, 'target', 'routing-point', -1);
     }
 
