@@ -57,7 +57,7 @@ export class ActionDispatcher implements IActionDispatcher {
         if (!this.initialized) {
             this.initialized = this.actionHandlerRegistryProvider().then(registry => {
                 this.actionHandlerRegistry = registry;
-                this.handleAction(new SetModelAction(EMPTY_ROOT));
+                this.handleAction(new SetModelAction(EMPTY_ROOT)).catch(() => { /* Logged in handleAction method */ });
             });
         }
         return this.initialized;
@@ -100,7 +100,7 @@ export class ActionDispatcher implements IActionDispatcher {
         }
         const deferred = new Deferred<Res>();
         this.requests.set(action.requestId, deferred);
-        this.dispatch(action);
+        this.dispatch(action).catch(() => { /* Logged in handleAction method */ });
         return deferred.promise;
     }
 
