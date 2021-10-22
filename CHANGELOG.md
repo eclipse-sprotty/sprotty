@@ -2,19 +2,23 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-layout](https://github.com/eclipse/sprotty-layout/blob/master/CHANGELOG.md).
 
-### v0.10.0 (upcoming)
+### v0.10.0 (Oct. 2021)
 
 New features:
+
  * Line jumps (`JumpingPolylineEdgeView`) or gaps (`PolylineEdgeViewWithGapsOnIntersections`) to visually clarify intersecting edges ([#226](https://github.com/eclipse/sprotty/pull/226))
 
  * `TYPES.IEdgeRoutePostprocessor` can be registered to analyse and/or change computed routes ([#226](https://github.com/eclipse/sprotty/pull/226))
 
  * `EdgeRouterRegistry` can route all edges contained in a parent element at once. These pre-computed routes are then added to the `args` that are passed on to the views. This allows `IView` and `IEdgeRoutePostprocessor` implementations to consider all computed routes before the routed edges have been rendered. ([#226](https://github.com/eclipse/sprotty/pull/226))
 
-Breaking API changes:
- * It is recommended that implementations of the `IView` for `SGraph` instances compute the routes of its children with `edgeRouterRegistry.routeAllChildren(model)` and pass on the routes as arguments to its child views. See implementation of `SGraphView` ([#226](https://github.com/eclipse/sprotty/pull/226))
+ * Added "projection bars" that can serve as scroll bars and display horizontal / vertical projections of model elements. Use `ProjectedViewportView` as root element view to enable this feature. ([#240](https://github.com/eclipse/sprotty/pull/240))
+
+ * Added support for Codicons ([#248](https://github.com/eclipse/sprotty/issues/248))
 
 Breaking API changes:
+
+ * It is recommended that implementations of the `IView` for `SGraph` instances compute the routes of its children with `edgeRouterRegistry.routeAllChildren(model)` and pass on the routes as arguments to its child views. See implementation of `SGraphView` ([#226](https://github.com/eclipse/sprotty/pull/226))
 
 * Upgrade to snabbdom 3.0.3. The imports of snabbdom functions have changed. The main snabbdom package exports all of the public API.This means consumers of the snabbdom package need to update their imports.
 
@@ -49,6 +53,10 @@ import { svg } from 'sprotty';
 
 * The `on` function API of `vnode-utils` has been changed due to the API change of snabbdom's event listner. Listners must `bind` elements. (see https://github.com/snabbdom/snabbdom/issues/802)
 
+Fixed issues: https://github.com/eclipse/sprotty/milestone/5?closed=1
+
+-----
+
 ### v0.9.0 (Aug. 2020)
 
 New features:
@@ -56,6 +64,8 @@ New features:
  * Rejecting request actions ([#184](https://github.com/eclipse/sprotty/pull/184))
 
 Fixed issues: https://github.com/eclipse/sprotty/milestone/4?closed=1
+
+-----
 
 ### v0.8.0 (Apr. 2020)
 
