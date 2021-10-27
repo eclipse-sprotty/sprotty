@@ -403,8 +403,7 @@ export class SBezierControlHandleView extends SRoutingHandleView {
                         if (elem.kind === position.kind && elem.pointIndex === position.pointIndex) {
                             if (handle.kind === 'bezier-control-before') {
                                 pathEndPos = theRoute[i + 1];
-                            }
-                            else {
+                            } else {
                                 pathEndPos = theRoute[i - 1];
                             }
                             break;
@@ -419,8 +418,7 @@ export class SBezierControlHandleView extends SRoutingHandleView {
                                 <path d={coords} stroke="grey" style-stroke-width="2px"></path>
                                 <circle cx={position.x} cy={position.y} r={this.getRadius()} />
                             </g>;
-                    }
-                    else {
+                    } else {
                         node = <circle class-sprotty-routing-handle={true} class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
                                 cx={position.x} cy={position.y} r={this.getRadius()} />;
                     }

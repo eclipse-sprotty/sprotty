@@ -17,7 +17,7 @@
 import { translatePoint } from "../../base/model/smodel-utils";
 import { almostEquals, center, includes, linear, Point, manhattanDistance } from "../../utils/geometry";
 import { ResolvedHandleMove } from "../move/move";
-import { DefaultAnchors, LinearEdgeRouter, LinearRouteOptions, Side } from "./linear-edge-router";
+import { DefaultAnchors, AbstractEdgeRouter, LinearRouteOptions, Side } from "./abstract-edge-router";
 import { SRoutableElement, RoutingHandleKind, SRoutingHandle } from "./model";
 import { RoutedPoint } from "./routing";
 
@@ -25,7 +25,7 @@ export interface ManhattanRouterOptions extends LinearRouteOptions {
     standardDistance: number;
 }
 
-export class ManhattanEdgeRouter extends LinearEdgeRouter {
+export class ManhattanEdgeRouter extends AbstractEdgeRouter {
 
     static readonly KIND = 'manhattan';
 
