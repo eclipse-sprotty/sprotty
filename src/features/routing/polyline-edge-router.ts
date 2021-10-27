@@ -19,7 +19,7 @@ import { angleBetweenPoints, center, centerOfLine, maxDistance, Point } from "..
 import { SRoutingHandle } from "./model";
 import { ResolvedHandleMove } from "../move/move";
 import { AnchorComputerRegistry } from "./anchor";
-import { LinearEdgeRouter, LinearRouteOptions } from "./linear-edge-router";
+import { AbstractEdgeRouter, LinearRouteOptions } from "./abstract-edge-router";
 import { SRoutableElement } from "./model";
 import { RoutedPoint } from "./routing";
 
@@ -29,7 +29,7 @@ export interface PolylineRouteOptions extends LinearRouteOptions {
 }
 
 @injectable()
-export class PolylineEdgeRouter extends LinearEdgeRouter {
+export class PolylineEdgeRouter extends AbstractEdgeRouter {
 
     @inject(AnchorComputerRegistry) anchorRegistry: AnchorComputerRegistry;
 
