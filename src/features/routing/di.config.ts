@@ -22,10 +22,11 @@ import { ManhattanRectangularAnchor, ManhattanEllipticAnchor, ManhattanDiamondAn
 import { RectangleAnchor, EllipseAnchor, DiamondAnchor } from "./polyline-anchors";
 import { AnchorComputerRegistry } from "./anchor";
 import { EdgeRouterRegistry } from "./routing";
-import { BezierEdgeRouter } from './bezier-edge-router';
+import { BezierCurveCommand, BezierEdgeRouter } from './bezier-edge-router';
 import { BezierDiamondAnchor, BezierEllipseAnchor, BezierRectangleAnchor } from './bezier-anchors';
+import { configureCommand } from "../../base/commands/command-registration";
 
-const routingModule = new ContainerModule(bind => {
+const routingModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(EdgeRouterRegistry).toSelf().inSingletonScope();
 
     bind(AnchorComputerRegistry).toSelf().inSingletonScope();
@@ -47,6 +48,8 @@ const routingModule = new ContainerModule(bind => {
     bind(TYPES.IAnchorComputer).to(BezierEllipseAnchor);
     bind(TYPES.IAnchorComputer).to(BezierRectangleAnchor);
     bind(TYPES.IAnchorComputer).to(BezierDiamondAnchor);
+
+    configureCommand({ bind, isBound }, BezierCurveCommand);
 });
 
 export default routingModule;

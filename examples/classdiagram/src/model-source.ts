@@ -281,7 +281,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 500,
+                x: 540,
                 y: 25
             },
             layout: 'vbox',
@@ -324,8 +324,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
             id: 'package0',
             type: 'node:package',
             position: {
-                x: 400,
-                y: 120
+                x: 600,
+                y: 160
             },
             size: {
                 width: 400,
