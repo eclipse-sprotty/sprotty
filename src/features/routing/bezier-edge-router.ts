@@ -14,15 +14,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from 'inversify';
+import { inject, injectable, optional } from 'inversify';
 import { ResolvedHandleMove } from '../move/move';
 import { centerOfLine, Point } from '../../utils/geometry';
 import { SDanglingAnchor, SRoutableElement, SRoutingHandle } from './model';
-import { RoutedPoint } from './routing';
+import { SModelElement } from '../../base/model/smodel';
+import { EdgeRouterRegistry, RoutedPoint } from './routing';
 import { AbstractEdgeRouter, LinearRouteOptions } from './abstract-edge-router';
+import { MouseListener } from '../../base/views/mouse-tool';
+import { Action } from '../../base/actions/action';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
+import { TYPES } from "../../base/types";
+import { SEdge } from '../../graph/sgraph';
 
 @injectable()
-export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
+export class BezierEdgeRouter extends AbstractEdgeRouter {
 
     static readonly KIND = 'bezier';
     static readonly DEFAULT_BEZIER_HANDLE_OFFSET = 25;
@@ -30,10 +36,6 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
     get kind() {
         return BezierEdgeRouter.KIND;
     }
-
-    // TODO: register MouseListener and only listen to mouseDown
-    // if target fits (class and kind)
-    // return is action, then fire command (require new add/remove action)
 
     route(edge: SRoutableElement): RoutedPoint[] {
         if (!edge.source || !edge.target)
@@ -110,7 +112,7 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
                 // Add two circle for add/remove segments
                 this.addHandle(edge, 'bezier-add', 'bezier-create-routing-point', i + 1);
                 this.addHandle(edge, 'bezier-junction', 'routing-point', i + 1);
-                this.addHandle(edge, 'bezier-remove', 'bezier-create-routing-point', i + 1);
+                this.addHandle(edge, 'bezier-remove', 'bezier-remove-routing-point', i + 1);
                 this.addHandle(edge, 'bezier-control-after', 'bezier-routing-point', i + 2);
 
                 // re-position control-pairs
@@ -152,7 +154,6 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
     }
 
     applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
-        console.log(moves.length);
         moves.forEach(move => {
             const handle = move.handle;
             let orgPosition = { x: 0, y: 0 };
@@ -175,12 +176,6 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
                         edge.routingPoints[index] = moveToPos;
                         this.moveBezierControlPair(newControlPos, ctrlPointIndex, edge);
                     }
-                    break;
-                case 'bezier-add':
-                    this.createNewBezierSegment(move, edge);
-                    break;
-                case 'bezier-remove':
-                    this.removeBezierSegment(move, edge);
                     break;
                 case 'source':
                     ctrlPointIndex = 0;
@@ -230,6 +225,10 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
         });
     }
 
+    protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
+        // not required
+    }
+
     protected getOptions(edge: SRoutableElement): LinearRouteOptions {
         return  {
             minimalPointDistance: 2,
@@ -245,12 +244,7 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
         };
     }
 
-    private createNewBezierSegment(move: ResolvedHandleMove, edge: SRoutableElement): void {
-        const handle = move.handle;
-        handle.kind = 'bezier-junction';
-        handle.type = 'routing-point';
-
-        const index = handle.pointIndex;
+    public createNewBezierSegment(index: number, edge: SRoutableElement): void {
         const routingPoints = edge.routingPoints;
 
         let bezierJunctionPos, start, end: Point;
@@ -259,7 +253,7 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
             end = routingPoints[routingPoints.length - 1];
             bezierJunctionPos = centerOfLine(start, end);
         } else {
-            start = routingPoints[index + 1];
+            start = routingPoints[index];
             end = routingPoints[index + 2];
             bezierJunctionPos = centerOfLine(start, end);
         }
@@ -276,9 +270,7 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
         this.rebuildHandles(edge);
     }
 
-    private removeBezierSegment(move: ResolvedHandleMove, edge: SRoutableElement): void {
-        const handle = move.handle;
-        const index = handle.pointIndex;
+    public removeBezierSegment(index: number, edge: SRoutableElement): void {
         const routingPoints = edge.routingPoints;
 
         routingPoints.splice(index - 1, 3);
@@ -316,5 +308,99 @@ export abstract class BezierEdgeRouter extends AbstractEdgeRouter {
             x: jct.x - (newPos.x - jct.x),
             y: jct.y - (newPos.y - jct.y)
         };
+    }
+
+}
+
+/**
+ * Reacts on mouseDown events if the target kind is bezier-add or bezier-remove
+ */
+export class BezierMouseListener extends MouseListener {
+
+    @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
+
+    mouseDown(target: SModelElement, event: MouseEvent): Action[] {
+        if (!(target instanceof SRoutingHandle) || (target.kind !== 'bezier-add' && target.kind !== 'bezier-remove')) {
+            return [];
+        }
+
+        const result = [];
+        let router;
+        const element = target.root.index.getById(target.id);
+        if (this.edgeRouterRegistry && element instanceof SRoutingHandle) {
+            router = this.edgeRouterRegistry.get((element.parent as SRoutableElement).routerKind);
+        }
+        if (router instanceof BezierEdgeRouter) {
+            if (target.type === 'bezier-create-routing-point') {
+                result.push(new BezierCurveAction(router, BezierActionTask.ADD, target.pointIndex, target.parent.id));
+            } else if (target.type === 'bezier-remove-routing-point') {
+                result.push(new BezierCurveAction(router, BezierActionTask.REMOVE, target.pointIndex, target.parent.id));
+            }
+        }
+        return result;
+    }
+};
+
+export enum BezierActionTask {
+    ADD,
+    REMOVE
+}
+
+export class BezierCurveAction implements Action {
+    static readonly KIND = 'bezierAction';
+    readonly kind = BezierCurveAction.KIND;
+    pointIndex: number;
+    edgeId: string;
+    actionTask: BezierActionTask;
+
+    constructor(@inject(TYPES.IEdgeRouter) protected readonly router: BezierEdgeRouter,
+        actionTask: BezierActionTask, pointIndex: number, edgeId: string) {
+        this.actionTask = actionTask;
+        this.pointIndex = pointIndex;
+        this.edgeId = edgeId;
+    }
+
+    getRouter(): BezierEdgeRouter {
+        return this.router;
+    }
+
+    getPointIndex(): number {
+        return this.pointIndex;
+    }
+
+    getEdgeId(): string {
+        return this.edgeId;
+    }
+};
+
+@injectable()
+export class BezierCurveCommand extends Command {
+    static readonly KIND = BezierCurveAction.KIND;
+
+    constructor(@inject(TYPES.Action) protected readonly action: BezierCurveAction) {
+        super();
+    }
+
+    execute(context: CommandExecutionContext): CommandReturn {
+        for (const child of context.root.children) {
+            if (child.id === this.action.getEdgeId()) {
+                if (this.action.actionTask === BezierActionTask.ADD) {
+                    this.action.getRouter().createNewBezierSegment(this.action.getPointIndex(), child as SEdge);
+                } else if (this.action.actionTask === BezierActionTask.REMOVE) {
+                    this.action.getRouter().removeBezierSegment(this.action.getPointIndex(), child as SEdge);
+                }
+                break;
+            }
+        }
+
+        return context.root;
+    }
+
+    undo(context: CommandExecutionContext): CommandReturn {
+        throw new Error('Method not implemented.');
+    }
+
+    redo(context: CommandExecutionContext): CommandReturn {
+        throw new Error('Method not implemented.');
     }
 }

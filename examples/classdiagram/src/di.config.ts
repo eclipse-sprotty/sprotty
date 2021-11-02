@@ -29,6 +29,7 @@ import { PopupModelProvider } from "./popup";
 import { ClassDiagramModelSource } from './model-source';
 import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
 import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
+import { BezierMouseListener } from '../../../src/features/routing/bezier-edge-router';
 
 export default (containerId: string) => {
     require("../../../css/sprotty.css");
@@ -45,6 +46,7 @@ export default (containerId: string) => {
         bind(TYPES.ISnapper).to(CenterGridSnapper);
         bind(TYPES.IEditLabelValidator).to(ClassDiagramLabelValidator);
         bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);
+        bind(TYPES.MouseListener).to(BezierMouseListener);
 
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
@@ -71,6 +73,7 @@ export default (containerId: string) => {
         configureModelElement(context, 'routing-point', SRoutingHandle, SRoutingHandleView);
         configureModelElement(context, 'volatile-routing-point', SRoutingHandle, SRoutingHandleView);
         configureModelElement(context, 'bezier-create-routing-point', SRoutingHandle, SBezierCreateHandleView);
+        configureModelElement(context, 'bezier-remove-routing-point', SRoutingHandle, SBezierCreateHandleView);
         configureModelElement(context, 'bezier-routing-point', SRoutingHandle, SBezierControlHandleView);
 
 
