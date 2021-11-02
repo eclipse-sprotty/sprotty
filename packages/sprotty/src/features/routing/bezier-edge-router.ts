@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, optional } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { Action } from 'sprotty-protocol/lib/actions';
 import { centerOfLine, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { ResolvedHandleMove } from '../move/move';
@@ -317,79 +317,64 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
  */
 export class BezierMouseListener extends MouseListener {
 
-    @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
-
     mouseDown(target: SModelElement, event: MouseEvent): Action[] {
-        if (!(target instanceof SRoutingHandle) || (target.kind !== 'bezier-add' && target.kind !== 'bezier-remove')) {
-            return [];
-        }
-
         const result = [];
-        let router;
-        const element = target.root.index.getById(target.id);
-        if (this.edgeRouterRegistry && element instanceof SRoutingHandle) {
-            router = this.edgeRouterRegistry.get((element.parent as SRoutableElement).routerKind);
-        }
-        if (router instanceof BezierEdgeRouter) {
+        if (target instanceof SRoutingHandle && (target.kind === 'bezier-add' || target.kind === 'bezier-remove')) {
             if (target.type === 'bezier-create-routing-point') {
-                result.push(new BezierCurveAction(router, BezierActionTask.ADD, target.pointIndex, target.parent.id));
+                result.push(new AddRemoveBezierSegmentAction(AddRemoveBezierSegmentActionTask.ADD, target.id));
             } else if (target.type === 'bezier-remove-routing-point') {
-                result.push(new BezierCurveAction(router, BezierActionTask.REMOVE, target.pointIndex, target.parent.id));
+                result.push(new AddRemoveBezierSegmentAction(AddRemoveBezierSegmentActionTask.REMOVE, target.id));
             }
         }
         return result;
     }
 };
 
-export enum BezierActionTask {
+export enum AddRemoveBezierSegmentActionTask {
     ADD,
     REMOVE
 }
 
-export class BezierCurveAction implements Action {
+export class AddRemoveBezierSegmentAction implements Action {
     static readonly KIND = 'bezierAction';
-    readonly kind = BezierCurveAction.KIND;
-    pointIndex: number;
-    edgeId: string;
-    actionTask: BezierActionTask;
+    readonly kind = AddRemoveBezierSegmentAction.KIND;
+    targetId: string;
+    actionTask: AddRemoveBezierSegmentActionTask;
 
-    constructor(@inject(TYPES.IEdgeRouter) protected readonly router: BezierEdgeRouter,
-        actionTask: BezierActionTask, pointIndex: number, edgeId: string) {
+    constructor(actionTask: AddRemoveBezierSegmentActionTask, targetId: string) {
         this.actionTask = actionTask;
-        this.pointIndex = pointIndex;
-        this.edgeId = edgeId;
-    }
-
-    getRouter(): BezierEdgeRouter {
-        return this.router;
-    }
-
-    getPointIndex(): number {
-        return this.pointIndex;
-    }
-
-    getEdgeId(): string {
-        return this.edgeId;
+        this.targetId = targetId;
     }
 };
 
 @injectable()
-export class BezierCurveCommand extends Command {
-    static readonly KIND = BezierCurveAction.KIND;
+export class AddRemoveBezierSegmentCommand extends Command {
+    static readonly KIND = AddRemoveBezierSegmentAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected readonly action: BezierCurveAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: AddRemoveBezierSegmentAction,
+        @inject(EdgeRouterRegistry) protected readonly edgeRouterRegistry?: EdgeRouterRegistry) {
         super();
     }
 
     execute(context: CommandExecutionContext): CommandReturn {
-        for (const child of context.root.children) {
-            if (child.id === this.action.getEdgeId()) {
-                if (this.action.actionTask === BezierActionTask.ADD) {
-                    this.action.getRouter().createNewBezierSegment(this.action.getPointIndex(), child as SEdge);
-                } else if (this.action.actionTask === BezierActionTask.REMOVE) {
-                    this.action.getRouter().removeBezierSegment(this.action.getPointIndex(), child as SEdge);
+        const index = context.root.index;
+        const target = index.getById(this.action.targetId);
+
+        if (this.edgeRouterRegistry && target instanceof SRoutingHandle) {
+            const raw = this.edgeRouterRegistry.get((target.parent as SRoutableElement).routerKind);
+            if (raw instanceof BezierEdgeRouter) {
+                const router = raw;
+
+                for (const child of context.root.children) {
+                    if (child.id === target.parent.id) {
+                        if (this.action.actionTask === AddRemoveBezierSegmentActionTask.ADD) {
+                            router.createNewBezierSegment(target.pointIndex, child as SEdge);
+                        } else if (this.action.actionTask === AddRemoveBezierSegmentActionTask.REMOVE) {
+                            router.removeBezierSegment(target.pointIndex, child as SEdge);
+                        }
+                        break;
+                    }
                 }
-                break;
             }
         }
 
