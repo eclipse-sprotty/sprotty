@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import createContainer from "./di.config";
-import { TYPES, LocalModelSource } from "../../../src";
+import { TYPES, LocalModelSource } from 'sprotty';
 
 export default function runClassDiagram() {
     const container = createContainer('sprotty');

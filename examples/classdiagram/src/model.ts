@@ -17,7 +17,7 @@
 import {
     SShapeElement, Expandable, RectangularNode, Nameable, SLabel, WithEditableLabel, isEditableLabel,
     boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature
-} from "../../../src";
+} from 'sprotty';
 
 export class ClassNode extends RectangularNode implements Expandable, Nameable, WithEditableLabel {
     expanded: boolean = false;

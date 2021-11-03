@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../../src/lib/jsx';
+import { svg } from 'sprotty/lib/lib/jsx';
 import { injectable } from 'inversify';
 import { VNode } from "snabbdom";
-import { RenderingContext, SNode, ShapeView } from "../../../src";
+import { RenderingContext, SNode, ShapeView } from 'sprotty';
 
 /**
  * A very simple example node consisting of a plain circle.

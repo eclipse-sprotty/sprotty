@@ -43,7 +43,6 @@ pipeline {
             steps {
                 container('node') {
                     sh "yarn install"
-                    sh "yarn examples:build"
                     sh "yarn test || true" // Ignore test failures
                 }
             }
@@ -59,8 +58,8 @@ pipeline {
     
     post {
         success {
-            junit 'artifacts/test/xunit.xml'
-            archiveArtifacts 'artifacts/coverage/**'
+            junit 'packages/sprotty/artifacts/test/xunit.xml'
+            archiveArtifacts 'packages/sprotty/artifacts/coverage/**'
         }
     }
 }

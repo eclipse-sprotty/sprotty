@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../../src/lib/jsx';
+import { svg } from 'sprotty/lib/lib/jsx';
 
 import { VNode } from "snabbdom";
-import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, ShapeView, IViewArgs } from '../../../src';
+import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, ShapeView, IViewArgs } from 'sprotty';
 import { Channel, Core, Crossbar, Processor } from './chipmodel';
 import { injectable } from 'inversify';
 

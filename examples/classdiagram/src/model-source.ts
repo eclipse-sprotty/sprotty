@@ -19,7 +19,7 @@ import {
     Action, ActionHandlerRegistry, CollapseExpandAction, CollapseExpandAllAction, LocalModelSource,
     SCompartmentSchema, SEdgeSchema, SGraphSchema, SLabelSchema, SModelElementSchema, SModelIndex,
     SModelRootSchema, SNodeSchema, Expandable
-} from "../../../src";
+} from 'sprotty';
 
 @injectable()
 export class ClassDiagramModelSource extends LocalModelSource {

@@ -1,0 +1,108 @@
+{
+  "name": "sprotty",
+  "version": "0.10.0",
+  "description": "A next-gen framework for graphical views",
+  "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
+  "keywords": [
+    "eclipse",
+    "graphics",
+    "diagram",
+    "modeling",
+    "visualization",
+    "svg"
+  ],
+  "homepage": "https://github.com/eclipse/sprotty",
+  "bugs": "https://github.com/eclipse/sprotty/issues",
+  "author": {
+    "name": "Eclipse Sprotty"
+  },
+  "contributors": [
+    {
+      "name": "Marc Dumais",
+      "email": "marc.dumais@ericsson.com",
+      "url": "https://www.ericsson.com/"
+    },
+    {
+      "name": "Takashi Katou"
+    },
+    {
+      "name": "Jan Köhnlein",
+      "email": "jan.koehnlein@typefox.io",
+      "url": "http://typefox.io"
+    },
+    {
+      "name": "Philip Langer",
+      "email": "planger@eclipsesource.com",
+      "url": "https://www.eclipsesource.com"
+    },
+    {
+      "name": "Tobias Ortmayr",
+      "email": "tortmayr@eclipsesource.com",
+      "url": "https://www.eclipsesource.com"
+    },
+    {
+      "name": "Miro Spönemann",
+      "email": "miro.spoenemann@typefox.io",
+      "url": "http://typefox.io"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse/sprotty",
+    "directory": "packages/sprotty"
+  },
+  "dependencies": {
+    "@vscode/codicons": "^0.0.25",
+    "autocompleter": "^5.1.0",
+    "file-saver": "^2.0.2",
+    "inversify": "^5.0.1",
+    "snabbdom": "^3.0.3",
+    "tinyqueue": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/file-saver": "^2.0.3",
+    "@types/jsdom": "^16.2.13",
+    "@types/mocha": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.3.0",
+    "@typescript-eslint/parser": "^5.3.0",
+    "chai": "^4.3.4",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-no-null": "^1.0.2",
+    "jenkins-mocha": "^8.0.0",
+    "jsdom": "^18.0.1",
+    "mocha": "^7.2.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "semver": "^7.3.5",
+    "snabbdom-to-html": "^7.0.0",
+    "ts-mocha": "^8.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "~3.8.3"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib artifacts",
+    "build": "tsc -p ./tsconfig.json && yarn run lint",
+    "watch": "tsc -w -p ./tsconfig.json",
+    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*|test-helper.ts)\"",
+    "test:cli": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\"",
+    "test": "jenkins-mocha --opts ../../configs/mocha.opts \"./src/**/*.spec.?(ts|tsx)\"",
+    "prepublishOnly": "yarn run test",
+    "publish:next": "yarn publish --new-version \"$(semver $npm_package_version -i minor)-next.$(git rev-parse --short HEAD)\" --tag next",
+    "publish:latest": "yarn publish --tag latest"
+  },
+  "files": [
+    "lib",
+    "css",
+    "src"
+  ],
+  "main": "lib/index",
+  "types": "lib/index",
+  "eslintIgnore": [
+    "src/**/*.spec.?(ts|tsx)",
+    "src/utils/test-helper.ts"
+  ]
+}

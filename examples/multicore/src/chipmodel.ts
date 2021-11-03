@@ -19,7 +19,7 @@ import {
     Bounds, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
     layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
     ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature, JsonMap
-} from '../../../src';
+} from 'sprotty';
 import { CORE_DISTANCE, CORE_WIDTH } from "./views";
 
 export interface ProcessorSchema extends SModelRootSchema {

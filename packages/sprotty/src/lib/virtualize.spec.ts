@@ -16,12 +16,10 @@
 
 "use strict";
 
+import 'mocha';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-
-import virtualize from './virtualize';
 import { h } from 'snabbdom';
-
+import virtualize from './virtualize';
 import setup from '../utils/test-helper';
 
 describe("virtualize (happy path)", () => {
@@ -92,7 +90,7 @@ describe("virtualize (happy path)", () => {
         expect(virtualize(input)).to.deep.equal(
             h("textarea", {
                 attrs: {
-                    placeholder: " Test1, \n\n Test2   ",
+                    placeholder: " Test1,    Test2   ",
                 },
             })
         );

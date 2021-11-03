@@ -18,11 +18,11 @@ import { Container, ContainerModule } from "inversify";
 import {
     TYPES, configureViewerOptions, SGraphView, ConsoleLogger, LogLevel, loadDefaultModules,
     LocalModelSource, CircularNode, configureModelElement, SGraph, SEdge, selectFeature, PolylineEdgeView
-} from "../../../src";
+} from 'sprotty';
 import { CircleNodeView } from "./views";
 
 export default () => {
-    require("../../../css/sprotty.css");
+    require("sprotty/css/sprotty.css");
     require("../css/diagram.css");
 
     const circlegraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {

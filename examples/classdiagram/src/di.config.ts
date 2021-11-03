@@ -22,19 +22,19 @@ import {
     SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
     RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
-} from "../../../src";
-import edgeIntersectionModule from "../../../src/features/edge-intersection/di.config";
+} from 'sprotty';
+import edgeIntersectionModule from "sprotty/lib/features/edge-intersection/di.config";
 import { IconView, NodeView} from "./views";
 import { PopupModelProvider } from "./popup";
 import { ClassDiagramModelSource } from './model-source';
 import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
 import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
-import { BezierMouseListener } from '../../../src/features/routing/bezier-edge-router';
+import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
 
 export default (containerId: string) => {
-    require("../../../css/sprotty.css");
-    require("../../../css/command-palette.css");
-    require("../../../css/edit-label.css");
+    require("sprotty/css/sprotty.css");
+    require("sprotty/css/command-palette.css");
+    require("sprotty/css/edit-label.css");
     require("../css/diagram.css");
 
     const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {

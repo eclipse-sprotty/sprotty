@@ -17,8 +17,8 @@
 /** @jsx svg */
 import { injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { IViewArgs, IView, RectangularNodeView, RenderingContext, SNode } from "../../../src";
-import { svg } from '../../../src/lib/jsx';
+import { IViewArgs, IView, RectangularNodeView, RenderingContext, SNode } from 'sprotty';
+import { svg } from 'sprotty/lib/lib/jsx';
 import { PopupButton } from "./model";
 
 @injectable()

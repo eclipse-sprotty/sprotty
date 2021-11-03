@@ -31,12 +31,7 @@ import { getAbsoluteClientBounds } from "../bounds/model";
 import { isSelectable } from "../select/model";
 import { CommandPaletteActionProviderRegistry } from "./action-providers";
 import { MousePositionTracker } from "../../base/views/mouse-tool";
-
-
-// import of function autocomplete(...) doesn't work
-// see also https://github.com/kraaden/autocomplete/issues/13
-// this is a workaround to still get the function including type support
-const configureAutocomplete: (settings: AutocompleteSettings<LabeledAction>) => AutocompleteResult = require("autocompleter");
+import configureAutocomplete from "autocompleter";
 
 @injectable()
 export class CommandPalette extends AbstractUIExtension {

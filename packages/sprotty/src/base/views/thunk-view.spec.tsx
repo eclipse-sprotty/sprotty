@@ -17,15 +17,14 @@
  /** @jsx svg */
 import { svg } from '../../lib/jsx';
 
-import { describe, it } from 'mocha';
+import 'mocha';
 import { expect } from "chai";
 import { init } from "snabbdom";
 import { SModelElement } from "../model/smodel";
 import { ModelRenderer } from './viewer';
 import { ThunkView } from './thunk-view';
 import setup from '../../utils/test-helper';
-
-const toHTML = require('snabbdom-to-html');
+import toHTML from 'snabbdom-to-html';
 
 
 describe('ThunkView', () => {
