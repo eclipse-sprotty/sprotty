@@ -6,7 +6,7 @@
             "es6", "dom"
         ],
         "types": [
-            "node", "reflect-metadata"
+            "reflect-metadata"
         ],
         "typeRoots": [
             "node_modules/@types", "typings"

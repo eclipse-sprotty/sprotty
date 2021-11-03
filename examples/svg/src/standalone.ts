@@ -17,7 +17,7 @@
 import {
     TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema,
     Projectable, LocalModelSource
-} from '../../../src';
+} from 'sprotty';
 import createContainer from './di.config';
 
 function loadFile(path: string): Promise<string> {

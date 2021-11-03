@@ -17,7 +17,7 @@
 import {
     SGraphFactory, SChildElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement, getBasicType,
     Direction, HtmlRootSchema, PreRenderedElementSchema, PreRenderedElement, HtmlRoot, createFeatureSet
-} from '../../../src';
+} from 'sprotty';
 import {
     Channel, ChannelSchema, Core, CoreSchema, Crossbar, CrossbarSchema, Processor, ProcessorSchema
 } from "./chipmodel";

@@ -1,10 +1,5 @@
 .idea/
 .nyc_output/
 node_modules/
-/lib/
-/artifacts/
-bundle.js
-bundle.js.map
-*.ttf
 npm-debug.log
 yarn-error.log

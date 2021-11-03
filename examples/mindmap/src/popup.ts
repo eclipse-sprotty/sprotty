@@ -20,7 +20,7 @@ import {
     SModelElement, Action, LocalModelSource, SNodeSchema, SetPopupModelAction, EMPTY_ROOT,
     Point, Command, CommandExecutionContext, CommandReturn, SChildElement, FadeAnimation,
     isFadeable, isLocateable, isBoundsAware, subtract, IPopupModelProvider
-} from "../../../src";
+} from 'sprotty';
 import { PopupButtonSchema, PopupButton } from "./model";
 import { PopupButtonView } from "./views";
 

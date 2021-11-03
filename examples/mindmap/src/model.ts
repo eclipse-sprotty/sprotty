@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelRoot, SModelRootSchema, SGraph } from "../../../src";
+import { SModelRoot, SModelRootSchema, SGraph } from 'sprotty';
 
 export class Mindmap extends SGraph {
 }

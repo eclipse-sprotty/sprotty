@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Direction, LocalModelSource, TYPES, UpdateModelAction, IActionDispatcher, SLabelSchema } from "../../../src";
+import { Direction, LocalModelSource, TYPES, UpdateModelAction, IActionDispatcher, SLabelSchema } from 'sprotty';
 import {
     ChannelSchema, CoreSchema, CrossbarSchema, ProcessorSchema
 } from './chipmodel';

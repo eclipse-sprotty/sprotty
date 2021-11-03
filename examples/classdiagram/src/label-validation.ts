@@ -13,7 +13,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { IEditLabelValidator, EditableLabel, SModelElement, EditLabelValidationResult, Severity, IEditLabelValidationDecorator } from "../../../src";
+import {
+    IEditLabelValidator, EditableLabel, SModelElement, EditLabelValidationResult, Severity, IEditLabelValidationDecorator
+} from 'sprotty';
 import { injectable } from "inversify";
 
 @injectable()

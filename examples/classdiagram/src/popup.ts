@@ -18,7 +18,7 @@ import { injectable, inject } from "inversify";
 import {
     TYPES, IModelFactory, SModelElementSchema, SModelRootSchema, RequestPopupModelAction,
     PreRenderedElementSchema, IPopupModelProvider
-} from "../../../src";
+} from 'sprotty';
 import { ClassNode } from "./model";
 
 @injectable()

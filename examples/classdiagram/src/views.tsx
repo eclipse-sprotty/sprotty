@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../../src/lib/jsx';
+import { svg } from 'sprotty/lib/lib/jsx';
 
-import { RenderingContext, IView, RectangularNodeView, SNode, IViewArgs } from "../../../src";
+import { RenderingContext, IView, RectangularNodeView, SNode, IViewArgs } from 'sprotty';
 import { VNode } from "snabbdom";
 import { Icon } from './model';
 import { injectable } from 'inversify';

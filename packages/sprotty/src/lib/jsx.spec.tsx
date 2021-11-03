@@ -17,7 +17,7 @@
 /** @jsx svg */
 import { svg } from './jsx';
 
-import { describe, it } from 'mocha';
+import 'mocha';
 import { expect } from 'chai';
 import { h } from 'snabbdom';
 

@@ -21,11 +21,11 @@ import {
     ForeignObjectElement, ForeignObjectView, RectangularNode, RectangularNodeView, moveFeature,
     selectFeature, EditableLabel, editLabelFeature, WithEditableLabel, withEditLabelFeature,
     isEditableLabel
-} from '../../../src';
+} from 'sprotty';
 
 export default () => {
-    require('../../../css/sprotty.css');
-    require('../../../css/edit-label.css');
+    require('sprotty/css/sprotty.css');
+    require('sprotty/css/edit-label.css');
     require('../css/diagram.css');
 
     const svgModule = new ContainerModule((bind, unbind, isBound, rebind) => {

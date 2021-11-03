@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource } from "../../../src";
+import { TYPES, LocalModelSource } from 'sprotty';
 import createContainer from "./di.config";
 
 export default function runMindmap() {

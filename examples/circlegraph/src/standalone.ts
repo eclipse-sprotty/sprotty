@@ -17,7 +17,7 @@
 import {
     TYPES, IActionDispatcher, SModelElementSchema, SEdgeSchema, SNodeSchema, SGraphSchema,
     ElementMove, MoveAction, LocalModelSource, Bounds, SelectAction, Point, getBasicType
-} from "../../../src";
+} from 'sprotty';
 import createContainer from "./di.config";
 
 const NODE_SIZE = 60;

@@ -19,7 +19,7 @@ import {
     SCompartmentView, SLabelView, TYPES, configureViewerOptions, ConsoleLogger, LogLevel,
     loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, SvgExporter,
     configureView
-} from '../../../src';
+} from 'sprotty';
 import { ChipModelFactory } from "./chipmodel-factory";
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from "./views";
 
@@ -34,7 +34,7 @@ class FilteringSvgExporter extends SvgExporter {
 }
 
 export default () => {
-    require("../../../css/sprotty.css");
+    require("sprotty/css/sprotty.css");
     require("../css/diagram.css");
 
     const multicoreModule = new ContainerModule((bind, unbind, isBound, rebind) => {

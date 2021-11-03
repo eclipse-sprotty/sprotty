@@ -1,21 +1,24 @@
+//@ts-check
+
 var webpack = require('webpack');
 var path = require('path');
-var CircularDependencyPlugin = require('circular-dependency-plugin');
 
-module.exports = {
+/** @type {import('webpack').Configuration} */
+const config = {
+    target: 'web',
     mode: 'development',
     devtool: 'source-map',
 
     entry: [
-        'core-js/es/map', 
-        'core-js/es/promise', 
-        'core-js/es/string', 
-        'core-js/es/symbol', 
-        './examples/app.ts'
+        'core-js/es/map',
+        'core-js/es/promise',
+        'core-js/es/string',
+        'core-js/es/symbol',
+        './app.ts'
     ],
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, '../examples')
+        path: path.resolve(__dirname, 'resources')
     },
 
     resolve: {
@@ -25,12 +28,7 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: [{
-                    loader: 'ts-loader',
-                    options: {
-                        configFile: path.resolve(__dirname, 'examples.tsconfig.json')
-                    }
-                }]
+                use: ['ts-loader']
             },
             {
                 test: /\.js$/,
@@ -54,17 +52,10 @@ module.exports = {
             }
         ]
     },
-    node : { fs: 'empty', net: 'empty' },
 
     plugins: [
-        new CircularDependencyPlugin({
-            exclude: /(node_modules|examples)\/./,
-            failOnError: false
-        }),
-        new webpack.WatchIgnorePlugin([
-            /\.js$/,
-            /\.d\.ts$/
-        ]),
         new webpack.ProgressPlugin()
     ]
 };
+
+module.exports = config;

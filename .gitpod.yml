@@ -1,21 +1,8 @@
 ports:
   - port: 8080
-tasks:
-  - init: >
-      yarn install &&
-      yarn examples:build
-    command: >
-      yarn examples:run
-github:
-  prebuilds:
-    master: true
-    branches: true
-    pullRequests: true
-    pullRequestsFromForks: false
-    addComment: true
-    addBadge: false
-    addLabel: prebuilt-in-gitpod
 
-vscode:
-  extensions:
-    - ms-vscode.vscode-typescript-tslint-plugin@1.2.2:0nQ3PEEA0NPEt3UcbCYiIQ==
+tasks:
+  - init: |
+      yarn
+    command: |
+      yarn --cwd examples start

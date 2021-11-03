@@ -19,13 +19,13 @@ import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
     loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, PreRenderedElement,
     SNode, SLabel, HtmlRoot, configureModelElement, configureCommand, popupFeature
-} from "../../../src";
+} from 'sprotty';
 import { MindmapNodeView, PopupButtonView } from "./views";
 import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
 import { Mindmap, PopupButton } from "./model";
 
 export default (containerId: string) => {
-    require("../../../css/sprotty.css");
+    require("sprotty/css/sprotty.css");
     require("../css/diagram.css");
 
     const mindmapModule = new ContainerModule((bind, unbind, isBound, rebind) => {
