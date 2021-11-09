@@ -15,21 +15,29 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "../../base/actions/action";
+import { Action } from "sprotty-protocol/lib/actions";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { TYPES } from "../../base/types";
-import { Point } from "../../utils/geometry";
 import { SRoutableElement, SRoutingHandle } from "../routing/model";
 import { EdgeRouterRegistry } from "../routing/routing";
 import { canEditRouting } from './model';
 
-export class SwitchEditModeAction implements Action {
-    static readonly KIND: string = "switchEditMode";
-    kind = SwitchEditModeAction.KIND;
+export interface SwitchEditModeAction extends Action {
+    kind: typeof SwitchEditModeAction.KIND;
+    elementsToActivate: string[]
+    elementsToDeactivate: string[]
+}
+export namespace SwitchEditModeAction {
+    export const KIND = "switchEditMode";
 
-    constructor(public readonly elementsToActivate: string[] = [],
-                public readonly elementsToDeactivate: string[] = []) {
+    export function create(options: { elementsToActivate?: string[], elementsToDeactivate?: string[] }): SwitchEditModeAction {
+        return {
+            kind: KIND,
+            elementsToActivate: options.elementsToActivate ?? [],
+            elementsToDeactivate: options.elementsToDeactivate ?? []
+        };
     }
 }
 

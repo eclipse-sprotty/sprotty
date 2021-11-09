@@ -16,24 +16,24 @@
 
 import { saveAs } from 'file-saver';
 import { inject, injectable, optional } from "inversify";
-import { Bounds } from "../utils/geometry";
+import {
+    Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
+    SetModelAction, SetPopupModelAction, UpdateModelAction
+} from 'sprotty-protocol/lib/actions';
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { Viewport } from 'sprotty-protocol/lib/model';
+import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
 import { ILogger } from "../utils/logging";
 import { FluentIterable } from '../utils/iterable';
 import { TYPES } from "../base/types";
-import { Action } from "../base/actions/action";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
-import { RequestModelAction, SetModelAction } from "../base/features/set-model";
-import { SModelElementSchema, SModelIndex, SModelRootSchema } from "../base/model/smodel";
 import { findElement } from "../base/model/smodel-utils";
 import { EMPTY_ROOT } from '../base/model/smodel-factory';
-import { ComputedBoundsAction, RequestBoundsAction } from '../features/bounds/bounds-manipulation';
-import { GetViewportAction } from '../features/viewport/viewport';
-import { Viewport } from '../features/viewport/model';
+import { GetViewportAction, ViewportResult } from '../features/viewport/viewport';
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { RequestPopupModelAction, SetPopupModelAction } from "../features/hover/hover";
 import { applyMatches, Match } from "../features/update/model-matching";
-import { UpdateModelAction } from "../features/update/update-model";
-import { GetSelectionAction } from '../features/select/select';
+import { GetSelectionAction, SelectionResult } from '../features/select/select';
 import { ModelSource, ComputedBoundsApplicator } from "./model-source";
 
 /**
@@ -105,17 +105,28 @@ export class LocalModelSource extends ModelSource {
      * Get the current selection from the model.
      */
     async getSelection(): Promise<FluentIterable<SModelElementSchema>> {
-        const res = await this.actionDispatcher.request(GetSelectionAction.create());
-        const index = new SModelIndex();
-        index.add(this.currentRoot);
-        return index.all().filter(e => res.selectedElementsIDs.indexOf(e.id) >= 0);
+        const res = await this.actionDispatcher.request<SelectionResult>(GetSelectionAction.create());
+        const result: SModelElementSchema[] = [];
+        this.gatherSelectedElements(this.currentRoot, new Set(res.selectedElementsIDs), result);
+        return result;
+    }
+
+    private gatherSelectedElements(element: SModelElementSchema, selected: Set<string>, result: SModelElementSchema[]): void {
+        if (selected.has(element.id)) {
+            result.push(element);
+        }
+        if (element.children) {
+            for (const child of element.children) {
+                this.gatherSelectedElements(child, selected, result);
+            }
+        }
     }
 
     /**
      * Get the current viewport from the model.
      */
     async getViewport(): Promise<Viewport & { canvasBounds: Bounds }> {
-        const res = await this.actionDispatcher.request(GetViewportAction.create());
+        const res = await this.actionDispatcher.request<ViewportResult>(GetViewportAction.create());
         return {
             scroll: res.viewport.scroll,
             zoom: res.viewport.zoom,
@@ -129,7 +140,7 @@ export class LocalModelSource extends ModelSource {
      */
     protected async submitModel(newRoot: SModelRootSchema, update: boolean | Match[], cause?: Action): Promise<void> {
         if (this.viewerOptions.needsClientLayout) {
-            const computedBounds = await this.actionDispatcher.request(RequestBoundsAction.create(newRoot));
+            const computedBounds = await this.actionDispatcher.request<ComputedBoundsAction>(RequestBoundsAction.create(newRoot));
             const index = this.computedBoundsApplicator.apply(this.currentRoot, computedBounds);
             await this.doSubmitModel(newRoot, true, cause, index);
         } else {
@@ -142,7 +153,7 @@ export class LocalModelSource extends ModelSource {
      * `update` argument. If available, the model layout engine is invoked first.
      */
     protected async doSubmitModel(newRoot: SModelRootSchema, update: boolean | Match[],
-            cause?: Action, index?: SModelIndex<SModelElementSchema>): Promise<void> {
+            cause?: Action, index?: SModelIndex): Promise<void> {
         if (this.layoutEngine !== undefined) {
             try {
                 const layoutResult = this.layoutEngine.layout(newRoot, index);
@@ -159,12 +170,12 @@ export class LocalModelSource extends ModelSource {
         this.lastSubmittedModelType = newRoot.type;
         if (cause && cause.kind === RequestModelAction.KIND && (cause as RequestModelAction).requestId) {
             const request = cause as RequestModelAction;
-            await this.actionDispatcher.dispatch(new SetModelAction(newRoot, request.requestId));
+            await this.actionDispatcher.dispatch(SetModelAction.create(newRoot, request.requestId));
         } else if (update && newRoot.type === lastSubmittedModelType) {
             const input = Array.isArray(update) ? update : newRoot;
-            await this.actionDispatcher.dispatch(new UpdateModelAction(input, true, cause));
+            await this.actionDispatcher.dispatch(UpdateModelAction.create(input, { animate: true, cause }));
         } else {
-            await this.actionDispatcher.dispatch(new SetModelAction(newRoot));
+            await this.actionDispatcher.dispatch(SetModelAction.create(newRoot));
         }
     }
 
@@ -259,7 +270,7 @@ export class LocalModelSource extends ModelSource {
             const popupRoot = this.popupModelProvider.getPopupModel(action, element);
             if (popupRoot !== undefined) {
                 popupRoot.canvasBounds = action.bounds;
-                this.actionDispatcher.dispatch(new SetPopupModelAction(popupRoot, action.requestId));
+                this.actionDispatcher.dispatch(SetPopupModelAction.create(popupRoot, action.requestId));
             }
         }
     }
@@ -280,6 +291,9 @@ export interface IPopupModelProvider {
     getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined;
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface IModelLayoutEngine {
-    layout(model: SModelRootSchema, index?: SModelIndex<SModelElementSchema>): SModelRootSchema | Promise<SModelRootSchema>;
+    layout(model: SModelRootSchema, index?: SModelIndex): SModelRootSchema | Promise<SModelRootSchema>;
 }

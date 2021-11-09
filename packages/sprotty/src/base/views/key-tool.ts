@@ -16,10 +16,10 @@
 
 import { inject, injectable, multiInject, optional } from "inversify";
 import { VNode } from "snabbdom";
+import { Action } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../types";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../model/smodel";
-import { Action } from "../actions/action";
 import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { on } from "./vnode-utils";
 

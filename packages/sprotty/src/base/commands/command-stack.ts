@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable, postConstruct } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
 import { EMPTY_ROOT, IModelFactory } from "../model/smodel-factory";
 import { SModelRoot } from "../model/smodel";
-import { Action } from "../actions/action";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer, IViewerProvider } from "../views/viewer";
 import { CommandStackOptions } from './command-stack-options';

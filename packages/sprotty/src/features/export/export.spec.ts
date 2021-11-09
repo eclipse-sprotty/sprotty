@@ -47,7 +47,7 @@ describe('ExportSvgCommand', () => {
 
     const myNode = model.children[0] as SNode;
 
-    const cmd = new ExportSvgCommand(new RequestExportSvgAction());
+    const cmd = new ExportSvgCommand(RequestExportSvgAction.create());
 
     const context: CommandExecutionContext = {
         root: model,

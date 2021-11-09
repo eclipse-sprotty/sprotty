@@ -18,6 +18,7 @@
 import { svg } from './jsx';
 
 import { VNode } from "snabbdom";
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { IView, IViewArgs, RenderingContext } from "../base/views/view";
 import { SNode, SPort } from "../graph/sgraph";
 import { ViewportRootElement } from "../features/viewport/viewport-root";
@@ -25,7 +26,7 @@ import { SShapeElement } from '../features/bounds/model';
 import { ShapeView } from '../features/bounds/views';
 import { Hoverable } from '../features/hover/model';
 import { Selectable } from '../features/select/model';
-import { Diamond, Point } from '../utils/geometry';
+import { Diamond } from '../utils/geometry';
 import { SModelElement } from '../base/model/smodel';
 import { injectable } from 'inversify';
 

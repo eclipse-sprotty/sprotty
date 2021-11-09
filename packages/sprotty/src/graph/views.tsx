@@ -17,6 +17,7 @@
 /** @jsx svg */
 import { inject, injectable } from 'inversify';
 import { VNode } from "snabbdom";
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { getSubType } from "../base/model/smodel-utils";
 import { IViewArgs, IView, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
@@ -27,7 +28,7 @@ import { SRoutableElement, SRoutingHandle } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
 import { RoutableView } from '../features/routing/views';
 import { svg } from '../lib/jsx';
-import { Point, PointToPointLine, shiftTowards } from '../utils/geometry';
+import { PointToPointLine } from '../utils/geometry';
 import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
 
 /**
@@ -165,8 +166,8 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     }
 
     protected createJumpPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
-        const anchorBefore = shiftTowards(intersectionPoint, lineSegment.p1, this.jumpOffsetBefore);
-        const anchorAfter = shiftTowards(intersectionPoint, lineSegment.p2, this.jumpOffsetAfter);
+        const anchorBefore = Point.shiftTowards(intersectionPoint, lineSegment.p1, this.jumpOffsetBefore);
+        const anchorAfter = Point.shiftTowards(intersectionPoint, lineSegment.p2, this.jumpOffsetAfter);
         const rotation = lineSegment.p1.x < lineSegment.p2.x ? 1 : 0;
         return ` L ${anchorBefore.x},${anchorBefore.y} A 1,1 0,0 ${rotation} ${anchorAfter.x},${anchorAfter.y}`;
     }
@@ -181,8 +182,8 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
             offsetBefore = this.jumpOffsetBefore + this.skipOffsetAfter;
             offsetAfter = -this.skipOffsetBefore;
         }
-        const anchorBefore = shiftTowards(intersectionPoint, lineSegment.p1, offsetBefore);
-        const anchorAfter = shiftTowards(intersectionPoint, lineSegment.p2, offsetAfter);
+        const anchorBefore = Point.shiftTowards(intersectionPoint, lineSegment.p1, offsetBefore);
+        const anchorAfter = Point.shiftTowards(intersectionPoint, lineSegment.p2, offsetAfter);
         return ` L ${anchorBefore.x},${anchorBefore.y} M ${anchorAfter.x},${anchorAfter.y}`;
     }
 
@@ -209,8 +210,8 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     }
 
     protected createSkipPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
-        const anchorBefore = shiftTowards(intersectionPoint, lineSegment.p1, this.skipOffsetBefore);
-        const anchorAfter = shiftTowards(intersectionPoint, lineSegment.p2, this.skipOffsetAfter);
+        const anchorBefore = Point.shiftTowards(intersectionPoint, lineSegment.p1, this.skipOffsetBefore);
+        const anchorAfter = Point.shiftTowards(intersectionPoint, lineSegment.p2, this.skipOffsetAfter);
         return ` L ${anchorBefore.x},${anchorBefore.y} M ${anchorAfter.x},${anchorAfter.y}`;
     }
 

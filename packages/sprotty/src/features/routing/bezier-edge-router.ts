@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 import { inject, injectable, optional } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
+import { centerOfLine, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { ResolvedHandleMove } from '../move/move';
-import { centerOfLine, Point } from '../../utils/geometry';
 import { SDanglingAnchor, SRoutableElement, SRoutingHandle } from './model';
 import { SModelElement } from '../../base/model/smodel';
 import { EdgeRouterRegistry, RoutedPoint } from './routing';
 import { AbstractEdgeRouter, LinearRouteOptions } from './abstract-edge-router';
 import { MouseListener } from '../../base/views/mouse-tool';
-import { Action } from '../../base/actions/action';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { TYPES } from "../../base/types";
 import { SEdge } from '../../graph/sgraph';

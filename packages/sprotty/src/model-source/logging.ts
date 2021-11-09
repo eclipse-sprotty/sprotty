@@ -15,20 +15,27 @@
  ********************************************************************************/
 
 import { injectable, inject } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { ILogger, LogLevel } from "../utils/logging";
 import { TYPES } from "../base/types";
-import { Action } from "../base/actions/action";
 import { ModelSource } from "./model-source";
 
-export class LoggingAction implements Action {
-    static readonly KIND = 'logging';
-    readonly kind = LoggingAction.KIND;
+export interface LoggingAction extends Action {
+    kind: typeof LoggingAction.KIND;
+    severity: string
+    time: string
+    caller: string
+    message: string
+    params: string[]
+}
+export namespace LoggingAction {
+    export const KIND = 'logging';
 
-    constructor(public readonly severity: string,
-                public readonly time: string,
-                public readonly caller: string,
-                public readonly message: string,
-                public readonly params: string[]) {
+    export function create(options: { severity: string, time: string, caller: string, message: string, params: string[] }): LoggingAction {
+        return {
+            kind: KIND,
+            ...options
+        };
     }
 }
 
@@ -68,13 +75,13 @@ export class ForwardingLogger implements ILogger {
 
     protected forward(thisArg: any, message: string, logLevel: LogLevel, params: any[]) {
         const date = new Date();
-        const action = new LoggingAction(
-            LogLevel[logLevel],
-            date.toLocaleTimeString(),
-            typeof thisArg === 'object' ? thisArg.constructor.name : String(thisArg),
+        const action = LoggingAction.create({
             message,
-            params.map(p => JSON.stringify(p))
-        );
+            severity: LogLevel[logLevel],
+            time: date.toLocaleTimeString(),
+            caller: typeof thisArg === 'object' ? thisArg.constructor.name : String(thisArg),
+            params: params.map(p => JSON.stringify(p))
+        });
         this.modelSourceProvider().then(modelSource => {
             try {
                 modelSource.handle(action);

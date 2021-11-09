@@ -14,13 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, EMPTY_BOUNDS, Point, isBounds } from "../../utils/geometry";
+import { Bounds, isBounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { mapIterable, FluentIterable } from "../../utils/iterable";
 
 /**
  * The schema of an SModelElement describes its serializable form. The actual model is created from
  * its schema with an IModelFactory.
  * Each model element must have a unique ID and a type that is used to look up its view.
+ *
+ * @deprecated Use `SModelElement` from `sprotty-protocol` instead.
  */
 export interface SModelElementSchema {
     type: string
@@ -31,6 +33,8 @@ export interface SModelElementSchema {
 
 /**
  * Serializable schema for the root element of the model tree.
+ *
+ * @deprecated Use `SModelRoot` from `sprotty-protocol` instead.
  */
 export interface SModelRootSchema extends SModelElementSchema {
     canvasBounds?: Bounds
@@ -60,7 +64,7 @@ export class SModelElement {
         throw new Error("Element has no root");
     }
 
-    get index(): SModelIndex<SModelElement> {
+    get index(): ModelIndexImpl {
         return this.root.index;
     }
 
@@ -183,9 +187,9 @@ export class SChildElement extends SParentElement {
 export class SModelRoot extends SParentElement {
     revision?: number;
 
-    canvasBounds: Bounds = EMPTY_BOUNDS;
+    canvasBounds: Bounds = Bounds.EMPTY;
 
-    constructor(index = new SModelIndex<SModelElement>()) {
+    constructor(index = new ModelIndexImpl()) {
         super();
           // Override the index property from SModelElement, which has a getter, with a data property
           Object.defineProperty(this, 'index', {
@@ -204,15 +208,25 @@ export function createRandomId(length: number = 8): string {
     return id;
 }
 
+
 /**
  * Used to speed up model element lookup by id.
  */
-export class SModelIndex<E extends SModelElementSchema> {
+ export interface IModelIndex {
+    add(element: SModelElementSchema): void
+    remove(element: SModelElementSchema): void
+    contains(element: SModelElementSchema): boolean
+    getById(id: string): SModelElementSchema | undefined
+}
 
-    private readonly id2element: Map<string, E> = new Map();
-    private id2parent?: Map<string, E>;
+/**
+ * This index implementation is for the _internal model_ that is used for rendering.
+ */
+export class ModelIndexImpl implements IModelIndex {
 
-    add(element: E): void {
+    private readonly id2element: Map<string, SModelElement> = new Map();
+
+    add(element: SModelElement): void {
         if (!element.id) {
             do {
                 element.id = createRandomId();
@@ -221,83 +235,35 @@ export class SModelIndex<E extends SModelElementSchema> {
             throw new Error("Duplicate ID in model: " + element.id);
         }
         this.id2element.set(element.id, element);
-        if (element.children !== undefined && element.children.constructor === Array) {
+        if (element instanceof SParentElement) {
             for (const child of element.children) {
                 this.add(child as any);
-                if (!(child instanceof SChildElement)) {
-                    if (this.id2parent === undefined) {
-                        this.id2parent = new Map();
-                    }
-                    this.id2parent.set(child.id, element);
-                }
             }
         }
     }
 
-    remove(element: E): void {
+    remove(element: SModelElement): void {
         this.id2element.delete(element.id);
-        if (element.children !== undefined && element.children.constructor === Array) {
+        if (element instanceof SParentElement) {
             for (const child of element.children) {
-                if (!(child instanceof SChildElement)) {
-                    if (this.id2parent === undefined) {
-                        this.id2parent = new Map();
-                    }
-                    this.id2parent.delete(child.id);
-                }
                 this.remove(child as any);
             }
         }
     }
 
-    contains(element: E): boolean {
+    contains(element: SModelElement): boolean {
         return this.id2element.has(element.id);
     }
 
-    getById(id: string): E | undefined {
+    getById(id: string): SModelElement | undefined {
         return this.id2element.get(id);
     }
 
-    /**
-     * This utility method is for SModelElementSchema. For SChildElements, simply
-     * use the `parent` property.
-     */
-    getParent(id: string): E | undefined {
-        if (this.id2parent !== undefined) {
-            return this.id2parent.get(id);
-        }
-        const element = this.getById(id);
-        if (element instanceof SChildElement) {
-            return element.parent as any;
-        }
-        return undefined;
-    }
-
-    /**
-     * This utility method is for SModelElementSchema. For SModelElements, simply
-     * use the `root` property.
-     */
-    getRoot(element: E): E extends SModelElement ? SModelRoot : SModelRootSchema {
-        if (this.id2parent !== undefined) {
-            let current: SModelElementSchema | undefined = element;
-            while (current) {
-                const parent = this.id2parent.get(current.id);
-                if (parent === undefined) {
-                    return current as any;
-                }
-                current = parent;
-            }
-        }
-        if (element instanceof SChildElement) {
-            return element.root as any;
-        }
-        throw new Error("Element has no root");
-    }
-
-    getAttachedElements(element: E): FluentIterable<E> {
+    getAttachedElements(element: SModelElement): FluentIterable<SModelElement> {
         return [];
     }
 
-    all(): FluentIterable<E> {
-        return mapIterable(this.id2element, ([key, value]: [string, E]) => value);
+    all(): FluentIterable<SModelElement> {
+        return mapIterable(this.id2element, ([key, value]: [string, SModelElement]) => value);
     }
 }

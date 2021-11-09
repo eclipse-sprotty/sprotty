@@ -21,11 +21,11 @@ import { injectable, multiInject, optional, interfaces } from 'inversify';
 import { VNode } from 'snabbdom';
 import { TYPES } from '../types';
 import { InstanceRegistry } from '../../utils/registry';
-import { Point, ORIGIN_POINT } from '../../utils/geometry';
 import { isInjectable } from '../../utils/inversify';
 import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
 import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory';
 import { registerModelElement } from '../model/smodel-utils';
+import { Point } from 'sprotty-protocol';
 
 /**
  * Arguments for `IView` rendering.
@@ -156,7 +156,7 @@ export class EmptyView implements IView {
 @injectable()
 export class MissingView implements IView {
     render(model: Readonly<SModelElement>, context: RenderingContext): VNode {
-        const position: Point = (model as any).position || ORIGIN_POINT;
+        const position: Point = (model as any).position || Point.ORIGIN;
         return <text class-sprotty-missing={true} x={position.x} y={position.y}>?{model.id}?</text>;
     }
 }

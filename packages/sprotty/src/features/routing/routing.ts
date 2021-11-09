@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional } from "inversify";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { SParentElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { findArgValue, IViewArgs } from "../../base/views/view";
-import { Point } from "../../utils/geometry";
 import { InstanceRegistry } from "../../utils/registry";
 import { ResolvedHandleMove } from "../move/move";
 import { SRoutingHandle } from "../routing/model";

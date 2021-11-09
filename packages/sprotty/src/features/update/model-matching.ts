@@ -14,7 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelRootSchema, SModelElementSchema, SModelRoot, SModelIndex, SModelElement, isParent } from '../../base/model/smodel';
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { SModelRoot, SModelElement, isParent, IModelIndex } from '../../base/model/smodel';
+import { SModelIndex } from 'sprotty-protocol';
 
 export interface Match {
     left?: SModelElementSchema
@@ -78,11 +80,10 @@ export class ModelMatcher {
     }
 }
 
-export function applyMatches(root: SModelRootSchema, matches: Match[]): void {
-    let index: SModelIndex<SModelElementSchema>;
+export function applyMatches(root: SModelRootSchema, matches: Match[], index?: IModelIndex): void {
     if (root instanceof SModelRoot) {
         index = root.index;
-    } else {
+    } else if (index === undefined) {
         index = new SModelIndex();
         index.add(root);
     }

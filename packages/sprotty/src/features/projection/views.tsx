@@ -19,7 +19,7 @@ import { html } from '../../lib/jsx';
 
 import { injectable } from 'inversify';
 import { VNode, VNodeStyle, h } from 'snabbdom';
-import { Bounds } from '../../utils/geometry';
+import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { IView, IViewArgs, RenderingContext } from '../../base/views/view';
 import { setClass } from '../../base/views/vnode-utils';
 import { ViewportRootElement } from '../viewport/viewport-root';

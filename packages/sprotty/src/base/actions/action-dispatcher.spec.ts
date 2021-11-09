@@ -18,16 +18,15 @@ import 'reflect-metadata';
 import 'mocha';
 import { expect } from "chai";
 import { Container, injectable, interfaces } from "inversify";
+import { Action, RejectAction, RequestModelAction, SetModelAction } from 'sprotty-protocol/lib/actions';
+import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { TYPES } from "../types";
-import { EMPTY_BOUNDS } from '../../utils/geometry';
 import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
 import { Command, CommandExecutionContext, CommandReturn, ICommand } from '../commands/command';
 import { ICommandStack } from "../commands/command-stack";
 import { ActionDispatcher } from "./action-dispatcher";
-import { Action, RejectAction } from "./action";
 import defaultModule from "../di.config";
-import { SetModelAction, RequestModelAction } from '../features/set-model';
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { IActionHandler, configureActionHandler } from './action-handler';
 
@@ -56,14 +55,14 @@ describe('ActionDispatcher', () => {
     @injectable()
     class ResolvingHandler implements IActionHandler {
         handle(action: RequestModelAction): Action {
-            return new SetModelAction({ type: 'root', id: 'foo' }, action.requestId);
+            return SetModelAction.create({ type: 'root', id: 'foo' }, action.requestId);
         }
     }
 
     @injectable()
     class RejectingHandler implements IActionHandler {
         handle(action: RequestModelAction): Action {
-            return new RejectAction('because bar', action.requestId);
+            return RejectAction.create({ message: 'because bar', requestId: action.requestId });
         }
     }
 
@@ -102,7 +101,7 @@ describe('ActionDispatcher', () => {
 
         const actionDispatcher = container.get<ActionDispatcher>(TYPES.IActionDispatcher);
         if (options.initialize) {
-            actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+            actionDispatcher.dispatch(InitializeCanvasBoundsAction.create(Bounds.EMPTY));
         }
         return { actionDispatcher, state };
     }
@@ -118,18 +117,18 @@ describe('ActionDispatcher', () => {
 
         // actions are postponed until InitializeCanvasBoundsAction comes in
         // no await here, as it is blocking
-        actionDispatcher.dispatch(new UndoAction);
+        actionDispatcher.dispatch(UndoAction.create());
         expect(state.execCount).to.be.equal(1);
         expect(state.undoCount).to.be.equal(0);
         expect(state.redoCount).to.be.equal(0);
 
-        await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+        await actionDispatcher.dispatch(InitializeCanvasBoundsAction.create(Bounds.EMPTY));
         // postponed actions are fired as well
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(0);
 
-        await actionDispatcher.dispatch(new RedoAction);
+        await actionDispatcher.dispatch(RedoAction.create());
         expect(state.execCount).to.be.equal(2);
         expect(state.undoCount).to.be.equal(1);
         expect(state.redoCount).to.be.equal(1);
@@ -150,9 +149,9 @@ describe('ActionDispatcher', () => {
         const { actionDispatcher } = setup({ initialize: true });
 
         // We expect this promise to be resolved
-        await actionDispatcher.dispatch(new SetModelAction(EMPTY_ROOT));
+        await actionDispatcher.dispatch(SetModelAction.create(EMPTY_ROOT));
         // Remove the blocking
-        await actionDispatcher.dispatch(new InitializeCanvasBoundsAction(EMPTY_BOUNDS));
+        await actionDispatcher.dispatch(InitializeCanvasBoundsAction.create(Bounds.EMPTY));
 
         try {
             await actionDispatcher.dispatch({ kind: 'unknown' });
@@ -174,7 +173,7 @@ describe('ActionDispatcher', () => {
 
     it('should be able to resolve requests', async () => {
         const { actionDispatcher } = setup({ requestHandler: ResolvingHandler, initialize: true });
-        const response = await actionDispatcher.request(RequestModelAction.create());
+        const response = await actionDispatcher.request<SetModelAction>(RequestModelAction.create());
         expect(response.newRoot.id).to.equal('foo');
     });
 

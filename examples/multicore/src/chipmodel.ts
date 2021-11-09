@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 import {
-    SShapeElement, SChildElement, SModelElementSchema, SModelRootSchema,
-    Bounds, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
+    SShapeElement, SChildElement, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
     layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
     ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature, JsonMap
 } from 'sprotty';
+import { Bounds, SModelElement, SModelRoot } from 'sprotty-protocol';
 import { CORE_DISTANCE, CORE_WIDTH } from "./views";
 
-export interface ProcessorSchema extends SModelRootSchema {
+export interface ProcessorSchema extends SModelRoot {
     rows: number
     columns: number
 }
@@ -49,14 +49,14 @@ export class Processor extends ViewportRootElement implements BoundsAware {
 
 }
 
-export interface CoreSchema extends SModelElementSchema {
+export interface CoreSchema extends SModelElement {
     row: number
     column: number
     kernelNr?: number
     selected?: boolean
     layout: string
     resizeContainer: boolean
-    children: SModelElementSchema[]
+    children: SModelElement[]
 }
 
 export class Core extends SShapeElement implements Selectable, Fadeable, Hoverable, LayoutContainer {
@@ -74,7 +74,7 @@ export class Core extends SShapeElement implements Selectable, Fadeable, Hoverab
 
 }
 
-export interface CrossbarSchema extends SModelElementSchema {
+export interface CrossbarSchema extends SModelElement {
     selected?: boolean
     direction: Direction
     load: number
@@ -85,7 +85,7 @@ export class Crossbar extends SChildElement {
     load: number = 0;
 }
 
-export interface ChannelSchema extends SModelElementSchema {
+export interface ChannelSchema extends SModelElement {
     row: number
     column: number
     direction: Direction
@@ -103,5 +103,3 @@ export class Channel extends SChildElement implements Selectable {
     selected: boolean = false;
 
 }
-
-

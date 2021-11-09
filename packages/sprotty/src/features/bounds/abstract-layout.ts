@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, EMPTY_BOUNDS, isValidDimension, Dimension, Point } from "../../utils/geometry";
+import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
 import { SParentElement, SModelElement, SChildElement } from "../../base/model/smodel";
 import { isLayoutContainer, isLayoutableChild, LayoutContainer, isBoundsAware } from "./model";
 import { ILayout, StatefulLayouter } from './layout';
@@ -73,14 +73,14 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
                 const bounds = currentContainer.bounds;
                 if (isLayoutContainer(currentContainer) && layoutOptions.resizeContainer)
                     layouter.log.error(currentContainer, 'Resizable container found while detecting fixed bounds');
-                if (isValidDimension(bounds))
+                if (Dimension.isValid(bounds))
                     return bounds;
             }
             if (currentContainer instanceof SChildElement) {
                 currentContainer = currentContainer.parent;
             } else {
                 layouter.log.error(currentContainer, 'Cannot detect fixed bounds');
-                return EMPTY_BOUNDS;
+                return Bounds.EMPTY;
             }
         }
     }
@@ -103,7 +103,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
                     const boundsData = layouter.getBoundsData(child);
                     const bounds = boundsData.bounds;
                     const childOptions = this.getChildLayoutOptions(child, containerOptions);
-                    if (bounds !== undefined && isValidDimension(bounds)) {
+                    if (bounds !== undefined && Dimension.isValid(bounds)) {
                         currentOffset = this.layoutChild(child, boundsData, bounds,
                             childOptions, containerOptions, currentOffset,
                             maxWidth, maxHeight);

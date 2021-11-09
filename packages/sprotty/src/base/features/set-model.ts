@@ -15,10 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { JsonPrimitive } from '../../utils/json';
-import { Action, RequestAction, ResponseAction, generateRequestId } from "../actions/action";
+import { Action, generateRequestId, RequestAction, ResponseAction } from "sprotty-protocol/lib/actions";
+import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { JsonPrimitive } from "sprotty-protocol/lib/utils/json";
 import { CommandExecutionContext, ResetCommand } from "../commands/command";
-import { SModelRoot, SModelRootSchema } from "../model/smodel";
+import { SModelRoot } from "../model/smodel";
 import { TYPES } from "../types";
 import { InitializeCanvasBoundsCommand } from './initialize-canvas';
 
@@ -26,6 +27,8 @@ import { InitializeCanvasBoundsCommand } from './initialize-canvas';
  * Sent from the client to the model source (e.g. a DiagramServer) in order to request a model. Usually this
  * is the first message that is sent to the source, so it is also used to initiate the communication.
  * The response is a SetModelAction or an UpdateModelAction.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class RequestModelAction implements RequestAction<SetModelAction> {
     static readonly KIND = 'requestModel';
@@ -42,6 +45,8 @@ export class RequestModelAction implements RequestAction<SetModelAction> {
 
 /**
  * Sent from the model source to the client in order to set the model. If a model is already present, it is replaced.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class SetModelAction implements ResponseAction {
     static readonly KIND = 'setModel';

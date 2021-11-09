@@ -13,16 +13,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+
 import { inject, injectable, multiInject, optional } from "inversify";
+import { CenterAction, SelectAction, SelectAllAction } from "sprotty-protocol/lib/actions";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { LabeledAction } from "../../base/actions/action";
 import { SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { toArray } from "../../utils/iterable";
 import { ILogger } from "../../utils/logging";
 import { isNameable, name } from "../nameable/model";
-import { SelectAction, SelectAllAction } from "../select/select";
-import { CenterAction } from "../viewport/center-fit";
-import { Point } from "../../utils/geometry";
 
 export interface ICommandPaletteActionProvider {
     getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number): Promise<LabeledAction[]>;
@@ -49,12 +49,12 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
         if (index !== undefined && index % 2 === 0)
             return Promise.resolve(this.createSelectActions(root));
         else
-            return Promise.resolve([new LabeledAction("Select all", [new SelectAllAction()])]);
+            return Promise.resolve([new LabeledAction("Select all", [SelectAllAction.create()])]);
     }
 
     createSelectActions(modelRoot: SModelRoot): LabeledAction[] {
         const nameables = toArray(modelRoot.index.all().filter(element => isNameable(element)));
         return nameables.map(nameable => new LabeledAction(`Reveal ${name(nameable)}`,
-            [new SelectAction([nameable.id]), new CenterAction([nameable.id])], 'eye'));
+            [SelectAction.create({ selectedElementsIDs: [nameable.id] }), CenterAction.create([nameable.id])], 'eye'));
     }
 }

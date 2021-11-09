@@ -100,7 +100,7 @@ module.exports = {
         "no-invalid-this": "warn",
         "no-new-wrappers": "warn",
         "no-null/no-null": "off",
-        "no-redeclare": "error",
+        "no-redeclare": "off",
         "no-restricted-imports": [
             "error",
             "..",

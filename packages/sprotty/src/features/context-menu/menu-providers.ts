@@ -13,11 +13,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { injectable, multiInject, optional } from "inversify";
 
+import { injectable, multiInject, optional } from "inversify";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { MenuItem } from "./context-menu-service";
 import { SModelRoot } from "../../base/model/smodel";
-import { Point } from "../../utils/geometry";
 import { LabeledAction } from "../../base/actions/action";
 import { TYPES } from "../../base/types";
 import { isDeletable, DeleteElementAction } from "../edit/delete";
@@ -74,7 +74,7 @@ export class DeleteContextMenuItemProvider implements IContextMenuItemProvider {
                 label: "Delete",
                 sortString: "d",
                 group: "edit",
-                actions: [new DeleteElementAction(selectedElements.map(e => e.id))],
+                actions: [DeleteElementAction.create(selectedElements.map(e => e.id))],
                 isEnabled: () => selectedElements.length > 0
             }
         ]);

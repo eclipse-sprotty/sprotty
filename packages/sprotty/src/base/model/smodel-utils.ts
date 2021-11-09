@@ -15,9 +15,10 @@
  ********************************************************************************/
 
 import { interfaces } from "inversify";
+import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
+import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../types";
-import { Point, Bounds } from "../../utils/geometry";
-import { SChildElement, SModelElement, SModelElementSchema, SModelRoot } from "./smodel";
+import { SChildElement, SModelElement, SModelRoot } from "./smodel";
 import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
 
 /**

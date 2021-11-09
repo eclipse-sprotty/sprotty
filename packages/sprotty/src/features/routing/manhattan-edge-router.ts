@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { translatePoint } from "../../base/model/smodel-utils";
-import { almostEquals, center, includes, linear, Point, manhattanDistance } from "../../utils/geometry";
 import { ResolvedHandleMove } from "../move/move";
 import { DefaultAnchors, AbstractEdgeRouter, LinearRouteOptions, Side } from "./abstract-edge-router";
 import { SRoutableElement, RoutingHandleKind, SRoutingHandle } from "./model";
@@ -46,10 +46,10 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             return [];
         const routedCorners = this.createRoutedCorners(edge);
         const sourceRefPoint = routedCorners[0]
-            || translatePoint(center(edge.target.bounds), edge.target.parent, edge.parent);
+            || translatePoint(Bounds.center(edge.target.bounds), edge.target.parent, edge.parent);
         const sourceAnchor = this.getTranslatedAnchor(edge.source, sourceRefPoint, edge.parent, edge, edge.sourceAnchorCorrection);
         const targetRefPoint = routedCorners[routedCorners.length - 1]
-            || translatePoint(center(edge.source.bounds), edge.source.parent, edge.parent);
+            || translatePoint(Bounds.center(edge.source.bounds), edge.source.parent, edge.parent);
         const targetAnchor = this.getTranslatedAnchor(edge.target, targetRefPoint, edge.parent, edge, edge.targetAnchorCorrection);
         if (!sourceAnchor || !targetAnchor)
             return [];
@@ -94,7 +94,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         if (fraction !== undefined) {
             const { start, end } = this.findRouteSegment(edge, route, handle.pointIndex);
             if (start !== undefined && end !== undefined)
-                return linear(start, end, fraction);
+                return Point.linear(start, end, fraction);
         }
         return undefined;
     }
@@ -182,7 +182,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             return;
         // delete leading RPs inside the bounds of the source
         for (let i = 0; i < routingPoints.length; ++i)
-            if (includes(sourceAnchors.bounds, routingPoints[i])) {
+            if (Bounds.includes(sourceAnchors.bounds, routingPoints[i])) {
                 routingPoints.splice(0, 1);
                 if (updateHandles) {
                     this.removeHandle(edge, -1);
@@ -192,7 +192,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             }
         // delete trailing RPs inside the bounds of the target
         for (let i = routingPoints.length - 1; i >= 0; --i)
-            if (includes(targetAnchors.bounds, routingPoints[i])) {
+            if (Bounds.includes(targetAnchors.bounds, routingPoints[i])) {
                 routingPoints.splice(i, 1);
                 if (updateHandles) {
                     this.removeHandle(edge, i);
@@ -203,7 +203,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         if (routingPoints.length >= 2) {
             const options = this.getOptions(edge);
             for (let i = routingPoints.length - 2; i >= 0; --i) {
-                if (manhattanDistance(routingPoints[i], routingPoints[i + 1]) < options.minimalPointDistance) {
+                if (Point.manhattanDistance(routingPoints[i], routingPoints[i + 1]) < options.minimalPointDistance) {
                     routingPoints.splice(i, 2);
                     --i;
                     if (updateHandles) {
@@ -474,7 +474,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         // priority NN >> EE >> NE >> NW >> SE >> SW
         sourcePoint = sourceAnchors.get(Side.TOP);
         targetPoint = targetAnchors.get(Side.TOP);
-        if (!includes(targetAnchors.bounds, sourcePoint) && !includes(sourceAnchors.bounds, targetPoint)) {
+        if (!Bounds.includes(targetAnchors.bounds, sourcePoint) && !Bounds.includes(sourceAnchors.bounds, targetPoint)) {
             if ((sourcePoint.y - targetPoint.y) < 0) {
                 if (Math.abs(sourcePoint.x - targetPoint.x) > ((sourceAnchors.bounds.width + options.standardDistance) / 2))
                     return { source: Side.TOP, target: Side.TOP };
@@ -486,7 +486,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
 
         sourcePoint = sourceAnchors.get(Side.RIGHT);
         targetPoint = targetAnchors.get(Side.RIGHT);
-        if (!includes(targetAnchors.bounds, sourcePoint) && !includes(sourceAnchors.bounds, targetPoint)) {
+        if (!Bounds.includes(targetAnchors.bounds, sourcePoint) && !Bounds.includes(sourceAnchors.bounds, targetPoint)) {
             if ((sourcePoint.x - targetPoint.x) > 0) {
                 if (Math.abs(sourcePoint.y - targetPoint.y) > ((sourceAnchors.bounds.height + options.standardDistance) / 2))
                     return { source: Side.RIGHT, target: Side.RIGHT };
@@ -497,21 +497,21 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         // Secondly, judge NE NW is available
         sourcePoint = sourceAnchors.get(Side.TOP);
         targetPoint = targetAnchors.get(Side.RIGHT);
-        if (!includes(targetAnchors.bounds, sourcePoint) && !includes(sourceAnchors.bounds, targetPoint))
+        if (!Bounds.includes(targetAnchors.bounds, sourcePoint) && !Bounds.includes(sourceAnchors.bounds, targetPoint))
             return { source: Side.TOP, target: Side.RIGHT };
 
         targetPoint = targetAnchors.get(Side.LEFT);
-        if (!includes(targetAnchors.bounds, sourcePoint) && !includes(sourceAnchors.bounds, targetPoint))
+        if (!Bounds.includes(targetAnchors.bounds, sourcePoint) && !Bounds.includes(sourceAnchors.bounds, targetPoint))
             return { source: Side.TOP, target: Side.LEFT };
 
         // Finally, judge SE SW is available
         sourcePoint = sourceAnchors.get(Side.BOTTOM);
         targetPoint = targetAnchors.get(Side.RIGHT);
-        if (!includes(targetAnchors.bounds, sourcePoint) && !includes(sourceAnchors.bounds, targetPoint))
+        if (!Bounds.includes(targetAnchors.bounds, sourcePoint) && !Bounds.includes(sourceAnchors.bounds, targetPoint))
             return { source: Side.BOTTOM, target: Side.RIGHT };
 
         targetPoint = targetAnchors.get(Side.LEFT);
-        if (!includes(targetAnchors.bounds, sourcePoint) && !includes(sourceAnchors.bounds, targetPoint))
+        if (!Bounds.includes(targetAnchors.bounds, sourcePoint) && !Bounds.includes(sourceAnchors.bounds, targetPoint))
             return { source: Side.BOTTOM, target: Side.LEFT };
 
         // Only to return to the

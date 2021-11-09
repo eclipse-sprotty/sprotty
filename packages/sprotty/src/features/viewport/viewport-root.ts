@@ -14,9 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Point, isBounds, isValidDimension, EMPTY_DIMENSION, Dimension, ORIGIN_POINT } from "../../utils/geometry";
-import { SModelRoot, SModelIndex, SModelElement, SModelRootSchema } from '../../base/model/smodel';
-import { Viewport, viewportFeature } from "./model";
+import { SModelRoot as SModelRootSchema, Viewport } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelRoot, ModelIndexImpl } from '../../base/model/smodel';
+import { viewportFeature } from "./model";
 import { exportFeature } from "../export/model";
 import { BoundsAware } from "../bounds/model";
 
@@ -36,10 +37,10 @@ export class ViewportRootElement extends SModelRoot implements Viewport, BoundsA
 
     scroll: Point = { x: 0, y: 0 };
     zoom: number = 1;
-    position: Point = ORIGIN_POINT;
-    size: Dimension = EMPTY_DIMENSION;
+    position: Point = Point.ORIGIN;
+    size: Dimension = Dimension.EMPTY;
 
-    constructor(index?: SModelIndex<SModelElement>) {
+    constructor(index?: ModelIndexImpl) {
         super(index);
     }
 
@@ -84,7 +85,7 @@ export class ViewportRootElement extends SModelRoot implements Viewport, BoundsA
             width: -1,
             height: -1
         };
-        if (isBounds(point) && isValidDimension(point)) {
+        if (isBounds(point) && Dimension.isValid(point)) {
             result.width = point.width / this.zoom;
             result.height = point.height / this.zoom;
         }

@@ -14,24 +14,29 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point } from '../../utils/geometry';
+import { Action, CenterAction, SetViewportAction } from 'sprotty-protocol/lib/actions';
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElement, SModelRoot } from '../../base/model/smodel';
 import { MouseListener } from '../../base/views/mouse-tool';
-import { Action } from '../../base/actions/action';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
-import { SetViewportAction } from './viewport';
-import { isViewport, Viewport } from './model';
+import { isViewport } from './model';
 import { isMoveable } from '../move/model';
 import { SRoutingHandle } from '../routing/model';
 import { getModelBounds } from '../projection/model';
-import { CenterAction } from './center-fit';
 import { hitsMouseEvent } from '../../utils/browser';
+import { Viewport } from 'sprotty-protocol/lib/model';
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface Scrollable extends SModelExtension {
     scroll: Point
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export function isScrollable(element: SModelElement | Scrollable): element is Scrollable {
     return 'scroll' in element;
 }
@@ -112,7 +117,7 @@ export class ScrollMouseListener extends MouseListener {
                     elementId = targetElement.id.substring('vertical-projection:'.length);
                 }
                 if (elementId) {
-                    return [new CenterAction([elementId], true, true)];
+                    return [CenterAction.create([elementId], { animate: true, retainZoom: true })];
                 }
             }
         }
@@ -130,7 +135,7 @@ export class ScrollMouseListener extends MouseListener {
             zoom: viewport.zoom
         };
         this.lastScrollPosition = { x: event.pageX, y: event.pageY };
-        return [new SetViewportAction(viewport.id, newViewport, false)];
+        return [SetViewportAction.create(newViewport, { elementId: viewport.id, animate: false })];
     }
 
     protected moveScrollBar(model: SModelRoot & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
@@ -171,7 +176,7 @@ export class ScrollMouseListener extends MouseListener {
                 y: modelBounds.y + (position / scrollbarRect.height) * modelBounds.height
             };
         }
-        return [new SetViewportAction(model.id, { scroll: newScroll, zoom: model.zoom }, animate)];
+        return [SetViewportAction.create({ scroll: newScroll, zoom: model.zoom }, { elementId: model.id, animate })];
     }
 
     protected getScrollbar(event: MouseEvent): HTMLElement | undefined {

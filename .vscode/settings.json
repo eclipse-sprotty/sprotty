@@ -1,7 +1,8 @@
 {
     "eslint.options": {
-      "configFile": "configs/.eslintrc.js"  
+      "configFile": "configs/.eslintrc.js"
     },
+    "eslint.packageManager": "yarn",
     "search.exclude": {
         "**/node_modules": true,
         "**/lib": true,
@@ -12,4 +13,5 @@
         "editor.tabSize": 4
     },
     "typescript.tsdk": "node_modules/typescript/lib",
+    "files.trimTrailingWhitespace": true,
 }

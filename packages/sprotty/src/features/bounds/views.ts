@@ -16,7 +16,7 @@
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { isValidDimension } from '../../utils/geometry';
+import { Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
 import { getAbsoluteBounds, BoundsAware } from './model';
 import { SChildElement } from '../../base/model/smodel';
@@ -34,7 +34,7 @@ export abstract class ShapeView implements IView {
             // Don't hide any element for hidden rendering
             return true;
         }
-        if (!isValidDimension(model.bounds)) {
+        if (!Dimension.isValid(model.bounds)) {
             // We should hide only if we know the element's bounds
             return true;
         }

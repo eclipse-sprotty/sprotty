@@ -16,7 +16,7 @@
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Point } from '../../utils/geometry';
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
 import { SRoutableElement, getAbsoluteRouteBounds } from './model';
 

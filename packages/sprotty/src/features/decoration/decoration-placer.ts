@@ -20,10 +20,10 @@ import { SModelElement, SChildElement } from "../../base/model/smodel";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { isDecoration, Decoration } from "./model";
 import { setAttr } from "../../base/views/vnode-utils";
-import { Point, ORIGIN_POINT } from "../../utils/geometry";
 import { isSizeable } from "../bounds/model";
 import { SRoutableElement } from "../routing/model";
 import { EdgeRouterRegistry } from "../routing/routing";
+import { Point } from "sprotty-protocol";
 
 @injectable()
 export class DecorationPlacer implements IVNodePostprocessor {
@@ -49,7 +49,7 @@ export class DecorationPlacer implements IVNodePostprocessor {
                         x: - 0.5 * element.bounds.width,
                         y: - 0.5 * element.bounds.width
                     }
-                    : ORIGIN_POINT;
+                    : Point.ORIGIN;
                 return {
                     x: 0.5 * (route[index].x + route[index + 1].x) + offset.x,
                     y: 0.5 * (route[index].y + route[index + 1].y) + offset.y
@@ -61,7 +61,7 @@ export class DecorationPlacer implements IVNodePostprocessor {
                 x: -0.666 * element.bounds.width,
                 y: -0.666 * element.bounds.height
             };
-        return ORIGIN_POINT;
+        return Point.ORIGIN;
     }
 
     postUpdate(): void {

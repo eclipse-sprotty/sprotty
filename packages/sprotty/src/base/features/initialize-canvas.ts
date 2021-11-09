@@ -16,9 +16,9 @@
 
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom";
+import { Action } from "sprotty-protocol/lib/actions";
+import { almostEquals, Bounds, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../types";
-import { almostEquals, Bounds, isValidDimension } from '../../utils/geometry';
-import { Action } from '../actions/action';
 import { IActionDispatcher } from '../actions/action-dispatcher';
 import { IVNodePostprocessor } from "../views/vnode-postprocessor";
 import { SModelElement, SModelRoot } from "../model/smodel";
@@ -38,7 +38,7 @@ export class CanvasBoundsInitializer implements IVNodePostprocessor {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
 
     decorate(vnode: VNode, element: SModelElement): VNode {
-        if (element instanceof SModelRoot && !isValidDimension(element.canvasBounds)) {
+        if (element instanceof SModelRoot && !Dimension.isValid(element.canvasBounds)) {
             this.rootAndVnode = [element, vnode];
         }
         return vnode;
@@ -54,7 +54,7 @@ export class CanvasBoundsInitializer implements IVNodePostprocessor {
                         && almostEquals(newBounds.y, oldBounds.y)
                         && almostEquals(newBounds.width, oldBounds.width)
                         && almostEquals(newBounds.height, oldBounds.width)))
-                    this.actionDispatcher.dispatch(new InitializeCanvasBoundsAction(newBounds));
+                    this.actionDispatcher.dispatch(InitializeCanvasBoundsAction.create(newBounds));
 
             }
             this.rootAndVnode = undefined;
@@ -73,11 +73,18 @@ export class CanvasBoundsInitializer implements IVNodePostprocessor {
     }
 }
 
-export class InitializeCanvasBoundsAction implements Action {
-    static readonly KIND: string  = 'initializeCanvasBounds';
-    readonly kind = InitializeCanvasBoundsAction.KIND;
+export interface InitializeCanvasBoundsAction extends Action {
+    kind: typeof InitializeCanvasBoundsAction.KIND
+    newCanvasBounds: Bounds
+}
+export namespace InitializeCanvasBoundsAction {
+    export const KIND = 'initializeCanvasBounds';
 
-    constructor(public readonly newCanvasBounds: Bounds) {
+    export function create(newCanvasBounds: Bounds): InitializeCanvasBoundsAction {
+        return {
+            kind: KIND,
+            newCanvasBounds
+        };
     }
 }
 

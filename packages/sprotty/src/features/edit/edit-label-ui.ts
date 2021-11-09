@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable, optional } from "inversify";
-import { Action } from "../../base/actions/action";
+import { Action } from "sprotty-protocol/lib/actions";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
 import { IActionHandler } from "../../base/actions/action-handler";
 import { ICommand } from "../../base/commands/command";
@@ -38,7 +38,7 @@ import { EditableLabel, isEditableLabel } from "./model";
 export class EditLabelActionHandler implements IActionHandler {
     handle(action: Action): void | Action | ICommand {
         if (isEditLabelAction(action)) {
-            return new SetUIExtensionVisibilityAction(EditLabelUI.ID, true, [action.labelId]);
+            return SetUIExtensionVisibilityAction.create({ extensionId: EditLabelUI.ID, visible: true, contextElementsId: [action.labelId] });
         }
     }
 }
@@ -132,7 +132,7 @@ export class EditLabelUI extends AbstractUIExtension {
             }
         }
         this.actionDispatcherProvider()
-            .then((actionDispatcher) => actionDispatcher.dispatchAll([new ApplyLabelEditAction(this.labelId, this.editControl.value), new CommitModelAction()]))
+            .then((actionDispatcher) => actionDispatcher.dispatchAll([new ApplyLabelEditAction(this.labelId, this.editControl.value), CommitModelAction.create()]))
             .catch((reason) => this.logger.error(this, 'No action dispatcher available to execute apply label edit action', reason));
         this.hide();
     }

@@ -14,17 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, center, combine, isValidDimension } from "../../utils/geometry";
+import { Action } from "sprotty-protocol/lib/actions";
+import { Viewport } from "sprotty-protocol/lib/model";
+import { Bounds, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { matchesKeystroke } from "../../utils/keyboard";
 import { SChildElement } from '../../base/model/smodel';
-import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { KeyListener } from "../../base/views/key-tool";
 import { isBoundsAware } from "../bounds/model";
 import { isSelectable } from "../select/model";
 import { ViewportAnimation } from "./viewport";
-import { isViewport, Viewport } from "./model";
+import { isViewport } from "./model";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../base/types";
 
@@ -34,6 +35,8 @@ import { TYPES } from "../../base/types";
  * It also resets the zoom to its default if retainZoom is false.
  * This action can also be sent from the model source to the client in order to perform such a
  * viewport change programmatically.
+ *
+ * @deprecated Use the declaration in `sprotty-protocol` instead.
  */
 export class CenterAction implements Action {
     static readonly KIND = 'center';
@@ -50,6 +53,8 @@ export class CenterAction implements Action {
  * The resulting FitToScreenCommand changes the zoom and scroll settings of the viewport so the model
  * can be shown completely. This action can also be sent from the model source to the client in order
  * to perform such a viewport change programmatically.
+ *
+ * @deprecated Use the declaration in `sprotty-protocol` instead.
  */
 export class FitToScreenAction implements Action {
     static readonly KIND = 'fit';
@@ -103,8 +108,8 @@ export abstract class BoundsAwareViewportCommand extends Command {
                 );
             }
             if (allBounds.length !== 0) {
-                const bounds = allBounds.reduce((b0, b1) => combine(b0, b1));
-                if (isValidDimension(bounds))
+                const bounds = allBounds.reduce((b0, b1) => Bounds.combine(b0, b1));
+                if (Dimension.isValid(bounds))
                     this.newViewport = this.getNewViewport(bounds, model);
             }
         }
@@ -169,11 +174,11 @@ export class CenterCommand extends BoundsAwareViewportCommand {
     }
 
     getNewViewport(bounds: Bounds, model: SModelRoot): Viewport | undefined {
-        if (!isValidDimension(model.canvasBounds)) {
+        if (!Dimension.isValid(model.canvasBounds)) {
             return undefined;
         }
         const zoom = (this.action.retainZoom && isViewport(model)) ? model.zoom : 1;
-        const c = center(bounds);
+        const c = Bounds.center(bounds);
         return {
             scroll: {
                 x: c.x - 0.5 * model.canvasBounds.width / zoom,
@@ -196,10 +201,10 @@ export class FitToScreenCommand extends BoundsAwareViewportCommand {
     }
 
     getNewViewport(bounds: Bounds, model: SModelRoot): Viewport | undefined {
-        if (!isValidDimension(model.canvasBounds)) {
+        if (!Dimension.isValid(model.canvasBounds)) {
             return undefined;
         }
-        const c = center(bounds);
+        const c = Bounds.center(bounds);
         const delta = this.action.padding === undefined
             ? 0
             : 2 *  this.action.padding;

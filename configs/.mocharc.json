@@ -1,0 +1,10 @@
+{
+    "require": [
+        "ts-node/register",
+        "reflect-metadata/Reflect"
+    ],
+    "extension": ["ts", "tsx"],
+    "timeout": 10000,
+    "reporter": "spec",
+    "colors": true
+}

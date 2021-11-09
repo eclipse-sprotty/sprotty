@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from "../actions/action";
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler";
 import { injectable, multiInject, optional, interfaces, Container } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { isInjectable } from "../../utils/inversify";
+import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler";
 import { ICommand } from "./command";
 import { TYPES } from "../types";
 

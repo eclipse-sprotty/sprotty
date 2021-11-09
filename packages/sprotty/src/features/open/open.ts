@@ -14,23 +14,32 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Action } from 'sprotty-protocol/lib/actions';
 import { MouseListener } from '../../base/views/mouse-tool';
-import { Action } from '../../base/actions/action';
 import { SModelElement } from '../../base/model/smodel';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isOpenable } from './model';
 
-export class OpenAction {
-    static KIND = 'open';
-    kind = OpenAction.KIND;
-    constructor(public readonly elementId: string) {}
+export interface OpenAction extends Action {
+    kind: typeof OpenAction.KIND
+    elementId: string
+}
+export namespace OpenAction {
+    export const KIND = 'open';
+
+    export function create(elementId: string): OpenAction {
+        return {
+            kind: KIND,
+            elementId
+        };
+    }
 }
 
 export class OpenMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const openableTarget = findParentByFeature(target, isOpenable);
         if (openableTarget !== undefined) {
-            return [ new OpenAction(openableTarget.id) ];
+            return [ OpenAction.create(openableTarget.id) ];
         }
         return [];
     }

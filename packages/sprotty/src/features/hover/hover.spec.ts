@@ -18,9 +18,9 @@ import "reflect-metadata";
 import "mocha";
 import { expect } from "chai";
 import { Container } from "inversify";
+import { Action } from 'sprotty-protocol/lib/actions';
 import { TYPES } from "../../base/types";
 import { SChildElement, SModelElement, SModelRoot } from "../../base/model/smodel";
-import { Action } from "../../base/actions/action";
 import { HoverFeedbackAction, HoverMouseListener } from "./hover";
 import { Hoverable, hoverFeedbackFeature, popupFeature } from "./model";
 import defaultModule from "../../base/di.config";
@@ -93,7 +93,7 @@ describe('hover', () => {
             const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(target, event);
 
             expect(mouseOverResult).to.have.lengthOf(1);
-            expect(mouseOverResult[0]).to.be.an.instanceof(HoverFeedbackAction);
+            expect((mouseOverResult[0] as Action).kind).to.equal(HoverFeedbackAction.KIND);
         });
         it('resets the hover feedback on hovering over another element', () => {
             const target = new HoverableTarget("1");
@@ -102,8 +102,8 @@ describe('hover', () => {
             const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(anotherTarget, event);
 
             expect(mouseOverResult).to.have.lengthOf(2);
-            expect(mouseOverResult[0]).to.be.an.instanceof(HoverFeedbackAction);
-            expect(mouseOverResult[1]).to.be.an.instanceof(HoverFeedbackAction);
+            expect((mouseOverResult[0] as Action).kind).to.equal(HoverFeedbackAction.KIND);
+            expect((mouseOverResult[1] as Action).kind).to.equal(HoverFeedbackAction.KIND);
 
             const action1 = mouseOverResult[0] as HoverFeedbackAction;
             const action2 = mouseOverResult[1] as HoverFeedbackAction;

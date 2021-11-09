@@ -32,7 +32,7 @@ describe('InitializeCanvasBoundsCommand', () => {
     };
 
     const root = new SModelRoot();
-    const command = new InitializeCanvasBoundsCommand(new InitializeCanvasBoundsAction(bounds));
+    const command = new InitializeCanvasBoundsCommand(InitializeCanvasBoundsAction.create(bounds));
 
     const context: CommandExecutionContext = {
         root: root,

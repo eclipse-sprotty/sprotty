@@ -15,12 +15,10 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional, inject } from 'inversify';
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { TYPES } from "../types";
 import { FactoryRegistry } from '../../utils/registry';
-import {
-    SChildElement, SModelElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement,
-    isParent, FeatureSet
-} from './smodel';
+import { SChildElement, SModelElement, SModelRoot, SParentElement, isParent, FeatureSet } from './smodel';
 
 /**
  * A model factory transforms a serializable model schema into the model representation that is used

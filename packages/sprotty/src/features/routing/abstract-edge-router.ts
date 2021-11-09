@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
+import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { SModelElement, SParentElement } from "../../base/model/smodel";
 import { translateBounds, translatePoint } from "../../base/model/smodel-utils";
-import { Bounds, euclideanDistance, linear, Point } from "../../utils/geometry";
 import { ResolvedHandleMove } from "../move/move";
 import { RoutingHandleKind, SDanglingAnchor, SRoutingHandle, edgeInProgressID, edgeInProgressTargetHandleID } from "./model";
 import { AnchorComputerRegistry, IAnchorComputer } from "./anchor";
@@ -53,10 +53,10 @@ export class DefaultAnchors {
     }
 
     getNearestSide(point: Point): Side {
-        const leftDistance = euclideanDistance(point, this.left);
-        const rightDistance = euclideanDistance(point, this.right);
-        const topDistance = euclideanDistance(point, this.top);
-        const bottomDistance = euclideanDistance(point, this.bottom);
+        const leftDistance = Point.euclideanDistance(point, this.left);
+        const rightDistance = Point.euclideanDistance(point, this.right);
+        const topDistance = Point.euclideanDistance(point, this.top);
+        const bottomDistance = Point.euclideanDistance(point, this.bottom);
         let currentNearestSide = Side.LEFT;
         let currentMinDist = leftDistance;
         if (rightDistance < currentMinDist) {
@@ -93,7 +93,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         if (!segments)
             return undefined;
         const { segmentStart, segmentEnd, lambda } = segments;
-        return linear(segmentStart, segmentEnd, lambda);
+        return Point.linear(segmentStart, segmentEnd, lambda);
     }
 
     derivativeAt(edge: SRoutableElement, t: number): Point | undefined {
@@ -116,7 +116,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         const segmentLengths: number[] = [];
         let totalLength = 0;
         for (let i = 0; i < routedPoints.length - 1; ++i) {
-            segmentLengths[i] = euclideanDistance(routedPoints[i], routedPoints[i + 1]);
+            segmentLengths[i] = Point.euclideanDistance(routedPoints[i], routedPoints[i + 1]);
             totalLength += segmentLengths[i];
         }
         let currentLenght = 0;

@@ -15,17 +15,16 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "../base/actions/action";
+import { Action, ComputedBoundsAction, RequestModelAction } from "sprotty-protocol/lib/actions";
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelIndex } from "sprotty-protocol/lib/utils/model-utils";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
 import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../base/actions/action-handler";
 import { ICommand } from "../base/commands/command";
-import { RequestModelAction } from "../base/features/set-model";
 import { TYPES } from "../base/types";
 import { ViewerOptions } from "../base/views/viewer-options";
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { SModelRootSchema, SModelIndex, SModelElementSchema } from "../base/model/smodel";
-import { ComputedBoundsAction } from "../features/bounds/bounds-manipulation";
-import { Point, Dimension } from "../utils/geometry";
 
 /**
  * A model source is serving the model to the event cycle. It represents
@@ -76,7 +75,7 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
 
 @injectable()
 export class ComputedBoundsApplicator {
-    apply(root: SModelRootSchema, action: ComputedBoundsAction): SModelIndex<SModelElementSchema> {
+    apply(root: SModelRootSchema, action: ComputedBoundsAction): SModelIndex {
         const index = new SModelIndex();
         index.add(root);
         for (const b of action.bounds) {

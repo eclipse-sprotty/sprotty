@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../types";
 import { EnableDefaultToolsAction, EnableToolsAction, Tool } from "./tool";
 import { IActionHandler } from "../actions/action-handler";
-import { Action } from "../actions/action";
 import { ICommand } from "../commands/command";
 import { KeyListener } from "../views/key-tool";
 import { SModelElement } from "../model/smodel";
@@ -139,7 +139,7 @@ export class ToolManagerActionHandler implements IActionHandler {
 export class DefaultToolsEnablingKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new EnableDefaultToolsAction()];
+            return [EnableDefaultToolsAction.create()];
         }
         return [];
     }

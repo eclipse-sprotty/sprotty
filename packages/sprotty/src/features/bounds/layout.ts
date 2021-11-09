@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { inject, injectable, interfaces, multiInject, optional } from "inversify";
+import { Bounds } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../../base/types";
 import { ILogger } from '../../utils/logging';
 import { InstanceRegistry } from "../../utils/registry";
-import { Bounds, EMPTY_BOUNDS } from "../../utils/geometry";
 import { SParentElement, SModelElement } from "../../base/model/smodel";
 import { isLayoutContainer, LayoutContainer } from "./model";
 import { BoundsData } from "./hidden-bounds-updater";
@@ -108,7 +108,7 @@ export class StatefulLayouter {
             return boundsData.bounds;
         } else {
             this.log.error(element, 'Layout failed');
-            return EMPTY_BOUNDS;
+            return Bounds.EMPTY;
         }
     }
 }

@@ -16,8 +16,8 @@
 
 import { injectable } from "inversify";
 import { VNode } from "snabbdom";
+import { Action } from "sprotty-protocol/lib/actions";
 import { SModelElement } from "../model/smodel";
-import { Action } from "../actions/action";
 import { setAttr } from "./vnode-utils";
 
 /**

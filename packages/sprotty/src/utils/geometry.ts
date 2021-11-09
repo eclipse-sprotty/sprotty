@@ -16,6 +16,8 @@
 
 /**
  * A Point is composed of the (x,y) coordinates of an object.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface Point {
     readonly x: number
@@ -24,6 +26,8 @@ export interface Point {
 
 /**
  * (x,y) coordinates of the origin.
+ *
+ * @deprecated Use `Point.ORIGIN` from `sprotty-protocol` instead.
  */
 export const ORIGIN_POINT: Point = Object.freeze({
     x: 0,
@@ -35,6 +39,8 @@ export const ORIGIN_POINT: Point = Object.freeze({
  * @param {Point} p1 - First point
  * @param {Point} p2 - Second point
  * @returns {Point} The sum of the two points
+ *
+ * @deprecated Use `Point.add` from `sprotty-protocol` instead.
  */
 export function add(p1: Point, p2: Point): Point {
     return {
@@ -48,6 +54,8 @@ export function add(p1: Point, p2: Point): Point {
  * @param {Point} p1 - First point
  * @param {Point} p2 - Second point
  * @returns {Point} The difference of the two points
+ *
+ * @deprecated Use `Point.subtract` from `sprotty-protocol` instead.
  */
 export function subtract(p1: Point, p2: Point): Point {
     return {
@@ -61,6 +69,8 @@ export function subtract(p1: Point, p2: Point): Point {
  * @param {Point} point1 a point
  * @param {Point} point2 another point
  * @returns {boolean} `true` if `point1` has exactly the same `x` and `y` values as `point2`, `false` otherwise.
+ *
+ * @deprecated Use `Point.equals` from `sprotty-protocol` instead.
  */
 export function pointEquals(point1: Point, point2: Point): boolean {
     return point1.x === point2.x && point1.y === point2.y;
@@ -68,6 +78,8 @@ export function pointEquals(point1: Point, point2: Point): boolean {
 
 /**
  * The Dimension of an object is composed of its width and height.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface Dimension {
     readonly width: number
@@ -76,6 +88,8 @@ export interface Dimension {
 
 /**
  * A dimension with both width and height set to a negative value, which is considered as undefined.
+ *
+ * @deprecated Use `Dimension.EMPTY` from `sprotty-protocol` instead.
  */
 export const EMPTY_DIMENSION: Dimension = Object.freeze({
     width: -1,
@@ -86,6 +100,8 @@ export const EMPTY_DIMENSION: Dimension = Object.freeze({
  * Checks whether the given dimention is valid, i.e. the width and height are non-zero.
  * @param {Dimension} b - Dimension object
  * @returns {boolean}
+ *
+ * @deprecated Use `Dimension.isValid` from `sprotty-protocol` instead.
  */
 export function isValidDimension(d: Dimension): boolean {
     return d.width >= 0 && d.height >= 0;
@@ -93,10 +109,15 @@ export function isValidDimension(d: Dimension): boolean {
 
 /**
  * The bounds are the position (x, y) and dimension (width, height) of an object.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface Bounds extends Point, Dimension {
 }
 
+/**
+ * @deprecated Use `Bounds.EMPTY` from `sprotty-protocol` instead.
+ */
 export const EMPTY_BOUNDS: Bounds = Object.freeze({
     x: 0,
     y: 0,
@@ -104,6 +125,9 @@ export const EMPTY_BOUNDS: Bounds = Object.freeze({
     height: -1
 });
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export function isBounds(element: any): element is Bounds {
     return 'x' in element
         && 'y' in element
@@ -117,6 +141,8 @@ export function isBounds(element: any): element is Bounds {
  * @param {Bounds} b0 - First bounds object
  * @param {Bounds} b1 - Second bounds object
  * @returns {Bounds} The combined bounds
+ *
+ * @deprecated Use `Bounds.combine` from `sprotty-protocol` instead.
  */
 export function combine(b0: Bounds, b1: Bounds): Bounds {
     if (!isValidDimension(b0))
@@ -137,6 +163,8 @@ export function combine(b0: Bounds, b1: Bounds): Bounds {
  * @param {Bounds} b - Bounds object
  * @param {Point} p - Vector by which to translate the bounds
  * @returns {Bounds} The translated bounds
+ *
+ * @deprecated Use `Bounds.translate` from `sprotty-protocol` instead.
  */
 export function translate(b: Bounds, p: Point): Bounds {
     return {
@@ -151,6 +179,8 @@ export function translate(b: Bounds, p: Point): Bounds {
  * Returns the center point of the bounds of an object
  * @param {Bounds} b - Bounds object
  * @returns {Point} the center point
+ *
+ * @deprecated Use `Bounds.center` from `sprotty-protocol` instead.
  */
 export function center(b: Bounds): Point {
     return {
@@ -159,6 +189,9 @@ export function center(b: Bounds): Point {
     };
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export function centerOfLine(s: Point, e: Point): Point {
     const b: Bounds = {
         x: s.x > e.x ? e.x : s.x,
@@ -171,6 +204,8 @@ export function centerOfLine(s: Point, e: Point): Point {
 
 /**
  * Checks whether the point p is included in the bounds b.
+ *
+ * @deprecated Use `Bounds.includes` from `sprotty-protocol` instead.
  */
 export function includes(b: Bounds, p: Point): boolean {
     return p.x >= b.x && p.x <= b.x + b.width && p.y >= b.y && p.y <= b.y + b.height;
@@ -199,6 +234,8 @@ export type Orientation = 'north' | 'south' | 'east' | 'west';
  * @param {Point} a - First point
  * @param {Point} b - Second point
  * @returns {number} The Eucledian distance
+ *
+ * @deprecated Use `Point.euclideanDistance` from `sprotty-protocol` instead.
  */
 export function euclideanDistance(a: Point, b: Point): number {
     const dx = b.x - a.x;
@@ -212,6 +249,8 @@ export function euclideanDistance(a: Point, b: Point): number {
  * @param {Point} a - First point
  * @param {Point} b - Second point
  * @returns {number} The Manhattan distance
+ *
+ * @deprecated Use `Point.manhattanDistance` from `sprotty-protocol` instead.
  */
 export function manhattanDistance(a: Point, b: Point): number {
     return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
@@ -222,6 +261,8 @@ export function manhattanDistance(a: Point, b: Point): number {
  * @param {Point} a - First point
  * @param {Point} b - Second point
  * @returns {number} The maximum distance
+ *
+ * @deprecated Use `Point.maxDistance` from `sprotty-protocol` instead.
  */
 export function maxDistance(a: Point, b: Point): number {
     return Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
@@ -231,6 +272,8 @@ export function maxDistance(a: Point, b: Point): number {
  * Computes the angle in radians of the given point to the x-axis of the coordinate system.
  * The result is in the range [-pi, pi].
  * @param {Point} p - A point in the Eucledian plane
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function angleOfPoint(p: Point): number {
     return Math.atan2(p.y, p.x);
@@ -241,6 +284,8 @@ export function angleOfPoint(p: Point): number {
  * The result is in the range [0, pi]. Returns NaN if the points are equal.
  * @param {Point} a - First point
  * @param {Point} b - Second point
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function angleBetweenPoints(a: Point, b: Point): number {
     const lengthProduct = Math.sqrt((a.x * a.x + a.y * a.y) * (b.x * b.x + b.y * b.y));
@@ -255,6 +300,8 @@ export function angleBetweenPoints(a: Point, b: Point): number {
  * @param {Point} point - Point to shift
  * @param {Point} refPoint - Point to shift towards
  * @param {Point} distance - Distance to shift
+ *
+ * @deprecated Use `Point.shiftTowards` from `sprotty-protocol` instead.
  */
 export function shiftTowards(point: Point, refPoint: Point, distance: number): Point {
     const diff = subtract(refPoint, point);
@@ -267,6 +314,8 @@ export function shiftTowards(point: Point, refPoint: Point, distance: number): P
  * Computes the normalized vector from the vector given in `point`; that is, computing its unit vector.
  * @param {Point} point - Point representing the vector to be normalized
  * @returns {Point} The normalized point
+ *
+ * @deprecated Use `Point.normalize` from `sprotty-protocol` instead.
  */
 export function normalize(point: Point): Point {
     const mag = magnitude(point);
@@ -283,6 +332,8 @@ export function normalize(point: Point): Point {
  * Computes the magnitude of the vector given in `point`.
  * @param {Point} point - Point representing the vector to compute the magnitude for
  * @returns {number} The magnitude or also known as length of the `point`
+ *
+ * @deprecated Use `Point.magnitude` from `sprotty-protocol` instead.
  */
 export function magnitude(point: Point): number {
     return Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
@@ -292,6 +343,8 @@ export function magnitude(point: Point): number {
  * Converts from radians to degrees
  * @param {number} a - A value in radians
  * @returns {number} The converted value
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function toDegrees(a: number): number {
     return a * 180 / Math.PI;
@@ -301,6 +354,8 @@ export function toDegrees(a: number): number {
  * Converts from degrees to radians
  * @param {number} a - A value in degrees
  * @returns {number} The converted value
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function toRadians(a: number): number {
     return a * Math.PI / 180;
@@ -311,6 +366,8 @@ export function toRadians(a: number): number {
  * @param {number} a - First number
  * @param {number} b - Second number
  * @returns {boolean} True if the two numbers are almost equal
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function almostEquals(a: number, b: number): boolean {
     return Math.abs(a - b) < 1e-3;
@@ -319,9 +376,8 @@ export function almostEquals(a: number, b: number): boolean {
 /**
  * Calculates a linear combination of p0 and p1 using lambda, i.e.
  *   (1-lambda) * p0 + lambda * p1
- * @param p0
- * @param p1
- * @param lambda
+ *
+ * @deprecated Use `Point.linear` from `sprotty-protocol` instead.
  */
 export function linear(p0: Point, p1: Point, lambda: number): Point {
     return {

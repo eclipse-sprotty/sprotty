@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Bounds, Point, isValidDimension } from '../../utils/geometry';
+import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, VAlignment } from './layout-options';
@@ -46,7 +46,7 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
             child => {
                 if (isLayoutableChild(child)) {
                     const bounds = layouter.getBoundsData(child).bounds;
-                    if (bounds !== undefined && isValidDimension(bounds)) {
+                    if (bounds !== undefined && Dimension.isValid(bounds)) {
                         if (isFirst)
                             isFirst = false;
                         else
