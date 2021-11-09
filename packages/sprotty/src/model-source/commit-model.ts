@@ -15,9 +15,10 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "../base/actions/action";
+import { Action } from "sprotty-protocol/lib/actions";
+import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { CommandExecutionContext, CommandReturn, SystemCommand } from "../base/commands/command";
-import { SModelRoot, SModelRootSchema } from "../base/model/smodel";
+import { SModelRoot } from "../base/model/smodel";
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
 
@@ -29,13 +30,22 @@ import { ModelSource } from "./model-source";
  * commands finishes, it fires a CommitModelAction to write the final changes back to
  * the model source.
  */
-export class CommitModelAction implements Action {
-    readonly kind = CommitModelCommand.KIND;
+export interface CommitModelAction extends Action {
+    kind: typeof CommitModelAction.KIND;
+}
+export namespace CommitModelAction {
+    export const KIND = 'commitModel';
+
+    export function create(): CommitModelAction {
+        return {
+            kind: KIND
+        };
+    }
 }
 
 @injectable()
 export class CommitModelCommand extends SystemCommand {
-    static readonly KIND = 'commitModel';
+    static readonly KIND = CommitModelAction.KIND;
 
     @inject(TYPES.ModelSource) modelSource: ModelSource;
 

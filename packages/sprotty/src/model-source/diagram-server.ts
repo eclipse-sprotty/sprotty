@@ -16,30 +16,36 @@
 
 import { saveAs } from 'file-saver';
 import { inject, injectable } from "inversify";
-import { Action } from "../base/actions/action";
+import {
+    Action, CollapseExpandAction, CollapseExpandAllAction, ComputedBoundsAction, RequestModelAction,
+    RequestPopupModelAction, SetModelAction, UpdateModelAction
+} from 'sprotty-protocol/lib/actions';
+import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
 import { ICommand } from "../base/commands/command";
-import { SetModelAction, SetModelCommand, RequestModelAction } from "../base/features/set-model";
-import { SModelRootSchema } from "../base/model/smodel";
+import { SetModelCommand } from "../base/features/set-model";
 import { TYPES } from "../base/types";
-import { ComputedBoundsAction, RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
-import { CollapseExpandAction, CollapseExpandAllAction } from '../features/expand/expand';
+import { RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { RequestPopupModelAction } from "../features/hover/hover";
 import { OpenAction } from '../features/open/open';
-import { UpdateModelAction, UpdateModelCommand } from "../features/update/update-model";
+import { UpdateModelCommand } from "../features/update/update-model";
 import { ILogger } from "../utils/logging";
-import { hasOwnProperty } from '../utils/object';
 import { ComputedBoundsApplicator, ModelSource } from "./model-source";
 
 /**
  * Wrapper for actions when transferring them between client and server via a DiagramServer.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface ActionMessage {
     clientId: string
     action: Action
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export function isActionMessage(object: unknown): object is ActionMessage {
     return hasOwnProperty(object, 'action');
 }
@@ -64,7 +70,7 @@ const receivedFromServerProperty = '__receivedFromServer';
  * external model source.
  */
 @injectable()
-export abstract class DiagramServer extends ModelSource {
+export abstract class DiagramServerProxy extends ModelSource {
 
     @inject(TYPES.ILogger) protected logger: ILogger;
     @inject(ComputedBoundsApplicator) protected readonly computedBoundsApplicator: ComputedBoundsApplicator;
@@ -189,9 +195,9 @@ export abstract class DiagramServer extends ModelSource {
             const root = this.currentRoot;
             this.computedBoundsApplicator.apply(root, action);
             if (root.type === this.lastSubmittedModelType) {
-                this.actionDispatcher.dispatch(new UpdateModelAction(root));
+                this.actionDispatcher.dispatch(UpdateModelAction.create(root));
             } else {
-                this.actionDispatcher.dispatch(new SetModelAction(root));
+                this.actionDispatcher.dispatch(SetModelAction.create(root));
             }
             this.lastSubmittedModelType = root.type;
             return false;
@@ -214,3 +220,8 @@ export abstract class DiagramServer extends ModelSource {
         return previousRoot;
     }
 }
+
+/**
+ * @deprecated Use `DiagramServerProxy` instead.
+ */
+export const DiagramServer = DiagramServerProxy;

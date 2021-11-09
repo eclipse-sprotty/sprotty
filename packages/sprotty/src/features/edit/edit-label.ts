@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject } from "inversify";
-import { Action, isAction } from "../../base/actions/action";
+import { Action, isAction } from "sprotty-protocol/lib/actions";
 import { CommandExecutionContext, CommandReturn, Command } from "../../base/commands/command";
 import { SModelElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
@@ -26,10 +26,19 @@ import { isSelectable } from "../select/model";
 import { toArray } from "../../utils/iterable";
 import { EditableLabel, isEditableLabel, isWithEditableLabel } from "./model";
 
-export class EditLabelAction implements Action {
-    static KIND = 'EditLabel';
-    kind = EditLabelAction.KIND;
-    constructor(readonly labelId: string) { }
+export interface EditLabelAction extends Action {
+    kind: typeof EditLabelAction.KIND
+    labelId: string
+}
+export namespace EditLabelAction {
+    export const KIND = 'EditLabel';
+
+    export function create(labelId: string): EditLabelAction {
+        return {
+            kind: KIND,
+            labelId
+        };
+    }
 }
 
 export function isEditLabelAction(element?: any): element is EditLabelAction {
@@ -99,7 +108,7 @@ export class EditLabelMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const editableLabel = getEditableLabel(target);
         if (editableLabel) {
-            return [new EditLabelAction(editableLabel.id)];
+            return [EditLabelAction.create(editableLabel.id)];
         }
         return [];
     }
@@ -112,7 +121,7 @@ export class EditLabelKeyListener extends KeyListener {
                 .filter(e => isSelectable(e) && e.selected)).map(getEditableLabel)
                 .filter((e): e is EditableLabel & SModelElement => e !== undefined);
             if (editableLabels.length === 1) {
-                return [new EditLabelAction(editableLabels[0].id)];
+                return [EditLabelAction.create(editableLabels[0].id)];
             }
         }
         return [];

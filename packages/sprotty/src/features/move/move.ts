@@ -16,7 +16,8 @@
 
 import { inject, injectable, optional } from "inversify";
 import { VNode } from "snabbdom";
-import { Action } from "../../base/actions/action";
+import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
+import { Action, SelectAction, SelectAllAction } from "sprotty-protocol/lib/actions";
 import { Animation, CompoundAnimation } from "../../base/animations/animation";
 import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from "../../base/commands/command";
 import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smodel';
@@ -27,7 +28,6 @@ import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { setAttr } from "../../base/views/vnode-utils";
 import { SEdge } from "../../graph/sgraph";
 import { CommitModelAction } from "../../model-source/commit-model";
-import { add, center, linear, Point, subtract } from '../../utils/geometry';
 import { findChildrenAtPosition, isAlignable } from "../bounds/model";
 import { isCreatingOnDrag } from "../edit/create-on-drag";
 import { DeleteElementAction } from "../edit/delete";
@@ -37,18 +37,26 @@ import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutabl
 import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from "../routing/routing";
 import { isEdgeLayoutable } from "../edge-layout/model";
 import { isSelectable } from "../select/model";
-import { SelectAction, SelectAllAction } from "../select/select";
 import { isViewport } from "../viewport/model";
 import { isLocateable, isMoveable, Locateable } from './model';
 import { ISnapper } from "./snap";
 
-export class MoveAction implements Action {
-    static readonly KIND = 'move';
-    kind = MoveAction.KIND;
+export interface MoveAction extends Action {
+    kind: typeof MoveAction.KIND
+    moves: ElementMove[]
+    animate: boolean
+    finished: boolean
+}
+export namespace MoveAction {
+    export const KIND = 'move';
 
-    constructor(public readonly moves: ElementMove[],
-                public readonly animate: boolean = true,
-                public readonly finished: boolean = false) {
+    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean } = {}): MoveAction {
+        return {
+            kind: KIND,
+            moves,
+            animate: options.animate ?? true,
+            finished: options.finished ?? false
+        };
     }
 }
 
@@ -110,9 +118,9 @@ export class MoveCommand extends MergeableCommand {
                         index.getAttachedElements(element).forEach(edge => {
                             if (edge instanceof SRoutableElement) {
                                 const existingDelta = attachedEdgeShifts.get(edge);
-                                const newDelta = subtract(resolvedMove.toPosition, resolvedMove.fromPosition);
+                                const newDelta = Point.subtract(resolvedMove.toPosition, resolvedMove.fromPosition);
                                 const delta = (existingDelta)
-                                    ? linear(existingDelta, newDelta, 0.5)
+                                    ? Point.linear(existingDelta, newDelta, 0.5)
                                     : newDelta;
                                 attachedEdgeShifts.set(edge, delta);
                             }
@@ -178,7 +186,7 @@ export class MoveCommand extends MergeableCommand {
                     && this.resolvedMoves.get(edge.source.id)
                     && this.resolvedMoves.get(edge.target.id)) {
                     // move the entire edge when both source and target are moved
-                    edge.routingPoints = edge.routingPoints.map(rp => add(rp, delta));
+                    edge.routingPoints = edge.routingPoints.map(rp => Point.add(rp, delta));
                 } else {
                     // add/remove RPs according to the new source/target positions
                     const updateHandles = isSelectable(edge) && edge.selected;
@@ -311,9 +319,9 @@ export class MorphEdgesAnimation extends Animation {
         const edge = edgeMemento.edge;
         const source = edgeMemento.edge.source!;
         const target = edgeMemento.edge.target!;
-        return linear(
-            translatePoint(center(source.bounds), source.parent, edge.parent),
-            translatePoint(center(target.bounds), target.parent, edge.parent),
+        return Point.linear(
+            translatePoint(Bounds.center(source.bounds), source.parent, edge.parent),
+            translatePoint(Bounds.center(target.bounds), target.parent, edge.parent),
             0.5);
     }
 
@@ -338,7 +346,7 @@ export class MorphEdgesAnimation extends Animation {
                 const newRoutingPoints: Point[] = [];
                 // ignore source and target anchor
                 for (let i = 1; i < morph.startExpandedRoute.length - 1; ++i)
-                    newRoutingPoints.push(linear(morph.startExpandedRoute[i], morph.endExpandedRoute[i], t));
+                    newRoutingPoints.push(Point.linear(morph.startExpandedRoute[i], morph.endExpandedRoute[i], t));
 
                 const closestSnapshot = t < 0.5 ? morph.memento.before : morph.memento.after;
                 const newSnapshot: EdgeSnapshot = {
@@ -368,7 +376,7 @@ export class MorphEdgesAnimation extends Animation {
                 ++insertions;
             nextInsertion += insertions;
             for (let j = 0; j < insertions; ++j) {
-                const p = linear(route[i - 1], route[i], (j + 1) / (insertions + 1));
+                const p = Point.linear(route[i - 1], route[i], (j + 1) / (insertions + 1));
                 result.push(p);
             }
             result.push(route[i]);
@@ -399,14 +407,14 @@ export class MoveMouseListener extends MouseListener {
             }
             this.hasDragged = false;
             if (isCreatingOnDrag(target)) {
-                result.push(new SelectAllAction(false));
+                result.push(SelectAllAction.create({ select: false }));
                 result.push(target.createAction(edgeInProgressID));
-                result.push(new SelectAction([edgeInProgressID], []));
-                result.push(new SwitchEditModeAction([edgeInProgressID], []));
-                result.push(new SelectAction([edgeInProgressTargetHandleID], []));
-                result.push(new SwitchEditModeAction([edgeInProgressTargetHandleID], []));
+                result.push(SelectAction.create({ selectedElementsIDs: [edgeInProgressID] }));
+                result.push(SwitchEditModeAction.create({ elementsToActivate: [edgeInProgressID] }));
+                result.push(SelectAction.create({ selectedElementsIDs: [edgeInProgressTargetHandleID] }));
+                result.push(SwitchEditModeAction.create({ elementsToActivate: [edgeInProgressTargetHandleID] }));
             } else if (isRoutingHandle) {
-                result.push(new SwitchEditModeAction([target.id], []));
+                result.push(SwitchEditModeAction.create({ elementsToActivate: [target.id] }));
             }
         }
         return result;
@@ -494,7 +502,7 @@ export class MoveMouseListener extends MouseListener {
             }
         });
         if (elementMoves.length > 0)
-            return new MoveAction(elementMoves, false, isFinished);
+            return MoveAction.create(elementMoves, { animate: false, finished: isFinished });
         else
             return undefined;
     }
@@ -542,15 +550,17 @@ export class MoveMouseListener extends MouseListener {
                                 const newEnd = findChildrenAtPosition(target.root, handlePosAbs)
                                     .find(e => isConnectable(e) && e.canConnect(parent, element.kind as ('source' | 'target')));
                                 if (newEnd && this.hasDragged) {
-                                    result.push(new ReconnectAction(element.parent.id,
-                                        element.kind === 'source' ? newEnd.id : parent.sourceId,
-                                        element.kind === 'target' ? newEnd.id : parent.targetId));
+                                    result.push(ReconnectAction.create({
+                                        routableId: element.parent.id,
+                                        newSourceId: element.kind === 'source' ? newEnd.id : parent.sourceId,
+                                        newTargetId: element.kind === 'target' ? newEnd.id : parent.targetId
+                                    }));
                                     hasReconnected = true;
                                 }
                             }
                         }
                         if (element.editMode)
-                            result.push(new SwitchEditModeAction([], [element.id]));
+                            result.push(SwitchEditModeAction.create({ elementsToDeactivate: [element.id] }));
                     }
                 });
         }
@@ -563,11 +573,11 @@ export class MoveMouseListener extends MouseListener {
                     if (c instanceof SRoutingHandle && c.danglingAnchor)
                         deleteIds.push(c.danglingAnchor.id);
                 });
-                result.push(new DeleteElementAction(deleteIds));
+                result.push(DeleteElementAction.create(deleteIds));
             }
         }
         if (this.hasDragged)
-            result.push(new CommitModelAction());
+            result.push(CommitModelAction.create());
         this.hasDragged = false;
         this.startDragPosition = undefined;
         this.elementId2startPos.clear();

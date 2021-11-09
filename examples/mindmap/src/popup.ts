@@ -16,11 +16,14 @@
 
 import { inject, injectable } from "inversify";
 import {
-    TYPES, SModelElementSchema, SModelRootSchema, RequestPopupModelAction, MouseListener,
-    SModelElement, Action, LocalModelSource, SNodeSchema, SetPopupModelAction, EMPTY_ROOT,
-    Point, Command, CommandExecutionContext, CommandReturn, SChildElement, FadeAnimation,
-    isFadeable, isLocateable, isBoundsAware, subtract, IPopupModelProvider
+    TYPES, MouseListener, SModelElement, LocalModelSource, EMPTY_ROOT, Command, CommandExecutionContext,
+    CommandReturn, SChildElement, FadeAnimation, isFadeable, isLocateable, isBoundsAware, IPopupModelProvider
 } from 'sprotty';
+import {
+    Action, Point, SetPopupModelAction, SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema,
+    SNode as SNodeSchema
+} from 'sprotty-protocol';
+import { RequestPopupModelAction } from "sprotty-protocol";
 import { PopupButtonSchema, PopupButton } from "./model";
 import { PopupButtonView } from "./views";
 
@@ -52,7 +55,7 @@ export class PopupButtonMouseListener extends MouseListener {
 
     mouseDown(target: SModelElement, event: MouseEvent): Action[] {
         let actions: Action[] = [
-            new SetPopupModelAction({type: EMPTY_ROOT.type, id: EMPTY_ROOT.id})
+            SetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })
         ];
         if (target instanceof PopupButton) {
             switch (target.kind) {
@@ -124,9 +127,9 @@ export class AddElementCommand extends Command {
     protected initialize(element: SModelElement) {
         if (isLocateable(element)) {
             const root = element.root;
-            const centerPos = root.parentToLocal(subtract(this.action.absolutePos, root.canvasBounds));
+            const centerPos = root.parentToLocal(Point.subtract(this.action.absolutePos, root.canvasBounds));
             const elementBounds = isBoundsAware(element) ? element.bounds : { x: 0, y: 0, width: 0, height: 0 };
-            element.position = subtract(centerPos, { x: elementBounds.width / 2, y: elementBounds.height / 2 });
+            element.position = Point.subtract(centerPos, { x: elementBounds.width / 2, y: elementBounds.height / 2 });
         }
     }
 

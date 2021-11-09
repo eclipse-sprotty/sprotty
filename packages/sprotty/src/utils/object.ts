@@ -14,11 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
- export function isObject(data: unknown): data is Record<PropertyKey, unknown> {
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export function isObject(data: unknown): data is Record<PropertyKey, unknown> {
     return typeof data === 'object' && data !== null;
 }
 
-export type TypeOf<T> =
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+ export type TypeOf<T> =
     T extends number ? 'number'
     : T extends string ? 'string'
     : T extends boolean ? 'boolean'
@@ -28,7 +34,10 @@ export type TypeOf<T> =
     : T extends object ? 'object'
     : 'undefined';
 
-export function hasOwnProperty<K extends PropertyKey, T>(arg: unknown, key: K, type?: TypeOf<T> | ((v: unknown) => v is T)): arg is Record<K, T> {
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+ export function hasOwnProperty<K extends PropertyKey, T>(arg: unknown, key: K, type?: TypeOf<T> | ((v: unknown) => v is T)): arg is Record<K, T> {
     if (!(isObject(arg) && Object.prototype.hasOwnProperty.call(arg, key))) {
         return false;
     }
@@ -41,6 +50,9 @@ export function hasOwnProperty<K extends PropertyKey, T>(arg: unknown, key: K, t
     return true;
 }
 
-export function safeAssign<T>(target: T, partial: Partial<T>): T {
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+ export function safeAssign<T>(target: T, partial: Partial<T>): T {
     return Object.assign(target, partial);
 }

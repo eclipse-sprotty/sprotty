@@ -14,8 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelRoot, SModelRootSchema, SChildElement, SModelElementSchema } from "../base/model/smodel";
-import { Point, Dimension, ORIGIN_POINT, EMPTY_DIMENSION, Bounds, isValidDimension, EMPTY_BOUNDS } from "../utils/geometry";
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
+import { SModelRoot, SChildElement } from "../base/model/smodel";
 import { BoundsAware, boundsFeature, Alignable, alignFeature, isBoundsAware } from "../features/bounds/model";
 import { Locateable, moveFeature } from "../features/move/model";
 import { Selectable, selectFeature } from "../features/select/model";
@@ -69,6 +70,8 @@ export class RectangularPort extends SPort {
 
 /**
  * Serializable schema for HtmlRoot.
+ *
+ * @deprecated Use `HtmlRoot` from `sprotty-protocol` instead.
  */
 export interface HtmlRootSchema extends SModelRootSchema {
     classes?: string[]
@@ -83,6 +86,8 @@ export class HtmlRoot extends SModelRoot {
 
 /**
  * Serializable schema for PreRenderedElement.
+ *
+ * @deprecated Use `PreRenderedElement` from `sprotty-protocol` instead.
  */
 export interface PreRenderedElementSchema extends SModelElementSchema {
     code: string
@@ -98,6 +103,8 @@ export class PreRenderedElement extends SChildElement {
 
 /**
  * Serializable schema for ShapedPreRenderedElement.
+ *
+ * @deprecated Use `ShapedPreRenderedElement` from `sprotty-protocol` instead.
  */
 export interface ShapedPreRenderedElementSchema extends PreRenderedElementSchema {
     position?: Point
@@ -110,10 +117,10 @@ export interface ShapedPreRenderedElementSchema extends PreRenderedElementSchema
 export class ShapedPreRenderedElement extends PreRenderedElement implements BoundsAware, Locateable, Selectable, Alignable {
     static readonly DEFAULT_FEATURES = [moveFeature, boundsFeature, selectFeature, alignFeature];
 
-    position: Point = ORIGIN_POINT;
-    size: Dimension = EMPTY_DIMENSION;
+    position: Point = Point.ORIGIN;
+    size: Dimension = Dimension.EMPTY;
     selected: boolean = false;
-    alignment: Point = ORIGIN_POINT;
+    alignment: Point = Point.ORIGIN;
 
     get bounds(): Bounds {
         return {
@@ -151,7 +158,7 @@ export class ShapedPreRenderedElement extends PreRenderedElement implements Boun
 export class ForeignObjectElement extends ShapedPreRenderedElement {
     namespace: string;
     get bounds(): Bounds {
-        if (isValidDimension(this.size)) {
+        if (Dimension.isValid(this.size)) {
             return {
                 x: this.position.x,
                 y: this.position.y,
@@ -166,12 +173,14 @@ export class ForeignObjectElement extends ShapedPreRenderedElement {
                 height: this.parent.bounds.height
             };
         }
-        return EMPTY_BOUNDS;
+        return Bounds.EMPTY;
     }
 }
 
 /**
  * Serializable schema for ForeignObjectElement.
+ *
+ * @deprecated Use `ForeignObjectElement` from `sprotty-protocol` instead.
  */
 export interface ForeignObjectElementSchema extends ShapedPreRenderedElementSchema {
     /** The namespace to be assigned to the elements inside of the `foreignObject`. */

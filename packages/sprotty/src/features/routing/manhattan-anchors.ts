@@ -14,7 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { center, Point, Bounds, Line, PointToPointLine, intersection, subtract } from "../../utils/geometry";
+import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
+import { Line, PointToPointLine, intersection } from "../../utils/geometry";
 import { RECTANGULAR_ANCHOR_KIND, IAnchorComputer, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from "./anchor";
 import { ManhattanEdgeRouter } from "./manhattan-edge-router";
 import { SConnectableElement } from "./model";
@@ -52,7 +53,7 @@ export class ManhattanRectangularAnchor implements IAnchorComputer {
             else
             return { x: bounds.x + bounds.width, y: refPoint.y };
         }
-        return center(bounds);
+        return Bounds.center(bounds);
     }
 }
 
@@ -76,7 +77,7 @@ export class ManhattanDiamondAnchor implements IAnchorComputer {
             width: b.width + 2 * offset,
             height: b.height + 2 * offset
         };
-        const c = center(bounds);
+        const c = Bounds.center(bounds);
 
         let outline: Line | undefined = undefined;
         let refLine: Line | undefined = undefined;
@@ -136,8 +137,8 @@ export class ManhattanEllipticAnchor implements IAnchorComputer {
             width: b.width + 2 * offset,
             height: b.height + 2 * offset
         };
-        const c = center(bounds);
-        const refRelative = subtract(refPoint, c);
+        const c = Bounds.center(bounds);
+        const refRelative = Point.subtract(refPoint, c);
         let x = c.x;
         let y = c.y;
         if (refPoint.x >= bounds.x && bounds.x + bounds.width >= refPoint.x) {

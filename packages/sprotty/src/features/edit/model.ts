@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElement } from '../../base/model/smodel';
 import { SRoutableElement } from '../routing/model';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { Point, Dimension } from '../../utils/geometry';
 
 export const editFeature = Symbol('editFeature');
 

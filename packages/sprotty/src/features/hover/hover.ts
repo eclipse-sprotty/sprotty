@@ -15,12 +15,13 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
+import { Action, generateRequestId, RequestAction, ResponseAction } from "sprotty-protocol/lib/actions";
+import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { matchesKeystroke } from '../../utils/keyboard';
-import { Bounds, Point, translate } from "../../utils/geometry";
 import { TYPES } from "../../base/types";
-import { SModelElement, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
+import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
-import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
 import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn, ICommand } from "../../base/commands/command";
 import { IActionHandler } from "../../base/actions/action-handler";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
@@ -33,11 +34,20 @@ import { hasPopupFeature, isHoverable } from "./model";
 /**
  * Triggered when the user puts the mouse pointer over an element.
  */
-export class HoverFeedbackAction implements Action {
-    static readonly KIND = 'hoverFeedback';
-    kind = HoverFeedbackAction.KIND;
+export interface HoverFeedbackAction extends Action {
+    kind: typeof HoverFeedbackAction.KIND
+    mouseoverElement: string
+    mouseIsOver: boolean
+}
+export namespace HoverFeedbackAction {
+    export const KIND = 'hoverFeedback';
 
-    constructor(public readonly mouseoverElement: string, public readonly mouseIsOver: boolean) {
+    export function create(options: { mouseoverElement: string, mouseIsOver: boolean }): HoverFeedbackAction {
+        return {
+            kind: KIND,
+            mouseoverElement: options.mouseoverElement,
+            mouseIsOver: options.mouseIsOver
+        };
     }
 }
 
@@ -75,6 +85,8 @@ export class HoverFeedbackCommand extends SystemCommand {
  * Triggered when the user hovers the mouse pointer over an element to get a popup with details on
  * that element. This action is sent from the client to the model source, e.g. a DiagramServer.
  * The response is a SetPopupModelAction.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class RequestPopupModelAction implements RequestAction<SetPopupModelAction> {
     static readonly KIND = 'requestPopupModel';
@@ -93,6 +105,8 @@ export class RequestPopupModelAction implements RequestAction<SetPopupModelActio
 /**
  * Sent from the model source to the client to display a popup in response to a RequestPopupModelAction.
  * This action can also be used to remove any existing popup by choosing EMPTY_ROOT as root element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class SetPopupModelAction implements ResponseAction {
     static readonly KIND = 'setPopupModel';
@@ -192,7 +206,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 
         const targetBounds = getAbsoluteBounds(target);
         const canvasBounds = target.root.canvasBounds;
-        const boundsInWindow = translate(targetBounds, canvasBounds);
+        const boundsInWindow = Bounds.translate(targetBounds, canvasBounds);
         const distRight = boundsInWindow.x + boundsInWindow.width - mousePosition.x;
         const distBottom = boundsInWindow.y + boundsInWindow.height - mousePosition.y;
         if (distBottom <= distRight && this.allowSidePosition(target, 'below', distBottom)) {
@@ -248,12 +262,12 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 result.push(this.startMouseOverTimer(popupTarget, event));
             }
             if (this.lastHoverFeedbackElementId) {
-                result.push(new HoverFeedbackAction(this.lastHoverFeedbackElementId, false));
+                result.push(HoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
                 this.lastHoverFeedbackElementId = undefined;
             }
             const hoverTarget = findParentByFeature(target, isHoverable);
             if (hoverTarget !== undefined) {
-                result.push(new HoverFeedbackAction(hoverTarget.id, true));
+                result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: true }));
                 this.lastHoverFeedbackElementId = hoverTarget.id;
             }
         }
@@ -274,7 +288,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 this.stopMouseOverTimer();
                 const hoverTarget = findParentByFeature(target, isHoverable);
                 if (hoverTarget !== undefined) {
-                    result.push(new HoverFeedbackAction(hoverTarget.id, false));
+                    result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: false }));
                     this.lastHoverFeedbackElementId = undefined;
                 }
             }

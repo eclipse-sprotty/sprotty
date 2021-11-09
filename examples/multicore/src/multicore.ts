@@ -14,7 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Direction, LocalModelSource, TYPES, UpdateModelAction, IActionDispatcher, SLabelSchema } from 'sprotty';
+import { Direction, LocalModelSource, TYPES, IActionDispatcher } from 'sprotty';
+import { SLabel, UpdateModelAction } from 'sprotty-protocol';
 import {
     ChannelSchema, CoreSchema, CrossbarSchema, ProcessorSchema
 } from './chipmodel';
@@ -42,7 +43,7 @@ export default function runMulticore() {
                     id: 'nr_' + pos,
                     type: 'label:heading',
                     text: '' + pos
-                } as SLabelSchema]
+                } as SLabel]
             });
             channels.push(createChannel(i, j, Direction.up));
             channels.push(createChannel(i, j, Direction.down));
@@ -115,7 +116,7 @@ export default function runMulticore() {
             }
         }
         // modelSource.update() would trigger hidden bounds computation, which is not necessary here
-        actionDispatcher.dispatch(new UpdateModelAction(processor));
+        actionDispatcher.dispatch(UpdateModelAction.create(processor));
     }
 
     setInterval(() => changeModel(), 300);

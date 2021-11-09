@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { SModelElement } from "../../base/model/smodel";
-import { Point } from "../../utils/geometry";
 import { isBoundsAware } from "../bounds/model";
 
 /**

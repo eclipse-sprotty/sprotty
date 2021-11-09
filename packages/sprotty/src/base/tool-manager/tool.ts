@@ -13,23 +13,41 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { Action } from "../actions/action";
+
+import { Action } from "sprotty-protocol/lib/actions";
 
 /**
  * Action to enable the tools of the specified `toolIds`.
  */
-export class EnableToolsAction implements Action {
-    static KIND = "enable-tools";
-    readonly kind = EnableToolsAction.KIND;
-    constructor(public readonly toolIds: string[]) { }
+export interface EnableToolsAction extends Action {
+    kind: typeof EnableToolsAction.KIND
+    toolIds: string[]
+}
+export namespace EnableToolsAction {
+    export const KIND = "enable-tools";
+
+    export function create(toolIds: string[]): EnableToolsAction {
+        return {
+            kind: KIND,
+            toolIds
+        };
+    }
 }
 
 /**
  * Action to disable the currently active tools and enable the default tools instead.
  */
-export class EnableDefaultToolsAction implements Action {
-    static KIND = "enable-default-tools";
-    readonly kind = EnableDefaultToolsAction.KIND;
+export interface EnableDefaultToolsAction extends Action {
+    kind: typeof EnableDefaultToolsAction.KIND;
+}
+export namespace EnableDefaultToolsAction {
+    export const KIND = "enable-default-tools";
+
+    export function create(): EnableDefaultToolsAction {
+        return {
+            kind: KIND
+        };
+    }
 }
 
 /** A tool that can be managed by a `ToolManager`. */

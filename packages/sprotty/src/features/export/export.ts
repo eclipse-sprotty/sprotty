@@ -16,10 +16,10 @@
 
 import { injectable, inject } from "inversify";
 import { VNode } from 'snabbdom';
+import { Action, generateRequestId, RequestAction } from "sprotty-protocol/lib/actions";
 import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
 import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { isSelectable } from '../select/model';
-import { Action, RequestAction, generateRequestId } from '../../base/actions/action';
 import { SModelElement, SModelRoot } from '../../base/model/smodel';
 import { KeyListener } from '../../base/views/key-tool';
 import { matchesKeystroke } from '../../utils/keyboard';
@@ -33,21 +33,23 @@ import { TYPES } from '../../base/types';
 export class ExportSvgKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyE', 'ctrlCmd', 'shift'))
-            return [ new RequestExportSvgAction() ];
+            return [ RequestExportSvgAction.create() ];
         else
             return [];
     }
 }
 
-export class RequestExportSvgAction implements RequestAction<ExportSvgAction> {
-    static readonly KIND = 'requestExportSvg';
-    readonly kind = RequestExportSvgAction.KIND;
+export interface RequestExportSvgAction extends RequestAction<ExportSvgAction> {
+    kind: typeof RequestExportSvgAction.KIND
+}
+export namespace RequestExportSvgAction {
+    export const KIND = 'requestExportSvg';
 
-    constructor(public readonly requestId: string = '') {}
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(): RequestAction<ExportSvgAction> {
-        return new RequestExportSvgAction(generateRequestId());
+    export function create(): RequestExportSvgAction {
+        return {
+            kind: KIND,
+            requestId: generateRequestId()
+        };
     }
 }
 

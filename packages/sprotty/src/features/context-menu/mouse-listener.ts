@@ -15,12 +15,12 @@
  ********************************************************************************/
 
 import { inject } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { IContextMenuServiceProvider, IContextMenuService } from "./context-menu-service";
 import { ContextMenuProviderRegistry } from "./menu-providers";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { TYPES } from "../../base/types";
 import { SModelElement } from "../../base/model/smodel";
-import { Action } from "../../base/actions/action";
 import { isSelectable } from "../select/model";
 import { findParentByFeature } from "../../base/model/smodel-utils";
 

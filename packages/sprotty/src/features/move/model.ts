@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point } from "../../utils/geometry";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { SModelElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 

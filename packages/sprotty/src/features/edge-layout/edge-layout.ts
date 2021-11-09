@@ -16,11 +16,12 @@
 
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom";
+import { Bounds, Point, toDegrees } from "sprotty-protocol/lib/utils/geometry";
 import { SModelElement, SChildElement } from "../../base/model/smodel";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { setAttr } from "../../base/views/vnode-utils";
 import { SEdge } from "../../graph/sgraph";
-import { EMPTY_BOUNDS, linear, Orientation, Point, toDegrees } from "../../utils/geometry";
+import { Orientation } from "../../utils/geometry";
 import { isAlignable, BoundsAware } from "../bounds/model";
 import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement } from "./model";
 import { EdgeRouterRegistry } from "../routing/routing";
@@ -32,7 +33,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (isEdgeLayoutable(element) && element.parent instanceof SEdge) {
-            if (element.bounds !== EMPTY_BOUNDS) {
+            if (element.bounds !== Bounds.EMPTY) {
                 const placement = this.getEdgePlacement(element);
                 const edge = element.parent;
                 const position = Math.min(1, Math.max(0, placement.position));
@@ -140,35 +141,35 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
             case 'left':
                 switch (quadrant.orientation) {
                     case 'west':
-                        return linear(topLeft, topRight, quadrant.position);
+                        return Point.linear(topLeft, topRight, quadrant.position);
                     case 'north':
-                        return linear(topRight, bottomRight, quadrant.position);
+                        return Point.linear(topRight, bottomRight, quadrant.position);
                     case 'east':
-                        return linear(bottomRight, bottomLeft, quadrant.position);
+                        return Point.linear(bottomRight, bottomLeft, quadrant.position);
                     case 'south':
-                        return linear(bottomLeft, topLeft, quadrant.position);
+                        return Point.linear(bottomLeft, topLeft, quadrant.position);
                 }
                 break;
             case 'right':
                 switch (quadrant.orientation) {
                     case 'west':
-                        return linear(bottomRight, bottomLeft, quadrant.position);
+                        return Point.linear(bottomRight, bottomLeft, quadrant.position);
                     case 'north':
-                        return linear(bottomLeft, topLeft, quadrant.position);
+                        return Point.linear(bottomLeft, topLeft, quadrant.position);
                     case 'east':
-                        return linear(topLeft, topRight, quadrant.position);
+                        return Point.linear(topLeft, topRight, quadrant.position);
                     case 'south':
-                        return linear(topRight, bottomRight, quadrant.position);
+                        return Point.linear(topRight, bottomRight, quadrant.position);
                 }
                 break;
             case 'top':
                 switch (quadrant.orientation) {
                     case 'west':
-                        return linear(bottomRight, bottomLeft, quadrant.position);
+                        return Point.linear(bottomRight, bottomLeft, quadrant.position);
                     case 'north':
                         return this.linearFlip(bottomLeft, midLeft, midRight, bottomRight, quadrant.position);
                     case 'east':
-                        return linear(bottomRight, bottomLeft, quadrant.position);
+                        return Point.linear(bottomRight, bottomLeft, quadrant.position);
                     case 'south':
                         return this.linearFlip(bottomLeft, midLeft, midRight, bottomRight, quadrant.position);
                 }
@@ -176,11 +177,11 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
             case 'bottom':
                 switch (quadrant.orientation) {
                     case 'west':
-                        return linear(topLeft, topRight, quadrant.position);
+                        return Point.linear(topLeft, topRight, quadrant.position);
                     case 'north':
                         return this.linearFlip(topRight, midRight, midLeft, topLeft, quadrant.position);
                     case 'east':
-                        return linear(topLeft, topRight, quadrant.position);
+                        return Point.linear(topLeft, topRight, quadrant.position);
                     case 'south':
                         return this.linearFlip(topRight, midRight, midLeft, topLeft, quadrant.position);
                 }
@@ -201,7 +202,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
     }
 
     protected linearFlip(p0: Point, p1: Point, p2: Point, p3: Point, position: number) {
-        return position < 0.5 ? linear(p0, p1, 2 * position) : linear(p2, p3, 2 * position - 1);
+        return position < 0.5 ? Point.linear(p0, p1, 2 * position) : Point.linear(p2, p3, 2 * position - 1);
     }
 
     postUpdate(): void {}

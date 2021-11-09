@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Bounds, Point, isValidDimension } from '../../utils/geometry';
+import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
@@ -43,7 +43,7 @@ export class StackLayouter extends AbstractLayout<StackLayoutOptions> {
             child => {
                 if (isLayoutableChild(child)) {
                     const bounds = layouter.getBoundsData(child).bounds;
-                    if (bounds !== undefined && isValidDimension(bounds)) {
+                    if (bounds !== undefined && Dimension.isValid(bounds)) {
                         maxWidth = Math.max(maxWidth, bounds.width);
                         maxHeight = Math.max(maxHeight, bounds.height);
                     }

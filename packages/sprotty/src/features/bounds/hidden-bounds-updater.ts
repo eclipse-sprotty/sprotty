@@ -16,14 +16,13 @@
 
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
+import { Action, ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from "sprotty-protocol/lib/actions";
+import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { ILogger } from "../../utils/logging";
-import { almostEquals, Bounds, Point, EMPTY_BOUNDS } from '../../utils/geometry';
-import { Action } from "../../base/actions/action";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
 import { SChildElement, SModelElement, SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from './bounds-manipulation';
 import { Layouter } from "./layout";
 import { BoundsAware, isAlignable, isLayoutContainer, isSizeable } from "./model";
 
@@ -79,7 +78,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
         this.getBoundsFromDOM();
         this.layouter.layout(this.element2boundsData);
         const resizes: ElementAndBounds[] = [];
-        const realignments: ElementAndAlignment[] = [];
+        const alignments: ElementAndAlignment[] = [];
         this.element2boundsData.forEach(
             (boundsData, element) => {
                 if (boundsData.boundsChanged && boundsData.bounds !== undefined) {
@@ -91,21 +90,23 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
                         }
                     };
                     // don't copy position if the element is layouted by the server
-                    if (element instanceof SChildElement && isLayoutContainer(element.parent))
+                    if (element instanceof SChildElement && isLayoutContainer(element.parent)) {
                         resize.newPosition = {
                             x: boundsData.bounds.x,
                             y: boundsData.bounds.y,
                         };
+                    }
                     resizes.push(resize);
                 }
-                if (boundsData.alignmentChanged && boundsData.alignment !== undefined)
-                    realignments.push({
+                if (boundsData.alignmentChanged && boundsData.alignment !== undefined) {
+                    alignments.push({
                         elementId: element.id,
                         newAlignment: boundsData.alignment
                     });
+                }
             });
         const revision = (this.root !== undefined) ? this.root.revision : undefined;
-        this.actionDispatcher.dispatch(new ComputedBoundsAction(resizes, revision, realignments, request.requestId));
+        this.actionDispatcher.dispatch(ComputedBoundsAction.create(resizes, { revision, alignments, requestId: request.requestId }));
         this.element2boundsData.clear();
     }
 
@@ -147,7 +148,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
     protected getBounds(elm: any, element: BoundsAware): Bounds {
         if (typeof elm.getBBox !== 'function') {
             this.logger.error(this, 'Not an SVG element:', elm);
-            return EMPTY_BOUNDS;
+            return Bounds.EMPTY;
         }
         const bounds = elm.getBBox();
         return {

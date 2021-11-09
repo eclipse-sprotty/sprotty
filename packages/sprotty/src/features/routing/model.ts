@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SChildElement, SModelElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { SEdge, SGraphIndex } from '../../graph/sgraph';
-import { Point, Bounds, combine, EMPTY_BOUNDS } from '../../utils/geometry';
 import { FluentIterable } from '../../utils/iterable';
 import { SShapeElement } from '../bounds/model';
 import { deletableFeature } from '../edit/delete';
@@ -43,12 +43,12 @@ export abstract class SRoutableElement extends SChildElement {
 
     get bounds(): Bounds {
         // this should also work for splines, which have the convex hull property
-        return this.routingPoints.reduce<Bounds>((bounds, routingPoint) => combine(bounds, {
+        return this.routingPoints.reduce<Bounds>((bounds, routingPoint) => Bounds.combine(bounds, {
             x: routingPoint.x,
             y: routingPoint.y,
             width: 0,
             height: 0
-        }), EMPTY_BOUNDS);
+        }), Bounds.EMPTY);
     }
 }
 

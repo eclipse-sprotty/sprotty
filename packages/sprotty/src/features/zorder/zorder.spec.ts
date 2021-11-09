@@ -54,7 +54,7 @@ describe('BringToFrontCommand', () => {
     const lastIndex = initialModel.children.length - 1;
 
     // Create the z-order action
-    const myZOrderAction = new BringToFrontAction(['node1']);
+    const myZOrderAction = BringToFrontAction.create(['node1']);
 
     // Create the z-order command
     const cmd = new BringToFrontCommand(myZOrderAction);

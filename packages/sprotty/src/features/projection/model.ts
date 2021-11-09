@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Viewport } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
+import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { SChildElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { Bounds, isValidDimension } from '../../utils/geometry';
-import { hasOwnProperty } from '../../utils/object';
 import { BoundsAware, isBoundsAware } from '../bounds/model';
-import { Viewport } from '../viewport/model';
 
 /**
  * Model elements implementing this interface can be displayed on a projection bar.
@@ -100,7 +100,7 @@ export function getModelBounds(model: SModelRoot & Viewport): Bounds | undefined
     let maxY = -MAX_COORD;
 
     const bounds = isBoundsAware(model) ? model.bounds : undefined;
-    if (bounds && isValidDimension(bounds)) {
+    if (bounds && Dimension.isValid(bounds)) {
         // Get the bounds directly from the model if it returns a valid size
         minX = bounds.x;
         minY = bounds.y;

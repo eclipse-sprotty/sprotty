@@ -15,20 +15,27 @@
  ********************************************************************************/
 
 import { injectable, inject } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../../base/types";
 import { SModelRoot, SChildElement, SModelElement, SParentElement } from '../../base/model/smodel';
-import { Action } from "../../base/actions/action";
 import { Command, CommandExecutionContext } from "../../base/commands/command";
 import { SRoutableElement, SConnectableElement } from "../routing/model";
 
 /**
  * Action to render the selected elements in front of others by manipulating the z-order.
  */
-export class BringToFrontAction implements Action {
-    static readonly KIND = 'bringToFront';
-    kind = BringToFrontAction.KIND;
+export interface BringToFrontAction extends Action {
+    kind: typeof BringToFrontAction.KIND;
+    elementIDs: string[]
+}
+export namespace BringToFrontAction {
+    export const KIND = 'bringToFront';
 
-    constructor(public readonly elementIDs: string[]) {
+    export function create(elementIDs: string[]): BringToFrontAction {
+        return {
+            kind: KIND,
+            elementIDs
+        };
     }
 }
 

@@ -14,22 +14,31 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { injectable, inject } from "inversify";
+import { RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
+import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { isBoundsAware } from '../bounds/model';
-import { ResponseAction, RequestAction } from '../../base/actions/action';
 import { ActionDispatcher } from '../../base/actions/action-dispatcher';
 import { TYPES } from '../../base/types';
 import { SModelRoot } from '../../base/model/smodel';
-import { Bounds, combine, EMPTY_BOUNDS } from '../../utils/geometry';
 import { ILogger } from '../../utils/logging';
-import { injectable, inject } from "inversify";
 
-export class ExportSvgAction implements ResponseAction {
-    static KIND = 'exportSvg';
-    kind = ExportSvgAction.KIND;
+export interface ExportSvgAction extends ResponseAction {
+    kind: typeof ExportSvgAction.KIND;
+    svg: string
+    responseId: string
+}
+export namespace ExportSvgAction {
+    export const KIND = 'exportSvg';
 
-    constructor(public readonly svg: string,
-                public readonly responseId: string = '') {}
+    export function create(svg: string, requestId: string): ExportSvgAction {
+        return {
+            kind: KIND,
+            svg,
+            responseId: requestId
+        };
+    }
 }
 
 @injectable()
@@ -45,7 +54,7 @@ export class SvgExporter {
             if (div !== null && div.firstElementChild && div.firstElementChild.tagName === 'svg') {
                 const svgElement = div.firstElementChild as SVGSVGElement;
                 const svg = this.createSvg(svgElement, root);
-                this.actionDispatcher.dispatch(new ExportSvgAction(svg, request ? request.requestId : ''));
+                this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : ''));
             }
         }
     }
@@ -97,12 +106,12 @@ export class SvgExporter {
     }
 
     protected getBounds(root: SModelRoot) {
-        const allBounds: Bounds[] = [ EMPTY_BOUNDS ];
+        const allBounds: Bounds[] = [ Bounds.EMPTY ];
         root.children.forEach(element => {
             if (isBoundsAware(element)) {
                 allBounds.push(element.bounds);
             }
         });
-        return allBounds.reduce((one, two) => combine(one, two));
+        return allBounds.reduce((one, two) => Bounds.combine(one, two));
     }
 }

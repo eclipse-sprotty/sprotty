@@ -15,7 +15,8 @@
  ********************************************************************************/
 import { AutocompleteResult, AutocompleteSettings } from "autocompleter";
 import { inject, injectable } from "inversify";
-import { Action, isAction, LabeledAction, isLabeledAction } from "../../base/actions/action";
+import { Action, isAction } from 'sprotty-protocol/lib/actions';
+import { LabeledAction, isLabeledAction } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
@@ -237,10 +238,10 @@ function espaceForRegExp(value: string): string {
 export class CommandPaletteKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, false, [])];
+            return [SetUIExtensionVisibilityAction.create({ extensionId: CommandPalette.ID, visible: false, contextElementsId: [] })];
         } else if (CommandPalette.isInvokePaletteKey(event)) {
             const selectedElements = toArray(element.index.all().filter(e => isSelectable(e) && e.selected).map(e => e.id));
-            return [new SetUIExtensionVisibilityAction(CommandPalette.ID, true, selectedElements)];
+            return [SetUIExtensionVisibilityAction.create({ extensionId: CommandPalette.ID, visible: true, contextElementsId: selectedElements })];
         }
         return [];
     }

@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { ILogger } from "../../utils/logging";
-import { Action } from "../actions/action";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { SModelRoot } from "../model/smodel";
 import { IModelFactory } from "../model/smodel-factory";

@@ -19,7 +19,7 @@ import 'mocha';
 import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../types';
-import { SModelElementSchema, SModelIndex, SChildElement } from './smodel';
+import { SModelElementSchema, ModelIndexImpl, SChildElement } from './smodel';
 import { SModelFactory } from "./smodel-factory";
 import { registerModelElement } from './smodel-utils';
 import { selectFeature, Selectable } from '../../features/select/model';
@@ -123,7 +123,7 @@ describe('model factory', () => {
         expect(element1.parent).to.equal(root);
         expect(element1.children).to.deep.equal([]);
         expect(element1.root).to.equal(root);
-        expect(root.index).to.be.instanceOf(SModelIndex);
+        expect(root.index).to.be.instanceOf(ModelIndexImpl);
     });
 
     it('gets default features for registered element', () => {

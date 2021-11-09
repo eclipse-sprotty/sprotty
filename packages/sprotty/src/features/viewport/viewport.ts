@@ -14,16 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ORIGIN_POINT, Bounds } from "../../utils/geometry";
+import { injectable, inject } from "inversify";
+import { Action, generateRequestId, RequestAction, ResponseAction } from "sprotty-protocol/lib/actions";
+import { Viewport } from "sprotty-protocol/lib/model";
+import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
-import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
 import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { Animation } from "../../base/animations/animation";
-import { isViewport, Viewport } from "./model";
-import { injectable, inject } from "inversify";
+import { isViewport } from "./model";
 import { TYPES } from "../../base/types";
 import { ModelRequestCommand } from "../../base/commands/request-command";
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export class SetViewportAction implements Action {
     static readonly KIND = 'viewport';
     kind = SetViewportAction.KIND;
@@ -37,25 +41,36 @@ export class SetViewportAction implements Action {
 /**
  * Request action for retrieving the current viewport and canvas bounds.
  */
-export class GetViewportAction implements RequestAction<ViewportResult> {
-    static readonly KIND = 'getViewport';
-    kind = GetViewportAction.KIND;
+export interface GetViewportAction extends RequestAction<ViewportResult> {
+    kind: typeof GetViewportAction.KIND;
+}
+export namespace GetViewportAction {
+    export const KIND = 'getViewport';
 
-    constructor(public readonly requestId: string = '') {}
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(): RequestAction<ViewportResult> {
-        return new GetViewportAction(generateRequestId());
+    export function create(): GetViewportAction {
+        return {
+            kind: KIND,
+            requestId: generateRequestId()
+        };
     }
 }
 
-export class ViewportResult implements ResponseAction {
-    static readonly KIND = 'viewportResult';
-    kind = ViewportResult.KIND;
+export interface ViewportResult extends ResponseAction {
+    kind: typeof ViewportResult.KIND;
+    viewport: Viewport
+    canvasBounds: Bounds
+}
+export namespace ViewportResult {
+    export const KIND = 'viewportResult';
 
-    constructor(public readonly viewport: Viewport,
-                public readonly canvasBounds: Bounds,
-                public readonly responseId: string) {}
+    export function create(viewport: Viewport, canvasBounds: Bounds, requestId: string): ViewportResult {
+        return {
+            kind: KIND,
+            viewport,
+            canvasBounds,
+            responseId: requestId
+        };
+    }
 }
 
 @injectable()
@@ -120,9 +135,9 @@ export class GetViewportCommand extends ModelRequestCommand {
         if (isViewport(elem)) {
             viewport = { scroll: elem.scroll, zoom: elem.zoom };
         } else {
-            viewport = { scroll: ORIGIN_POINT, zoom: 1 };
+            viewport = { scroll: Point.ORIGIN, zoom: 1 };
         }
-        return new ViewportResult(viewport, elem.canvasBounds, this.action.requestId);
+        return ViewportResult.create(viewport, elem.canvasBounds, this.action.requestId);
     }
 }
 

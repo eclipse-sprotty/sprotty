@@ -14,20 +14,26 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point } from "../../utils/geometry";
+import { Action, SetViewportAction } from "sprotty-protocol/lib/actions";
+import { Viewport } from "sprotty-protocol/lib/model";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { getWindowScroll } from "../../utils/browser";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
 import { MouseListener } from "../../base/views/mouse-tool";
-import { Action } from "../../base/actions/action";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from "../../base/model/smodel-utils";
-import { SetViewportAction } from "./viewport";
-import { isViewport, Viewport } from "./model";
+import { isViewport } from "./model";
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface Zoomable extends SModelExtension {
     zoom: number
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export function isZoomable(element: SModelElement | Zoomable): element is Zoomable {
     return 'zoom' in element;
 }
@@ -56,7 +62,7 @@ export class ZoomMouseListener extends MouseListener {
                 },
                 zoom: viewport.zoom * newZoom
             };
-            return [new SetViewportAction(viewport.id, newViewport, false)];
+            return [SetViewportAction.create(newViewport, { elementId: viewport.id, animate: false })];
         }
         return [];
     }

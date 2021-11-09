@@ -17,10 +17,10 @@
 /** @jsx html */
 import { inject, injectable, multiInject, optional } from 'inversify';
 import { attributesModule, classModule, eventListenersModule, init, Module, propsModule, styleModule, VNode } from 'snabbdom';
+import { Action } from 'sprotty-protocol/lib/actions';
 import { html } from '../../lib/jsx'; // must be html here, as we're creating a div
 import { getWindowScroll } from '../../utils/browser';
 import { ILogger } from '../../utils/logging';
-import { Action } from '../actions/action';
 import { IActionDispatcher } from '../actions/action-dispatcher';
 import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
 import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
@@ -194,7 +194,7 @@ export class ModelViewer implements IViewer {
         const baseDiv = document.getElementById(this.options.baseDiv);
         if (baseDiv !== null) {
             const newBounds = this.getBoundsInPage(baseDiv as Element);
-            this.actiondispatcher.dispatch(new InitializeCanvasBoundsAction(newBounds));
+            this.actiondispatcher.dispatch(InitializeCanvasBoundsAction.create(newBounds));
         }
     }
 

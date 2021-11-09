@@ -16,9 +16,10 @@
 
 import { IAnchorComputer, ELLIPTIC_ANCHOR_KIND, RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND } from "./anchor";
 import { SConnectableElement } from "./model";
-import { Point, center, almostEquals, PointToPointLine, Diamond, intersection, shiftTowards } from "../../utils/geometry";
+import { PointToPointLine, Diamond, intersection } from "../../utils/geometry";
 import { injectable } from "inversify";
 import { PolylineEdgeRouter } from "./polyline-edge-router";
+import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 
 @injectable()
 export class EllipseAnchor implements IAnchorComputer {
@@ -29,7 +30,7 @@ export class EllipseAnchor implements IAnchorComputer {
 
     getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
         const bounds = connectable.bounds;
-        const c = center(bounds);
+        const c = Bounds.center(bounds);
         const dx = c.x - refPoint.x;
         const dy = c.y - refPoint.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -51,7 +52,7 @@ export class RectangleAnchor implements IAnchorComputer {
 
     getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
         const bounds = connectable.bounds;
-        const c = center(bounds);
+        const c = Bounds.center(bounds);
         const finder = new NearestPointFinder(c, refPoint);
         if (!almostEquals(c.y, refPoint.y)) {
             const xTop = this.getXIntersection(bounds.y, c, refPoint);
@@ -120,9 +121,9 @@ export class DiamondAnchor implements IAnchorComputer {
 
     getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number): Point {
         const bounds = connectable.bounds;
-        const referenceLine = new PointToPointLine(center(bounds), refPoint);
+        const referenceLine = new PointToPointLine(Bounds.center(bounds), refPoint);
         const closestDiamondSide = new Diamond(bounds).closestSideLine(refPoint);
         const anchorPoint = intersection(closestDiamondSide, referenceLine);
-        return shiftTowards(anchorPoint, refPoint, offset);
+        return Point.shiftTowards(anchorPoint, refPoint, offset);
     }
 }

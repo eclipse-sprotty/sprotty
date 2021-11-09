@@ -16,7 +16,7 @@
 
 import "mocha";
 import { expect } from "chai";
-import { SChildElement, SModelIndex, SModelRoot, SModelElement, SModelElementSchema, SModelRootSchema } from './smodel';
+import { SChildElement, ModelIndexImpl, SModelRoot } from './smodel';
 
 describe('SModelRoot', () => {
     function setup() {
@@ -60,9 +60,9 @@ describe('SModelRoot', () => {
     });
 });
 
-describe('SModelIndex', () => {
+describe('ModelIndexImpl', () => {
     function setup() {
-        const index = new SModelIndex<SModelElement>();
+        const index = new ModelIndexImpl();
         const child1 = new SChildElement();
         child1.id = 'child1';
         index.add(child1);
@@ -83,77 +83,5 @@ describe('SModelIndex', () => {
         ctx.index.remove(ctx.child2);
         expect(ctx.index.contains(ctx.child2)).to.be.false;
         expect(ctx.index.getById('child2')).to.be.undefined;
-    });
-
-    it('returns the parent element for an internal model', () => {
-        const index = new SModelIndex<SModelElement>();
-        const root = new SModelRoot(index);
-        const parent = new SChildElement();
-        parent.id = 'parent';
-        root.add(parent);
-        const child = new SChildElement();
-        child.id = 'child';
-        parent.add(child);
-        expect((index as any).id2parent).to.be.undefined;
-        expect(index.getParent(child.id)!.id).to.equal('parent');
-    });
-
-    it('returns the root element for an internal model', () => {
-        const index = new SModelIndex<SModelElement>();
-        const root = new SModelRoot(index);
-        root.id = 'root';
-        const parent = new SChildElement();
-        parent.id = 'parent';
-        root.add(parent);
-        const child = new SChildElement();
-        child.id = 'child';
-        parent.add(child);
-        expect((index as any).id2parent).to.be.undefined;
-        expect(index.getRoot(child).id).to.equal('root');
-    });
-
-    it('returns the parent element for an external model', () => {
-        const index = new SModelIndex<SModelElementSchema>();
-        const root: SModelRootSchema = {
-            type: 'root',
-            id: 'root',
-            children: [
-                {
-                    type: 'node',
-                    id: 'parent',
-                    children: [
-                        {
-                            type: 'node',
-                            id: 'child'
-                        }
-                    ]
-                }
-            ]
-        };
-        index.add(root);
-        expect(index.getParent('child')!.id).to.equal('parent');
-    });
-
-    it('returns the root element for an external model', () => {
-        const index = new SModelIndex<SModelElementSchema>();
-        const root: SModelRootSchema = {
-            type: 'root',
-            id: 'root',
-            children: [
-                {
-                    type: 'node',
-                    id: 'parent',
-                    children: [
-                        {
-                            type: 'node',
-                            id: 'child'
-                        }
-                    ]
-                }
-            ]
-        };
-        index.add(root);
-        const child = root.children![0].children![0];
-        expect(index.getRoot(child).id).to.equal('root');
     });
 });

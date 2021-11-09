@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { injectable, multiInject } from "inversify";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../../base/types";
-import { Point } from "../../utils/geometry";
 import { InstanceRegistry } from "../../utils/registry";
 import { SConnectableElement } from "./model";
 

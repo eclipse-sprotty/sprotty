@@ -16,7 +16,7 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from "snabbdom";
-import { Action, RequestAction, ResponseAction, generateRequestId } from "../../base/actions/action";
+import { Action, generateRequestId, RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext } from "../../base/commands/command";
 import { ModelRequestCommand } from '../../base/commands/request-command';
 import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
@@ -41,6 +41,8 @@ import { isSelectable, Selectable } from "./model";
  * SelectCommand changes the `selected` state accordingly, so the elements can be rendered differently.
  * This action is also forwarded to the diagram server, if present, so it may react on the selection change.
  * Furthermore, the server can send such an action to the client in order to change the selection programmatically.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class SelectAction implements Action {
     static readonly KIND = 'elementSelected';
@@ -53,13 +55,15 @@ export class SelectAction implements Action {
 
 /**
  * Programmatic action for selecting or deselecting all elements.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class SelectAllAction implements Action {
     static readonly KIND = 'allSelected';
     kind = SelectAllAction.KIND;
 
     /**
-     * If `select` is true, all elements are selected, othewise they are deselected.
+     * If `select` is true, all elements are selected, otherwise they are deselected.
      */
     constructor(public readonly select: boolean = true) {
     }
@@ -68,24 +72,34 @@ export class SelectAllAction implements Action {
 /**
  * Request action for retrieving the current selection.
  */
-export class GetSelectionAction implements RequestAction<SelectionResult> {
-    static readonly KIND = 'getSelection';
-    kind = GetSelectionAction.KIND;
+export interface GetSelectionAction extends RequestAction<SelectionResult> {
+    kind: typeof GetSelectionAction.KIND
+}
+export namespace GetSelectionAction {
+    export const KIND = 'getSelection';
 
-    constructor(public readonly requestId: string = '') {}
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(): RequestAction<SelectionResult> {
-        return new GetSelectionAction(generateRequestId());
+    export function create(): GetSelectionAction {
+        return {
+            kind: KIND,
+            requestId: generateRequestId()
+        };
     }
 }
 
-export class SelectionResult implements ResponseAction {
-    static readonly KIND = 'selectionResult';
-    kind = SelectionResult.KIND;
+export interface SelectionResult extends ResponseAction {
+    kind: typeof SelectionResult.KIND
+    selectedElementsIDs: string[]
+}
+export namespace SelectionResult {
+    export const KIND = 'selectionResult';
 
-    constructor(public readonly selectedElementsIDs: string[] = [],
-                public readonly responseId: string) {}
+    export function create(selectedElementsIDs: string[], requestId: string): SelectionResult {
+        return {
+            kind: KIND,
+            selectedElementsIDs,
+            responseId: requestId
+        };
+    }
 }
 
 @injectable()
@@ -207,17 +221,17 @@ export class SelectMouseListener extends MouseListener {
                     if (!selectableTarget.selected) {
                         this.wasSelected = false;
                         result.push(new SelectAction([selectableTarget.id], deselect.map(e => e.id)));
-                        result.push(new BringToFrontAction([selectableTarget.id]));
+                        result.push(BringToFrontAction.create([selectableTarget.id]));
                         const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
                         if (selectableTarget instanceof SRoutableElement)
-                            result.push(new SwitchEditModeAction([selectableTarget.id], routableDeselect));
+                            result.push(SwitchEditModeAction.create({ elementsToActivate: [selectableTarget.id], elementsToDeactivate: routableDeselect }));
                         else if (routableDeselect.length > 0)
-                            result.push(new SwitchEditModeAction([], routableDeselect));
+                            result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
                     } else if (isCtrlOrCmd(event)) {
                         this.wasSelected = false;
                         result.push(new SelectAction([], [selectableTarget.id]));
                         if (selectableTarget instanceof SRoutableElement)
-                            result.push(new SwitchEditModeAction([], [selectableTarget.id]));
+                            result.push(SwitchEditModeAction.create({ elementsToDeactivate: [selectableTarget.id] }));
                     } else {
                         this.wasSelected = true;
                     }
@@ -225,7 +239,7 @@ export class SelectMouseListener extends MouseListener {
                     result.push(new SelectAction([], deselect.map(e => e.id)));
                     const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
                     if (routableDeselect.length > 0)
-                        result.push(new SwitchEditModeAction([], routableDeselect));
+                        result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
                 }
             }
         }
@@ -272,7 +286,7 @@ export class GetSelectionCommand extends ModelRequestCommand {
         const selection = context.root.index.all()
                 .filter(e => isSelectable(e) && e.selected)
                 .map(e => e.id);
-        return new SelectionResult(toArray(selection), this.action.requestId);
+        return SelectionResult.create(toArray(selection), this.action.requestId);
     }
 
 }

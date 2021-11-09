@@ -16,7 +16,8 @@
 // Based on the sweepline implementation at https://github.com/rowanwins/sweepline-intersections
 // which is published under the terms of MIT, but has been adapted to the use case of sprotty.
 import TinyQueue from "tinyqueue";
-import { Point, PointToPointLine } from "../../utils/geometry";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
+import { PointToPointLine } from "../../utils/geometry";
 import { Intersection } from "./intersection-finder";
 import { RoutedPoint } from "../routing/routing";
 

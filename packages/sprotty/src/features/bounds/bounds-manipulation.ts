@@ -15,16 +15,19 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action, generateRequestId, RequestAction, ResponseAction } from "../../base/actions/action";
+import { Action, generateRequestId, RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
+import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
 import { CommandExecutionContext, CommandResult, CommandReturn, HiddenCommand, SystemCommand } from "../../base/commands/command";
-import { SModelElement, SModelRootSchema } from "../../base/model/smodel";
+import { SModelElement } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
-import { Bounds, Dimension, Point } from "../../utils/geometry";
 import { Alignable, BoundsAware, isBoundsAware } from './model';
 
 /**
  * Sent from the model source (e.g. a DiagramServer) to the client to update the bounds of some
  * (or all) model elements.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class SetBoundsAction implements Action {
     static readonly KIND: string  = 'setBounds';
@@ -39,6 +42,8 @@ export class SetBoundsAction implements Action {
  * rendered invisibly so the bounds can derived from the DOM. The response is a ComputedBoundsAction.
  * This hidden rendering round-trip is necessary if the client is responsible for parts of the layout
  * (see `needsClientLayout` viewer option).
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class RequestBoundsAction implements RequestAction<ComputedBoundsAction> {
     static readonly KIND: string  = 'requestBounds';
@@ -59,6 +64,8 @@ export class RequestBoundsAction implements RequestAction<ComputedBoundsAction> 
  * the layout (see `needsServerLayout` viewer option), it can do so after applying the computed bounds
  * received with this action. Otherwise there is no need to send the computed bounds to the server,
  * so they can be processed locally by the client.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class ComputedBoundsAction implements ResponseAction {
     static readonly KIND = 'computedBounds';
@@ -72,6 +79,8 @@ export class ComputedBoundsAction implements ResponseAction {
 
 /**
  * Associates new bounds with a model element, which is referenced via its id.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface ElementAndBounds {
     elementId: string
@@ -81,6 +90,8 @@ export interface ElementAndBounds {
 
 /**
  * Associates a new alignment with a model element, which is referenced via its id.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface ElementAndAlignment {
     elementId: string
@@ -89,6 +100,8 @@ export interface ElementAndAlignment {
 
 /**
  * Request a layout of the diagram or the selected elements only.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class LayoutAction implements Action {
     static readonly KIND = 'layout';

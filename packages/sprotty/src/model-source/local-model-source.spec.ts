@@ -18,18 +18,15 @@ import "reflect-metadata";
 import "mocha";
 import { expect } from "chai";
 import { Container, injectable } from "inversify";
-import { Deferred } from "../utils/async";
+import { Action, ComputedBoundsAction, isResponseAction, RequestAction, RequestBoundsAction, ResponseAction, SetModelAction, UpdateModelAction } from 'sprotty-protocol/lib/actions';
+import { Deferred } from 'sprotty-protocol/lib/utils/async';
 import { TYPES } from "../base/types";
 import { SModelRootSchema } from "../base/model/smodel";
-import { Action, RequestAction, ResponseAction, isResponseAction } from "../base/actions/action";
-import { SetModelAction } from "../base/features/set-model";
 import { ViewerOptions, overrideViewerOptions } from "../base/views/viewer-options";
-import { ComputedBoundsAction, RequestBoundsAction } from "../features/bounds/bounds-manipulation";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
-import { UpdateModelAction } from "../features/update/update-model";
 import { LocalModelSource } from "./local-model-source";
-import defaultContainerModule from "../base/di.config";
 import { ComputedBoundsApplicator } from "./model-source";
+import defaultContainerModule from "../base/di.config";
 
 describe('LocalModelSource', () => {
 
@@ -58,12 +55,12 @@ describe('LocalModelSource', () => {
             return Promise.resolve();
         }
 
-        request<Req extends RequestAction<Res>, Res extends ResponseAction>(action: Req): Promise<Res> {
+        request<Res extends ResponseAction>(action: RequestAction<Res>): Promise<Res> {
             if (!action.requestId) {
                 return Promise.reject(new Error('Request without requestId'));
             }
             const deferred = new Deferred<Res>();
-            this.requests.push({ requestId: action.requestId, deferred });
+            this.requests.push({ requestId: action.requestId, deferred: deferred as any });
             this.dispatch(action);
             return deferred.promise;
         }
@@ -103,10 +100,10 @@ describe('LocalModelSource', () => {
 
         expect(dispatcher.actions).to.have.lengthOf(2);
         const action0 = dispatcher.actions[0] as SetModelAction;
-        expect(action0).to.be.instanceOf(SetModelAction);
+        expect(action0.kind).to.equal(SetModelAction.KIND);
         expect(action0.newRoot).to.equal(root1);
         const action1 = dispatcher.actions[1] as UpdateModelAction;
-        expect(action1).to.be.instanceOf(UpdateModelAction);
+        expect(action1.kind).to.equal(UpdateModelAction.KIND);
         expect(action1.newRoot).to.equal(root2);
     });
 
@@ -127,13 +124,13 @@ describe('LocalModelSource', () => {
         };
         const promise1 = modelSource.setModel(root1);
         expect(dispatcher.requests).to.have.lengthOf(1);
-        dispatcher.dispatch(new ComputedBoundsAction([
+        dispatcher.dispatch(ComputedBoundsAction.create([
             {
                 elementId: 'child1',
                 newPosition: { x: 10, y: 10 },
                 newSize: { width: 20, height: 20 }
             }
-        ], undefined, undefined, dispatcher.requests[0].requestId));
+        ], { requestId: dispatcher.requests[0].requestId }));
         const root2: SModelRootSchema = {
             type: 'root',
             id: 'root',
@@ -148,21 +145,21 @@ describe('LocalModelSource', () => {
 
         const promise2 = modelSource.updateModel(root2);
         expect(dispatcher.requests).to.have.lengthOf(2);
-        dispatcher.dispatch(new ComputedBoundsAction([
+        dispatcher.dispatch(ComputedBoundsAction.create([
             {
                 elementId: 'bar',
                 newPosition: { x: 10, y: 10 },
                 newSize: { width: 20, height: 20 }
             }
-        ], undefined, undefined, dispatcher.requests[1].requestId));
+        ], { requestId: dispatcher.requests[1].requestId }));
         await promise2;
 
         expect(dispatcher.actions).to.have.lengthOf(4);
         const action0 = dispatcher.actions[0] as RequestBoundsAction;
-        expect(action0).to.be.instanceOf(RequestBoundsAction);
+        expect(action0.kind).to.equal(RequestBoundsAction.KIND);
         expect(action0.newRoot).to.equal(root1);
         const action1 = dispatcher.actions[1] as SetModelAction;
-        expect(action1).to.be.instanceOf(SetModelAction);
+        expect(action1.kind).to.equal(SetModelAction.KIND);
         expect(action1.newRoot).to.deep.equal({
             type: 'root',
             id: 'root',
@@ -176,10 +173,10 @@ describe('LocalModelSource', () => {
             ]
         });
         const action2 = dispatcher.actions[2] as RequestBoundsAction;
-        expect(action2).to.be.instanceOf(RequestBoundsAction);
+        expect(action2.kind).to.equal(RequestBoundsAction.KIND);
         expect(action2.newRoot).to.equal(root2);
         const action3 = dispatcher.actions[3] as UpdateModelAction;
-        expect(action3).to.be.instanceOf(UpdateModelAction);
+        expect(action3.kind).to.equal(UpdateModelAction.KIND);
     });
 
     it('adds and removes elements', () => {
@@ -287,13 +284,13 @@ describe('LocalModelSource', () => {
         };
         const promise1 = modelSource.setModel(root1);
         expect(dispatcher.requests).to.have.lengthOf(1);
-        dispatcher.dispatch(new ComputedBoundsAction([
+        dispatcher.dispatch(ComputedBoundsAction.create([
             {
                 elementId: 'child1',
                 newPosition: { x: 10, y: 10 },
                 newSize: { width: 20, height: 20 }
              }
-        ], undefined, undefined, dispatcher.requests[0].requestId));
+        ], { requestId: dispatcher.requests[0].requestId }));
         await promise1;
 
         const root2: SModelRootSchema = {
@@ -303,13 +300,13 @@ describe('LocalModelSource', () => {
         };
         const promise2 = modelSource.updateModel(root2);
         expect(dispatcher.requests).to.have.lengthOf(2);
-        dispatcher.dispatch(new ComputedBoundsAction([
+        dispatcher.dispatch(ComputedBoundsAction.create([
             {
                 elementId: 'bar',
                 newPosition: { x: 10, y: 10 },
                 newSize: { width: 20, height: 20 }
             }
-        ], undefined, undefined, dispatcher.requests[1].requestId));
+        ], { requestId: dispatcher.requests[1].requestId }));
         await promise2;
 
         expect(dispatcher.actions).to.have.lengthOf(4);

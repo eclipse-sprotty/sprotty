@@ -14,12 +14,24 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export type JsonAny =  JsonPrimitive | JsonMap | JsonArray | null;
 
-export type JsonPrimitive = string | number | boolean;
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+ export type JsonPrimitive = string | number | boolean;
 
-export interface JsonMap {
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+ export interface JsonMap {
     [key: string]: JsonAny;
 }
 
-export interface JsonArray extends Array<JsonAny> {}
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+ export type JsonArray = Array<JsonAny>;

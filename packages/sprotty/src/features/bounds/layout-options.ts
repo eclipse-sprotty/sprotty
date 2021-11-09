@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { JsonMap } from '../../utils/json';
+import { JsonMap } from 'sprotty-protocol/lib/utils/json';
 
 export type HAlignment = 'left' | 'center' | 'right';
 

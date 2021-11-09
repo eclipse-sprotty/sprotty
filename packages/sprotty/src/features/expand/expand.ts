@@ -14,18 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from '../../base/actions/action';
+import { injectable } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
 import { SButton } from '../button/model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isExpandable } from './model';
 import { IButtonHandler } from '../button/button-handler';
-import { injectable } from 'inversify';
 
 /**
  * Sent from the client to the model source to recalculate a diagram when elements
  * are collapsed/expanded by the client.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class CollapseExpandAction {
+export class CollapseExpandAction implements Action {
     static KIND = 'collapseExpand';
     kind = CollapseExpandAction.KIND;
 
@@ -36,8 +38,10 @@ export class CollapseExpandAction {
 
 /**
  * Programmatic action for expanding or collapsing all elements.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class CollapseExpandAllAction {
+export class CollapseExpandAllAction implements Action {
     static KIND = 'collapseExpandAll';
     kind = CollapseExpandAllAction.KIND;
 

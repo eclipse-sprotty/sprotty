@@ -15,19 +15,29 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "../../base/actions/action";
+import { Action } from "sprotty-protocol/lib/actions";
 import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { TYPES } from "../../base/types";
 import { SRoutableElement } from "../routing/model";
 import { EdgeMemento, EdgeRouterRegistry } from "../routing/routing";
 
-export class ReconnectAction implements Action {
-    static readonly KIND = 'reconnect';
-    readonly kind =  ReconnectAction.KIND;
+export interface ReconnectAction extends Action {
+    kind: typeof ReconnectAction.KIND
+    routableId: string
+    newSourceId?: string
+    newTargetId?: string
+}
+export namespace ReconnectAction {
+    export const KIND = 'reconnect';
 
-    constructor(readonly routableId: string,
-                readonly newSourceId?: string,
-                readonly newTargetId?: string) {}
+    export function create(options: { routableId: string, newSourceId?: string, newTargetId?: string }): ReconnectAction {
+        return {
+            kind: KIND,
+            routableId: options.routableId,
+            newSourceId: options.newSourceId,
+            newTargetId: options.newTargetId
+        };
+    }
 }
 
 @injectable()

@@ -17,6 +17,8 @@
 /**
  * Simple implementation of the deferred pattern.
  * An object that exposes a promise and functions to resolve and reject it.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class Deferred<T> {
     resolve: (value?: T | PromiseLike<T>) => void;

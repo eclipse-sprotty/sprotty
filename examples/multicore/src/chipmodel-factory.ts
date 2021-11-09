@@ -15,9 +15,13 @@
  ********************************************************************************/
 
 import {
-    SGraphFactory, SChildElement, SModelElementSchema, SModelRoot, SModelRootSchema, SParentElement, getBasicType,
-    Direction, HtmlRootSchema, PreRenderedElementSchema, PreRenderedElement, HtmlRoot, createFeatureSet
+    SGraphFactory, SChildElement, SModelRoot, SParentElement, getBasicType, PreRenderedElement, HtmlRoot,
+    createFeatureSet, Direction
 } from 'sprotty';
+import {
+    SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, HtmlRoot as HtmlRootSchema,
+    PreRenderedElement as PreRenderedElementSchema
+} from 'sprotty-protocol';
 import {
     Channel, ChannelSchema, Core, CoreSchema, Crossbar, CrossbarSchema, Processor, ProcessorSchema
 } from "./chipmodel";

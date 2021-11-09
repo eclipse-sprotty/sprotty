@@ -14,14 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SChildElement, SModelElement, SModelElementSchema, SModelRoot, SParentElement } from "../../base/model/smodel";
+import { Bounds, Dimension, isBounds, Point } from "sprotty-protocol/lib/utils/geometry";
+import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
+import { SChildElement, SModelElement, SModelRoot, SParentElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { DOMHelper } from "../../base/views/dom-helper";
 import { ViewerOptions } from "../../base/views/viewer-options";
-import {
-    Bounds, Dimension, EMPTY_BOUNDS, EMPTY_DIMENSION, includes, isBounds, ORIGIN_POINT, Point
-} from "../../utils/geometry";
 import { Locateable } from '../move/model';
 import { getWindowScroll } from "../../utils/browser";
 
@@ -32,6 +31,8 @@ export const alignFeature = Symbol('alignFeature');
 
 /**
  * Model elements that implement this interface have a position and a size.
+ * Note that this definition differs from the one in `sprotty-protocol` because this is
+ * used in the _internal model_, while the other is used in the _external model_.
  */
 export interface BoundsAware extends SModelExtension {
     bounds: Bounds
@@ -97,7 +98,7 @@ export function getAbsoluteBounds(element: SModelElement): Bounds {
         const canvasBounds = element.canvasBounds;
         return { x: 0, y: 0, width: canvasBounds.width, height: canvasBounds.height };
     } else {
-        return EMPTY_BOUNDS;
+        return Bounds.EMPTY;
     }
 }
 
@@ -147,7 +148,7 @@ export function findChildrenAtPosition(parent: SParentElement, point: Point): SM
 
 function doFindChildrenAtPosition(parent: SParentElement, point: Point, matches: SModelElement[]) {
     parent.children.forEach(child => {
-        if (isBoundsAware(child) && includes(child.bounds, point))
+        if (isBoundsAware(child) && Bounds.includes(child.bounds, point))
             matches.push(child);
         if (child instanceof SParentElement) {
             const newPoint = child.parentToLocal(point);
@@ -158,11 +159,12 @@ function doFindChildrenAtPosition(parent: SParentElement, point: Point, matches:
 
 /**
  * Serializable schema for SShapeElement.
+ *
+ * @deprecated Use `SShapeElement` from `sprotty-protocol` instead.
  */
 export interface SShapeElementSchema extends SModelElementSchema {
     position?: Point
     size?: Dimension
-    children?: SModelElementSchema[]
     layoutOptions?: ModelLayoutOptions
 }
 
@@ -170,8 +172,8 @@ export interface SShapeElementSchema extends SModelElementSchema {
  * Abstract class for elements with a position and a size.
  */
 export abstract class SShapeElement extends SChildElement implements BoundsAware, Locateable, LayoutableChild {
-    position: Point = ORIGIN_POINT;
-    size: Dimension = EMPTY_DIMENSION;
+    position: Point = Point.ORIGIN;
+    size: Dimension = Dimension.EMPTY;
     layoutOptions?: ModelLayoutOptions;
 
     get bounds(): Bounds {

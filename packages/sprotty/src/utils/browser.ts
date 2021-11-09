@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point, ORIGIN_POINT } from "./geometry";
+import { Point } from 'sprotty-protocol';
 
 /**
  * Returns whether the mouse or keyboard event includes the CMD key
@@ -48,7 +48,7 @@ export function isCrossSite(url: string): boolean {
  */
 export function getWindowScroll(): Point {
     if (typeof window === 'undefined') {
-        return ORIGIN_POINT;
+        return Point.ORIGIN;
     }
     return {
         x: window.pageXOffset,

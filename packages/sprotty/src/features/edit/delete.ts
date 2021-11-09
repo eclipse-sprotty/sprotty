@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { inject, injectable } from "inversify";
+import { Action } from "sprotty-protocol/lib/actions";
 import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { Action } from "../../base/actions/action";
 import { SModelElement, SParentElement, SChildElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { TYPES } from "../../base/types";
-import { inject, injectable } from "inversify";
 
 export const deletableFeature = Symbol('deletableFeature');
 
@@ -30,11 +30,22 @@ export function isDeletable<T extends SModelElement>(element: T): element is T &
     return element instanceof SChildElement && element.hasFeature(deletableFeature);
 }
 
-export class DeleteElementAction implements Action {
-    static readonly KIND = 'delete';
-    kind = DeleteElementAction.KIND;
+/**
+ * Delete a set of elements identified by their IDs.
+ */
+ export interface DeleteElementAction extends Action {
+    kind: typeof DeleteElementAction.KIND
+    elementIds: string[]
+}
+export namespace DeleteElementAction {
+    export const KIND = 'delete';
 
-    constructor(readonly elementIds: string[]) {}
+    export function create(elementIds: string[]): DeleteElementAction {
+        return {
+            kind: KIND,
+            elementIds
+        };
+    }
 }
 
 export class ResolvedDelete {

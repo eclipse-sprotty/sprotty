@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { angleBetweenPoints, center, centerOfLine, maxDistance, Point } from "../../utils/geometry";
+import { angleBetweenPoints, Bounds, centerOfLine, Point } from "sprotty-protocol/lib/utils/geometry";
 import { SRoutingHandle } from "./model";
 import { ResolvedHandleMove } from "../move/move";
 import { AnchorComputerRegistry } from "./anchor";
@@ -65,10 +65,10 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         const rpCount = routingPoints !== undefined ? routingPoints.length : 0;
         if (rpCount === 0) {
             // Use the target center as start anchor reference
-            const startRef = center(target.bounds);
+            const startRef = Bounds.center(target.bounds);
             sourceAnchor = this.getTranslatedAnchor(source, startRef, target.parent, edge, edge.sourceAnchorCorrection);
             // Use the source center as end anchor reference
-            const endRef = center(source.bounds);
+            const endRef = Bounds.center(source.bounds);
             targetAnchor = this.getTranslatedAnchor(target, endRef, source.parent, edge, edge.targetAnchorCorrection);
         } else {
             // Use the first routing point as start anchor reference
@@ -84,8 +84,8 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         for (let i = 0; i < rpCount; i++) {
             const p = routingPoints[i];
             if (i > 0 && i < rpCount - 1
-                || i === 0 && maxDistance(sourceAnchor, p) >= options.minimalPointDistance + (edge.sourceAnchorCorrection || 0)
-                || i === rpCount - 1 && maxDistance(p, targetAnchor) >= options.minimalPointDistance + (edge.targetAnchorCorrection || 0)) {
+                || i === 0 && Point.maxDistance(sourceAnchor, p) >= options.minimalPointDistance + (edge.sourceAnchorCorrection || 0)
+                || i === rpCount - 1 && Point.maxDistance(p, targetAnchor) >= options.minimalPointDistance + (edge.targetAnchorCorrection || 0)) {
                 result.push({ kind: 'linear', x: p.x, y: p.y, pointIndex: i });
             }
         }

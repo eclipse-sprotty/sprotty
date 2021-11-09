@@ -15,12 +15,13 @@
  ********************************************************************************/
 
 import { injectable, inject, optional } from "inversify";
-import { isValidDimension, almostEquals } from "../../utils/geometry";
+import { Action } from "sprotty-protocol/lib/actions";
+import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { almostEquals, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
-import { Action } from '../../base/actions/action';
-import { SModelRootSchema, SModelRoot, SChildElement, SModelElement, SParentElement } from "../../base/model/smodel";
+import { SModelRoot, SChildElement, SModelElement, SParentElement } from "../../base/model/smodel";
 import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from "../move/move";
 import { Fadeable, isFadeable } from "../fade/model";
 import { isLocateable } from "../move/model";
@@ -38,6 +39,8 @@ import { containsSome } from "../../base/model/smodel-utils";
 /**
  * Sent from the model source to the client in order to update the model. If no model is present yet,
  * this behaves the same as a SetModelAction. The transition from the old model to the new one can be animated.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export class UpdateModelAction implements Action {
     static readonly KIND = 'updateModel';
@@ -105,7 +108,7 @@ export class UpdateModelCommand extends Command {
             else
                 return animationOrRoot;
         } else {
-            if (oldRoot.type === newRoot.type && isValidDimension(oldRoot.canvasBounds))
+            if (oldRoot.type === newRoot.type && Dimension.isValid(oldRoot.canvasBounds))
                 newRoot.canvasBounds = oldRoot.canvasBounds;
             if (isViewport(oldRoot) && isViewport(newRoot)) {
                 newRoot.zoom = oldRoot.zoom;
@@ -222,7 +225,7 @@ export class UpdateModelCommand extends Command {
             }
         }
         if (isSizeable(left) && isSizeable(right)) {
-            if (!isValidDimension(right.bounds)) {
+            if (!Dimension.isValid(right.bounds)) {
                 right.bounds = {
                     x: right.bounds.x,
                     y: right.bounds.y,

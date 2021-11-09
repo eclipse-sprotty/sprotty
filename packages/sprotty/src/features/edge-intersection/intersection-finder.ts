@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
+import { Point } from "sprotty-protocol/lib/utils/geometry";
 import TinyQueue from "tinyqueue";
-import { Point } from "../../utils/geometry";
 import { EdgeRouting, IEdgeRoutePostprocessor, RoutedPoint } from "../routing/routing";
 import { addRoute, checkWhichEventIsLeft, runSweep, SweepEvent } from "./sweepline";
 

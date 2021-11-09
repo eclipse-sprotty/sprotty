@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import { DiagramServer, ActionMessage } from "./diagram-server";
+import { ActionMessage } from "sprotty-protocol/lib/actions";
+import { DiagramServerProxy } from "./diagram-server";
 
 /**
- * An external ModelSource that connects to the model provider using a
- * websocket.
+ * An external ModelSource that connects to the model provider using a websocket.
  */
 @injectable()
-export class WebSocketDiagramServer extends DiagramServer {
+export class WebSocketDiagramServerProxy extends DiagramServerProxy {
 
     protected webSocket?: WebSocket;
 
@@ -51,3 +51,8 @@ export class WebSocketDiagramServer extends DiagramServer {
         }
     }
 }
+
+/**
+ * @deprecated Use `WebSocketDiagramServerProxy` instead;
+ */
+export const WebSocketDiagramServer = WebSocketDiagramServerProxy;

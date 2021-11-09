@@ -15,17 +15,17 @@
  ********************************************************************************/
 
 import {
-    TYPES, IActionDispatcher, SModelElementSchema, SEdgeSchema, SNodeSchema, SGraphSchema,
-    ElementMove, MoveAction, LocalModelSource, Bounds, SelectAction, Point, getBasicType
+    TYPES, IActionDispatcher, ElementMove, MoveAction, LocalModelSource, getBasicType
 } from 'sprotty';
+import { Bounds, Point, SEdge, SelectAction, SGraph, SModelElement, SNode } from 'sprotty-protocol';
 import createContainer from "./di.config";
 
 const NODE_SIZE = 60;
 
 export default async function runCircleGraph() {
     let count = 2;
-    function addNode(bounds: Bounds): SModelElementSchema[] {
-        const newNode: SNodeSchema = {
+    function addNode(bounds: Bounds): SModelElement[] {
+        const newNode: SNode = {
             id: 'node' + count,
             type: 'node:circle',
             position: {
@@ -37,7 +37,7 @@ export default async function runCircleGraph() {
                 height: NODE_SIZE
             }
         };
-        const newEdge: SEdgeSchema = {
+        const newEdge: SEdge = {
             id: 'edge' + count,
             type: 'edge:straight',
             sourceId: 'node0',
@@ -67,7 +67,7 @@ export default async function runCircleGraph() {
 
     // Initialize model
     const node0 = { id: 'node0', type: 'node:circle', position: { x: 100, y: 100 }, size: { width: NODE_SIZE, height: NODE_SIZE } };
-    const graph: SGraphSchema = { id: 'graph', type: 'graph', children: [node0] };
+    const graph: SGraph = { id: 'graph', type: 'graph', children: [node0] };
 
     const initialViewport = await modelSource.getViewport();
     for (let i = 0; i < 200; ++i) {
@@ -83,7 +83,7 @@ export default async function runCircleGraph() {
         const viewport = await modelSource.getViewport();
         const newElements = addNode(getVisibleBounds(viewport));
         modelSource.addElements(newElements);
-        dispatcher.dispatch(new SelectAction(newElements.map(e => e.id)));
+        dispatcher.dispatch(SelectAction.create({ selectedElementsIDs: newElements.map(e => e.id) }));
         focusGraph();
     });
 
@@ -102,7 +102,7 @@ export default async function runCircleGraph() {
                 });
             }
         });
-        dispatcher.dispatch(new MoveAction(nodeMoves, true));
+        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true }));
         focusGraph();
     });
 
@@ -122,7 +122,7 @@ export default async function runCircleGraph() {
                 });
             }
         });
-        dispatcher.dispatch(new MoveAction(nodeMoves, true));
+        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true }));
         focusGraph();
     });
 

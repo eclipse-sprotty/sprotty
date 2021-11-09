@@ -15,15 +15,14 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
+import { Action, isAction, isRequestAction, isResponseAction, RejectAction, RequestAction, ResponseAction, SetModelAction } from "sprotty-protocol/lib/actions";
+import { Deferred } from "sprotty-protocol/lib/utils/async";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
-import { Deferred } from "../../utils/async";
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { ICommandStack } from "../commands/command-stack";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { SetModelAction } from '../features/set-model';
 import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
-import { Action, isAction, RequestAction, ResponseAction, isResponseAction, RejectAction, isRequestAction } from './action';
 import { ActionHandlerRegistry } from "./action-handler";
 import { IDiagramLocker } from "./diagram-locker";
 
@@ -57,7 +56,7 @@ export class ActionDispatcher implements IActionDispatcher {
         if (!this.initialized) {
             this.initialized = this.actionHandlerRegistryProvider().then(registry => {
                 this.actionHandlerRegistry = registry;
-                this.handleAction(new SetModelAction(EMPTY_ROOT)).catch(() => { /* Logged in handleAction method */ });
+                this.handleAction(SetModelAction.create(EMPTY_ROOT)).catch(() => { /* Logged in handleAction method */ });
             });
         }
         return this.initialized;

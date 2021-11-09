@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Container, interfaces } from "inversify";
-import { safeAssign } from "../../utils/object";
+import { safeAssign } from "sprotty-protocol/lib/utils/object";
 import { TYPES } from "../types";
 
 export interface ViewerOptions {

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from "../../base/actions/action";
+import { Action } from "sprotty-protocol/lib/actions";
 import { SModelElement } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 
@@ -27,4 +27,3 @@ export interface CreatingOnDrag extends SModelExtension {
 export function isCreatingOnDrag<T extends SModelElement>(element: T): element is T & CreatingOnDrag {
     return element.hasFeature(creatingOnDragFeature) && (element as any).createAction !== undefined;
 }
-

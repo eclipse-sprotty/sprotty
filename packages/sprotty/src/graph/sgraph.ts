@@ -14,9 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SChildElement, SModelElement, SModelElementSchema, SModelIndex, SModelRootSchema } from '../base/model/smodel';
-import { Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
-    ModelLayoutOptions, SShapeElement, SShapeElementSchema } from '../features/bounds/model';
+import {
+    SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, SShapeElement as SShapeElementSchema
+} from 'sprotty-protocol/lib/model';
+import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { ModelIndexImpl, SChildElement, SModelElement } from '../base/model/smodel';
+import {
+    Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    ModelLayoutOptions, SShapeElement
+} from '../features/bounds/model';
 import { edgeLayoutFeature, EdgePlacement } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
 import { editFeature } from '../features/edit/model';
@@ -26,11 +32,12 @@ import { moveFeature } from '../features/move/model';
 import { connectableFeature, SConnectableElement, SRoutableElement } from '../features/routing/model';
 import { Selectable, selectFeature } from '../features/select/model';
 import { ViewportRootElement } from '../features/viewport/viewport-root';
-import { Bounds, ORIGIN_POINT, Point } from '../utils/geometry';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
 
 /**
  * Serializable schema for graph-like models.
+ *
+ * @deprecated Use `SGraph` from `sprotty-protocol` instead.
  */
 export interface SGraphSchema extends SModelRootSchema {
     children: SModelElementSchema[]
@@ -53,6 +60,8 @@ export class SGraph extends ViewportRootElement {
 
 /**
  * Serializable schema for SNode.
+ *
+ * @deprecated Use `SNode` from `sprotty-protocol` instead.
  */
 export interface SNodeSchema extends SShapeElementSchema {
     layout?: string
@@ -85,6 +94,8 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
 
 /**
  * Serializable schema for SPort.
+ *
+ * @deprecated Use `SPort` from `sprotty-protocol` instead.
  */
 export interface SPortSchema extends SShapeElementSchema {
     selected?: boolean
@@ -108,6 +119,8 @@ export class SPort extends SConnectableElement implements Selectable, Fadeable, 
 
 /**
  * Serializable schema for SEdge.
+ *
+ * @deprecated Use `SEdge` from `sprotty-protocol` instead.
  */
 export interface SEdgeSchema extends SModelElementSchema {
     sourceId: string
@@ -136,6 +149,8 @@ export class SEdge extends SRoutableElement implements Fadeable, Selectable, Hov
 
 /**
  * Serializable schema for SLabel.
+ *
+ * @deprecated Use `SLabel` from `sprotty-protocol` instead.
  */
 export interface SLabelSchema extends SShapeElementSchema {
     text: string
@@ -151,7 +166,7 @@ export class SLabel extends SShapeElement implements Selectable, Alignable, Fade
 
     text: string;
     selected: boolean = false;
-    alignment: Point = ORIGIN_POINT;
+    alignment: Point = Point.ORIGIN;
     opacity = 1;
     edgePlacement?: EdgePlacement;
 
@@ -159,6 +174,8 @@ export class SLabel extends SShapeElement implements Selectable, Alignable, Fade
 
 /**
  * Serializable schema for SCompartment.
+ *
+ * @deprecated Use `SCompartment` from `sprotty-protocol` instead.
  */
 export interface SCompartmentSchema extends SShapeElementSchema {
     layout?: string
@@ -182,7 +199,7 @@ export class SCompartment extends SShapeElement implements Fadeable {
 /**
  * A specialized model index that tracks outgoing and incoming edges.
  */
-export class SGraphIndex extends SModelIndex<SModelElement> {
+export class SGraphIndex extends ModelIndexImpl {
 
     private outgoing: Map<string, SEdge[]> = new Map;
     private incoming: Map<string, SEdge[]> = new Map;

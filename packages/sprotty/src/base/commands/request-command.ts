@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { injectable, inject } from "inversify";
+import { ResponseAction } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../types";
 import { SystemCommand, CommandExecutionContext, CommandReturn } from "./command";
-import { ResponseAction } from "../actions/action";
 import { IActionDispatcher } from "../actions/action-dispatcher";
 
 /**

@@ -14,28 +14,44 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Action } from "sprotty-protocol/lib/actions";
 import { matchesKeystroke } from "../../utils/keyboard";
-import { Action } from "../../base/actions/action";
 import { KeyListener } from "../../base/views/key-tool";
 import { SModelElement } from "../../base/model/smodel";
 import { isMac } from "../../utils/browser";
 
-export class UndoAction implements Action {
-    static readonly KIND = 'undo';
-    kind = UndoAction.KIND;
+export interface UndoAction extends Action {
+    kind: typeof UndoAction.KIND;
+}
+export namespace UndoAction {
+    export const KIND = 'undo';
+
+    export function create(): UndoAction {
+        return {
+            kind: KIND
+        };
+    }
 }
 
-export class RedoAction implements Action {
-    static readonly KIND = 'redo';
-    kind = RedoAction.KIND;
+export interface RedoAction extends Action {
+    kind: typeof RedoAction.KIND;
+}
+export namespace RedoAction {
+    export const KIND = 'redo';
+
+    export function create(): RedoAction {
+        return {
+            kind: KIND
+        };
+    }
 }
 
 export class UndoRedoKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
-            return [new UndoAction];
+            return [UndoAction.create()];
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))
-            return [new RedoAction];
+            return [RedoAction.create()];
         return [];
     }
 }
