@@ -17,7 +17,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import { Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, SetModelAction } from './actions';
-import { DiagramServer } from './diagram-server';
+import { DiagramServer, ServerActionHandler } from './diagram-server';
 import { BoundsAware, SModelRoot } from './model';
 
 declare function setImmediate(callback: () => void): void;
@@ -166,5 +166,32 @@ describe('DiagramServer', () => {
             },
             responseId: 'req1'
         });
+    });
+
+    it('calls a registered action handler', async () => {
+        const { server, dispatched } = createServer();
+        server.onAction('foo', (_, state, server) => {
+            state.revision = -7;
+            server.dispatch({ kind: 'bar' });
+            return Promise.resolve();
+        });
+        await server.accept({ kind: 'foo' });
+        expect((server as any).state.revision).to.equal(-7);
+        expect(dispatched).to.have.lengthOf(1);
+        expect(dispatched[0]).to.deep.equal({ kind: 'bar' });
+    });
+
+    it('does not call an unregistered action handler', async () => {
+        const { server, dispatched } = createServer();
+        const handler: ServerActionHandler = (_, state, server) => {
+            state.revision = -7;
+            server.dispatch({ kind: 'bar' });
+            return Promise.resolve();
+        };
+        server.onAction('foo', handler);
+        server.removeActionHandler('foo', handler);
+        await server.accept({ kind: 'foo' });
+        expect((server as any).state.revision).to.equal(0);
+        expect(dispatched).to.have.lengthOf(0);
     });
 });
