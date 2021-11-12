@@ -16,7 +16,7 @@
 
 import { SModelRoot, SModelElement, Viewport } from './model';
 import { Bounds, Point, Dimension } from './utils/geometry';
-import { JsonAny, JsonPrimitive } from './utils/json';
+import { JsonAny, JsonMap } from './utils/json';
 import { hasOwnProperty } from './utils/object';
 
 /**
@@ -80,7 +80,7 @@ export interface ResponseAction extends Action {
  */
 
 export function isResponseAction(object?: Action): object is ResponseAction {
-    return hasOwnProperty<string, string>(object, 'responseId', 'string');
+    return hasOwnProperty<string, string>(object, 'responseId', 'string') && object.responseId !== '';
 }
 
 /**
@@ -111,12 +111,12 @@ export namespace RejectAction {
  */
 export interface RequestModelAction extends RequestAction<SetModelAction> {
     kind: typeof RequestModelAction.KIND
-    options?: { [key: string]: string | number | boolean }
+    options?: JsonMap
 }
 export namespace RequestModelAction {
     export const KIND = 'requestModel';
 
-    export function create(options?: { [key: string]: JsonPrimitive }): RequestModelAction {
+    export function create(options?: JsonMap): RequestModelAction {
         return {
             kind: KIND,
             options,
@@ -135,11 +135,11 @@ export interface SetModelAction extends ResponseAction {
 export namespace SetModelAction {
     export const KIND = 'setModel';
 
-    export function create(newRoot: SModelRoot, requestId?: string): SetModelAction {
+    export function create(newRoot: SModelRoot, requestId: string = ''): SetModelAction {
         return {
             kind: KIND,
             newRoot,
-            responseId: requestId!
+            responseId: requestId
         };
     }
 }
@@ -218,11 +218,11 @@ export interface SetPopupModelAction extends ResponseAction {
 export namespace SetPopupModelAction {
     export const KIND = 'setPopupModel';
 
-    export function create(newRoot: SModelRoot, requestId?: string): SetPopupModelAction {
+    export function create(newRoot: SModelRoot, requestId: string = ''): SetPopupModelAction {
         return {
             kind: KIND,
             newRoot,
-            responseId: requestId!
+            responseId: requestId
         };
     }
 }
@@ -284,13 +284,13 @@ export interface ComputedBoundsAction extends ResponseAction {
 export namespace ComputedBoundsAction {
     export const KIND = 'computedBounds';
 
-    export function create(bounds: ElementAndBounds[], options: { revision?: number, alignments?: ElementAndAlignment[], requestId: string }): ComputedBoundsAction {
+    export function create(bounds: ElementAndBounds[], options: { revision?: number, alignments?: ElementAndAlignment[], requestId?: string } = {}): ComputedBoundsAction {
         return {
             kind: KIND,
             bounds,
             revision: options.revision,
             alignments: options.alignments,
-            responseId: options.requestId
+            responseId: options.requestId ?? ''
         };
     }
 }
@@ -464,7 +464,7 @@ export interface FitToScreenAction extends Action {
 export namespace FitToScreenAction {
     export const KIND = 'fit';
 
-    export function create(elementIds: string[], options: { padding?: number, maxZoom?: number, animate?: boolean }): FitToScreenAction {
+    export function create(elementIds: string[], options: { padding?: number, maxZoom?: number, animate?: boolean } = {}): FitToScreenAction {
         return {
             kind: KIND,
             elementIds,
@@ -489,11 +489,11 @@ export interface SetViewportAction extends Action {
 export namespace SetViewportAction {
     export const KIND = 'viewport';
 
-    export function create(newViewport: Viewport, options: { elementId: string, animate?: boolean }): SetViewportAction {
+    export function create(elementId: string, newViewport: Viewport, options: { animate?: boolean } = {}): SetViewportAction {
         return {
             kind: KIND,
+            elementId,
             newViewport,
-            elementId: options.elementId,
             animate: options.animate ?? true
         };
     }

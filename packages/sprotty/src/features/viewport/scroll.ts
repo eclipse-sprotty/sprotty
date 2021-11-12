@@ -135,7 +135,7 @@ export class ScrollMouseListener extends MouseListener {
             zoom: viewport.zoom
         };
         this.lastScrollPosition = { x: event.pageX, y: event.pageY };
-        return [SetViewportAction.create(newViewport, { elementId: viewport.id, animate: false })];
+        return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
     }
 
     protected moveScrollBar(model: SModelRoot & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
@@ -176,7 +176,7 @@ export class ScrollMouseListener extends MouseListener {
                 y: modelBounds.y + (position / scrollbarRect.height) * modelBounds.height
             };
         }
-        return [SetViewportAction.create({ scroll: newScroll, zoom: model.zoom }, { elementId: model.id, animate })];
+        return [SetViewportAction.create(model.id, { scroll: newScroll, zoom: model.zoom }, { animate })];
     }
 
     protected getScrollbar(event: MouseEvent): HTMLElement | undefined {

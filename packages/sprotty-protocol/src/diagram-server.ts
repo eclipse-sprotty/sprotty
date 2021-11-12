@@ -20,6 +20,7 @@ import {
 } from './actions';
 import { SModelRoot } from './model';
 import { Deferred } from './utils/async';
+import { JsonMap } from './utils/json';
 import { applyBounds, cloneModel, SModelIndex } from './utils/model-utils';
 
 /**
@@ -203,7 +204,7 @@ export class DiagramServer {
 
 }
 
-export type DiagramOptions = { [key: string]: string | number | boolean };
+export type DiagramOptions = JsonMap;
 
 export interface IModelLayoutEngine {
     layout(model: SModelRoot, index?: SModelIndex): SModelRoot | Promise<SModelRoot>;
