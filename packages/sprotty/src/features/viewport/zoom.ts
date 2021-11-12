@@ -62,7 +62,7 @@ export class ZoomMouseListener extends MouseListener {
                 },
                 zoom: viewport.zoom * newZoom
             };
-            return [SetViewportAction.create(newViewport, { elementId: viewport.id, animate: false })];
+            return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
         }
         return [];
     }

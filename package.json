@@ -10,8 +10,7 @@
     "lerna": "^4.0.0"
   },
   "workspaces": [
-    "packages/sprotty",
-    "packages/sprotty-protocol",
+    "packages/*",
     "examples"
   ]
 }
