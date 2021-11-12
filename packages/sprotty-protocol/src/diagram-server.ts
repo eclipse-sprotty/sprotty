@@ -29,47 +29,101 @@ import { applyBounds, cloneModel, SModelIndex } from './utils/model-utils';
  */
 export class DiagramServer {
 
-    protected readonly requests = new Map<string, Deferred<ResponseAction>>();
-    protected options: DiagramOptions | undefined;
-    protected currentRoot: SModelRoot;
-
-    private revision = 0;
-    private lastSubmittedModelType?: string;
-
-    constructor(readonly dispatch: <A extends Action>(action: A) => Promise<void>,
-                readonly services: DiagramServices) {
-        this.currentRoot = {
+    protected readonly state: DiagramState & {
+        lastSubmittedModelType?: string
+    } = {
+        currentRoot: {
             type: 'NONE',
             id: 'ROOT'
-        };
+        },
+        revision: 0
+    };
+    protected readonly requests = new Map<string, Deferred<ResponseAction>>();
+    protected readonly handlers = new Map<string, ServerActionHandler[]>();
+    readonly dispatch: <A extends Action>(action: A) => Promise<void>;
+    readonly services: DiagramServices;
+
+    constructor(dispatch: <A extends Action>(action: A) => Promise<void>,
+                services: DiagramServices) {
+        this.dispatch = dispatch;
+        this.services = services;
     }
 
+    /**
+     * Add an action handler to be called when an action of the specified kind is received.
+     */
+    onAction<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
+        if (this.handlers.has(kind)) {
+            this.handlers.get(kind)!.push(handler);
+        } else {
+            this.handlers.set(kind, [handler]);
+        }
+    }
+
+    /**
+     * Remove an action handler that was previously added with `onAction`.
+     */
+    removeActionHandler<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
+        const list = this.handlers.get(kind);
+        if (list) {
+            const index = list.indexOf(handler);
+            if (index >= 0) {
+                list.splice(index, 1);
+            }
+        }
+    }
+
+    /**
+     * Set the model and submit it to the client.
+     */
     setModel(newRoot: SModelRoot): Promise<void> {
-        newRoot.revision = ++this.revision;
-        this.currentRoot = newRoot;
+        newRoot.revision = ++this.state.revision;
+        this.state.currentRoot = newRoot;
         return this.submitModel(newRoot, false);
     }
 
+    /**
+     * Update the model to a new state and submit it to the client.
+     */
     updateModel(newRoot: SModelRoot): Promise<void> {
-        newRoot.revision = ++this.revision;
-        this.currentRoot = newRoot;
+        newRoot.revision = ++this.state.revision;
+        this.state.currentRoot = newRoot;
         return this.submitModel(newRoot, true);
     }
 
+    /**
+     * Whether the client needs to compute the layout of parts of the model. This affects the behavior
+     * of `submitModel`.
+     *
+     * This setting is determined by the `DiagramOptions` that are received with the `RequestModelAction`
+     * from the client. If the client does not specify whether it needs client layout, the default value
+     * is `true`.
+     */
     get needsClientLayout(): boolean {
-        if (this.options) {
-            return !!this.options.needsClientLayout;
+        if (this.state.options && this.state.options.needsClientLayout !== undefined) {
+            return !!this.state.options.needsClientLayout;
         }
         return true;
     }
 
+    /**
+     * Whether the server needs to compute the layout of parts of the model. This affects the behavior
+     * of `submitModel`.
+     *
+     * This setting is determined by the `DiagramOptions` that are received with the `RequestModelAction`
+     * from the client. If the client does not specify whether it needs server layout, the default value
+     * is `false`.
+     */
     get needsServerLayout(): boolean {
-        if (this.options) {
-            return !!this.options.needsServerLayout;
+        if (this.state.options && this.state.options.needsServerLayout !== undefined) {
+            return !!this.state.options.needsServerLayout;
         }
         return false;
     }
 
+    /**
+     * Called when an action is received from the client.
+     */
     accept(action: Action): Promise<void> {
         if (isResponseAction(action)) {
             const id = action.responseId;
@@ -90,6 +144,10 @@ export class DiagramServer {
         return this.handleAction(action);
     }
 
+    /**
+     * Send a request action to the client. The resulting promise is resolved when a matching
+     * response is received and rejected when a `RejectAction` is received.
+     */
     request<Res extends ResponseAction>(action: RequestAction<Res>): Promise<Res> {
         if (!action.requestId) {
             action.requestId = 'server_' + generateRequestId();
@@ -104,7 +162,10 @@ export class DiagramServer {
         return future.promise;
     }
 
-    protected rejectRemoteRequest(action: Action | undefined, error: Error): void {
+    /**
+     * Send a `RejectAction` to the client to notify that a request could not be fulfilled.
+     */
+    rejectRemoteRequest(action: Action | undefined, error: Error): void {
         if (action && isRequestAction(action)) {
             this.dispatch({
                 kind: RejectAction.KIND,
@@ -116,6 +177,14 @@ export class DiagramServer {
     }
 
     protected handleAction(action: Action): Promise<void> {
+        // Find a matching action handler in the registered map
+        const handlers = this.handlers.get(action.kind);
+        if (handlers && handlers.length === 1) {
+            return handlers[0](action, this.state, this);
+        } else if (handlers && handlers.length > 1) {
+            return Promise.all(handlers.map(h => h(action, this.state, this))) as Promise<any>;
+        }
+        // If no handler is registered, call one of the default handling methods
         switch (action.kind) {
             case RequestModelAction.KIND:
                 return this.handleRequestModel(action as RequestModelAction);
@@ -123,28 +192,32 @@ export class DiagramServer {
                 return this.handleComputedBounds(action as ComputedBoundsAction);
             case LayoutAction.KIND:
                 return this.handleLayout(action as LayoutAction);
-            default:
-                console.warn(`Unhandled action from client: ${action.kind}`);
         }
+        // We don't know this action kind, sigh
+        console.warn(`Unhandled action from client: ${action.kind}`);
         return Promise.resolve();
     }
 
     protected async handleRequestModel(action: RequestModelAction): Promise<void> {
-        this.options = action.options;
+        this.state.options = action.options;
         try {
             const newRoot = await this.services.diagramGenerator.generate({
-                options: this.options ?? {}
+                options: this.state.options ?? {},
+                state: this.state
             });
-            newRoot.revision = ++this.revision;
-            this.currentRoot = newRoot;
-            await this.submitModel(this.currentRoot, false, action);
+            newRoot.revision = ++this.state.revision;
+            this.state.currentRoot = newRoot;
+            await this.submitModel(this.state.currentRoot, false, action);
         } catch (err) {
             this.rejectRemoteRequest(action, err as Error);
             console.error('Failed to generate diagram:', err);
         }
     }
 
-    protected async submitModel(newRoot: SModelRoot, update: boolean, cause?: Action): Promise<void> {
+    /**
+     * Submit a model to the client after it has been updated in the server state.
+     */
+     protected async submitModel(newRoot: SModelRoot, update: boolean, cause?: Action): Promise<void> {
         if (this.needsClientLayout) {
             if (!this.needsServerLayout) {
                 // In this case the client won't send us the computed bounds
@@ -152,9 +225,10 @@ export class DiagramServer {
             } else {
                 const request = RequestBoundsAction.create(newRoot);
                 const response = await this.request<ComputedBoundsAction>(request);
-                if (response.revision === this.currentRoot.revision) {
-                    applyBounds(this.currentRoot, response);
-                    await this.doSubmitModel(this.currentRoot, update, cause);
+                const currentRoot = this.state.currentRoot;
+                if (response.revision === currentRoot.revision) {
+                    applyBounds(currentRoot, response);
+                    await this.doSubmitModel(currentRoot, update, cause);
                 } else {
                     this.rejectRemoteRequest(cause, new Error(`Model revision does not match: ${response.revision}`));
                 }
@@ -165,7 +239,7 @@ export class DiagramServer {
     }
 
     private async doSubmitModel(newRoot: SModelRoot, update: boolean, cause?: Action): Promise<void> {
-        if (newRoot.revision !== this.revision) {
+        if (newRoot.revision !== this.state.revision) {
             return;
         }
         if (this.needsServerLayout) {
@@ -176,19 +250,19 @@ export class DiagramServer {
             const requestId = (cause as RequestModelAction).requestId;
             const response = SetModelAction.create(newRoot, requestId);
             await this.dispatch(response);
-        } else if (update && modelType === this.lastSubmittedModelType) {
+        } else if (update && modelType === this.state.lastSubmittedModelType) {
             await this.dispatch({ kind: UpdateModelAction.KIND, newRoot, cause });
         } else {
             await this.dispatch({ kind: SetModelAction.KIND, newRoot });
         }
-        this.lastSubmittedModelType = modelType;
+        this.state.lastSubmittedModelType = modelType;
     }
 
     protected handleComputedBounds(action: ComputedBoundsAction): Promise<void> {
-        if (action.revision !== this.currentRoot.revision) {
+        if (action.revision !== this.state.currentRoot.revision) {
             return Promise.reject();
         }
-        applyBounds(this.currentRoot, action);
+        applyBounds(this.state.currentRoot, action);
         return Promise.resolve();
     }
 
@@ -196,9 +270,9 @@ export class DiagramServer {
         if (!this.needsServerLayout) {
             return Promise.resolve();
         }
-        const newRoot = cloneModel(this.currentRoot);
-        newRoot.revision = ++this.revision;
-        this.currentRoot = newRoot;
+        const newRoot = cloneModel(this.state.currentRoot);
+        newRoot.revision = ++this.state.revision;
+        this.state.currentRoot = newRoot;
         return this.doSubmitModel(newRoot, true, action);
     }
 
@@ -211,10 +285,18 @@ export interface IModelLayoutEngine {
 }
 
 export interface IDiagramGenerator {
-    generate(args: { options: DiagramOptions }): SModelRoot | Promise<SModelRoot>
+    generate(args: { options: DiagramOptions, state: DiagramState }): SModelRoot | Promise<SModelRoot>
 }
 
 export interface DiagramServices {
     readonly diagramGenerator: IDiagramGenerator
     readonly layoutEngine: IModelLayoutEngine;
 }
+
+export interface DiagramState {
+    options?: DiagramOptions;
+    currentRoot: SModelRoot;
+    revision: number;
+}
+
+export type ServerActionHandler<A extends Action = Action> = (action: A, state: DiagramState, server: DiagramServer) => Promise<void>;
