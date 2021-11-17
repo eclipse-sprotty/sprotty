@@ -321,31 +321,31 @@ export class BezierMouseListener extends MouseListener {
         const result = [];
         if (target instanceof SRoutingHandle && (target.kind === 'bezier-add' || target.kind === 'bezier-remove')) {
             if (target.type === 'bezier-create-routing-point') {
-                result.push(new AddRemoveBezierSegmentAction(AddRemoveBezierSegmentActionTask.ADD, target.id));
+                result.push(AddRemoveBezierSegmentAction.create('add', target.id));
             } else if (target.type === 'bezier-remove-routing-point') {
-                result.push(new AddRemoveBezierSegmentAction(AddRemoveBezierSegmentActionTask.REMOVE, target.id));
+                result.push(AddRemoveBezierSegmentAction.create('remove', target.id));
             }
         }
         return result;
     }
 };
 
-export enum AddRemoveBezierSegmentActionTask {
-    ADD,
-    REMOVE
+export interface AddRemoveBezierSegmentAction extends Action {
+    kind: typeof AddRemoveBezierSegmentAction.KIND
+    targetId: string
+    actionTask: 'add' | 'remove'
 }
 
-export class AddRemoveBezierSegmentAction implements Action {
-    static readonly KIND = 'bezierAction';
-    readonly kind = AddRemoveBezierSegmentAction.KIND;
-    targetId: string;
-    actionTask: AddRemoveBezierSegmentActionTask;
-
-    constructor(actionTask: AddRemoveBezierSegmentActionTask, targetId: string) {
-        this.actionTask = actionTask;
-        this.targetId = targetId;
+export namespace AddRemoveBezierSegmentAction {
+    export const KIND = 'addRemoveBezierSegment';
+    export function create(actionTask: 'add' | 'remove', targetId: string): AddRemoveBezierSegmentAction {
+        return {
+            kind: KIND,
+            actionTask,
+            targetId
+        };
     }
-};
+}
 
 @injectable()
 export class AddRemoveBezierSegmentCommand extends Command {
@@ -367,9 +367,9 @@ export class AddRemoveBezierSegmentCommand extends Command {
 
                 for (const child of context.root.children) {
                     if (child.id === target.parent.id) {
-                        if (this.action.actionTask === AddRemoveBezierSegmentActionTask.ADD) {
+                        if (this.action.actionTask === 'add') {
                             router.createNewBezierSegment(target.pointIndex, child as SEdge);
-                        } else if (this.action.actionTask === AddRemoveBezierSegmentActionTask.REMOVE) {
+                        } else if (this.action.actionTask === 'remove') {
                             router.removeBezierSegment(target.pointIndex, child as SEdge);
                         }
                         break;
