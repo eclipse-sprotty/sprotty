@@ -19,9 +19,9 @@ import {
     SCompartment as SCompartmentSchema, SEdge as SEdgeSchema, SGraph as SGraphSchema, SLabel as SLabelSchema,
     SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, SNode as SNodeSchema, SPort as SPortSchema
 } from 'sprotty-protocol/lib/model';
+import { getBasicType } from 'sprotty-protocol/lib/utils/model-utils';
 import { SModelFactory, createFeatureSet } from "../base/model/smodel-factory";
 import { SChildElement, SModelRoot, SParentElement } from "../base/model/smodel";
-import { getBasicType } from "../base/model/smodel-utils";
 import { SCompartment, SEdge, SGraph, SLabel, SNode, SPort } from "./sgraph";
 import { SButton, SButtonSchema } from '../features/button/model';
 
