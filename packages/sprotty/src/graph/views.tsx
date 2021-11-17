@@ -18,7 +18,7 @@
 import { inject, injectable } from 'inversify';
 import { VNode } from "snabbdom";
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { getSubType } from "../base/model/smodel-utils";
+import { getSubType } from 'sprotty-protocol/lib/utils/model-utils';
 import { IViewArgs, IView, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
 import { ShapeView } from '../features/bounds/views';

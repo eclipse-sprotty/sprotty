@@ -20,15 +20,13 @@ import {
     Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
     SetModelAction, SetPopupModelAction, UpdateModelAction
 } from 'sprotty-protocol/lib/actions';
-import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { Viewport } from 'sprotty-protocol/lib/model';
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, Viewport } from 'sprotty-protocol/lib/model';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
+import { SModelIndex, findElement } from 'sprotty-protocol/lib/utils/model-utils';
 import { ILogger } from "../utils/logging";
 import { FluentIterable } from '../utils/iterable';
 import { TYPES } from "../base/types";
 import { ActionHandlerRegistry } from "../base/actions/action-handler";
-import { findElement } from "../base/model/smodel-utils";
 import { EMPTY_ROOT } from '../base/model/smodel-factory';
 import { GetViewportAction, ViewportResult } from '../features/viewport/viewport';
 import { ExportSvgAction } from '../features/export/svg-exporter';

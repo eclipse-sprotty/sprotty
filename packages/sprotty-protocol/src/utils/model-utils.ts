@@ -56,6 +56,47 @@ export function applyBounds(root: SModelRoot, action: ComputedBoundsAction) {
 }
 
 /**
+ * Model element types can include a colon to separate the basic type and a sub-type. This function
+ * extracts the basic type of a model element.
+ */
+export function getBasicType(element: { type: string }): string {
+    if (!element.type) {
+        return '';
+    }
+    const colonIndex = element.type.indexOf(':');
+    return colonIndex >= 0 ? element.type.substring(0, colonIndex) : element.type;
+}
+
+/**
+ * Model element types can include a colon to separate the basic type and a sub-type. This function
+ * extracts the sub-type of a model element.
+ */
+export function getSubType(schema: { type: string }): string {
+    if (!schema.type) {
+        return '';
+    }
+    const colonIndex = schema.type.indexOf(':');
+    return colonIndex >= 0 ? schema.type.substring(colonIndex + 1) : schema.type;
+}
+
+/**
+ * Find the element with the given identifier. If you need to find multiple elements, using an
+ * `SModelIndex` might be more effective.
+ */
+export function findElement(parent: SModelElement, elementId: string): SModelElement | undefined {
+    if (parent.id === elementId)
+        return parent;
+    if (parent.children !== undefined) {
+        for (const child of parent.children) {
+            const result = findElement(child, elementId);
+            if (result !== undefined)
+                return result;
+        }
+    }
+    return undefined;
+}
+
+/**
  * Used to speed up model element lookup by id.
  * This index implementation is for the serializable _external model_ defined in `sprotty-protocol`.
  */

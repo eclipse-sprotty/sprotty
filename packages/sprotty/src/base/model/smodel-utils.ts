@@ -34,6 +34,8 @@ export function registerModelElement(context: { bind: interfaces.Bind, isBound: 
 /**
  * Model element types can include a colon to separate the basic type and a sub-type. This function
  * extracts the basic type of a model element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function getBasicType(schema: SModelElementSchema | SModelElement): string {
     if (!schema.type)
@@ -48,6 +50,8 @@ export function getBasicType(schema: SModelElementSchema | SModelElement): strin
 /**
  * Model element types can include a colon to separate the basic type and a sub-type. This function
  * extracts the sub-type of a model element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function getSubType(schema: SModelElementSchema | SModelElement): string {
     if (!schema.type)
@@ -62,6 +66,8 @@ export function getSubType(schema: SModelElementSchema | SModelElement): string 
 /**
  * Find the element with the given identifier. If you need to find multiple elements, using an
  * SModelIndex might be more effective.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export function findElement(parent: SModelElementSchema, elementId: string): SModelElementSchema | undefined {
     if (parent.id === elementId)

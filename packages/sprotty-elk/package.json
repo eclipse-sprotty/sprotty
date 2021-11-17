@@ -1,0 +1,82 @@
+{
+  "name": "sprotty-elk",
+  "version": "0.10.0",
+  "description": "Integration of ELK graph layout algorithms in Sprotty",
+  "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
+  "keywords": [
+    "eclipse",
+    "graph",
+    "diagram",
+    "layout",
+    "sprotty"
+  ],
+  "homepage": "https://github.com/eclipse/sprotty-layout",
+  "bugs": "https://github.com/eclipse/sprotty-layout/issues",
+  "author": {
+    "name": "Eclipse Sprotty"
+  },
+  "contributors": [
+    {
+      "name": "Jan Köhnlein",
+      "email": "jan.koehnlein@typefox.io",
+      "url": "http://typefox.io"
+    },
+    {
+      "name": "Philip Langer",
+      "email": "planger@eclipsesource.com",
+      "url": "https://www.eclipsesource.com"
+    },
+    {
+      "name": "Miro Spönemann",
+      "email": "miro.spoenemann@typefox.io",
+      "url": "http://typefox.io"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse/sprotty",
+    "directory": "packages/sprotty-elk"
+  },
+  "dependencies": {
+    "elkjs": "^0.7.1",
+    "sprotty-protocol": "0.10.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.3.0",
+    "@typescript-eslint/parser": "^5.3.0",
+    "chai": "^4.3.4",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-no-null": "^1.0.2",
+    "jenkins-mocha": "^8.0.0",
+    "mocha": "^7.2.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "semver": "^7.3.5",
+    "ts-node": "^10.4.0",
+    "typescript": "~3.8.3"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib artifacts",
+    "build": "tsc -p ./tsconfig.json && yarn run lint",
+    "watch": "tsc -w -p ./tsconfig.json",
+    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*)\"",
+    "test": "jenkins-mocha --config ../../configs/.mocharc.json \"./src/**/*.spec.?(ts|tsx)\"",
+    "prepublishOnly": "yarn run test",
+    "publish:next": "yarn publish --new-version \"$(semver $npm_package_version -i minor)-next.$(git rev-parse --short HEAD)\" --tag next",
+    "publish:latest": "yarn publish --tag latest"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "main": "lib/index",
+  "types": "lib/index",
+  "eslintIgnore": [
+    "src/**/*.spec.?(ts|tsx)"
+  ]
+}
