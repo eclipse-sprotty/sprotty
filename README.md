@@ -3,14 +3,14 @@
 [![Gitpod - Code Now](https://img.shields.io/badge/Gitpod-code%20now-blue.svg?longCache=true)](https://gitpod.io#https://github.com/eclipse/sprotty)
 [![Join the chat at https://gitter.im/eclipse/sprotty](https://badges.gitter.im/eclipse/sprotty.svg)](https://gitter.im/eclipse/sprotty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This is the client part of _Sprotty_, a next-generation, open-source diagramming framework built with web technologies. 
+This is the client part of _Sprotty_, a next-generation, open-source diagramming framework built with web technologies.
 
 <img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot0.png" width="23%" align="left">
 <img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot1.png" width="23%" align="left">
 <img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot2.png" width="23%" align="left">
-<img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot3.png" width="23%"> 
+<img src="https://raw.githubusercontent.com/wiki/eclipse/sprotty/images/screenshot3.png" width="23%">
 
-  
+
 Some selected features:
 
 * fast, scalable SVG rendering that is compatible with many browsers and stylable with CSS,
@@ -34,7 +34,7 @@ The project is built on [jenkins.eclipse.org/sprotty](https://jenkins.eclipse.or
 
 ## Docs
 
-For further information please consult the [wiki](https://github.com/eclipse/sprotty/wiki) or this [blog post](http://typefox.io/sprotty-a-web-based-diagramming-framework).
+For further information please consult the [wiki](https://github.com/eclipse/sprotty/wiki) or this [blog post](https://www.typefox.io/sprotty-a-web-based-diagramming-framework).
 
 The version history is documented in the [CHANGELOG](https://github.com/eclipse/sprotty/blob/master/CHANGELOG.md).
 

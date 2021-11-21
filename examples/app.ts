@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,19 @@ import "reflect-metadata";
 
 import runCircleGraph from "./circlegraph/src/standalone";
 import runClassDiagram from "./classdiagram/src/standalone";
-import runMindmap from "./mindmap/src/standalone";
+import runRandomGraph from "./random-graph/src/standalone";
 import runSvgPreRendered from "./svg/src/standalone";
 import runMulticore from "./multicore/src/multicore";
 
 const appDiv = document.getElementById('sprotty-app')
-if(appDiv) {
+if (appDiv) {
     const appMode = appDiv.getAttribute('data-app');
     if (appMode === 'circlegraph')
         runCircleGraph();
     else if (appMode === 'class-diagram')
         runClassDiagram();
-    else if (appMode === 'mindmap')
-        runMindmap();
+    else if (appMode === 'random-graph')
+        runRandomGraph();
     else if (appMode === 'svg')
         runSvgPreRendered();
     else if (appMode === 'multicore')

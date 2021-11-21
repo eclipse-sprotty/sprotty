@@ -20,7 +20,7 @@ import {
 } from './elk-layout';
 
 /**
- * This dependency injection module adds the default bindings for the ELK integration.
+ * This dependency injection module adds the default bindings for the frontend integration of ELK.
  * **Note:** Since this package has no direct dependency to the `sprotty` frontend package,
  * this module does not include a binding for `TYPES.IModelLayoutEngine`. Add it like this:
  * ```
