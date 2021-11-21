@@ -19,7 +19,7 @@
     {
       "name": "Jan Köhnlein",
       "email": "jan.koehnlein@typefox.io",
-      "url": "http://typefox.io"
+      "url": "https://www.typefox.io"
     },
     {
       "name": "Philip Langer",
@@ -29,7 +29,7 @@
     {
       "name": "Miro Spönemann",
       "email": "miro.spoenemann@typefox.io",
-      "url": "http://typefox.io"
+      "url": "https://www.typefox.io"
     }
   ],
   "repository": {
@@ -40,6 +40,9 @@
   "dependencies": {
     "elkjs": "^0.7.1",
     "sprotty-protocol": "0.10.0"
+  },
+  "optionalDependencies": {
+    "inversify": "^5.0.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

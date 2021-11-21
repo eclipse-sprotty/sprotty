@@ -15,6 +15,3 @@
  ********************************************************************************/
 
 export * from './elk-layout';
-
-import elkLayoutModule from './di.config';
-export { elkLayoutModule };

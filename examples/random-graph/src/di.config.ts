@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,47 +14,45 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from "inversify";
+import { Container, ContainerModule } from 'inversify';
+import ElkConstructor from 'elkjs/lib/elk.bundled';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
-    loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, PreRenderedElement,
-    SNode, SLabel, HtmlRoot, configureModelElement, configureCommand, popupFeature
+    loadDefaultModules, LocalModelSource, SNode, SEdge, SLabel, configureModelElement,
+    SGraph, RectangularNodeView, PolylineEdgeView
 } from 'sprotty';
-import { MindmapNodeView, PopupButtonView } from "./views";
-import { PopupButtonMouseListener, AddElementCommand, PopupModelProvider } from "./popup";
-import { Mindmap, PopupButton } from "./model";
+import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk';
+import elkLayoutModule from 'sprotty-elk/lib/di.config';
 
 export default (containerId: string) => {
-    require("sprotty/css/sprotty.css");
-    require("../css/diagram.css");
+    require('sprotty/css/sprotty.css');
+    require('../css/diagram.css');
 
-    const mindmapModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const elkFactory: ElkFactory = () => new ElkConstructor({
+        algorithms: ['layered']
+    });
+
+    const randomGraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
+        bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
+        bind(ElkFactory).toConstantValue(elkFactory);
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        bind(TYPES.IPopupModelProvider).to(PopupModelProvider).inSingletonScope();
-        bind(TYPES.PopupMouseListener).to(PopupButtonMouseListener);
-        configureCommand(container, AddElementCommand);
 
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'mindmap', Mindmap, SGraphView, {
-            enable: [popupFeature]
-        });
-        configureModelElement(container, 'node', SNode, MindmapNodeView);
+        configureModelElement(container, 'graph', SGraph, SGraphView);
+        configureModelElement(container, 'node', SNode, RectangularNodeView);
+        configureModelElement(container, 'edge', SEdge, PolylineEdgeView);
         configureModelElement(container, 'label', SLabel, SLabelView);
-        configureModelElement(container, 'html', HtmlRoot, HtmlRootView);
-        configureModelElement(container, 'pre-rendered', PreRenderedElement, PreRenderedView);
-        configureModelElement(container, 'popup:button', PopupButton, PopupButtonView);
 
         configureViewerOptions(context, {
-            needsClientLayout: false,
-            baseDiv: containerId,
-            popupOpenDelay: 500
+            needsClientLayout: true,
+            baseDiv: containerId
         });
     });
 
     const container = new Container();
     loadDefaultModules(container);
-    container.load(mindmapModule);
+    container.load(elkLayoutModule, randomGraphModule);
     return container;
 };

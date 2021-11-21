@@ -6,18 +6,24 @@ This change log covers only the `elkjs` layout of Sprotty. See also the change l
 
 The `sprotty-elk` package was moved to the main repository of Sprotty, which is now a monorepo. Furthermore, the dependency to the `sprotty` package was removed in favor of the new `sprotty-protocol` package.
 
+This package can now be used on the backend side with Node.js as well as on the frontend side.
+
 Breaking API changes:
+ * The `elkLayoutModule` is no longer exported by the package index. Imports need to be changed to this:
+```typescript
+import elkLayoutModule from 'sprotty-elk/lib/di.config';
+```
  * The `elkLayoutModule` no longer includes a binding for `TYPES.IModelLayoutEngine`. Add it like this:
- ```typescript
- bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
- ```
+```typescript
+bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
+```
  * `ElkLayoutEngine` takes the new `SModelIndex` from `sprotty-protocol` as optional second parameter.
 
 -----
 
 ### v0.10.0 (Nov. 2021)
 
-No changes, this release is just to keep versions in sync.
+No changes since v0.9.0; this release is to keep the versions of the Sprotty components synchronized.
 
 ### v0.9.0 (Aug. 2020)
 
