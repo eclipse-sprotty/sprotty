@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 TypeFox and others.
+ * Copyright (c) 2018-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ContainerModule } from 'inversify';
+import { ContainerModule, injectable } from 'inversify';
 import {
-    ElkLayoutEngine, DefaultElementFilter, IElementFilter, DefaultLayoutConfigurator, ILayoutConfigurator
+    ElkLayoutEngine as ElkLayoutEnginePlain, DefaultElementFilter as DefaultElementFilterPlain,
+    DefaultLayoutConfigurator as DefaultLayoutConfiguratorPlain, ElkFactory as ElkFactoryPlain,
+    IElementFilter as IElementFilterPlain, ILayoutConfigurator as ILayoutConfiguratorPlain
 } from './elk-layout';
+
+export const ElkLayoutEngine: typeof ElkLayoutEnginePlain = injectable()(ElkLayoutEnginePlain);
+
+export type ElkFactory = ElkFactoryPlain;
+export const ElkFactory = Symbol('ElkFactory');
+
+export type IElementFilter = IElementFilterPlain;
+export const IElementFilter = Symbol('IElementFilter');
+export const DefaultElementFilter: typeof DefaultElementFilterPlain = injectable()(DefaultElementFilterPlain);
+
+export type ILayoutConfigurator = ILayoutConfiguratorPlain;
+export const ILayoutConfigurator = Symbol('ILayoutConfigurator');
+export const DefaultLayoutConfigurator: typeof DefaultLayoutConfiguratorPlain = injectable()(DefaultLayoutConfiguratorPlain);
 
 /**
  * This dependency injection module adds the default bindings for the frontend integration of ELK.
@@ -35,10 +50,13 @@ import {
  * You can import `ElkConstructor` from `'elkjs/lib/elk.bundled'` for the bundled variant or
  * `'elkjs/lib/elk-api'` for the webworker variant.
  */
-const elkLayoutModule = new ContainerModule(bind => {
-    bind(ElkLayoutEngine).toSelf().inSingletonScope();
+export const elkLayoutModule = new ContainerModule(bind => {
+    bind(ElkLayoutEngine).toDynamicValue(context => {
+        const elkFactory = context.container.get<ElkFactory>(ElkFactory);
+        const elementFilter = context.container.get<IElementFilter>(IElementFilter);
+        const layoutConfigurator = context.container.get<ILayoutConfigurator>(ILayoutConfigurator);
+        return new ElkLayoutEngine(elkFactory, elementFilter, layoutConfigurator);
+    }).inSingletonScope();
     bind(IElementFilter).to(DefaultElementFilter);
     bind(ILayoutConfigurator).to(DefaultLayoutConfigurator);
 });
-
-export default elkLayoutModule;

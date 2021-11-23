@@ -21,8 +21,7 @@ import {
     loadDefaultModules, LocalModelSource, SNode, SEdge, SLabel, configureModelElement,
     SGraph, RectangularNodeView, PolylineEdgeView
 } from 'sprotty';
-import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk';
-import elkLayoutModule from 'sprotty-elk/lib/di.config';
+import { ElkFactory, ElkLayoutEngine, elkLayoutModule } from 'sprotty-elk/lib/inversify';
 
 export default (containerId: string) => {
     require('sprotty/css/sprotty.css');

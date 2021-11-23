@@ -16,6 +16,7 @@
 
 export * from './actions';
 export * from './diagram-server';
+export * from './diagram-services';
 export * from './model';
 export * from './utils/async';
 export * from './utils/geometry';

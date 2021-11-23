@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 TypeFox and others.
+ * Copyright (c) 2018-2021 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,31 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from 'inversify';
 import {
     ELK, ElkNode, ElkGraphElement, ElkEdge, ElkLabel, ElkPort, ElkShape, ElkPrimitiveEdge,
     ElkExtendedEdge, LayoutOptions
 } from 'elkjs/lib/elk-api';
-import { IModelLayoutEngine } from 'sprotty-protocol/lib/diagram-server';
+import { IModelLayoutEngine } from 'sprotty-protocol/lib/diagram-services';
 import { SEdge, SGraph, SLabel, SModelElement, SNode, SPort, SShapeElement } from 'sprotty-protocol/lib/model';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { getBasicType, SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
 
-export const ElkFactory = Symbol('ElkFactory');
-export const IElementFilter = Symbol('IElementFilter');
-export const ILayoutConfigurator = Symbol('ILayoutConfigurator');
-
 /**
  * Layout engine that delegates to ELK by transforming the Sprotty graph into an ELK graph.
  */
-@injectable()
 export class ElkLayoutEngine implements IModelLayoutEngine {
 
     protected readonly elk: ELK;
 
-    constructor(@inject(ElkFactory) elkFactory: ElkFactory,
-                @inject(IElementFilter) protected readonly filter: IElementFilter,
-                @inject(ILayoutConfigurator) protected readonly configurator: ILayoutConfigurator) {
+    constructor(elkFactory: ElkFactory,
+                protected readonly filter: IElementFilter,
+                protected readonly configurator: ILayoutConfigurator) {
         this.elk = elkFactory();
     }
 
@@ -272,7 +266,6 @@ export interface IElementFilter {
     apply(element: SModelElement, index: SModelIndex): boolean
 }
 
-@injectable()
 export class DefaultElementFilter implements IElementFilter {
 
     apply(element: SModelElement, index: SModelIndex): boolean {
@@ -329,7 +322,6 @@ export interface ILayoutConfigurator {
     apply(element: SModelElement, index: SModelIndex): LayoutOptions | undefined
 }
 
-@injectable()
 export class DefaultLayoutConfigurator implements ILayoutConfigurator {
 
     apply(element: SModelElement, index: SModelIndex): LayoutOptions | undefined {
