@@ -18,10 +18,10 @@ import {
     Action, isResponseAction, ResponseAction, RequestModelAction, ComputedBoundsAction, LayoutAction, RequestBoundsAction,
     RequestAction, generateRequestId, SetModelAction, UpdateModelAction, RejectAction, isRequestAction
 } from './actions';
+import { DiagramServices, DiagramState, IDiagramGenerator, IModelLayoutEngine } from './diagram-services';
 import { SModelRoot } from './model';
 import { Deferred } from './utils/async';
-import { JsonMap } from './utils/json';
-import { applyBounds, cloneModel, SModelIndex } from './utils/model-utils';
+import { applyBounds, cloneModel } from './utils/model-utils';
 
 /**
  * An instance of this class is responsible for handling a single diagram client. It holds the current
@@ -29,7 +29,7 @@ import { applyBounds, cloneModel, SModelIndex } from './utils/model-utils';
  */
 export class DiagramServer {
 
-    protected readonly state: DiagramState & {
+    readonly state: DiagramState & {
         lastSubmittedModelType?: string
     } = {
         currentRoot: {
@@ -38,15 +38,18 @@ export class DiagramServer {
         },
         revision: 0
     };
+    readonly dispatch: <A extends Action>(action: A) => Promise<void>;
+
+    protected readonly diagramGenerator: IDiagramGenerator;
+    protected readonly layoutEngine?: IModelLayoutEngine;
     protected readonly requests = new Map<string, Deferred<ResponseAction>>();
     protected readonly handlers = new Map<string, ServerActionHandler[]>();
-    readonly dispatch: <A extends Action>(action: A) => Promise<void>;
-    readonly services: DiagramServices;
 
     constructor(dispatch: <A extends Action>(action: A) => Promise<void>,
                 services: DiagramServices) {
         this.dispatch = dispatch;
-        this.services = services;
+        this.diagramGenerator = services.DiagramGenerator;
+        this.layoutEngine = services.ModelLayoutEngine;
     }
 
     /**
@@ -201,7 +204,7 @@ export class DiagramServer {
     protected async handleRequestModel(action: RequestModelAction): Promise<void> {
         this.state.options = action.options;
         try {
-            const newRoot = await this.services.diagramGenerator.generate({
+            const newRoot = await this.diagramGenerator.generate({
                 options: this.state.options ?? {},
                 state: this.state
             });
@@ -242,8 +245,8 @@ export class DiagramServer {
         if (newRoot.revision !== this.state.revision) {
             return;
         }
-        if (this.needsServerLayout) {
-            newRoot = await this.services.layoutEngine.layout(newRoot);
+        if (this.needsServerLayout && this.layoutEngine) {
+            newRoot = await this.layoutEngine.layout(newRoot);
         }
         const modelType = newRoot.type;
         if (cause && cause.kind === RequestModelAction.KIND) {
@@ -266,37 +269,19 @@ export class DiagramServer {
         return Promise.resolve();
     }
 
-    protected handleLayout(action: LayoutAction): Promise<void> {
-        if (!this.needsServerLayout) {
-            return Promise.resolve();
+    protected async handleLayout(action: LayoutAction): Promise<void> {
+        if (!this.layoutEngine) {
+            return;
         }
-        const newRoot = cloneModel(this.state.currentRoot);
-        newRoot.revision = ++this.state.revision;
-        this.state.currentRoot = newRoot;
-        return this.doSubmitModel(newRoot, true, action);
+        if (!this.needsServerLayout) {
+            let newRoot = cloneModel(this.state.currentRoot);
+            newRoot = await this.layoutEngine.layout(newRoot);
+            newRoot.revision = ++this.state.revision;
+            this.state.currentRoot = newRoot;
+        }
+        await this.doSubmitModel(this.state.currentRoot, true, action);
     }
 
-}
-
-export type DiagramOptions = JsonMap;
-
-export interface IModelLayoutEngine {
-    layout(model: SModelRoot, index?: SModelIndex): SModelRoot | Promise<SModelRoot>;
-}
-
-export interface IDiagramGenerator {
-    generate(args: { options: DiagramOptions, state: DiagramState }): SModelRoot | Promise<SModelRoot>
-}
-
-export interface DiagramServices {
-    readonly diagramGenerator: IDiagramGenerator
-    readonly layoutEngine: IModelLayoutEngine;
-}
-
-export interface DiagramState {
-    options?: DiagramOptions;
-    currentRoot: SModelRoot;
-    revision: number;
 }
 
 export type ServerActionHandler<A extends Action = Action> = (action: A, state: DiagramState, server: DiagramServer) => Promise<void>;

@@ -20,8 +20,7 @@ import { expect } from 'chai';
 import { Container } from 'inversify';
 import ElkConstructor from 'elkjs/lib/elk.bundled';
 import { SEdge, SGraph, SNode, SPort } from 'sprotty-protocol/lib/model';
-import { ElkFactory, ElkLayoutEngine } from './elk-layout';
-import elkLayoutModule from './di.config';
+import { ElkFactory, ElkLayoutEngine, elkLayoutModule } from './inversify';
 
 describe('ElkLayoutEngine', () => {
     const container = new Container();

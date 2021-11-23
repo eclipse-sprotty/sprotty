@@ -6,13 +6,15 @@ This change log covers only the `elkjs` layout of Sprotty. See also the change l
 
 The `sprotty-elk` package was moved to the main repository of Sprotty, which is now a monorepo. Furthermore, the dependency to the `sprotty` package was removed in favor of the new `sprotty-protocol` package.
 
-This package can now be used on the backend side with Node.js as well as on the frontend side.
+This package can now be used on the backend side with Node.js as well as on the frontend side:
+ * In the backend, import from `'sprotty-elk/lib/elk-layout'`. These are the plain definitions without a dependency to InversifyJS.
+ * In the frontend, import from `'sprotty-elk'` (the default export) or `'sprotty-elk/lib/inversify'`. These definitions are adapted to be used with InversifyJS.
+
+Of course you can use the InversifyJS-specific definitions in the backend as well if you plan to use that DI framework there.
 
 Breaking API changes:
- * The `elkLayoutModule` is no longer exported by the package index. Imports need to be changed to this:
-```typescript
-import elkLayoutModule from 'sprotty-elk/lib/di.config';
-```
+ * The module `di.config` was removed in favor of `inversify`, which contains all InversifyJS-specific definitions.
+ * The plain definitions in the module `elk-layout` no longer include InversifyJS annotations.
  * The `elkLayoutModule` no longer includes a binding for `TYPES.IModelLayoutEngine`. Add it like this:
 ```typescript
 bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);

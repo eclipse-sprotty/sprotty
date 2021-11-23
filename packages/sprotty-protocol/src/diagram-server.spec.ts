@@ -45,7 +45,7 @@ describe('DiagramServer', () => {
             async a => {
                 dispatched.push(a)
             }, {
-            diagramGenerator: {
+            DiagramGenerator: {
                 generate: () => {
                     return {
                         type: 'root',
@@ -53,7 +53,7 @@ describe('DiagramServer', () => {
                     };
                 }
             },
-            layoutEngine: {
+            ModelLayoutEngine: {
                 layout: model => {
                     (model as SModelRoot & BoundsAware).position = { x: 10, y: 10 };
                     return model;
