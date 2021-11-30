@@ -1,6 +1,6 @@
 {
   "name": "sprotty",
-  "version": "0.10.0",
+  "version": "0.11.1",
   "description": "A next-gen framework for graphical views",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
@@ -57,7 +57,7 @@
     "file-saver": "^2.0.2",
     "inversify": "^5.0.1",
     "snabbdom": "^3.0.3",
-    "sprotty-protocol": "0.10.0",
+    "sprotty-protocol": "~0.11.0",
     "tinyqueue": "^2.0.3"
   },
   "devDependencies": {
@@ -92,8 +92,8 @@
     "test:cli": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\"",
     "test": "jenkins-mocha --config ../../configs/.mocharc.json \"./src/**/*.spec.?(ts|tsx)\"",
     "prepublishOnly": "yarn run test",
-    "publish:next": "yarn publish --new-version \"$(semver $npm_package_version -i minor)-next.$(git rev-parse --short HEAD)\" --tag next",
-    "publish:latest": "yarn publish --tag latest"
+    "publish:next": "yarn publish --new-version \"$(semver $npm_package_version -i minor)-next.$(git rev-parse --short HEAD)\" --tag next --no-git-tag-version",
+    "publish:latest": "yarn publish --tag latest --no-git-tag-version"
   },
   "files": [
     "lib",

@@ -130,6 +130,8 @@ export * from "./features/projection/views";
 
 export * from "./features/routing/anchor";
 export * from "./features/routing/abstract-edge-router";
+export * from "./features/routing/bezier-anchors";
+export * from "./features/routing/bezier-edge-router";
 export * from "./features/routing/manhattan-anchors";
 export * from "./features/routing/manhattan-edge-router";
 export * from "./features/routing/model";

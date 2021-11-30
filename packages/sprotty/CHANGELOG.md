@@ -1,10 +1,17 @@
 ## Eclipse Sprotty Change Log
 
-This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-layout](https://github.com/eclipse/sprotty-layout/blob/master/CHANGELOG.md).
+This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-elk](https://github.com/eclipse/sprotty/blob/master//packages/sprotty-elk/CHANGELOG.md).
+
+### v0.11.1 (Nov. 2020)
+
+Fixed dependency to `sprotty-protocol`: version constraint is now `~0.11.0` (equivalent to `0.11.*`). The previous version pointed to the non-existing version `0.10.0`.
 
 ### v0.11.0 (Nov. 2020)
 
 This version introduces a dependency to the new package `sprotty-protocol`. Many definitions have been copied to the new package and the original definitions are marked as deprecated, so you need to update your imports to stay compatible with future versions.
+
+New features:
+ * Edges rendered as Bézier curves ([#245](https://github.com/eclipse/sprotty/pull/245)). Use the new `BezierCurveEdgeView` to display edges as smooth curves. This requires the routing points of the edges to be provided as a series of curve segments, each with two control points and one target point (except the last segment, which connects to the target node). The expected number of routing points is of the form `3*n-1`: 2, 5, 8, 11...
 
 Breaking API changes:
  * Actions are consistently declared as interfaces, not as classes, to emphasize that they must be serializable to enable transfer between client and server. Instead of a constructor, use the `create` function defined in the namespace with the same name as the corresponding action interface.
