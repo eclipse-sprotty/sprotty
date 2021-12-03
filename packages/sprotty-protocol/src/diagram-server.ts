@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { ServerActionHandlerRegistry } from './action-handler';
 import {
     Action, isResponseAction, ResponseAction, RequestModelAction, ComputedBoundsAction, LayoutAction, RequestBoundsAction,
     RequestAction, generateRequestId, SetModelAction, UpdateModelAction, RejectAction, isRequestAction
@@ -42,38 +43,15 @@ export class DiagramServer {
 
     protected readonly diagramGenerator: IDiagramGenerator;
     protected readonly layoutEngine?: IModelLayoutEngine;
+    protected readonly actionHandlerRegistry?: ServerActionHandlerRegistry;
     protected readonly requests = new Map<string, Deferred<ResponseAction>>();
-    protected readonly handlers = new Map<string, ServerActionHandler[]>();
 
     constructor(dispatch: <A extends Action>(action: A) => Promise<void>,
                 services: DiagramServices) {
         this.dispatch = dispatch;
         this.diagramGenerator = services.DiagramGenerator;
         this.layoutEngine = services.ModelLayoutEngine;
-    }
-
-    /**
-     * Add an action handler to be called when an action of the specified kind is received.
-     */
-    onAction<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
-        if (this.handlers.has(kind)) {
-            this.handlers.get(kind)!.push(handler);
-        } else {
-            this.handlers.set(kind, [handler]);
-        }
-    }
-
-    /**
-     * Remove an action handler that was previously added with `onAction`.
-     */
-    removeActionHandler<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
-        const list = this.handlers.get(kind);
-        if (list) {
-            const index = list.indexOf(handler);
-            if (index >= 0) {
-                list.splice(index, 1);
-            }
-        }
+        this.actionHandlerRegistry = services.ServerActionHandlerRegistry;
     }
 
     /**
@@ -180,8 +158,8 @@ export class DiagramServer {
     }
 
     protected handleAction(action: Action): Promise<void> {
-        // Find a matching action handler in the registered map
-        const handlers = this.handlers.get(action.kind);
+        // Find a matching action handler in the registry
+        const handlers = this.actionHandlerRegistry?.getHandler(action.kind);
         if (handlers && handlers.length === 1) {
             return handlers[0](action, this.state, this);
         } else if (handlers && handlers.length > 1) {
@@ -283,5 +261,3 @@ export class DiagramServer {
     }
 
 }
-
-export type ServerActionHandler<A extends Action = Action> = (action: A, state: DiagramState, server: DiagramServer) => Promise<void>;

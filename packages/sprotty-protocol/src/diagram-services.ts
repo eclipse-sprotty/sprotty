@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { ServerActionHandlerRegistry } from './action-handler';
 import { SModelRoot } from './model';
 import { JsonMap } from './utils/json';
 import { SModelIndex } from './utils/model-utils';
@@ -35,6 +36,7 @@ export interface DiagramState {
 export interface DiagramServices {
     readonly DiagramGenerator: IDiagramGenerator
     readonly ModelLayoutEngine?: IModelLayoutEngine
+    readonly ServerActionHandlerRegistry?: ServerActionHandlerRegistry
 }
 
 /**
