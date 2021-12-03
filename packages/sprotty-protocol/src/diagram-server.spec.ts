@@ -17,8 +17,9 @@
 import 'mocha';
 import { expect } from 'chai';
 import { Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, SetModelAction } from './actions';
-import { DiagramServer, ServerActionHandler } from './diagram-server';
+import { DiagramServer } from './diagram-server';
 import { BoundsAware, SModelRoot } from './model';
+import { ServerActionHandler, ServerActionHandlerRegistry } from './action-handler';
 
 declare function setImmediate(callback: () => void): void;
 
@@ -39,8 +40,13 @@ async function condition(cb: () => boolean): Promise<void> {
 }
 
 describe('DiagramServer', () => {
-    function createServer(): { server: DiagramServer, dispatched: Action[] } {
+    function createServer(): {
+        server: DiagramServer,
+        actionHandlerRegistry: ServerActionHandlerRegistry,
+        dispatched: Action[]
+    } {
         const dispatched: Action[] = [];
+        const actionHandlerRegistry = new ServerActionHandlerRegistry();
         const server = new DiagramServer(
             async a => {
                 dispatched.push(a)
@@ -58,9 +64,10 @@ describe('DiagramServer', () => {
                     (model as SModelRoot & BoundsAware).position = { x: 10, y: 10 };
                     return model;
                 }
-            }
+            },
+            ServerActionHandlerRegistry: actionHandlerRegistry
         });
-        return { server, dispatched };
+        return { server, actionHandlerRegistry, dispatched };
     }
 
     it('sets the model without client or server layout', async () => {
@@ -169,8 +176,8 @@ describe('DiagramServer', () => {
     });
 
     it('calls a registered action handler', async () => {
-        const { server, dispatched } = createServer();
-        server.onAction('foo', (_, state, server) => {
+        const { server, actionHandlerRegistry, dispatched } = createServer();
+        actionHandlerRegistry.onAction('foo', (_, state, server) => {
             state.revision = -7;
             server.dispatch({ kind: 'bar' });
             return Promise.resolve();
@@ -182,14 +189,14 @@ describe('DiagramServer', () => {
     });
 
     it('does not call an unregistered action handler', async () => {
-        const { server, dispatched } = createServer();
+        const { server, actionHandlerRegistry, dispatched } = createServer();
         const handler: ServerActionHandler = (_, state, server) => {
             state.revision = -7;
             server.dispatch({ kind: 'bar' });
             return Promise.resolve();
         };
-        server.onAction('foo', handler);
-        server.removeActionHandler('foo', handler);
+        actionHandlerRegistry.onAction('foo', handler);
+        actionHandlerRegistry.removeActionHandler('foo', handler);
         await server.accept({ kind: 'foo' });
         expect((server as any).state.revision).to.equal(0);
         expect(dispatched).to.have.lengthOf(0);

@@ -18,37 +18,7 @@ module.exports = {
     ],
     "rules": {
         "@typescript-eslint/indent": "off",
-        "@typescript-eslint/naming-convention": [
-            "warn",
-                {
-                    "selector": 'default',
-                    "format": ['camelCase'],
-                    "leadingUnderscore": 'allow',
-                    "trailingUnderscore": 'allow',
-                },
-                {
-                    "selector": 'variable',
-                    "format": ['camelCase', 'UPPER_CASE'],
-                    "leadingUnderscore": 'allow',
-                    "trailingUnderscore": 'allow',
-                },
-                {
-                    "selector": 'typeLike',
-                    "format": ['PascalCase'],
-                },                
-                {
-                    "selector": "classProperty",
-                    "format": ["camelCase", "UPPER_CASE"]
-                },      
-                {
-                    "selector": "typeProperty",
-                    "format": ["camelCase", "UPPER_CASE"]
-                },
-                {
-                    "selector": "enumMember",
-                    "format": ["camelCase", "UPPER_CASE"]
-                }
-            ],
+        "@typescript-eslint/naming-convention": "off",
         "@typescript-eslint/no-dynamic-delete": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-misused-new": "error",
