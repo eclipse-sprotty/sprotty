@@ -1,4 +1,4 @@
-# Sprotty
+![Sprotty](./sprotty-logo-500px.png)
 
 [![Gitpod - Code Now](https://img.shields.io/badge/Gitpod-code%20now-blue.svg?longCache=true)](https://gitpod.io#https://github.com/eclipse/sprotty)
 [![Join the chat at https://gitter.im/eclipse/sprotty](https://badges.gitter.im/eclipse/sprotty.svg)](https://gitter.im/eclipse/sprotty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
