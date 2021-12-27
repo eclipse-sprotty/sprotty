@@ -37,9 +37,9 @@ pipeline {
         YARN_CACHE_FOLDER = "${env.WORKSPACE}/yarn-cache"
         SPAWN_WRAP_SHIM_ROOT = "${env.WORKSPACE}"
     }
-    
+
     stages {
-        stage('Build sprotty') { 
+        stage('Build sprotty') {
             steps {
                 container('node') {
                     sh "yarn install"
@@ -49,13 +49,22 @@ pipeline {
         }
 
         stage('Deploy (master only)') {
-            when { branch 'master'}
+            when {
+                allOf {
+                    branch 'master'
+                    expression {
+                      /* Only trigger the deployment job if the changeset contains changes in
+                      the `packages` directory */
+                      sh(returnStatus: true, script: 'git diff --name-only HEAD^ | grep --quiet "^packages"') == 0
+                    }
+                }
+            }
             steps {
                 build job: 'deploy-sprotty', wait: false
             }
         }
     }
-    
+
     post {
         success {
             junit 'packages/sprotty/artifacts/test/xunit.xml'

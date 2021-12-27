@@ -1,7 +1,4 @@
 {
-    "eslint.options": {
-      "configFile": "configs/.eslintrc.js"
-    },
     "eslint.packageManager": "yarn",
     "search.exclude": {
         "**/node_modules": true,

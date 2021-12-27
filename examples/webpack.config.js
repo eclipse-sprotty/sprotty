@@ -55,7 +55,9 @@ const config = {
 
     plugins: [
         new webpack.ProgressPlugin()
-    ]
+    ],
+    ignoreWarnings: [/Failed to parse source map/],
+
 };
 
 module.exports = config;
