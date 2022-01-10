@@ -277,7 +277,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
     mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
         if (!this.mouseIsDown) {
-            const elementUnderMouse = document.elementFromPoint(event.x, event.y);
+            const elementUnderMouse = this.getElementFromEventPosition(event);
             if (!this.isSprottyPopup(elementUnderMouse)) {
                 if (this.state.popupOpen) {
                     const popupTarget = findParent(target, hasPopupFeature);
@@ -289,11 +289,18 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 const hoverTarget = findParentByFeature(target, isHoverable);
                 if (hoverTarget !== undefined) {
                     result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: false }));
+                    if (this.lastHoverFeedbackElementId && this.lastHoverFeedbackElementId !== hoverTarget.id) {
+                        result.push(HoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
+                    }
                     this.lastHoverFeedbackElementId = undefined;
                 }
             }
         }
         return result;
+    }
+
+    protected getElementFromEventPosition(event: MouseEvent) {
+        return document.elementFromPoint(event.x, event.y);
     }
 
     protected isSprottyPopup(element: Element | null): boolean {

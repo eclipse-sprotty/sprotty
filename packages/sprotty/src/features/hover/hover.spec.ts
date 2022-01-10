@@ -29,6 +29,10 @@ import hoverModule from "./di.config";
 describe('hover', () => {
     class HoverListenerMock extends HoverMouseListener {
 
+        resetLastHoverFeedbackElement() {
+            this.lastHoverFeedbackElementId = undefined;
+        }
+
         set popupIsOpen(isOpen: boolean) {
             this.state.popupOpen = isOpen;
         }
@@ -48,11 +52,15 @@ describe('hover', () => {
             });
         }
 
-
         protected startMouseOutTimer(): Promise<Action> {
             this.state.popupOpen = false;
             return new Promise<Action>(() => {
             });
+        }
+
+        protected getElementFromEventPosition(event: MouseEvent) {
+            // the original implementation uses document which isn't available in unit testing
+            return null;
         }
     }
 
@@ -115,12 +123,33 @@ describe('hover', () => {
             hoverListener.mouseOver(new SModelRoot(), event);
         });
         it('contains SetPopupModelAction if popup is open and hovering over an non-hoverable element', () => {
+            hoverListener.resetLastHoverFeedbackElement();
             hoverListener.popupIsOpen = true;
             const target = new SModelElement();
             const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(target, event);
 
             expect(mouseOverResult).to.have.lengthOf(1);
             expect(mouseOverResult[0]).to.be.an.instanceof(Promise);
+        });
+        it('resets the hover feedback when moving out of another element', () => {
+            hoverListener.resetLastHoverFeedbackElement();
+            const target = new HoverableTarget("1");
+            const anotherTarget = new HoverableTarget("2");
+            hoverListener.mouseOver(target, event);
+            const mouseOutResult: (Action | Promise<Action>)[] = hoverListener.mouseOut(anotherTarget, event);
+
+            expect(mouseOutResult).to.have.lengthOf(2);
+            expect((mouseOutResult[0] as Action).kind).to.equal(HoverFeedbackAction.KIND);
+            expect((mouseOutResult[1] as Action).kind).to.equal(HoverFeedbackAction.KIND);
+
+            const action1 = mouseOutResult[0] as HoverFeedbackAction;
+            const action2 = mouseOutResult[1] as HoverFeedbackAction;
+            const actionForTarget = [action1, action2].filter(action => action.mouseoverElement === target.id);
+            const actionForAnotherTarget = [action1, action2].filter(action => action.mouseoverElement === anotherTarget.id);
+            expect(actionForTarget[0].mouseIsOver).to.be.false;
+            expect(actionForAnotherTarget[0].mouseIsOver).to.be.false;
+            // reset state by hovering over the root
+            hoverListener.mouseOver(new SModelRoot(), event);
         });
         it('contains SetPopupModelAction and Promise if popup is open and previous target is not the same', () => {
             hoverListener.popupIsOpen = true;
