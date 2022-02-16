@@ -177,7 +177,7 @@ export class CommandPalette extends AbstractUIExtension {
         if (item.icon) {
             this.renderIcon(itemElement, item.icon);
         }
-        itemElement.innerHTML += item.label.replace(regex, (match) => "<em>" + match + "</em>");
+        itemElement.innerHTML += item.label.replace(regex, (match) => "<em>" + match + "</em>").replace(/ /g, '&nbsp;');
         return itemElement;
     }
 
