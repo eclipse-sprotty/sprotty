@@ -180,7 +180,7 @@ export class CommandPalette extends AbstractUIExtension {
         if (value.length > 0) {
             itemElement.innerHTML += item.label.replace(regex, (match) => "<em>" + match + "</em>").replace(/ /g, '&nbsp;');
         } else {
-            itemElement.innerHTML += item.label.replace(regex, (match) =>  match ).replace(/ /g, '&nbsp;');
+            itemElement.innerHTML += item.label.replace(/ /g, '&nbsp;');
         }
         return itemElement;
     }
