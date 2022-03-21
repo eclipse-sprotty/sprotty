@@ -15,7 +15,9 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action, generateRequestId, RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
+import {
+    Action, generateRequestId, RequestAction, ResponseAction} from 'sprotty-protocol/lib/actions';
+import * as protocol from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
 import { CommandExecutionContext, CommandResult, CommandReturn, HiddenCommand, SystemCommand } from "../../base/commands/command";
@@ -29,8 +31,8 @@ import { Alignable, BoundsAware, isBoundsAware } from './model';
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class SetBoundsAction implements Action {
-    static readonly KIND: string  = 'setBounds';
+export class SetBoundsAction implements Action, protocol.SetBoundsAction {
+    static readonly KIND = 'setBounds';
     readonly kind = SetBoundsAction.KIND;
 
     constructor(public readonly bounds: ElementAndBounds[]) {
@@ -45,12 +47,12 @@ export class SetBoundsAction implements Action {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class RequestBoundsAction implements RequestAction<ComputedBoundsAction> {
-    static readonly KIND: string  = 'requestBounds';
+export class RequestBoundsAction implements RequestAction<ComputedBoundsAction>, protocol.RequestBoundsAction {
+    static readonly KIND = 'requestBounds';
     readonly kind = RequestBoundsAction.KIND;
 
     constructor(public readonly newRoot: SModelRootSchema,
-                public readonly requestId: string = '') {}
+        public readonly requestId: string = '') { }
 
     /** Factory function to dispatch a request with the `IActionDispatcher` */
     static create(newRoot: SModelRootSchema): RequestAction<ComputedBoundsAction> {
@@ -67,14 +69,14 @@ export class RequestBoundsAction implements RequestAction<ComputedBoundsAction> 
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class ComputedBoundsAction implements ResponseAction {
+export class ComputedBoundsAction implements ResponseAction, protocol.ComputedBoundsAction {
     static readonly KIND = 'computedBounds';
     readonly kind = ComputedBoundsAction.KIND;
 
     constructor(public readonly bounds: ElementAndBounds[],
-                public readonly revision?: number,
-                public readonly alignments?: ElementAndAlignment[],
-                public readonly responseId = '') {}
+        public readonly revision?: number,
+        public readonly alignments?: ElementAndAlignment[],
+        public readonly responseId = '') { }
 }
 
 /**
@@ -82,7 +84,7 @@ export class ComputedBoundsAction implements ResponseAction {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export interface ElementAndBounds {
+export interface ElementAndBounds extends protocol.ElementAndBounds {
     elementId: string
     newPosition?: Point
     newSize: Dimension
@@ -93,7 +95,7 @@ export interface ElementAndBounds {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export interface ElementAndAlignment {
+export interface ElementAndAlignment extends protocol.ElementAndAlignment{
     elementId: string
     newAlignment: Point
 }
@@ -103,7 +105,7 @@ export interface ElementAndAlignment {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class LayoutAction implements Action {
+export class LayoutAction implements Action, protocol.LayoutAction {
     static readonly KIND = 'layout';
     readonly kind = LayoutAction.KIND;
 
@@ -126,11 +128,11 @@ export interface ResolvedElementAndAlignment {
 
 @injectable()
 export class SetBoundsCommand extends SystemCommand {
-    static readonly KIND: string  = SetBoundsAction.KIND;
+    static readonly KIND: string = protocol.SetBoundsAction.KIND;
 
     protected bounds: ResolvedElementAndBounds[] = [];
 
-    constructor(@inject(TYPES.Action) protected readonly action: SetBoundsAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: protocol.SetBoundsAction) {
         super();
     }
 
@@ -181,9 +183,9 @@ export class SetBoundsCommand extends SystemCommand {
 
 @injectable()
 export class RequestBoundsCommand extends HiddenCommand {
-    static readonly KIND: string  = RequestBoundsAction.KIND;
+    static readonly KIND: string = protocol.RequestBoundsAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected action: RequestBoundsAction) {
+    constructor(@inject(TYPES.Action) protected action: protocol.RequestBoundsAction) {
         super();
     }
 

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from "sprotty-protocol/lib/actions";
+import { Action, CenterAction as ProtocolCenterAction, FitToScreenAction as ProtocolFitToScreenAction} from "sprotty-protocol/lib/actions";
 import { Viewport } from "sprotty-protocol/lib/model";
 import { Bounds, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { matchesKeystroke } from "../../utils/keyboard";
@@ -38,7 +38,7 @@ import { TYPES } from "../../base/types";
  *
  * @deprecated Use the declaration in `sprotty-protocol` instead.
  */
-export class CenterAction implements Action {
+export class CenterAction implements Action, ProtocolCenterAction {
     static readonly KIND = 'center';
     readonly kind = CenterAction.KIND;
 
@@ -56,7 +56,7 @@ export class CenterAction implements Action {
  *
  * @deprecated Use the declaration in `sprotty-protocol` instead.
  */
-export class FitToScreenAction implements Action {
+export class FitToScreenAction implements Action, ProtocolFitToScreenAction {
     static readonly KIND = 'fit';
     readonly kind = FitToScreenAction.KIND;
 
@@ -163,9 +163,9 @@ export abstract class BoundsAwareViewportCommand extends Command {
 }
 
 export class CenterCommand extends BoundsAwareViewportCommand {
-    static readonly KIND = CenterAction.KIND;
+    static readonly KIND = ProtocolCenterAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected action: CenterAction) {
+    constructor(@inject(TYPES.Action) protected action: ProtocolCenterAction) {
         super(action.animate);
     }
 
@@ -190,9 +190,9 @@ export class CenterCommand extends BoundsAwareViewportCommand {
 }
 
 export class FitToScreenCommand extends BoundsAwareViewportCommand {
-    static readonly KIND = FitToScreenAction.KIND;
+    static readonly KIND = ProtocolFitToScreenAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected readonly action: FitToScreenAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolFitToScreenAction) {
         super(action.animate);
     }
 

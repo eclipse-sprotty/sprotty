@@ -45,12 +45,28 @@ export function isEditLabelAction(element?: any): element is EditLabelAction {
     return isAction(element) && element.kind === EditLabelAction.KIND && 'labelId' in element;
 }
 
-export class ApplyLabelEditAction implements Action {
-    static readonly KIND = 'applyLabelEdit';
-    kind = ApplyLabelEditAction.KIND;
-
-    constructor(readonly labelId: string, readonly text: string) { }
+export interface ApplyLabelEditAction extends Action {
+    kind: typeof ApplyLabelEditAction.KIND;
+    labelId: string,
+    text: string
 }
+
+export namespace ApplyLabelEditAction {
+    export const KIND = 'applyLabelEdit';
+
+    export function create(labelId: string, text: string): ApplyLabelEditAction {
+        return {
+            kind: KIND,
+            labelId,
+            text
+        };
+    }
+}
+
+export function isApplyLabelEditAction(element?: any): element is ApplyLabelEditAction {
+    return isAction(element) && element.kind === ApplyLabelEditAction.KIND && 'labelId' in element && 'text' in element;
+}
+
 
 export class ResolvedLabelEdit {
     label: EditableLabel;

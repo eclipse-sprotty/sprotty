@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, CollapseExpandAction as ProtocolCollapseExpandAction, CollapseExpandAllAction as ProtocolCollapseExpandAllAction} from 'sprotty-protocol/lib/actions';
 import { SButton } from '../button/model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isExpandable } from './model';
@@ -27,9 +27,9 @@ import { IButtonHandler } from '../button/button-handler';
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class CollapseExpandAction implements Action {
-    static KIND = 'collapseExpand';
-    kind = CollapseExpandAction.KIND;
+export class CollapseExpandAction implements Action,ProtocolCollapseExpandAction {
+    static readonly KIND = 'collapseExpand';
+    readonly kind = CollapseExpandAction.KIND;
 
     constructor(public readonly expandIds: string[],
                 public readonly collapseIds: string[]) {
@@ -41,9 +41,9 @@ export class CollapseExpandAction implements Action {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class CollapseExpandAllAction implements Action {
-    static KIND = 'collapseExpandAll';
-    kind = CollapseExpandAllAction.KIND;
+export class CollapseExpandAllAction implements Action,ProtocolCollapseExpandAllAction {
+    static readonly KIND = 'collapseExpandAll';
+    readonly kind = CollapseExpandAllAction.KIND;
 
     /**
      * If `expand` is true, all elements are expanded, othewise they are collapsed.
@@ -59,9 +59,10 @@ export class ExpandButtonHandler implements IButtonHandler {
     buttonPressed(button: SButton): Action[] {
         const expandable = findParentByFeature(button, isExpandable);
         if (expandable !== undefined) {
-            return [ new CollapseExpandAction(
-                expandable.expanded ? [] : [ expandable.id ],
-                expandable.expanded ? [ expandable.id ] : []) ];
+            return [ ProtocolCollapseExpandAction.create({
+                expandIds:   expandable.expanded ? [] : [ expandable.id ],
+                collapseIds:  expandable.expanded ? [ expandable.id ] : []
+            })];
         } else {
             return [];
         }

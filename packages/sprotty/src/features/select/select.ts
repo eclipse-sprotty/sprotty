@@ -16,7 +16,10 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from "snabbdom";
-import { Action, generateRequestId, RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
+import {
+    Action, generateRequestId, RequestAction, ResponseAction, SelectAction as ProtocolSelectAction,
+    SelectAllAction as ProtocolSelectAllActon
+} from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext } from "../../base/commands/command";
 import { ModelRequestCommand } from '../../base/commands/request-command';
 import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
@@ -44,12 +47,12 @@ import { isSelectable, Selectable } from "./model";
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class SelectAction implements Action {
+export class SelectAction implements Action, ProtocolSelectAction {
     static readonly KIND = 'elementSelected';
-    kind = SelectAction.KIND;
+    readonly kind = SelectAction.KIND;
 
     constructor(public readonly selectedElementsIDs: string[] = [],
-                public readonly deselectedElementsIDs: string[] = []) {
+        public readonly deselectedElementsIDs: string[] = []) {
     }
 }
 
@@ -58,9 +61,9 @@ export class SelectAction implements Action {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class SelectAllAction implements Action {
+export class SelectAllAction implements Action, ProtocolSelectAllActon {
     static readonly KIND = 'allSelected';
-    kind = SelectAllAction.KIND;
+    readonly kind = SelectAllAction.KIND;
 
     /**
      * If `select` is true, all elements are selected, otherwise they are deselected.
@@ -104,12 +107,12 @@ export namespace SelectionResult {
 
 @injectable()
 export class SelectCommand extends Command {
-    static readonly KIND = SelectAction.KIND;
+    static readonly KIND = ProtocolSelectAction.KIND;
 
     protected selected: (SChildElement & Selectable)[] = [];
     protected deselected: (SChildElement & Selectable)[] = [];
 
-    constructor(@inject(TYPES.Action) public action: SelectAction) {
+    constructor(@inject(TYPES.Action) public action: ProtocolSelectAction) {
         super();
     }
 
@@ -153,11 +156,11 @@ export class SelectCommand extends Command {
 
 @injectable()
 export class SelectAllCommand extends Command {
-    static readonly KIND = SelectAllAction.KIND;
+    static readonly KIND = ProtocolSelectAllActon.KIND;
 
     protected previousSelection: Record<string, boolean> = {};
 
-    constructor(@inject(TYPES.Action) protected readonly action: SelectAllAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSelectAllActon) {
         super();
     }
 
@@ -194,7 +197,7 @@ export class SelectAllCommand extends Command {
 
 export class SelectMouseListener extends MouseListener {
 
-    @inject(ButtonHandlerRegistry)@optional() protected buttonHandlerRegistry: ButtonHandlerRegistry;
+    @inject(ButtonHandlerRegistry) @optional() protected buttonHandlerRegistry: ButtonHandlerRegistry;
 
     wasSelected = false;
     hasDragged = false;
@@ -284,8 +287,8 @@ export class GetSelectionCommand extends ModelRequestCommand {
 
     protected retrieveResult(context: CommandExecutionContext): ResponseAction {
         const selection = context.root.index.all()
-                .filter(e => isSelectable(e) && e.selected)
-                .map(e => e.id);
+            .filter(e => isSelectable(e) && e.selected)
+            .map(e => e.id);
         return SelectionResult.create(toArray(selection), this.action.requestId);
     }
 
