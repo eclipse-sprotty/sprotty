@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, inject } from "inversify";
-import { Action, generateRequestId, RequestAction, ResponseAction } from "sprotty-protocol/lib/actions";
+import { Action, generateRequestId, RequestAction, ResponseAction, SetViewportAction as ProtocolSetViewPortAction} from "sprotty-protocol/lib/actions";
 import { Viewport } from "sprotty-protocol/lib/model";
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
@@ -28,9 +28,9 @@ import { ModelRequestCommand } from "../../base/commands/request-command";
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class SetViewportAction implements Action {
+export class SetViewportAction implements Action, ProtocolSetViewPortAction {
     static readonly KIND = 'viewport';
-    kind = SetViewportAction.KIND;
+    readonly kind = SetViewportAction.KIND;
 
     constructor(public readonly elementId: string,
                 public readonly newViewport: Viewport,
@@ -75,13 +75,13 @@ export namespace ViewportResult {
 
 @injectable()
 export class SetViewportCommand extends MergeableCommand {
-    static readonly KIND = SetViewportAction.KIND;
+    static readonly KIND = ProtocolSetViewPortAction.KIND;
 
     protected element: SModelElement & Viewport;
     protected oldViewport: Viewport;
     protected newViewport: Viewport;
 
-    constructor(@inject(TYPES.Action) protected readonly action: SetViewportAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetViewPortAction) {
         super();
         this.newViewport = action.newViewport;
     }

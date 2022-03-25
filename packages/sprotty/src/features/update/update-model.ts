@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2020 TypeFox and others.
+ * Copyright (c) 2017-2022 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, inject, optional } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
+import { Action, UpdateModelAction as ProtocolUpdateModelAction } from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { almostEquals, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
@@ -42,7 +42,7 @@ import { containsSome } from "../../base/model/smodel-utils";
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class UpdateModelAction implements Action {
+export class UpdateModelAction implements Action, ProtocolUpdateModelAction {
     static readonly KIND = 'updateModel';
     readonly kind = UpdateModelAction.KIND;
 
@@ -50,8 +50,8 @@ export class UpdateModelAction implements Action {
     public readonly matches?: Match[];
 
     constructor(input: SModelRootSchema | Match[],
-                public readonly animate: boolean = true,
-                public readonly cause?: Action) {
+        public readonly animate: boolean = true,
+        public readonly cause?: Action) {
         if ((input as SModelRootSchema).id !== undefined)
             this.newRoot = input as SModelRootSchema;
         else
@@ -68,14 +68,14 @@ export interface UpdateAnimationData {
 
 @injectable()
 export class UpdateModelCommand extends Command {
-    static readonly KIND = UpdateModelAction.KIND;
+    static readonly KIND = ProtocolUpdateModelAction.KIND;
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    @inject(EdgeRouterRegistry)@optional() edgeRouterRegistry?: EdgeRouterRegistry;
+    @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
-    constructor(@inject(TYPES.Action) protected readonly action: UpdateModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolUpdateModelAction) {
         super();
     }
 
@@ -232,8 +232,8 @@ export class UpdateModelCommand extends Command {
                     width: left.bounds.width,
                     height: left.bounds.height
                 };
-            } else if (!almostEquals(left.bounds.width, right.bounds.width)
-                    || !almostEquals(left.bounds.height, right.bounds.height)) {
+            } else if (!almostEquals(left.bounds.width, right.bounds.width)
+                || !almostEquals(left.bounds.height, right.bounds.height)) {
                 if (animationData.resizes === undefined)
                     animationData.resizes = [];
                 animationData.resizes.push({
@@ -249,7 +249,7 @@ export class UpdateModelCommand extends Command {
                 });
             }
         }
-        if (left instanceof SRoutableElement && right instanceof SRoutableElement && this.edgeRouterRegistry) {
+        if (left instanceof SRoutableElement && right instanceof SRoutableElement && this.edgeRouterRegistry) {
             if (animationData.edgeMementi === undefined)
                 animationData.edgeMementi = [];
             animationData.edgeMementi.push({
@@ -294,7 +294,7 @@ export class UpdateModelCommand extends Command {
             }
             animations.push(new ResizeAnimation(root, resizesMap, context, false));
         }
-        if (data.edgeMementi  !== undefined && data.edgeMementi.length > 0) {
+        if (data.edgeMementi !== undefined && data.edgeMementi.length > 0) {
             animations.push(new MorphEdgesAnimation(root, data.edgeMementi, context, false));
         }
         return animations;

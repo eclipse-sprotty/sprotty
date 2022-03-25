@@ -132,7 +132,7 @@ export class EditLabelUI extends AbstractUIExtension {
             }
         }
         this.actionDispatcherProvider()
-            .then((actionDispatcher) => actionDispatcher.dispatchAll([new ApplyLabelEditAction(this.labelId, this.editControl.value), CommitModelAction.create()]))
+            .then((actionDispatcher) => actionDispatcher.dispatchAll([ApplyLabelEditAction.create(this.labelId, this.editControl.value), CommitModelAction.create()]))
             .catch((reason) => this.logger.error(this, 'No action dispatcher available to execute apply label edit action', reason));
         this.hide();
     }

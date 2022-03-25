@@ -15,7 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action, generateRequestId, RequestAction, ResponseAction } from "sprotty-protocol/lib/actions";
+import {
+    Action, generateRequestId, RequestAction,
+    ResponseAction, RequestPopupModelAction as ProtocolRequestPopupModelAction,
+    SetPopupModelAction as ProtocolSetPopupModelAction
+} from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { matchesKeystroke } from '../../utils/keyboard';
@@ -88,13 +92,13 @@ export class HoverFeedbackCommand extends SystemCommand {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class RequestPopupModelAction implements RequestAction<SetPopupModelAction> {
+export class RequestPopupModelAction implements RequestAction<SetPopupModelAction>, ProtocolRequestPopupModelAction {
     static readonly KIND = 'requestPopupModel';
     readonly kind = RequestPopupModelAction.KIND;
 
     constructor(public readonly elementId: string,
-                public readonly bounds: Bounds,
-                public readonly requestId = '') {}
+        public readonly bounds: Bounds,
+        public readonly requestId = '') { }
 
     /** Factory function to dispatch a request with the `IActionDispatcher` */
     static create(elementId: string, bounds: Bounds): RequestAction<SetPopupModelAction> {
@@ -108,22 +112,22 @@ export class RequestPopupModelAction implements RequestAction<SetPopupModelActio
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class SetPopupModelAction implements ResponseAction {
+export class SetPopupModelAction implements ResponseAction, ProtocolSetPopupModelAction {
     static readonly KIND = 'setPopupModel';
     readonly kind = SetPopupModelAction.KIND;
 
     constructor(public readonly newRoot: SModelRootSchema,
-                public readonly responseId = '') {}
+        public readonly responseId = '') { }
 }
 
 @injectable()
 export class SetPopupModelCommand extends PopupCommand {
-    static readonly KIND = SetPopupModelAction.KIND;
+    static readonly KIND = ProtocolSetPopupModelAction.KIND;
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(@inject(TYPES.Action) protected readonly action: SetPopupModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetPopupModelAction) {
         super();
     }
 
@@ -180,7 +184,7 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
             this.state.mouseOutTimer = window.setTimeout(() => {
                 this.state.popupOpen = false;
                 this.state.previousPopupElement = undefined;
-                resolve(new SetPopupModelAction({type: EMPTY_ROOT.type, id: EMPTY_ROOT.id}));
+                resolve(new SetPopupModelAction({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id }));
             }, this.options.popupCloseDelay);
         });
     }
@@ -237,7 +241,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
         this.stopMouseOverTimer();
         return new Promise((resolve) => {
             this.state.mouseOverTimer = window.setTimeout(() => {
-                const popupBounds = this.computePopupBounds(target, {x: event.pageX, y: event.pageY});
+                const popupBounds = this.computePopupBounds(target, { x: event.pageX, y: event.pageY });
                 resolve(new RequestPopupModelAction(target.id, popupBounds));
 
                 this.state.popupOpen = true;
@@ -351,7 +355,7 @@ export class PopupHoverMouseListener extends AbstractHoverMouseListener {
 export class HoverKeyListener extends KeyListener {
     keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new SetPopupModelAction({type: EMPTY_ROOT.type, id: EMPTY_ROOT.id})];
+            return [new SetPopupModelAction({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })];
         }
         return [];
     }
@@ -365,7 +369,7 @@ export class ClosePopupActionHandler implements IActionHandler {
         if (action.kind === SetPopupModelCommand.KIND) {
             this.popupOpen = (action as SetPopupModelAction).newRoot.type !== EMPTY_ROOT.type;
         } else if (this.popupOpen) {
-            return new SetPopupModelAction({id: EMPTY_ROOT.id, type: EMPTY_ROOT.type});
+            return new SetPopupModelAction({ id: EMPTY_ROOT.id, type: EMPTY_ROOT.type });
         }
     }
 }

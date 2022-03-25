@@ -298,7 +298,7 @@ export namespace ComputedBoundsAction {
 /**
  * Associates new bounds with a model element, which is referenced via its id.
  */
- export interface ElementAndBounds {
+export interface ElementAndBounds {
     elementId: string
     newPosition?: Point
     newSize: Dimension
@@ -307,7 +307,7 @@ export namespace ComputedBoundsAction {
 /**
  * Associates a new alignment with a model element, which is referenced via its id.
  */
- export interface ElementAndAlignment {
+export interface ElementAndAlignment {
     elementId: string
     newAlignment: Point
 }
@@ -358,7 +358,7 @@ export namespace SelectAllAction {
  * Sent from the client to the model source to recalculate a diagram when elements
  * are collapsed/expanded by the client.
  */
- export interface CollapseExpandAction {
+export interface CollapseExpandAction {
     kind: typeof CollapseExpandAction.KIND
     expandIds: string[]
     collapseIds: string[]
@@ -379,7 +379,7 @@ export namespace CollapseExpandAction {
  * Programmatic action for expanding or collapsing all elements.
  * If `expand` is true, all elements are expanded, otherwise they are collapsed.
  */
- export interface CollapseExpandAllAction {
+export interface CollapseExpandAllAction {
     kind: typeof CollapseExpandAllAction.KIND
     expand: boolean
 }
@@ -400,6 +400,13 @@ export interface OpenAction {
 }
 export namespace OpenAction {
     export const KIND = 'open';
+
+    export function create(elementId: string): OpenAction {
+        return {
+            kind: KIND,
+            elementId
+        };
+    }
 }
 
 /**

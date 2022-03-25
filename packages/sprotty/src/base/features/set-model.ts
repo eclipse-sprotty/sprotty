@@ -15,7 +15,10 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action, generateRequestId, RequestAction, ResponseAction } from "sprotty-protocol/lib/actions";
+import {
+    Action, generateRequestId, RequestAction, ResponseAction,
+    RequestModelAction as ProtocolRequestModelAction, SetModelAction as ProtocolSetModelAction
+} from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { JsonPrimitive } from "sprotty-protocol/lib/utils/json";
 import { CommandExecutionContext, ResetCommand } from "../commands/command";
@@ -30,12 +33,12 @@ import { InitializeCanvasBoundsCommand } from './initialize-canvas';
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class RequestModelAction implements RequestAction<SetModelAction> {
+export class RequestModelAction implements RequestAction<SetModelAction>, ProtocolRequestModelAction {
     static readonly KIND = 'requestModel';
     readonly kind = RequestModelAction.KIND;
 
     constructor(public readonly options?: { [key: string]: JsonPrimitive },
-                public readonly requestId = '') {}
+        public readonly requestId = '') { }
 
     /** Factory function to dispatch a request with the `IActionDispatcher` */
     static create(options?: { [key: string]: JsonPrimitive }): RequestAction<SetModelAction> {
@@ -48,22 +51,22 @@ export class RequestModelAction implements RequestAction<SetModelAction> {
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class SetModelAction implements ResponseAction {
+export class SetModelAction implements ResponseAction, ProtocolSetModelAction {
     static readonly KIND = 'setModel';
     readonly kind = SetModelAction.KIND;
 
     constructor(public readonly newRoot: SModelRootSchema,
-                public readonly responseId = '') {}
+        public readonly responseId = '') { }
 }
 
 @injectable()
 export class SetModelCommand extends ResetCommand {
-    static readonly KIND = SetModelAction.KIND;
+    static readonly KIND = ProtocolSetModelAction.KIND;
 
     oldRoot: SModelRoot;
     newRoot: SModelRoot;
 
-    constructor(@inject(TYPES.Action) protected readonly action: SetModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetModelAction) {
         super();
     }
 

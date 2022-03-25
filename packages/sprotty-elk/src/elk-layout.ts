@@ -51,7 +51,7 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
         });
     }
 
-    protected getBasicType(smodel:SModelElement): string{
+    protected getBasicType(smodel: SModelElement): string{
         return getBasicType(smodel);
     }
 
@@ -287,7 +287,7 @@ export class DefaultElementFilter implements IElementFilter {
         }
     }
 
-    protected getBasicType(smodel:SModelElement): string{
+    protected getBasicType(smodel: SModelElement): string{
         return getBasicType(smodel);
     }
 
@@ -349,7 +349,7 @@ export class DefaultLayoutConfigurator implements ILayoutConfigurator {
         }
     }
 
-    protected getBasicType(smodel:SModelElement): string{
+    protected getBasicType(smodel: SModelElement): string{
         return getBasicType(smodel);
     }
 
