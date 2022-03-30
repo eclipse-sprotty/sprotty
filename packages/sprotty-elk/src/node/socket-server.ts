@@ -23,6 +23,14 @@ import { applyLayoutData, findObjectEnd, isError, LayoutData, ParseState } from 
 const DEFAULT_PORT = 5008;
 const DEFAULT_TIMEOUT = 10_000;
 
+/**
+ * Use this together with the `ElkLayoutEngine` to connect to a Java process via socket:
+ * ```
+ * const elkFactory: ElkFactory = () => new SocketElkServer();
+ * ```
+ * The `elk-server` application can be obtained here:
+ * https://github.com/TypeFox/elk-server
+ */
 export class SocketElkServer implements ELK {
 
     protected socket?: Socket;
