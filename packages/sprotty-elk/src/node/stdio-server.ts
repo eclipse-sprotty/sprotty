@@ -22,6 +22,14 @@ import { applyLayoutData, findObjectEnd, isError, LayoutData, ParseState } from 
 
 const DEFAULT_TIMEOUT = 10_000;
 
+/**
+ * Use this together with the `ElkLayoutEngine` to spawn a Java process in the background:
+ * ```
+ * const elkFactory: ElkFactory = () => new StdioElkServer({ commandPath: './elk-server/bin/elk-server' });
+ * ```
+ * The `elk-server` application can be obtained here:
+ * https://github.com/TypeFox/elk-server
+ */
 export class StdioElkServer implements ELK {
 
     protected process?: ChildProcess;
