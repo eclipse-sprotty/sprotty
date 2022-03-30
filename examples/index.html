@@ -14,19 +14,28 @@
             <a href="https://github.com/eclipse/sprotty">Sprotty</a> is a web-based diagramming framework.
             For information how to use these examples see <a href="https://github.com/eclipse/sprotty/wiki/Using-sprotty">Using Sprotty</a>.
 
-            <h3>Without server</h3>
+            <h3>Without Server</h3>
+            The following examples run completely in the browser and do not require any additional component.
             <ul>
                 <li><a href="circlegraph/circlegraph.html">Circles and lines:</a><br>
                 A basic diagram showing a graph of moveable nodes and edges.</li>
                 <li><a href="classdiagram/class-diagram.html">Class diagram:</a><br>
                 A basic class diagram using node layouts and hovers.</li>
                 <li><a href="random-graph/random-graph.html">Random graph:</a><br>
-                Randomly generated graph with automatic layout.</li>
+                Randomly generated graph with automatic layout running in the browser.</li>
                 <li><a href="svg/svg-prerendered.html">SVG:</a><br>
                 Demonstrates how to use existing SVG figures.</li>
                 <li><a href="multicore/multicore.html">Multicore:</a><br>
                 Shows a multi-core chip. The color of the cores changes with the code they execute.
                 If you zoom in, the communication channels between the cores appear.</li>
+            </ul>
+
+            <h3>With Server</h3>
+            The following example requires to download and run <a href="https://github.com/TypeFox/elk-server">ELK Server</a> in socket mode.
+            The example server connects to the ELK server and uses it as layout engine.
+            <ul>
+                <li><a href="random-graph-distributed/random-graph.html">Random graph:</a><br>
+                Randomly generated graph with automatic layout running in a separate layout server.</li>
             </ul>
         </div>
     </div>

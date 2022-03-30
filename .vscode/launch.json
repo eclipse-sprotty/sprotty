@@ -2,9 +2,9 @@
 	"version": "0.2.0",
 	"configurations": [
         {
+            "name": "Current Test File",
             "type": "node",
             "request": "launch",
-            "name": "Current Test File",
             "protocol": "inspector",
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/node_modules/.bin/_mocha",
@@ -21,6 +21,26 @@
             "smartStep": true,
             "internalConsoleOptions": "openOnSessionStart",
             "outputCapture": "std"
+        },
+        {
+            "name": "Examples Server",
+            "type": "pwa-node",
+            "request": "launch",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "${workspaceFolder}/examples/server/server-app"
+            ],
+            "cwd": "${workspaceFolder}/examples",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/examples/server/**/*.js",
+                "${workspaceFolder}/packages/sprotty/lib/**/*.js",
+                "${workspaceFolder}/packages/sprotty-protocol/lib/**/*.js",
+                "${workspaceFolder}/packages/sprotty-elk/lib/**/*.js"
+            ]
         }
 	]
 }
