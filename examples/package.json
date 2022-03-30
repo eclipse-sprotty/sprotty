@@ -4,12 +4,13 @@
   "private": "true",
   "dependencies": {
     "core-js": "^3.19.1",
-    "http-server": "^14.0.0",
+    "express": "^4.17.3",
     "reflect-metadata": "^0.1.13",
     "sprotty": "0.11.1",
     "sprotty-elk": "0.11.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/webpack-env": "^1.16.3",
     "css-loader": "^6.5.0",
     "file-loader": "^6.2.0",
@@ -22,8 +23,9 @@
   },
   "scripts": {
     "prepare": "yarn run build",
-    "build": "webpack",
-    "watch": "webpack --watch",
-    "start": "http-server ./"
+    "build": "webpack && tsc",
+    "watch:browser": "webpack --watch",
+    "watch:server": "tsc -w",
+    "start": "node ./server/server-app"
   }
 }

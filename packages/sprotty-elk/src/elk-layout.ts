@@ -31,8 +31,8 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
     protected readonly elk: ELK;
 
     constructor(elkFactory: ElkFactory,
-                protected readonly filter: IElementFilter,
-                protected readonly configurator: ILayoutConfigurator) {
+                protected readonly filter: IElementFilter = new DefaultElementFilter(),
+                protected readonly configurator: ILayoutConfigurator = new DefaultLayoutConfigurator()) {
         this.elk = elkFactory();
     }
 

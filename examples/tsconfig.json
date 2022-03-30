@@ -4,11 +4,13 @@
     "types": [
       "reflect-metadata", "webpack-env"
     ],
-    "outDir": "../out",
     "declaration": false,
     "declarationMap": false
   },
+  "include": [
+    "./server/**/*.ts"
+  ],
   "exclude": [
-    "**/*.spec.ts", "**/*.spec.tsx", "src/utils/test-helper.ts"
+    "**/*.spec.ts", "**/*.spec.tsx"
   ]
 }

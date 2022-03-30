@@ -19,6 +19,7 @@ import "reflect-metadata";
 import runCircleGraph from "./circlegraph/src/standalone";
 import runClassDiagram from "./classdiagram/src/standalone";
 import runRandomGraph from "./random-graph/src/standalone";
+import runRandomGraphDistributed from "./random-graph-distributed/src/standalone";
 import runSvgPreRendered from "./svg/src/standalone";
 import runMulticore from "./multicore/src/multicore";
 
@@ -31,6 +32,8 @@ if (appDiv) {
         runClassDiagram();
     else if (appMode === 'random-graph')
         runRandomGraph();
+    else if (appMode === 'random-graph-distributed')
+        runRandomGraphDistributed();
     else if (appMode === 'svg')
         runSvgPreRendered();
     else if (appMode === 'multicore')

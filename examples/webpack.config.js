@@ -14,7 +14,7 @@ const config = {
         'core-js/es/promise',
         'core-js/es/string',
         'core-js/es/symbol',
-        './app.ts'
+        './browser-app.ts'
     ],
     output: {
         filename: 'bundle.js',
