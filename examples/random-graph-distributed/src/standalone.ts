@@ -26,5 +26,6 @@ export default function runRandomGraphDistributed() {
         actionDispatcher.dispatch(response);
     }, err => {
         console.error(err);
-    })
+        document.getElementById('sprotty')!.innerText = String(err);
+    });
 }
