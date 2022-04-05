@@ -24,6 +24,7 @@
   "scripts": {
     "prepare": "yarn run build",
     "build": "webpack && tsc",
+    "watch": "yarn run watch:browser",
     "watch:browser": "webpack --watch",
     "watch:server": "tsc -w",
     "start": "node ./server/server-app"
