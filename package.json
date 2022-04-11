@@ -6,7 +6,7 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "publish:latest": "lerna publish --exact --ignore-scripts --no-verify-access --yes --no-push",
-    "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
+    "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
   },
   "devDependencies": {
     "lerna": "^4.0.0"
