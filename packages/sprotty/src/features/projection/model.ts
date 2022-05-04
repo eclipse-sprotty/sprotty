@@ -19,14 +19,15 @@ import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { SChildElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { BoundsAware, isBoundsAware } from '../bounds/model';
+import { isBoundsAware } from '../bounds/model';
 
 /**
  * Model elements implementing this interface can be displayed on a projection bar.
  * _Note:_ Model elements also have to be `BoundsAware` so their projections can be shown.
  */
 export interface Projectable extends SModelExtension {
-    projectionCssClasses: string[]
+    projectionCssClasses: string[],
+    projectedBounds?: Bounds,
 }
 
 export function isProjectable(arg: unknown): arg is Projectable {
@@ -48,10 +49,12 @@ export interface ViewProjection {
 export function getProjections(parent: Readonly<SParentElement>): ViewProjection[] | undefined {
     let result: ViewProjection[] | undefined;
     for (const child of parent.children) {
-        if (isProjectable(child) && isBoundsAware(child) && child.projectionCssClasses.length > 0) {
+        if (isProjectable(child) && child.projectionCssClasses.length > 0) {
+          const projectedBounds = getProjectedBounds(child);
+          if (projectedBounds) {
             const projection: ViewProjection = {
                 elementId: child.id,
-                projectedBounds: getProjectedBounds(child),
+                projectedBounds,
                 cssClasses: child.projectionCssClasses
             };
             if (result) {
@@ -59,6 +62,7 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
             } else {
                 result = [projection];
             }
+          }
         }
         if (child.children.length > 0) {
             const childProj = getProjections(child);
@@ -77,7 +81,10 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
 /**
  * Compute the projected bounds of the given model element, that is the absolute position in the diagram.
  */
-export function getProjectedBounds(model: Readonly<SChildElement & BoundsAware>): Bounds {
+export function getProjectedBounds(model: Readonly<SChildElement & Projectable>): Bounds | undefined {
+  if (model.projectedBounds){
+    return model.projectedBounds;
+  } else if (isBoundsAware(model)){
     let bounds = model.bounds;
     let parent = model.parent;
     while (parent instanceof SChildElement) {
@@ -85,6 +92,8 @@ export function getProjectedBounds(model: Readonly<SChildElement & BoundsAware>)
         parent = parent.parent;
     }
     return bounds;
+  }
+  return undefined;
 }
 
 const MAX_COORD = 1_000_000_000;
