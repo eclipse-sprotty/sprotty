@@ -19,7 +19,7 @@ import ElkConstructor from 'elkjs/lib/elk.bundled';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
     loadDefaultModules, LocalModelSource, SNode, SEdge, SLabel, configureModelElement,
-    SGraph, RectangularNodeView, PolylineEdgeView
+    SGraph, RectangularNodeView, edgeIntersectionModule, PolylineEdgeViewWithGapsOnIntersections
 } from 'sprotty';
 import { ElkFactory, ElkLayoutEngine, elkLayoutModule } from 'sprotty-elk/lib/inversify';
 
@@ -41,7 +41,7 @@ export default (containerId: string) => {
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(container, 'graph', SGraph, SGraphView);
         configureModelElement(container, 'node', SNode, RectangularNodeView);
-        configureModelElement(container, 'edge', SEdge, PolylineEdgeView);
+        configureModelElement(container, 'edge', SEdge, PolylineEdgeViewWithGapsOnIntersections);
         configureModelElement(container, 'label', SLabel, SLabelView);
 
         configureViewerOptions(context, {
@@ -52,6 +52,7 @@ export default (containerId: string) => {
 
     const container = new Container();
     loadDefaultModules(container);
+    container.load(edgeIntersectionModule);
     container.load(elkLayoutModule, randomGraphModule);
     return container;
 };

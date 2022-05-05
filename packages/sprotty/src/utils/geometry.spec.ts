@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2022 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,43 @@ describe('PointToPointLine', () => {
             const lineB = new PointToPointLine({ x: 0, y: 1 }, { x: 1, y: 1 });
             const intersection = lineA.intersection(lineB);
             expect(intersection).to.be.undefined;
+        });
+    });
+    describe('direction', () => {
+        // the coordinate system goes from left to right and top to bottom
+        // thus, x increases to the right and y increases downwards
+        // so a line going north is (x:0,y:1) -> (x:0:y0)
+        it('correctly defines line to north', () => {
+            const line = new PointToPointLine({ x: 0, y: 1 }, { x: 0, y: 0 });
+            expect(line.direction).to.equal('north');
+        });
+        it('correctly defines line to north-east', () => {
+            const line = new PointToPointLine({ x: 0, y: 1 }, { x: 1, y: 0 });
+            expect(line.direction).to.equal('north-east');
+        });
+        it('correctly defines line to east', () => {
+            const line = new PointToPointLine({ x: 0, y: 0 }, { x: 1, y: 0 });
+            expect(line.direction).to.equal('east');
+        });
+        it('correctly defines line to south-east', () => {
+            const line = new PointToPointLine({ x: 0, y: 0 }, { x: 1, y: 1 });
+            expect(line.direction).to.equal('south-east');
+        });
+        it('correctly defines line to south', () => {
+            const line = new PointToPointLine({ x: 0, y: 0 }, { x: 0, y: 1 });
+            expect(line.direction).to.equal('south');
+        });
+        it('correctly defines line to south-west', () => {
+            const line = new PointToPointLine({ x: 1, y: 0 }, { x: 0, y: 1 });
+            expect(line.direction).to.equal('south-west');
+        });
+        it('correctly defines line to west', () => {
+            const line = new PointToPointLine({ x: 1, y: 0 }, { x: 0, y: 0 });
+            expect(line.direction).to.equal('west');
+        });
+        it('correctly defines line to north-west', () => {
+            const line = new PointToPointLine({ x: 1, y: 1 }, { x: 0, y: 0 });
+            expect(line.direction).to.equal('north-west');
         });
     });
 });

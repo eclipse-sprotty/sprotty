@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2021 EclipseSource and others.
+ * Copyright (c) 2021-2022 EclipseSource and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,8 +43,31 @@ export const BY_X_THEN_Y = (a: Intersection, b: Intersection): number => {
     return a.intersectionPoint.x - b.intersectionPoint.x;
 };
 
+export const BY_DESCENDING_X_THEN_Y = (a: Intersection, b: Intersection): number => {
+    if (a.intersectionPoint.x === b.intersectionPoint.x) {
+        return a.intersectionPoint.y - b.intersectionPoint.y;
+    }
+    return b.intersectionPoint.x - a.intersectionPoint.x;
+};
+
+export const BY_X_THEN_DESCENDING_Y = (a: Intersection, b: Intersection): number => {
+    if (a.intersectionPoint.x === b.intersectionPoint.x) {
+        return b.intersectionPoint.y - a.intersectionPoint.y;
+    }
+    return a.intersectionPoint.x - b.intersectionPoint.x;
+};
+
+export const BY_DESCENDING_X_THEN_DESCENDING_Y = (a: Intersection, b: Intersection): number => {
+    if (a.intersectionPoint.x === b.intersectionPoint.x) {
+        return b.intersectionPoint.y - a.intersectionPoint.y;
+    }
+    return b.intersectionPoint.x - a.intersectionPoint.x;
+};
+
 /**
  * Finds intersections among edges and updates routed points to reflect those intersections.
+ *
+ * This only yields correct intersections among straight line segments and doesn't work with bezier curves.
  */
 @injectable()
 export class IntersectionFinder implements IEdgeRoutePostprocessor {
