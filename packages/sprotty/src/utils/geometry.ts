@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2022 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -388,7 +388,7 @@ export function linear(p0: Point, p1: Point, lambda: number): Point {
 
 /**
  * A diamond or rhombus is a quadrilateral whose four sides all have the same length.
- * It consinsts of four points, a `topPoint`, `rightPoint`, `bottomPoint`, and a `leftPoint`,
+ * It consists of four points, a `topPoint`, `rightPoint`, `bottomPoint`, and a `leftPoint`,
  * which are connected by four lines -- the `topRightSideLight`, `topLeftSideLine`, `bottomRightSideLine`,
  * and the `bottomLeftSideLine`.
  */
@@ -472,6 +472,10 @@ export interface Line {
     readonly c: number
 }
 
+export type CardinalDirection =
+    'north' | 'north-east' | 'east' | 'south-east' |
+    'south' | 'south-west' | 'west' | 'north-west';
+
 /**
  * A line made up from two points.
  */
@@ -515,6 +519,33 @@ export class PointToPointLine implements Line {
             return Number.MAX_SAFE_INTEGER;
         }
         return this.slope;
+    }
+
+    /**
+     * The direction of this line, such as 'north', 'south', or 'south-west'.
+     */
+    get direction(): CardinalDirection {
+        const hDegrees = toDegrees(this.angle);
+        const degrees = hDegrees < 0 ? 360 + hDegrees : hDegrees;
+        // degrees are relative to the x-axis
+        if (degrees === 90) {
+            return 'south';
+        } else if (degrees === 0 || degrees === 360) {
+            return 'east';
+        } else if (degrees === 270) {
+            return 'north';
+        } else if (degrees === 180) {
+            return 'west';
+        } else if (degrees > 0 && degrees < 90) {
+            return 'south-east';
+        } else if (degrees > 90 && degrees < 180) {
+            return 'south-west';
+        } else if (degrees > 180 && degrees < 270) {
+            return 'north-west';
+        } else if (degrees > 270 && degrees < 360) {
+            return 'north-east';
+        }
+        throw new Error(`Cannot determine direction of line (${this.p1.x},${this.p1.y}) to (${this.p2.x},${this.p2.y})`);
     }
 
     /**

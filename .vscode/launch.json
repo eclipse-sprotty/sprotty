@@ -11,8 +11,8 @@
             "args": [
                 "${file}",
                 "--no-timeouts",
-                "--opts",
-                "${workspaceRoot}/configs/mocha.opts"
+                "--config",
+                "${workspaceRoot}/configs/.mocharc.json"
             ],
             "env": {
                 "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"

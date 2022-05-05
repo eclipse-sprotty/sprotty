@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2022 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,10 +19,18 @@ import { inject, injectable } from 'inversify';
 import { VNode } from "snabbdom";
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { getSubType } from 'sprotty-protocol/lib/utils/model-utils';
-import { IViewArgs, IView, RenderingContext } from "../base/views/view";
+import { IView, IViewArgs, RenderingContext } from "../base/views/view";
 import { setAttr } from '../base/views/vnode-utils';
 import { ShapeView } from '../features/bounds/views';
-import { BY_X_THEN_Y, IntersectingRoutedPoint, Intersection, isIntersectingRoutedPoint } from '../features/edge-intersection/intersection-finder';
+import {
+    BY_DESCENDING_X_THEN_DESCENDING_Y,
+    BY_DESCENDING_X_THEN_Y,
+    BY_X_THEN_DESCENDING_Y,
+    BY_X_THEN_Y,
+    IntersectingRoutedPoint,
+    Intersection,
+    isIntersectingRoutedPoint
+} from '../features/edge-intersection/intersection-finder';
 import { isEdgeLayoutable } from '../features/edge-layout/model';
 import { SRoutableElement, SRoutingHandle } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
@@ -103,6 +111,8 @@ export class PolylineEdgeView extends RoutableView {
  * In order to find intersections, `IntersectionFinder` needs to be configured as a `TYPES.IEdgeRoutePostprocessor`
  * so that that intersections are declared as `IntersectingRoutedPoint` in the computed routes.
  *
+ * This view only draws correct line jumps for intersections among straight line segments and doesn't work with bezier curves.
+ *
  * @see IntersectionFinder
  * @see IntersectingRoutedPoint
  * @see EdgeRouterRegistry
@@ -132,22 +142,85 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return <path d={path} />;
     }
 
+    /**
+     * Returns a path that takes the intersections into account by drawing a line jump or a gap for intersections on that path.
+     */
     protected intersectionPath(edge: SEdge, segments: Point[], intersectingPoint: IntersectingRoutedPoint, args?: IViewArgs): string {
+        if (intersectingPoint.intersections.length < 1) {
+            return '';
+        }
+
+        const segment = this.getLineSegment(edge, intersectingPoint.intersections[0], args, segments);
+        const intersections = this.getIntersectionsSortedBySegmentDirection(segment, intersectingPoint);
+
         let path = '';
-        for (const intersection of intersectingPoint.intersections.sort(BY_X_THEN_Y)) {
+        for (const intersection of intersections) {
             const otherLineSegment = this.getOtherLineSegment(edge, intersection, args);
             if (otherLineSegment === undefined) {
                 continue;
             }
-            const lineSegment = this.getLineSegment(edge, intersection, args, segments);
+            const currentLineSegment = this.getLineSegment(edge, intersection, args, segments);
             const intersectionPoint = intersection.intersectionPoint;
-            if (Math.abs(lineSegment.slopeOrMax) < Math.abs(otherLineSegment.slopeOrMax)) {
-                path += this.createJumpPath(intersectionPoint, lineSegment);
-            } else {
-                path += this.createSkipPath(intersectionPoint, lineSegment);
+            if (this.shouldDrawLineJumpOnIntersection(currentLineSegment, otherLineSegment)) {
+                path += this.createJumpPath(intersectionPoint, currentLineSegment);
+            } else if (this.shouldDrawLineGapOnIntersection(currentLineSegment, otherLineSegment)) {
+                path += this.createGapPath(intersectionPoint, currentLineSegment);
             }
         }
+
         return path;
+    }
+
+    /**
+     * Returns the intersections sorted by the direction of the `lineSegment`.
+     *
+     * The coordinate system goes from left to right and top to bottom.
+     * Thus, x increases to the right and y increases downwards.
+     *
+     * We need to draw the intersections in the order of the direction of the line segment.
+     * To draw a line pointing north, we need to order intersections by Y in a descending order.
+     * To draw a line pointing south, we need to order intersections by Y in an ascending order.
+     */
+    protected getIntersectionsSortedBySegmentDirection(lineSegment: PointToPointLine, intersectingPoint: IntersectingRoutedPoint) {
+        switch (lineSegment.direction) {
+            case 'north':
+            case 'north-east':
+                return intersectingPoint.intersections.sort(BY_X_THEN_DESCENDING_Y);
+
+            case 'south':
+            case 'south-east':
+            case 'east':
+                return intersectingPoint.intersections.sort(BY_X_THEN_Y);
+
+            case 'south-west':
+            case 'west':
+                return intersectingPoint.intersections.sort(BY_DESCENDING_X_THEN_Y);
+
+            case 'north-west':
+                return intersectingPoint.intersections.sort(BY_DESCENDING_X_THEN_DESCENDING_Y);
+        }
+    }
+
+    /**
+     * Whether or not to draw a line jump on an intersection for the `currentLineSegment`.
+     * This should usually be inverse of `shouldDrawLineGapOnIntersection()`.
+     */
+    protected shouldDrawLineJumpOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
+        return Math.abs(currentLineSegment.slopeOrMax) < Math.abs(otherLineSegment.slopeOrMax);
+    }
+
+    /**
+     * Whether or not to draw a line gap on an intersection for the `currentLineSegment`.
+     * This should usually be inverse of `shouldDrawLineJumpOnIntersection()`.
+     */
+    protected shouldDrawLineGapOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
+        return !this.shouldDrawLineJumpOnIntersection(currentLineSegment, otherLineSegment);
+    }
+
+    protected getLineSegment(edge: SRoutableElement, intersection: Intersection, args?: IViewArgs, segments?: Point[]): PointToPointLine {
+        const route = segments ? segments : this.edgeRouterRegistry.route(edge, args);
+        const index = intersection.routable1 === edge.id ? intersection.segmentIndex1 : intersection.segmentIndex2;
+        return new PointToPointLine(route[index], route[index + 1]);
     }
 
     protected getOtherLineSegment(currentEdge: SEdge, intersection: Intersection, args?: IViewArgs): PointToPointLine | undefined {
@@ -159,12 +232,6 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return this.getLineSegment(otherEdge, intersection, args);
     }
 
-    protected getLineSegment(edge: SRoutableElement, intersection: Intersection, args?: IViewArgs, segments?: Point[]): PointToPointLine {
-        const route = segments ? segments : this.edgeRouterRegistry.route(edge, args);
-        const index = intersection.routable1 === edge.id ? intersection.segmentIndex1 : intersection.segmentIndex2;
-        return new PointToPointLine(route[index], route[index + 1]);
-    }
-
     protected createJumpPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
         const anchorBefore = Point.shiftTowards(intersectionPoint, lineSegment.p1, this.jumpOffsetBefore);
         const anchorAfter = Point.shiftTowards(intersectionPoint, lineSegment.p2, this.jumpOffsetAfter);
@@ -172,7 +239,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return ` L ${anchorBefore.x},${anchorBefore.y} A 1,1 0,0 ${rotation} ${anchorAfter.x},${anchorAfter.y}`;
     }
 
-    protected createSkipPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+    protected createGapPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
         let offsetBefore;
         let offsetAfter;
         if (intersectionPoint.y < lineSegment.p1.y) {
@@ -195,12 +262,14 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
  * In order to find intersections, `IntersectionFinder` needs to be configured as a `TYPES.IEdgeRoutePostprocessor`
  * so that that intersections are declared as `IntersectingRoutedPoint` in the computed routes.
  *
+ * This view only draws correct gaps for intersections among straight line segments and doesn't work with bezier curves.
+ *
  * @see IntersectionFinder
  * @see IntersectingRoutedPoint
  * @see EdgeRouterRegistry
  */
- @injectable()
- export class PolylineEdgeViewWithGapsOnIntersections extends JumpingPolylineEdgeView {
+@injectable()
+export class PolylineEdgeViewWithGapsOnIntersections extends JumpingPolylineEdgeView {
 
     protected skipOffsetBefore = 3;
     protected skipOffsetAfter = 3;
@@ -209,13 +278,13 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return "";
     }
 
-    protected createSkipPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+    protected createGapPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
         const anchorBefore = Point.shiftTowards(intersectionPoint, lineSegment.p1, this.skipOffsetBefore);
         const anchorAfter = Point.shiftTowards(intersectionPoint, lineSegment.p2, this.skipOffsetAfter);
         return ` L ${anchorBefore.x},${anchorBefore.y} M ${anchorAfter.x},${anchorAfter.y}`;
     }
 
- }
+}
 
 @injectable()
 export class BezierCurveEdgeView extends RoutableView {
@@ -372,7 +441,7 @@ export class SBezierCreateHandleView extends SRoutingHandleView {
                     const text = (handle.kind === "bezier-add") ? "+" : "-";
                     const node =
                         <g transform={translation} class-sprotty-routing-handle={true}
-                                class-selected={handle.selected} class-mouseover={handle.hoverFeedback}>
+                            class-selected={handle.selected} class-mouseover={handle.hoverFeedback}>
                             <circle r={this.getRadius()} />
                             <text x={textOffsetX} y={textOffsetY} attrs-text-align="middle"
                                 style-font-family="monospace" style-pointer-events="none" style-fill="white">{text}</text>
@@ -421,7 +490,7 @@ export class SBezierControlHandleView extends SRoutingHandleView {
                             </g>;
                     } else {
                         node = <circle class-sprotty-routing-handle={true} class-selected={handle.selected} class-mouseover={handle.hoverFeedback}
-                                cx={position.x} cy={position.y} r={this.getRadius()} />;
+                            cx={position.x} cy={position.y} r={this.getRadius()} />;
                     }
 
                     setAttr(node, 'data-kind', handle.kind);
