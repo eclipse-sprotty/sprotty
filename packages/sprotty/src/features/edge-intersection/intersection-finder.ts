@@ -89,8 +89,22 @@ export class IntersectionFinder implements IEdgeRoutePostprocessor {
      */
     find(routing: EdgeRouting): Intersection[] {
         const eventQueue = new TinyQueue<SweepEvent>(undefined, checkWhichEventIsLeft);
-        routing.routes.forEach((route, routeId) => addRoute(routeId, route, eventQueue));
+        routing.routes.forEach((route, routeId) => {
+            if (this.isSupportedRoute(route)) {
+                addRoute(routeId, route, eventQueue);
+            }
+        });
         return runSweep(eventQueue);
+    }
+
+    /**
+     * Specifies whether or not a specific route should be included in this intersection search or not.
+     *
+     * As this intersection finder only supports linear line segments, this method only returns `true`
+     * for routes that only contain routed points, which are either 'source', 'target' or 'linear'.
+     */
+    protected isSupportedRoute(route: RoutedPoint[]): boolean {
+        return route.find(point => point.kind !== 'source' && point.kind !== 'target' && point.kind !== 'linear') === undefined;
     }
 
     protected addToRouting(intersections: Intersection[], routing: EdgeRouting) {

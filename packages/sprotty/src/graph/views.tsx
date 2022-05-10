@@ -274,8 +274,12 @@ export class PolylineEdgeViewWithGapsOnIntersections extends JumpingPolylineEdge
     protected skipOffsetBefore = 3;
     protected skipOffsetAfter = 3;
 
-    protected createJumpPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
-        return "";
+    protected shouldDrawLineJumpOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
+        return false;
+    }
+
+    protected shouldDrawLineGapOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
+        return Math.abs(currentLineSegment.slopeOrMax) >= Math.abs(otherLineSegment.slopeOrMax);
     }
 
     protected createGapPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
