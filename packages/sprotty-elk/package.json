@@ -42,7 +42,7 @@
     "sprotty-protocol": "~0.11.0"
   },
   "optionalDependencies": {
-    "inversify": "^5.0.1"
+    "inversify": "^5.1.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

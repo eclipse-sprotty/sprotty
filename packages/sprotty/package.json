@@ -55,7 +55,7 @@
     "@vscode/codicons": "^0.0.25",
     "autocompleter": "^5.1.0",
     "file-saver": "^2.0.2",
-    "inversify": "^5.0.1",
+    "inversify": "^5.1.1",
     "snabbdom": "^3.0.3",
     "sprotty-protocol": "~0.11.0",
     "tinyqueue": "^2.0.3"
