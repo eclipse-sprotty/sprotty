@@ -83,7 +83,15 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
  */
 export function getProjectedBounds(model: Readonly<SChildElement & Projectable>): Bounds | undefined {
   if (model.projectedBounds){
-    return model.projectedBounds;
+    let bounds = model.projectedBounds;
+    let parent = model.parent;
+    if (isBoundsAware(parent)){
+        while (parent instanceof SChildElement) {
+        bounds = parent.localToParent(bounds);
+        parent = parent.parent;
+        }
+    }
+    return bounds;
   } else if (isBoundsAware(model)){
     let bounds = model.bounds;
     let parent = model.parent;
