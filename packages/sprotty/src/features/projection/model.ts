@@ -19,6 +19,7 @@ import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { SChildElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
+import { transformToParentBounds } from '../../base/model/smodel-utils';
 import { isBoundsAware } from '../bounds/model';
 
 /**
@@ -50,19 +51,19 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
     let result: ViewProjection[] | undefined;
     for (const child of parent.children) {
         if (isProjectable(child) && child.projectionCssClasses.length > 0) {
-          const projectedBounds = getProjectedBounds(child);
-          if (projectedBounds) {
-            const projection: ViewProjection = {
-                elementId: child.id,
-                projectedBounds,
-                cssClasses: child.projectionCssClasses
-            };
-            if (result) {
-                result.push(projection);
-            } else {
-                result = [projection];
+            const projectedBounds = getProjectedBounds(child);
+            if (projectedBounds) {
+                const projection: ViewProjection = {
+                    elementId: child.id,
+                    projectedBounds,
+                    cssClasses: child.projectionCssClasses
+                };
+                if (result) {
+                    result.push(projection);
+                } else {
+                    result = [projection];
+                }
             }
-          }
         }
         if (child.children.length > 0) {
             const childProj = getProjections(child);
@@ -82,26 +83,19 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
  * Compute the projected bounds of the given model element, that is the absolute position in the diagram.
  */
 export function getProjectedBounds(model: Readonly<SChildElement & Projectable>): Bounds | undefined {
-  if (model.projectedBounds){
-    let bounds = model.projectedBounds;
-    let parent = model.parent;
-    if (isBoundsAware(parent)){
-        while (parent instanceof SChildElement) {
-        bounds = parent.localToParent(bounds);
-        parent = parent.parent;
+    const parent = model.parent;
+    if (model.projectedBounds) {
+        let bounds = model.projectedBounds;
+        if (isBoundsAware(parent)) {
+            bounds = transformToParentBounds(parent, bounds);
         }
+        return bounds;
+    } else if (isBoundsAware(model)) {
+        let bounds = model.bounds;
+        bounds = transformToParentBounds(parent, bounds);
+        return bounds;
     }
-    return bounds;
-  } else if (isBoundsAware(model)){
-    let bounds = model.bounds;
-    let parent = model.parent;
-    while (parent instanceof SChildElement) {
-        bounds = parent.localToParent(bounds);
-        parent = parent.parent;
-    }
-    return bounds;
-  }
-  return undefined;
+    return undefined;
 }
 
 const MAX_COORD = 1_000_000_000;

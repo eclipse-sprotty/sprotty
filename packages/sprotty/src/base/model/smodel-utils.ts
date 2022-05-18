@@ -18,7 +18,7 @@ import { interfaces } from "inversify";
 import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../types";
-import { SChildElement, SModelElement, SModelRoot } from "./smodel";
+import { SChildElement, SModelElement, SModelRoot, SParentElement } from "./smodel";
 import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
 
 /**
@@ -164,4 +164,15 @@ export function containsSome(root: SModelRoot, element: SChildElement): boolean 
     const test = (el: SChildElement) => root.index.getById(el.id) !== undefined;
     const find = (elements: readonly SChildElement[]): boolean => elements.some(el => test(el) || find(el.children));
     return find([element]);
+}
+
+/**
+ * Transforms the local bounds all the way up to the last parent.
+ */
+export function transformToParentBounds(parent: SParentElement, bounds: Bounds) {
+    while (parent instanceof SChildElement) {
+        bounds = parent.localToParent(bounds);
+        parent = parent.parent;
+    }
+    return bounds;
 }
