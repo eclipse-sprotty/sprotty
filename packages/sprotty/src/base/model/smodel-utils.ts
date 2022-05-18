@@ -167,9 +167,9 @@ export function containsSome(root: SModelRoot, element: SChildElement): boolean 
 }
 
 /**
- * Transforms the local bounds all the way up to the last parent.
+ * Transforms the local bounds all the way up to the root.
  */
-export function transformToParentBounds(parent: SParentElement, bounds: Bounds) {
+export function  transformToRootBounds(parent: SParentElement, bounds: Bounds) {
     while (parent instanceof SChildElement) {
         bounds = parent.localToParent(bounds);
         parent = parent.parent;

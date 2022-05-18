@@ -19,12 +19,13 @@ import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { SChildElement, SModelRoot, SParentElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { transformToParentBounds } from '../../base/model/smodel-utils';
+import { transformToRootBounds } from '../../base/model/smodel-utils';
 import { isBoundsAware } from '../bounds/model';
 
 /**
  * Model elements implementing this interface can be displayed on a projection bar.
- * _Note:_ Model elements also have to be `BoundsAware` so their projections can be shown.
+ * _Note:_ If set, the projectedBounds property will be prefered over the model element bounds.
+ * Otherwise model elements also have to be `BoundsAware` so their projections can be shown.
  */
 export interface Projectable extends SModelExtension {
     projectionCssClasses: string[],
@@ -87,12 +88,12 @@ export function getProjectedBounds(model: Readonly<SChildElement & Projectable>)
     if (model.projectedBounds) {
         let bounds = model.projectedBounds;
         if (isBoundsAware(parent)) {
-            bounds = transformToParentBounds(parent, bounds);
+            bounds = transformToRootBounds(parent, bounds);
         }
         return bounds;
     } else if (isBoundsAware(model)) {
         let bounds = model.bounds;
-        bounds = transformToParentBounds(parent, bounds);
+        bounds = transformToRootBounds(parent, bounds);
         return bounds;
     }
     return undefined;
