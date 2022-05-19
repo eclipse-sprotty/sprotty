@@ -32,10 +32,8 @@ export class ContextMenuMouseListener extends MouseListener {
         super();
     }
 
-    mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
-        if (event.button === 2) {
-            this.showContextMenu(target, event);
-        }
+    contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        this.showContextMenu(target, event);
         return [];
     }
 

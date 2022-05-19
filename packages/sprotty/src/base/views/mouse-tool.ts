@@ -119,6 +119,11 @@ export class MouseTool implements IVNodePostprocessor {
         this.handleEvent('wheel', model, event);
     }
 
+    contextMenu(model: SModelRoot, event: MouseEvent) {
+        event.preventDefault();
+        this.handleEvent('contextMenu', model, event);
+    }
+
     doubleClick(model: SModelRoot, event: MouseEvent) {
         this.handleEvent('doubleClick', model, event);
     }
@@ -133,9 +138,7 @@ export class MouseTool implements IVNodePostprocessor {
             on(vnode, 'mouseup', this.mouseUp.bind(this, element));
             on(vnode, 'mousemove', this.mouseMove.bind(this, element));
             on(vnode, 'wheel', this.wheel.bind(this, element));
-            on(vnode, 'contextmenu', (event: Event) => {
-                event.preventDefault();
-            });
+            on(vnode, 'contextmenu', this.contextMenu.bind(this, element));
             on(vnode, 'dblclick', this.doubleClick.bind(this, element));
         }
         vnode = this.mouseListeners.reduce(
@@ -155,7 +158,7 @@ export class PopupMouseTool extends MouseTool {
     }
 }
 
-export type MouseEventKind = 'mouseOver' | 'mouseOut' | 'mouseEnter' | 'mouseLeave' | 'mouseDown' | 'mouseMove' | 'mouseUp' | 'wheel' | 'doubleClick';
+export type MouseEventKind = 'mouseOver' | 'mouseOut' | 'mouseEnter' | 'mouseLeave' | 'mouseDown' | 'mouseMove' | 'mouseUp' | 'wheel' | 'doubleClick' | 'contextMenu';
 
 @injectable()
 export class MouseListener {
@@ -193,6 +196,10 @@ export class MouseListener {
     }
 
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        return [];
+    }
+
+    contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
