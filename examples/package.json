@@ -1,13 +1,13 @@
 {
   "name": "sprotty-examples",
-  "version": "0.0.0",
+  "version": "0.12.0",
   "private": "true",
   "dependencies": {
     "core-js": "^3.19.1",
     "express": "^4.17.3",
     "reflect-metadata": "^0.1.13",
-    "sprotty": "0.11.1",
-    "sprotty-elk": "0.11.0"
+    "sprotty": "0.12.0",
+    "sprotty-elk": "0.12.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

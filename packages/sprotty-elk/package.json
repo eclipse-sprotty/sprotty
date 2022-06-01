@@ -1,6 +1,6 @@
 {
   "name": "sprotty-elk",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Integration of ELK graph layout algorithms in Sprotty",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "elkjs": "^0.7.1",
-    "sprotty-protocol": "~0.11.0"
+    "sprotty-protocol": "~0.12.0"
   },
   "optionalDependencies": {
     "inversify": "^5.1.1"
