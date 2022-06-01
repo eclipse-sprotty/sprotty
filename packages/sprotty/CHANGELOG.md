@@ -2,11 +2,17 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-elk](https://github.com/eclipse/sprotty/blob/master//packages/sprotty-elk/CHANGELOG.md).
 
-### v0.11.1 (Nov. 2020)
+### v0.12.0 (Jun. 2022)
+
+* Aligned dependency to `inversify` ([#292](https://github.com/eclipse/sprotty/pull/292/)): version constraint is now `^5.1.1` in all sprotty packages.
+
+Fixed issues: https://github.com/eclipse/sprotty/issues?q=milestone%3Av0.12.0+is%3Aclosed+label%3Asprotty
+
+### v0.11.1 (Nov. 2021)
 
 Fixed dependency to `sprotty-protocol`: version constraint is now `~0.11.0` (equivalent to `0.11.*`). The previous version pointed to the non-existing version `0.10.0`.
 
-### v0.11.0 (Nov. 2020)
+### v0.11.0 (Nov. 2021)
 
 This version introduces a dependency to the new package `sprotty-protocol`. Many definitions have been copied to the new package and the original definitions are marked as deprecated, so you need to update your imports to stay compatible with future versions.
 
