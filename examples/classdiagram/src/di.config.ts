@@ -14,14 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from "inversify";
+import { Container,inject,injectable,ContainerModule } from "inversify";
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, JumpingPolylineEdgeView,
     ConsoleLogger, LogLevel, loadDefaultModules, HtmlRootView, PreRenderedView, ExpandButtonView,
     SRoutingHandleView, PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel,
     SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
-    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
+    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView, IButtonHandler, Action
 } from 'sprotty';
 import edgeIntersectionModule from "sprotty/lib/features/edge-intersection/di.config";
 import { IconView, NodeView} from "./views";
@@ -48,6 +48,8 @@ export default (containerId: string) => {
         bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);
         bind(TYPES.MouseListener).to(BezierMouseListener);
 
+        bind("Foo").toConstantValue("Bar");
+        bind(TYPES.IButtonHandler).toConstructor(CustomButtonHandler);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:package', RectangularNode, NodeView);
@@ -69,7 +71,7 @@ export default (containerId: string) => {
         configureModelElement(context, 'edge:bezier', SEdge, BezierCurveEdgeView);
         configureModelElement(context, 'html', HtmlRoot, HtmlRootView);
         configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView);
-        configureModelElement(context, 'button:expand', SButton, ExpandButtonView);
+        configureModelElement(context, 'button:custom', SButton, ExpandButtonView);
         configureModelElement(context, 'routing-point', SRoutingHandle, SRoutingHandleView);
         configureModelElement(context, 'volatile-routing-point', SRoutingHandle, SRoutingHandleView);
         configureModelElement(context, 'bezier-create-routing-point', SRoutingHandle, SBezierCreateHandleView);
@@ -89,3 +91,19 @@ export default (containerId: string) => {
     container.load(classDiagramModule);
     return container;
 };
+
+
+
+@injectable()
+export class CustomButtonHandler implements IButtonHandler {
+    static TYPE = 'button:custom';
+
+    constructor( @inject("Foo") protected foo:string){
+
+    }
+
+    buttonPressed(button: SButton): Action[] {
+        console.log("Foo");
+        return []
+    }
+}

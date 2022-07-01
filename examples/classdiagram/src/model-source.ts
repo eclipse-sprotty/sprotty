@@ -182,7 +182,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         },
                         {
                             id: 'node0_expand',
-                            type: 'button:expand'
+                            type: 'button:custom'
                         }
                     ]
                 }
@@ -226,7 +226,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         },
                         {
                             id: 'node1_expand',
-                            type: 'button:expand'
+                            type: 'button:custom'
                         }
                     ]
                 }
@@ -270,7 +270,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         },
                         {
                             id: 'node2_expand',
-                            type: 'button:expand'
+                            type: 'button:custom'
                         }
                     ]
                 }
@@ -314,7 +314,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         },
                         {
                             id: 'node3_expand',
-                            type: 'button:expand'
+                            type: 'button:custom'
                         }
                     ]
                 }
