@@ -14,26 +14,46 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional } from 'inversify';
+import { injectable, interfaces, multiInject, optional } from 'inversify';
 import { Action } from 'sprotty-protocol/lib/actions';
 import { InstanceRegistry } from '../../utils/registry';
 import { TYPES } from '../../base/types';
 import { SButton } from './model';
+import { isInjectable } from '../../utils/inversify';
 
 export interface IButtonHandler {
     buttonPressed(button: SButton): Action[]
 }
 
-export interface IButtonHandlerFactory {
+export interface IButtonHandlerRegistration {
     TYPE: string
-    new(): IButtonHandler
+    factory: () => IButtonHandler
 }
 
 @injectable()
 export class ButtonHandlerRegistry extends InstanceRegistry<IButtonHandler> {
 
-    constructor(@multiInject(TYPES.IButtonHandler)@optional() buttonHandlerFactories: IButtonHandlerFactory[]) {
+    constructor(@multiInject(TYPES.IButtonHandlerRegistration)@optional() buttonHandlerFactories: IButtonHandlerRegistration[]) {
         super();
-        buttonHandlerFactories.forEach(factory => this.register(factory.TYPE, new factory()));
+        buttonHandlerFactories.forEach(factory => this.register(factory.TYPE, factory.factory()));
     }
+}
+
+/**
+ * Utility function to register a button handler for an button type.
+ */
+export function configureButtonHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+    type: string, constr: interfaces.ServiceIdentifier<IButtonHandler>): void {
+    if (typeof constr === 'function') {
+        if (!isInjectable(constr)) {
+            throw new Error(`Button handlers should be @injectable: ${constr.name}`);
+        }
+        if (!context.isBound(constr)) {
+            context.bind(constr).toSelf();
+        }
+    }
+    context.bind(TYPES.IButtonHandlerRegistration).toDynamicValue(ctx => ({
+        TYPE: type,
+        factory: () => ctx.container.get(constr)
+    }));
 }

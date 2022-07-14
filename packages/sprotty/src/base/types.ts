@@ -24,7 +24,7 @@ export const TYPES = {
     ActionHandlerRegistryProvider: Symbol('ActionHandlerRegistryProvider'),
     IAnchorComputer: Symbol('IAnchor'),
     AnimationFrameSyncer: Symbol('AnimationFrameSyncer'),
-    IButtonHandler: Symbol('IButtonHandler'),
+    IButtonHandlerRegistration: Symbol('IButtonHandlerRegistration'),
     ICommandPaletteActionProvider: Symbol('ICommandPaletteActionProvider'),
     ICommandPaletteActionProviderRegistry: Symbol('ICommandPaletteActionProviderRegistry'),
     CommandRegistration: Symbol('CommandRegistration'),

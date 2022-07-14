@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
+import { configureButtonHandler } from "../button/button-handler";
 import { ExpandButtonHandler } from "./expand";
 
-const expandModule = new ContainerModule(bind => {
-    bind(TYPES.IButtonHandler).toConstructor(ExpandButtonHandler);
+const expandModule = new ContainerModule((bind, _unbind, isBound) => {
+    configureButtonHandler({bind, isBound}, ExpandButtonHandler.TYPE, ExpandButtonHandler);
 });
 
 export default expandModule;
