@@ -21,7 +21,7 @@ import { injectable } from 'inversify';
 import { VNode, VNodeStyle, h } from 'snabbdom';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { IView, IViewArgs, RenderingContext } from '../../base/views/view';
-import { setClass } from '../../base/views/vnode-utils';
+import { setAttr, setClass } from '../../base/views/vnode-utils';
 import { ViewportRootElement } from '../viewport/viewport-root';
 import { getModelBounds, getProjections, ViewProjection } from './model';
 
@@ -32,10 +32,12 @@ import { getModelBounds, getProjections, ViewProjection } from './model';
 export class ProjectedViewportView implements IView {
 
     render(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
-        return <div class-sprotty-root={true}>
+        const rootNode: VNode = <div class-sprotty-root={true}>
             {this.renderSvg(model, context, args)}
             {this.renderProjections(model, context, args)}
         </div>;
+        setAttr(rootNode, 'tabindex', 0); // make root div focus-able
+        return rootNode;
     }
 
     protected renderSvg(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {

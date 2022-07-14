@@ -80,9 +80,9 @@ export class MouseTool implements IVNodePostprocessor {
     }
 
     protected focusOnMouseEvent<K extends keyof MouseListener>(methodName: K, model: SModelRoot) {
-        if (document) {
+        if (document && methodName === 'mouseDown') {
             const domElement = document.getElementById(this.domHelper.createUniqueDOMElementId(model));
-            if (methodName === 'mouseDown' && domElement !== null && typeof domElement.focus === 'function')
+            if (domElement !== null && typeof domElement.focus === 'function')
                 domElement.focus();
         }
     }
