@@ -25,6 +25,12 @@ export interface IButtonHandler {
     buttonPressed(button: SButton): Action[]
 }
 
+/** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */
+export interface IButtonHandlerFactory {
+    TYPE: string
+    new(): IButtonHandler
+}
+
 export interface IButtonHandlerRegistration {
     TYPE: string
     factory: () => IButtonHandler
@@ -33,9 +39,14 @@ export interface IButtonHandlerRegistration {
 @injectable()
 export class ButtonHandlerRegistry extends InstanceRegistry<IButtonHandler> {
 
-    constructor(@multiInject(TYPES.IButtonHandlerRegistration)@optional() buttonHandlerFactories: IButtonHandlerRegistration[]) {
+    constructor(
+        @multiInject(TYPES.IButtonHandlerRegistration)@optional() buttonHandlerRegistrations: IButtonHandlerRegistration[],
+        // deprecated, but keep support for now
+        @multiInject(TYPES.IButtonHandler)@optional() buttonHandlerFactories: IButtonHandlerFactory[]) {
         super();
-        buttonHandlerFactories.forEach(factory => this.register(factory.TYPE, factory.factory()));
+        buttonHandlerRegistrations.forEach(factory => this.register(factory.TYPE, factory.factory()));
+        // deprecated, but keep support for now
+        buttonHandlerFactories.forEach(factory => this.register(factory.TYPE, new factory()));
     }
 }
 
