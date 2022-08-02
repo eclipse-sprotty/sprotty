@@ -14,26 +14,57 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional } from 'inversify';
+import { injectable, interfaces, multiInject, optional } from 'inversify';
 import { Action } from 'sprotty-protocol/lib/actions';
 import { InstanceRegistry } from '../../utils/registry';
 import { TYPES } from '../../base/types';
 import { SButton } from './model';
+import { isInjectable } from '../../utils/inversify';
 
 export interface IButtonHandler {
     buttonPressed(button: SButton): Action[]
 }
 
+/** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */
 export interface IButtonHandlerFactory {
     TYPE: string
     new(): IButtonHandler
 }
 
+export interface IButtonHandlerRegistration {
+    TYPE: string
+    factory: () => IButtonHandler
+}
+
 @injectable()
 export class ButtonHandlerRegistry extends InstanceRegistry<IButtonHandler> {
 
-    constructor(@multiInject(TYPES.IButtonHandler)@optional() buttonHandlerFactories: IButtonHandlerFactory[]) {
+    constructor(
+        @multiInject(TYPES.IButtonHandlerRegistration)@optional() buttonHandlerRegistrations: IButtonHandlerRegistration[],
+        // deprecated, but keep support for now
+        @multiInject(TYPES.IButtonHandler)@optional() buttonHandlerFactories: IButtonHandlerFactory[]) {
         super();
+        buttonHandlerRegistrations.forEach(factory => this.register(factory.TYPE, factory.factory()));
+        // deprecated, but keep support for now
         buttonHandlerFactories.forEach(factory => this.register(factory.TYPE, new factory()));
     }
+}
+
+/**
+ * Utility function to register a button handler for an button type.
+ */
+export function configureButtonHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+    type: string, constr: interfaces.ServiceIdentifier<IButtonHandler>): void {
+    if (typeof constr === 'function') {
+        if (!isInjectable(constr)) {
+            throw new Error(`Button handlers should be @injectable: ${constr.name}`);
+        }
+        if (!context.isBound(constr)) {
+            context.bind(constr).toSelf();
+        }
+    }
+    context.bind(TYPES.IButtonHandlerRegistration).toDynamicValue(ctx => ({
+        TYPE: type,
+        factory: () => ctx.container.get(constr)
+    }));
 }
