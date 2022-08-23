@@ -21,7 +21,7 @@ import {
     SRoutingHandleView, PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel,
     SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
-    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
+    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView, ExpandButtonHandler, IButtonHandler
 } from 'sprotty';
 import edgeIntersectionModule from "sprotty/lib/features/edge-intersection/di.config";
 import { IconView, NodeView} from "./views";
@@ -30,7 +30,8 @@ import { ClassDiagramModelSource } from './model-source';
 import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
 import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
 import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
-
+import {injectable} from "inversify";
+import { Action } from "sprotty-protocol";
 export default (containerId: string) => {
     require("sprotty/css/sprotty.css");
     require("sprotty/css/command-palette.css");
@@ -81,6 +82,8 @@ export default (containerId: string) => {
             needsClientLayout: true,
             baseDiv: containerId
         });
+
+        rebind(ExpandButtonHandler).to(CustomExpandButtonHandler).inSingletonScope();
     });
 
     const container = new Container();
@@ -89,3 +92,14 @@ export default (containerId: string) => {
     container.load(classDiagramModule);
     return container;
 };
+
+@injectable()
+export class CustomExpandButtonHandler implements IButtonHandler{
+    static TYPE = 'button:expand';
+
+    buttonPressed(button: SButton): Action[] {
+        console.log("I'm the custom expand handler");
+        return [];
+    }
+
+}
