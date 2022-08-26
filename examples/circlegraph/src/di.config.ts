@@ -14,14 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from "inversify";
+import { Container, ContainerModule, injectable, inject } from "inversify";
 import {
     TYPES, configureViewerOptions, SGraphView, ConsoleLogger, LogLevel, loadDefaultModules,
-    LocalModelSource, CircularNode, configureModelElement, SGraph, SEdge, selectFeature, PolylineEdgeView
+    LocalModelSource, CircularNode, configureModelElement, SGraph, SEdge, selectFeature, PolylineEdgeView, MouseListener, SModelElement
 } from 'sprotty';
+import { Action, Point } from "sprotty-protocol";
 import { CircleNodeView } from "./views";
 
-export default () => {
+const NodeCreator = Symbol('NodeCreator');
+
+export default (nodeCreator: (point?: Point)=>void) => {
     require("sprotty/css/sprotty.css");
     require("../css/diagram.css");
 
@@ -29,7 +32,8 @@ export default () => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-
+        bind(NodeCreator).toConstantValue(nodeCreator);
+        bind(TYPES.MouseListener).to(DroppableMouseListener);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
@@ -46,3 +50,20 @@ export default () => {
     container.load(circlegraphModule);
     return container;
 };
+
+@injectable()
+class DroppableMouseListener extends MouseListener {
+
+    @inject(NodeCreator) nodeCreator: (point?: Point)=>void;
+
+    dragOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        event.preventDefault();
+        return [];
+    }
+
+    drop(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        this.nodeCreator({ x: event.offsetX, y:event.offsetY })
+        return [];
+    }
+}
+

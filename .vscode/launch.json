@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
         {
-            "name": "Current Test File",
+            "name": "Mocha: Test Current File",
             "type": "node",
             "request": "launch",
             "protocol": "inspector",
@@ -14,6 +14,30 @@
                 "--config",
                 "${workspaceRoot}/configs/.mocharc.json"
             ],
+            "env": {
+                "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"
+            },
+            "sourceMaps": true,
+            "smartStep": true,
+            "internalConsoleOptions": "openOnSessionStart",
+            "outputCapture": "std"
+        },
+        {
+            "name": "Mocha: Test All",
+            "type": "node",
+            "request": "launch",
+            "protocol": "inspector",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+            "args": [
+                "--recursive",
+                "--no-timeouts",
+                "--exclude",
+                "**/views/view.spec.ts",
+                "--config",
+                "${workspaceRoot}/configs/.mocharc.json"
+            ],
+            "console": "integratedTerminal",
             "env": {
                 "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"
             },
