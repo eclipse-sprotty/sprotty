@@ -39,7 +39,7 @@ import { SEdge, SGraph, SNode, SPortSchema, SEdgeSchema, SNodeSchema } from "./s
 import graphModule from './di.config';
 import routingModule from '../features/routing/di.config';
 
-const toHTML = require('snabbdom-to-html');
+import toHTML from 'snabbdom-to-html';
 
 describe('graph views', () => {
     class CircleNodeView extends CircularNodeView {

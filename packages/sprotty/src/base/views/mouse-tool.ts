@@ -140,6 +140,8 @@ export class MouseTool implements IVNodePostprocessor {
             on(vnode, 'wheel', this.wheel.bind(this, element));
             on(vnode, 'contextmenu', this.contextMenu.bind(this, element));
             on(vnode, 'dblclick', this.doubleClick.bind(this, element));
+            on(vnode, 'dragover', (event: MouseEvent) => this.handleEvent('dragOver', element, event));
+            on(vnode, 'drop', (event: MouseEvent) => this.handleEvent('drop', element, event));
         }
         vnode = this.mouseListeners.reduce(
             (n: VNode, listener: MouseListener) => listener.decorate(n, element),
@@ -158,7 +160,9 @@ export class PopupMouseTool extends MouseTool {
     }
 }
 
-export type MouseEventKind = 'mouseOver' | 'mouseOut' | 'mouseEnter' | 'mouseLeave' | 'mouseDown' | 'mouseMove' | 'mouseUp' | 'wheel' | 'doubleClick' | 'contextMenu';
+export type MouseEventKind =
+    'mouseOver' | 'mouseOut' | 'mouseEnter' | 'mouseLeave' | 'mouseDown' | 'mouseMove' | 'mouseUp'
+    | 'wheel' | 'doubleClick' | 'contextMenu' | 'dragOver' | 'drop';
 
 @injectable()
 export class MouseListener {
@@ -200,6 +204,14 @@ export class MouseListener {
     }
 
     contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        return [];
+    }
+
+    dragOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        return [];
+    }
+
+    drop(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 

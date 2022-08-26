@@ -17,14 +17,14 @@
 import {
     TYPES, IActionDispatcher, ElementMove, MoveAction, LocalModelSource, getBasicType
 } from 'sprotty';
-import { Bounds, Point, SEdge, SelectAction, SGraph, SModelElement, SNode } from 'sprotty-protocol';
+import { Bounds, Point, SEdge, SelectAction, SGraph, SNode } from 'sprotty-protocol';
 import createContainer from "./di.config";
 
 const NODE_SIZE = 60;
 
 export default async function runCircleGraph() {
     let count = 2;
-    function addNode(bounds: Bounds): SModelElement[] {
+    function addNode(bounds: Bounds): [SNode, SEdge] {
         const newNode: SNode = {
             id: 'node' + count,
             type: 'node:circle',
@@ -61,7 +61,9 @@ export default async function runCircleGraph() {
         };
     }
 
-    const container = createContainer();
+    const container = createContainer((point: Point) => {
+        createNode(point);
+    });
     const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
 
@@ -78,13 +80,26 @@ export default async function runCircleGraph() {
     // Run
     modelSource.setModel(graph);
 
-    // Button features
-    document.getElementById('addNode')!.addEventListener('click', async () => {
+    async function createNode(point?: Point) {
         const viewport = await modelSource.getViewport();
         const newElements = addNode(getVisibleBounds(viewport));
+        if(point) {
+            const adjust = (offset:number) => {
+                return (offset / viewport.zoom) - (NODE_SIZE / 2);
+            }
+            newElements[0].position = {
+                x: viewport.scroll.x + adjust(point.x),
+                y: viewport.scroll.y + adjust(point.y)
+            };
+        }
         modelSource.addElements(newElements);
         dispatcher.dispatch(SelectAction.create({ selectedElementsIDs: newElements.map(e => e.id) }));
         focusGraph();
+    }
+
+    // Button features
+    document.getElementById('addNode')!.addEventListener('click', async () => {
+        createNode()
     });
 
     document.getElementById('scrambleAll')!.addEventListener('click', async () => {

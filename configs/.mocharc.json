@@ -6,5 +6,6 @@
     "extension": ["ts", "tsx"],
     "timeout": 10000,
     "reporter": "spec",
-    "colors": true
+    "colors": true,
+    "spec": ["**/*spec.ts", "**/*spec.tsx"]
 }
