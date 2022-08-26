@@ -19,7 +19,8 @@ import { TYPES } from "../../base/types";
 import { UndoRedoKeyListener } from "./undo-redo";
 
 const undoRedoModule = new ContainerModule(bind => {
-    bind(TYPES.KeyListener).to(UndoRedoKeyListener);
+    bind(UndoRedoKeyListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(UndoRedoKeyListener);
 });
 
 export default undoRedoModule;

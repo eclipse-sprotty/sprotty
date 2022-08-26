@@ -46,7 +46,8 @@ export default (containerId: string) => {
         bind(TYPES.ISnapper).to(CenterGridSnapper);
         bind(TYPES.IEditLabelValidator).to(ClassDiagramLabelValidator);
         bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);
-        bind(TYPES.MouseListener).to(BezierMouseListener);
+        bind(BezierMouseListener).toSelf().inSingletonScope();
+        bind(TYPES.MouseListener).toService(BezierMouseListener);
 
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);

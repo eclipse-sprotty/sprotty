@@ -27,9 +27,12 @@ const viewportModule = new ContainerModule((bind , _unbind, isBound) => {
     configureCommand({ bind, isBound }, FitToScreenCommand);
     configureCommand({ bind, isBound }, SetViewportCommand);
     configureCommand({ bind, isBound }, GetViewportCommand);
-    bind(TYPES.KeyListener).to(CenterKeyboardListener);
-    bind(TYPES.MouseListener).to(ScrollMouseListener);
-    bind(TYPES.MouseListener).to(ZoomMouseListener);
+    bind(CenterKeyboardListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(CenterKeyboardListener);
+    bind(ScrollMouseListener).toSelf().inSingletonScope();
+    bind(ZoomMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(ScrollMouseListener);
+    bind(TYPES.MouseListener).toService(ZoomMouseListener);
 });
 
 export default viewportModule;

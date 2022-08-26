@@ -160,7 +160,8 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
 
     // Tool manager initialization ------------------------------------
     bind(TYPES.IToolManager).to(ToolManager).inSingletonScope();
-    bind(TYPES.KeyListener).to(DefaultToolsEnablingKeyListener);
+    bind(DefaultToolsEnablingKeyListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(DefaultToolsEnablingKeyListener);
     bind(ToolManagerActionHandler).toSelf().inSingletonScope();
     configureActionHandler(context, EnableDefaultToolsAction.KIND, ToolManagerActionHandler);
     configureActionHandler(context, EnableToolsAction.KIND, ToolManagerActionHandler);
