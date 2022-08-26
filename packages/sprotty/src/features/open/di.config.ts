@@ -19,7 +19,8 @@ import { TYPES } from "../../base/types";
 import { OpenMouseListener } from "./open";
 
 const openModule = new ContainerModule(bind => {
-    bind(TYPES.MouseListener).to(OpenMouseListener);
+    bind(OpenMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(OpenMouseListener);
 });
 
 export default openModule;

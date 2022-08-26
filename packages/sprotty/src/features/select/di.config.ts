@@ -23,8 +23,10 @@ const selectModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SelectCommand);
     configureCommand({ bind, isBound }, SelectAllCommand);
     configureCommand({ bind, isBound }, GetSelectionCommand);
-    bind(TYPES.KeyListener).to(SelectKeyboardListener);
-    bind(TYPES.MouseListener).to(SelectMouseListener);
+    bind(SelectKeyboardListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(SelectKeyboardListener);
+    bind(SelectMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(SelectMouseListener);
 });
 
 export default selectModule;

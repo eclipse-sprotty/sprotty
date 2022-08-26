@@ -29,9 +29,12 @@ import { MoveCommand } from "../move/move";
 
 const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.PopupVNodePostprocessor).to(PopupPositionUpdater).inSingletonScope();
-    bind(TYPES.MouseListener).to(HoverMouseListener);
-    bind(TYPES.PopupMouseListener).to(PopupHoverMouseListener);
-    bind(TYPES.KeyListener).to(HoverKeyListener);
+    bind(HoverMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(HoverMouseListener);
+    bind(PopupHoverMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.PopupMouseListener).toService(PopupHoverMouseListener);
+    bind(HoverKeyListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(HoverKeyListener);
     bind<HoverState>(TYPES.HoverState).toConstantValue({
         mouseOverTimer: undefined,
         mouseOutTimer: undefined,

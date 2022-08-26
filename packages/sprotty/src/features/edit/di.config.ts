@@ -36,8 +36,10 @@ export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
 });
 
 export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.MouseListener).to(EditLabelMouseListener);
-    bind(TYPES.KeyListener).to(EditLabelKeyListener);
+    bind(EditLabelMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(EditLabelMouseListener);
+    bind(EditLabelKeyListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(EditLabelKeyListener);
     configureCommand({ bind, isBound }, ApplyLabelEditCommand);
 });
 

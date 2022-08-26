@@ -22,7 +22,8 @@ import { CommandPalette, CommandPaletteKeyListener } from "./command-palette";
 const commandPaletteModule = new ContainerModule((bind) => {
     bind(CommandPalette).toSelf().inSingletonScope();
     bind(TYPES.IUIExtension).toService(CommandPalette);
-    bind(TYPES.KeyListener).to(CommandPaletteKeyListener);
+    bind(CommandPaletteKeyListener).toSelf().inSingletonScope();
+    bind(TYPES.KeyListener).toService(CommandPaletteKeyListener);
     bind(CommandPaletteActionProviderRegistry).toSelf().inSingletonScope();
     bind(TYPES.ICommandPaletteActionProviderRegistry).toService(CommandPaletteActionProviderRegistry);
 });

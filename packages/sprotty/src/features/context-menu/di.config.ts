@@ -32,7 +32,8 @@ const contextMenuModule = new ContainerModule(bind => {
             });
         };
     });
-    bind(TYPES.MouseListener).to(ContextMenuMouseListener);
+    bind(ContextMenuMouseListener).toSelf().inSingletonScope();
+    bind(TYPES.MouseListener).toService(ContextMenuMouseListener);
     bind(TYPES.IContextMenuProviderRegistry).to(ContextMenuProviderRegistry);
 });
 
