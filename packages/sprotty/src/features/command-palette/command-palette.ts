@@ -61,7 +61,7 @@ export class CommandPalette extends AbstractUIExtension {
     public id() { return CommandPalette.ID; }
     public containerClass() { return "command-palette"; }
 
-    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+    override show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         super.show(root, ...contextElementIds);
         this.paletteIndex = 0;
         this.contextActions = undefined;
@@ -93,7 +93,7 @@ export class CommandPalette extends AbstractUIExtension {
         this.paletteIndex++;
     }
 
-    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...selectedElementIds: string[]) {
+    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...selectedElementIds: string[]) {
         let x = this.xOffset;
         let y = this.yOffset;
         const selectedElements = toArray(root.index.all().filter(e => isSelectable(e) && e.selected));
@@ -212,7 +212,7 @@ export class CommandPalette extends AbstractUIExtension {
         }
     }
 
-    hide() {
+    override hide() {
         super.hide();
         if (this.autoCompleteResult) {
             this.autoCompleteResult.destroy();
@@ -240,7 +240,7 @@ function espaceForRegExp(value: string): string {
 }
 
 export class CommandPaletteKeyListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
             return [SetUIExtensionVisibilityAction.create({ extensionId: CommandPalette.ID, visible: false, contextElementsId: [] })];
         } else if (CommandPalette.isInvokePaletteKey(event)) {

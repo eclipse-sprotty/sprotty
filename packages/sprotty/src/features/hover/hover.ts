@@ -161,12 +161,12 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
     @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
     @inject(TYPES.HoverState) protected state: HoverState;
 
-    mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.mouseIsDown = true;
         return [];
     }
 
-    mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.mouseIsDown = false;
         return [];
     }
@@ -202,7 +202,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 
     protected lastHoverFeedbackElementId?: string;
 
-    @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
+    @inject(TYPES.ViewerOptions) protected override options: ViewerOptions;
 
     protected computePopupBounds(target: SModelElement, mousePosition: Point): Bounds {
         // Default position: below the mouse cursor
@@ -250,7 +250,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
         });
     }
 
-    mouseOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
         if (!this.mouseIsDown) {
             const popupTarget = findParent(target, hasPopupFeature);
@@ -278,7 +278,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
         return result;
     }
 
-    mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
         if (!this.mouseIsDown) {
             const elementUnderMouse = this.getElementFromEventPosition(event);
@@ -314,7 +314,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
             : false;
     }
 
-    mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: (Action | Promise<Action>)[] = [];
 
         if (!this.mouseIsDown) {
@@ -341,11 +341,11 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 @injectable()
 export class PopupHoverMouseListener extends AbstractHoverMouseListener {
 
-    mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         return [this.startMouseOutTimer()];
     }
 
-    mouseOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.stopMouseOutTimer();
         this.stopMouseOverTimer();
         return [];
@@ -353,7 +353,7 @@ export class PopupHoverMouseListener extends AbstractHoverMouseListener {
 }
 
 export class HoverKeyListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
             return [new SetPopupModelAction({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })];
         }

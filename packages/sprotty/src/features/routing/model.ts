@@ -156,7 +156,7 @@ export class SRoutingHandle extends SChildElement implements Selectable, Hoverab
      * SRoutingHandles are created using the constructor, so we hard-wire the
      * default features
      */
-    hasFeature(feature: symbol): boolean {
+    override hasFeature(feature: symbol): boolean {
         return SRoutingHandle.DEFAULT_FEATURES.indexOf(feature) !== -1;
     }
 }
@@ -165,7 +165,7 @@ export class SDanglingAnchor extends SConnectableElement {
     static readonly DEFAULT_FEATURES = [deletableFeature];
 
     original?: SModelElement;
-    type = 'dangling-anchor';
+    override type = 'dangling-anchor';
 
     constructor() {
         super();

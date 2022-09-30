@@ -31,13 +31,13 @@ export class ClassDiagramModelSource extends LocalModelSource {
         this.currentRoot = this.initializeModel();
     }
 
-    initialize(registry: ActionHandlerRegistry): void {
+    override initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
         registry.register(CollapseExpandAction.KIND, this);
         registry.register(CollapseExpandAllAction.KIND, this);
     }
 
-    handle(action: Action) {
+    override handle(action: Action) {
         switch (action.kind) {
             case CollapseExpandAction.KIND:
                 this.handleCollapseExpandAction(action as CollapseExpandAction);

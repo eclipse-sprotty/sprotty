@@ -121,7 +121,7 @@ export interface EditLabelValidationResult {
 export type Severity = 'ok' | 'warning' | 'error';
 
 export class EditLabelMouseListener extends MouseListener {
-    doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const editableLabel = getEditableLabel(target);
         if (editableLabel) {
             return [EditLabelAction.create(editableLabel.id)];
@@ -131,7 +131,7 @@ export class EditLabelMouseListener extends MouseListener {
 }
 
 export class EditLabelKeyListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'F2')) {
             const editableLabels = toArray(element.index.all()
                 .filter(e => isSelectable(e) && e.selected)).map(getEditableLabel)

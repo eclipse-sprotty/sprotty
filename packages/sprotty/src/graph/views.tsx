@@ -43,11 +43,11 @@ import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.
  */
 @injectable()
-export class SGraphView<IRenderingArgs> implements IView {
+export class SGraphView implements IView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(model: Readonly<SGraph>, context: RenderingContext, args?: IRenderingArgs): VNode {
+    render(model: Readonly<SGraph>, context: RenderingContext): VNode {
         const edgeRouting = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg class-sprotty-graph={true}>
@@ -125,7 +125,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     protected skipOffsetBefore = 3;
     protected skipOffsetAfter = 2;
 
-    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
+    protected override renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
         let path = '';
         for (let i = 0; i < segments.length; i++) {
             const p = segments[i];
@@ -271,18 +271,18 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
 @injectable()
 export class PolylineEdgeViewWithGapsOnIntersections extends JumpingPolylineEdgeView {
 
-    protected skipOffsetBefore = 3;
-    protected skipOffsetAfter = 3;
+    protected override skipOffsetBefore = 3;
+    protected override skipOffsetAfter = 3;
 
-    protected shouldDrawLineJumpOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
+    protected override shouldDrawLineJumpOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
         return false;
     }
 
-    protected shouldDrawLineGapOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
+    protected override shouldDrawLineGapOnIntersection(currentLineSegment: PointToPointLine, otherLineSegment: PointToPointLine) {
         return Math.abs(currentLineSegment.slopeOrMax) >= Math.abs(otherLineSegment.slopeOrMax);
     }
 
-    protected createGapPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
+    protected override createGapPath(intersectionPoint: Point, lineSegment: PointToPointLine): string {
         const anchorBefore = Point.shiftTowards(intersectionPoint, lineSegment.p1, this.skipOffsetBefore);
         const anchorAfter = Point.shiftTowards(intersectionPoint, lineSegment.p2, this.skipOffsetAfter);
         return ` L ${anchorBefore.x},${anchorBefore.y} M ${anchorAfter.x},${anchorAfter.y}`;
@@ -431,7 +431,7 @@ export class SCompartmentView implements IView {
 @injectable()
 export class SBezierCreateHandleView extends SRoutingHandleView {
 
-    render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+    override render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
         if (args) {
             const theRoute = args.route;
             if (theRoute && handle.parent instanceof SRoutableElement) {
@@ -463,7 +463,7 @@ export class SBezierCreateHandleView extends SRoutingHandleView {
 @injectable()
 export class SBezierControlHandleView extends SRoutingHandleView {
 
-    render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+    override render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
         if (args) {
             const theRoute = args.route;
             if (theRoute && handle.parent instanceof SRoutableElement) {

@@ -172,7 +172,7 @@ export class EditLabelUI extends AbstractUIExtension {
         }
     }
 
-    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+    override show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         if (!hasEditableLabel(contextElementIds, root) || this.isActive) {
             return;
         }
@@ -180,7 +180,7 @@ export class EditLabelUI extends AbstractUIExtension {
         this.isActive = true;
     }
 
-    hide(): void {
+    override hide(): void {
         this.editControl.style.visibility = 'hidden';
         super.hide();
         this.clearValidationResult();
@@ -192,7 +192,7 @@ export class EditLabelUI extends AbstractUIExtension {
         }
     }
 
-    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
         this.label = getEditableLabels(contextElementIds, root)[0];
         this.previousLabelContent = this.label.text;
         this.setPosition(containerElement);

@@ -57,6 +57,6 @@ export function hasOwnProperty<K extends PropertyKey, T>(arg: unknown, key: K | 
     return true;
 }
 
-export function safeAssign<T>(target: T, partial: Partial<T>): T {
+export function safeAssign<T extends {}>(target: T, partial: Partial<T>): T {
     return Object.assign(target, partial);
 }

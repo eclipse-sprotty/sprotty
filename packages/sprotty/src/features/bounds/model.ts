@@ -196,7 +196,7 @@ export abstract class SShapeElement extends SChildElement implements BoundsAware
         };
     }
 
-    localToParent(point: Point | Bounds): Bounds {
+    override localToParent(point: Point | Bounds): Bounds {
         const result = {
             x: point.x + this.position.x,
             y: point.y + this.position.y,
@@ -210,7 +210,7 @@ export abstract class SShapeElement extends SChildElement implements BoundsAware
         return result;
     }
 
-    parentToLocal(point: Point | Bounds): Bounds {
+    override parentToLocal(point: Point | Bounds): Bounds {
         const result = {
             x: point.x - this.position.x,
             y: point.y - this.position.y,

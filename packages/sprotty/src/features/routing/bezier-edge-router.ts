@@ -153,7 +153,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         return result;
     }
 
-    applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
+    override applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
         moves.forEach(move => {
             const handle = move.handle;
             let orgPosition = { x: 0, y: 0 };
@@ -317,7 +317,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
  */
 export class BezierMouseListener extends MouseListener {
 
-    mouseDown(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseDown(target: SModelElement, event: MouseEvent): Action[] {
         const result = [];
         if (target instanceof SRoutingHandle && (target.kind === 'bezier-add' || target.kind === 'bezier-remove')) {
             if (target.type === 'bezier-create-routing-point') {

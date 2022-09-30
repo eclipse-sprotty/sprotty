@@ -73,9 +73,9 @@ export abstract class Animation {
 export class CompoundAnimation extends Animation {
 
     constructor(protected model: SModelRoot,
-                protected context: CommandExecutionContext,
+                protected override context: CommandExecutionContext,
                 public components: Animation[] = [],
-                protected ease: (x: number) => number = easeInOut) {
+                protected override ease: (x: number) => number = easeInOut) {
         super(context, ease);
     }
 

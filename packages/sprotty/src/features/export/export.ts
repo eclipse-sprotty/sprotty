@@ -31,7 +31,7 @@ import { TYPES } from '../../base/types';
 
 @injectable()
 export class ExportSvgKeyListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyE', 'ctrlCmd', 'shift'))
             return [ RequestExportSvgAction.create() ];
         else

@@ -175,7 +175,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             };
     }
 
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
+    override cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
         if (this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors))
@@ -296,7 +296,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         }
     }
 
-    protected calculateDefaultCorners(edge: SRoutableElement, sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors, options: ManhattanRouterOptions): Point[] {
+    protected override calculateDefaultCorners(edge: SRoutableElement, sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors, options: ManhattanRouterOptions): Point[] {
         const selfEdge = super.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
         if (selfEdge.length > 0)
             return selfEdge;

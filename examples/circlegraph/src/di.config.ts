@@ -56,12 +56,12 @@ class DroppableMouseListener extends MouseListener {
 
     @inject(NodeCreator) nodeCreator: (point?: Point)=>void;
 
-    dragOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override dragOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         event.preventDefault();
         return [];
     }
 
-    drop(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override drop(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.nodeCreator({ x: event.offsetX, y:event.offsetY })
         return [];
     }

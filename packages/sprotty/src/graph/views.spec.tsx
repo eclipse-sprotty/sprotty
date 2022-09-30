@@ -43,13 +43,13 @@ import toHTML from 'snabbdom-to-html';
 
 describe('graph views', () => {
     class CircleNodeView extends CircularNodeView {
-        render(node: SNode, renderContext: RenderingContext): VNode {
+        override render(node: SNode, renderContext: RenderingContext): VNode {
             const radius = this.getRadius(node);
             return <g>
                     <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius} />
                 </g>;
         }
-        protected getRadius(node: SNode) {
+        protected override getRadius(node: SNode) {
             return 40;
         }
     }

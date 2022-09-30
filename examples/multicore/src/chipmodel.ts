@@ -28,13 +28,13 @@ export interface ProcessorSchema extends SModelRoot {
 }
 
 export class Processor extends ViewportRootElement implements BoundsAware {
-    static readonly DEFAULT_FEATURES = [...ViewportRootElement.DEFAULT_FEATURES, boundsFeature];
+    static override readonly DEFAULT_FEATURES = [...ViewportRootElement.DEFAULT_FEATURES, boundsFeature];
 
     rows: number = 0;
     columns: number = 0;
     layoutOptions: JsonMap;
 
-    get bounds(): Bounds {
+    override get bounds(): Bounds {
         return {
             x: -3 * CORE_DISTANCE,
             y: -3 * CORE_DISTANCE,
@@ -43,7 +43,7 @@ export class Processor extends ViewportRootElement implements BoundsAware {
         };
     }
 
-    set bounds(newBounds: Bounds) {
+    override set bounds(newBounds: Bounds) {
         // Ignore the new bounds
     }
 

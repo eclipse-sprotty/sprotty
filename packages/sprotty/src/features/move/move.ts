@@ -222,7 +222,7 @@ export class MoveCommand extends MergeableCommand {
         ]).start();
     }
 
-    merge(other: ICommand, context: CommandExecutionContext) {
+    override merge(other: ICommand, context: CommandExecutionContext) {
         if (!this.action.animate && other instanceof MoveCommand) {
             other.resolvedMoves.forEach(
                 (otherMove, otherElementId) => {
@@ -325,7 +325,7 @@ export class MorphEdgesAnimation extends Animation {
             0.5);
     }
 
-    start() {
+    override start() {
         this.expanded.forEach(morph => {
             morph.memento.edge.removeAll(e => e instanceof SRoutingHandle);
         });
@@ -395,7 +395,7 @@ export class MoveMouseListener extends MouseListener {
     startDragPosition: Point | undefined;
     elementId2startPos = new Map<string, Point>();
 
-    mouseDown(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseDown(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
         if (event.button === 0) {
             const moveable = findParentByFeature(target, isMoveable);
@@ -420,7 +420,7 @@ export class MoveMouseListener extends MouseListener {
         return result;
     }
 
-    mouseMove(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
         if (event.buttons === 0)
             this.mouseUp(target, event);
@@ -526,13 +526,13 @@ export class MoveMouseListener extends MouseListener {
         return undefined;
     }
 
-    mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
         if (target instanceof SModelRoot && event.buttons === 0 && !this.startDragPosition)
             this.mouseUp(target, event);
         return [];
     }
 
-    mouseUp(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseUp(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
         let hasReconnected = false;
         if (this.startDragPosition) {
@@ -584,7 +584,7 @@ export class MoveMouseListener extends MouseListener {
         return result;
     }
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    override decorate(vnode: VNode, element: SModelElement): VNode {
         return vnode;
     }
 }

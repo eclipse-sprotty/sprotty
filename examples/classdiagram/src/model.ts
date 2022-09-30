@@ -47,7 +47,7 @@ export class PropertyLabel extends SLabel { }
 export class Icon extends SShapeElement {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature];
 
-    size = {
+    override size = {
         width: 32,
         height: 32
     };

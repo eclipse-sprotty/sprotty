@@ -45,27 +45,27 @@ describe('hover', () => {
             this.state.previousPopupElement = el;
         }
 
-        protected startMouseOverTimer(target: SModelElement, evt: MouseEvent): Promise<Action> {
+        protected override startMouseOverTimer(target: SModelElement, evt: MouseEvent): Promise<Action> {
             this.state.popupOpen = true;
             this.state.previousPopupElement = target;
             return new Promise<Action>(() => {
             });
         }
 
-        protected startMouseOutTimer(): Promise<Action> {
+        protected override startMouseOutTimer(): Promise<Action> {
             this.state.popupOpen = false;
             return new Promise<Action>(() => {
             });
         }
 
-        protected getElementFromEventPosition(event: MouseEvent) {
+        protected override getElementFromEventPosition(event: MouseEvent) {
             // the original implementation uses document which isn't available in unit testing
             return null;
         }
     }
 
     class PopupTarget extends SChildElement {
-        hasFeature(feature: symbol): boolean {
+        override hasFeature(feature: symbol): boolean {
             return feature === popupFeature;
         }
     }
@@ -78,7 +78,7 @@ describe('hover', () => {
             this.id = id;
         }
 
-        hasFeature(feature: symbol): boolean {
+        override hasFeature(feature: symbol): boolean {
             return feature === hoverFeedbackFeature;
         }
     }

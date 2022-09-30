@@ -27,7 +27,7 @@ import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } fr
  * A node that is represented by a circle.
  */
 export class CircularNode extends SNode {
-    get anchorKind() {
+    override get anchorKind() {
         return ELLIPTIC_ANCHOR_KIND;
     }
 }
@@ -36,7 +36,7 @@ export class CircularNode extends SNode {
  * A node that is represented by a rectangle.
  */
 export class RectangularNode extends SNode {
-    get anchorKind() {
+    override get anchorKind() {
         return RECTANGULAR_ANCHOR_KIND;
     }
 }
@@ -45,7 +45,7 @@ export class RectangularNode extends SNode {
  * A node that is represented by a diamond.
  */
 export class DiamondNode extends SNode {
-    get anchorKind() {
+    override get anchorKind() {
         return DIAMOND_ANCHOR_KIND;
     }
 }
@@ -54,7 +54,7 @@ export class DiamondNode extends SNode {
  * A port that is represented by a circle.
  */
 export class CircularPort extends SPort {
-    get anchorKind() {
+    override get anchorKind() {
         return ELLIPTIC_ANCHOR_KIND;
     }
 }
@@ -63,7 +63,7 @@ export class CircularPort extends SPort {
  * A port that is represented by a rectangle.
  */
 export class RectangularPort extends SPort {
-    get anchorKind() {
+    override get anchorKind() {
         return RECTANGULAR_ANCHOR_KIND;
     }
 }
@@ -157,7 +157,7 @@ export class ShapedPreRenderedElement extends PreRenderedElement implements Boun
  */
 export class ForeignObjectElement extends ShapedPreRenderedElement {
     namespace: string;
-    get bounds(): Bounds {
+    override get bounds(): Bounds {
         if (Dimension.isValid(this.size)) {
             return {
                 x: this.position.x,

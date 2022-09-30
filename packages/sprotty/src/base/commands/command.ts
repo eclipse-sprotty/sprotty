@@ -133,7 +133,7 @@ export abstract class MergeableCommand extends Command {
  */
 @injectable()
 export abstract class HiddenCommand extends Command {
-    abstract execute(context: CommandExecutionContext): SModelRoot | CommandResult;
+    abstract override execute(context: CommandExecutionContext): SModelRoot | CommandResult;
 
     undo(context: CommandExecutionContext): CommandReturn {
         context.logger.error(this, 'Cannot undo a hidden command');

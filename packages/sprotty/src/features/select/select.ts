@@ -202,7 +202,7 @@ export class SelectMouseListener extends MouseListener {
     wasSelected = false;
     hasDragged = false;
 
-    mouseDown(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseDown(target: SModelElement, event: MouseEvent): Action[] {
         const result: Action[] = [];
         if (event.button === 0) {
             if (this.buttonHandlerRegistry !== undefined && target instanceof SButton && target.enabled) {
@@ -249,12 +249,12 @@ export class SelectMouseListener extends MouseListener {
         return result;
     }
 
-    mouseMove(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
         this.hasDragged = true;
         return [];
     }
 
-    mouseUp(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseUp(target: SModelElement, event: MouseEvent): Action[] {
         if (event.button === 0) {
             if (!this.hasDragged) {
                 const selectableTarget = findParentByFeature(target, isSelectable);
@@ -267,7 +267,7 @@ export class SelectMouseListener extends MouseListener {
         return [];
     }
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    override decorate(vnode: VNode, element: SModelElement): VNode {
         const selectableTarget = findParentByFeature(element, isSelectable);
         if (selectableTarget !== undefined)
             setClass(vnode, 'selected', selectableTarget.selected);
@@ -295,7 +295,7 @@ export class GetSelectionCommand extends ModelRequestCommand {
 }
 
 export class SelectKeyboardListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyA', 'ctrlCmd')) {
             return [new SelectAllAction()];
         }

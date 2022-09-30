@@ -53,6 +53,6 @@ export function isObject(data: unknown): data is Record<PropertyKey, unknown> {
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
- export function safeAssign<T>(target: T, partial: Partial<T>): T {
+ export function safeAssign<T extends {}>(target: T, partial: Partial<T>): T {
     return Object.assign(target, partial);
 }

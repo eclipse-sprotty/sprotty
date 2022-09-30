@@ -137,7 +137,7 @@ export class ToolManagerActionHandler implements IActionHandler {
 
 @injectable()
 export class DefaultToolsEnablingKeyListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
             return [EnableDefaultToolsAction.create()];
         }

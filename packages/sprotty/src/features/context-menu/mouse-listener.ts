@@ -32,7 +32,7 @@ export class ContextMenuMouseListener extends MouseListener {
         super();
     }
 
-    contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.showContextMenu(target, event);
         return [];
     }

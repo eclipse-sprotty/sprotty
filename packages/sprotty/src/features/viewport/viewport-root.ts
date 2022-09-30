@@ -64,7 +64,7 @@ export class ViewportRootElement extends SModelRoot implements Viewport, BoundsA
         };
     }
 
-    localToParent(point: Point | Bounds): Bounds {
+    override localToParent(point: Point | Bounds): Bounds {
         const result = {
             x: (point.x - this.scroll.x) * this.zoom,
             y: (point.y - this.scroll.y) * this.zoom,
@@ -78,7 +78,7 @@ export class ViewportRootElement extends SModelRoot implements Viewport, BoundsA
         return result;
     }
 
-    parentToLocal(point: Point | Bounds): Bounds {
+    override parentToLocal(point: Point | Bounds): Bounds {
         const result = {
             x: (point.x / this.zoom) + this.scroll.x,
             y: (point.y / this.zoom) + this.scroll.y,
