@@ -106,7 +106,7 @@ export class ViewRegistry extends InstanceRegistry<IView> {
         this.register(EMPTY_ROOT.type, new EmptyView());
     }
 
-    missing(key: string): IView {
+    override missing(key: string): IView {
         return new MissingView();
     }
 }

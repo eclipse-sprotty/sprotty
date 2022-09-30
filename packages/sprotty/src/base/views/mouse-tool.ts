@@ -155,7 +155,7 @@ export class MouseTool implements IVNodePostprocessor {
 
 @injectable()
 export class PopupMouseTool extends MouseTool {
-    constructor(@multiInject(TYPES.PopupMouseListener) @optional() protected mouseListeners: MouseListener[] = []) {
+    constructor(@multiInject(TYPES.PopupMouseListener) @optional() protected override mouseListeners: MouseListener[] = []) {
         super(mouseListeners);
     }
 }
@@ -225,7 +225,7 @@ export class MousePositionTracker extends MouseListener {
 
     protected lastPosition: Point | undefined;
 
-    mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         this.lastPosition = target.root.parentToLocal({ x: event.offsetX, y: event.offsetY });
         return [];
     }

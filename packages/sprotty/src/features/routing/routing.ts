@@ -156,7 +156,7 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
         return PolylineEdgeRouter.KIND;
     }
 
-    get(kind: string | undefined): IEdgeRouter {
+    override get(kind: string | undefined): IEdgeRouter {
         return super.get(kind || this.defaultKind);
     }
 

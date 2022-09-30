@@ -57,7 +57,7 @@ export class AnchorComputerRegistry extends InstanceRegistry<IAnchorComputer> {
         return RECTANGULAR_ANCHOR_KIND;
     }
 
-    get(routerKind: string, anchorKind?: string): IAnchorComputer {
+    override get(routerKind: string, anchorKind?: string): IAnchorComputer {
         return super.get(`${routerKind}:${anchorKind || this.defaultAnchorKind}`);
     }
 }

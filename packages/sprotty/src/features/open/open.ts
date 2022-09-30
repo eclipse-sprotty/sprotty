@@ -22,7 +22,7 @@ import { isOpenable } from './model';
 
 
 export class OpenMouseListener extends MouseListener {
-    doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const openableTarget = findParentByFeature(target, isOpenable);
         if (openableTarget !== undefined) {
             return [ OpenAction.create(openableTarget.id) ];

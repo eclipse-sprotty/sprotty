@@ -49,7 +49,7 @@ export function getZoom(label: SModelElement) {
 
 export class ZoomMouseListener extends MouseListener {
 
-    wheel(target: SModelElement, event: WheelEvent): Action[] {
+    override wheel(target: SModelElement, event: WheelEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
         if (viewport) {
             const newZoom = this.getZoomFactor(event);

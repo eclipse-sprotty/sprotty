@@ -31,7 +31,7 @@ export interface PolylineRouteOptions extends LinearRouteOptions {
 @injectable()
 export class PolylineEdgeRouter extends AbstractEdgeRouter {
 
-    @inject(AnchorComputerRegistry) anchorRegistry: AnchorComputerRegistry;
+    @inject(AnchorComputerRegistry) override anchorRegistry: AnchorComputerRegistry;
 
     static readonly KIND = 'polyline';
 

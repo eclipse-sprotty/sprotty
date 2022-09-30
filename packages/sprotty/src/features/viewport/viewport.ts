@@ -113,7 +113,7 @@ export class SetViewportCommand extends MergeableCommand {
         return new ViewportAnimation(this.element, this.oldViewport, this.newViewport, context).start();
     }
 
-    merge(command: ICommand, context: CommandExecutionContext): boolean {
+    override merge(command: ICommand, context: CommandExecutionContext): boolean {
         if (!this.action.animate && command instanceof SetViewportCommand && this.element === command.element) {
             this.newViewport = command.newViewport;
             return true;
@@ -148,7 +148,7 @@ export class ViewportAnimation extends Animation {
     constructor(protected element: SModelElement & Viewport,
                 protected oldViewport: Viewport,
                 protected newViewport: Viewport,
-                protected context: CommandExecutionContext) {
+                protected override context: CommandExecutionContext) {
         super(context);
         this.zoomFactor = Math.log(newViewport.zoom / oldViewport.zoom);
     }

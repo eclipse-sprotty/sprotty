@@ -80,13 +80,13 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
 
-    children: SChildElement[];
+    override children: SChildElement[];
     layout?: string;
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    canConnect(routable: SRoutableElement, role: string) {
+    override canConnect(routable: SRoutableElement, role: string) {
         return this.children.find(c => c instanceof SPort) === undefined;
     }
 
@@ -189,9 +189,9 @@ export class SCompartment extends SShapeElement implements Fadeable {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature,
         fadeFeature];
 
-    children: SChildElement[];
+    override children: SChildElement[];
     layout?: string;
-    layoutOptions?: {[key: string]: string | number | boolean};
+    override layoutOptions?: {[key: string]: string | number | boolean};
     opacity = 1;
 
 }
@@ -204,7 +204,7 @@ export class SGraphIndex extends ModelIndexImpl {
     private outgoing: Map<string, SEdge[]> = new Map;
     private incoming: Map<string, SEdge[]> = new Map;
 
-    add(element: SModelElement): void {
+    override add(element: SModelElement): void {
         super.add(element);
         if (element instanceof SEdge) {
             // Register the edge in the outgoing map
@@ -226,7 +226,7 @@ export class SGraphIndex extends ModelIndexImpl {
         }
     }
 
-    remove(element: SModelElement): void {
+    override remove(element: SModelElement): void {
         super.remove(element);
         if (element instanceof SEdge) {
             // Remove the edge from the outgoing map
@@ -254,7 +254,7 @@ export class SGraphIndex extends ModelIndexImpl {
         }
     }
 
-    getAttachedElements(element: SModelElement): FluentIterable<SModelElement> {
+    override getAttachedElements(element: SModelElement): FluentIterable<SModelElement> {
         return new FluentIterableImpl(
             () => ({
                 outgoing: this.outgoing.get(element.id),

@@ -22,7 +22,7 @@ import { BezierEdgeRouter } from './bezier-edge-router';
 @injectable()
 export class BezierEllipseAnchor extends EllipseAnchor {
 
-    get kind() {
+    override get kind() {
         return BezierEdgeRouter.KIND + ':' + ELLIPTIC_ANCHOR_KIND;
     }
 }
@@ -30,7 +30,7 @@ export class BezierEllipseAnchor extends EllipseAnchor {
 @injectable()
 export class BezierRectangleAnchor extends RectangleAnchor {
 
-    get kind() {
+    override get kind() {
         return BezierEdgeRouter.KIND + ':' + RECTANGULAR_ANCHOR_KIND;
     }
 }
@@ -38,7 +38,7 @@ export class BezierRectangleAnchor extends RectangleAnchor {
 @injectable()
 export class BezierDiamondAnchor extends DiamondAnchor {
 
-    get kind() {
+    override get kind() {
         return BezierEdgeRouter.KIND + ':' + DIAMOND_ANCHOR_KIND;
     }
 }

@@ -63,7 +63,7 @@ export class LocalModelSource extends ModelSource {
         this.setModel(root);
     }
 
-    initialize(registry: ActionHandlerRegistry): void {
+    override initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
         // Register this model source

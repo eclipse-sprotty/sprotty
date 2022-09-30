@@ -47,7 +47,7 @@ export namespace RedoAction {
 }
 
 export class UndoRedoKeyListener extends KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
             return [UndoAction.create()];
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))

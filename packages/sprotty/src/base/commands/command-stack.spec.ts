@@ -92,7 +92,7 @@ class TestMergeableCommand extends MergeableCommand {
         return context.root;
     }
 
-    merge(other: TestCommand, context: CommandExecutionContext) {
+    override merge(other: TestCommand, context: CommandExecutionContext) {
         if (other instanceof TestMergeableCommand) {
             this.name = this.name + '/' + other.name;
             return true;

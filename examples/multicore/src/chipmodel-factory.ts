@@ -30,7 +30,7 @@ import { CORE_WIDTH, CORE_DISTANCE } from "./views";
 
 export class ChipModelFactory extends SGraphFactory {
 
-    createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
+    override createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
         try {
             if (this.isCoreSchema(schema)) {
                 this.validate(schema, parent);
@@ -59,7 +59,7 @@ export class ChipModelFactory extends SGraphFactory {
         return super.createElement(schema, parent);
     }
 
-    createRoot(schema: SModelRootSchema): SModelRoot {
+    override createRoot(schema: SModelRootSchema): SModelRoot {
         if (this.isProcessorSchema(schema)) {
             const processor = this.initializeRoot(new Processor(), schema);
             processor.features = createFeatureSet(Processor.DEFAULT_FEATURES);

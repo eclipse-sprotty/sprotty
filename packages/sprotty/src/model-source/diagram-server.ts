@@ -84,7 +84,7 @@ export abstract class DiagramServerProxy extends ModelSource {
 
     protected lastSubmittedModelType: string;
 
-    initialize(registry: ActionHandlerRegistry): void {
+    override initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
         // Register this model source

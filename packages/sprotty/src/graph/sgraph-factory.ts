@@ -41,7 +41,7 @@ export class SGraphFactory extends SModelFactory {
     protected readonly defaultCompartmentFeatures = createFeatureSet(SCompartment.DEFAULT_FEATURES);
     protected readonly defaultButtonFeatures = createFeatureSet(SButton.DEFAULT_FEATURES);
 
-    createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
+    override createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
         let child: SChildElement;
         if (this.registry.hasKey(schema.type)) {
             const regElement = this.registry.get(schema.type, undefined);
@@ -72,7 +72,7 @@ export class SGraphFactory extends SModelFactory {
         return this.initializeChild(child, schema, parent);
     }
 
-    createRoot(schema: SModelRootSchema): SModelRoot {
+    override createRoot(schema: SModelRootSchema): SModelRoot {
         let root: SModelRoot;
         if (this.registry.hasKey(schema.type)) {
             const regElement = this.registry.get(schema.type, undefined);

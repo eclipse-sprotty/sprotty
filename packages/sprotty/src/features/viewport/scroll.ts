@@ -48,7 +48,7 @@ export class ScrollMouseListener extends MouseListener {
     protected scrollbarMouseDownTimeout: number | undefined;
     protected scrollbarMouseDownDelay = 200;
 
-    mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const moveable = findParentByFeature(target, isMoveable);
         if (moveable === undefined && !(target instanceof SRoutingHandle)) {
             const viewport = findParentByFeature(target, isViewport);
@@ -70,7 +70,7 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    mouseMove(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
         if (event.buttons === 0) {
             return this.mouseUp(target, event);
         }
@@ -90,20 +90,20 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
         if (target instanceof SModelRoot && event.buttons === 0) {
             this.mouseUp(target, event);
         }
         return [];
     }
 
-    mouseUp(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseUp(target: SModelElement, event: MouseEvent): Action[] {
         this.lastScrollPosition = undefined;
         this.scrollbar = undefined;
         return [];
     }
 
-    doubleClick(target: SModelElement, event: MouseEvent): Action[] {
+    override doubleClick(target: SModelElement, event: MouseEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
         if (viewport) {
             const scrollbar = this.getScrollbar(event);
