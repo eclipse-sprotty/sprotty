@@ -15,17 +15,18 @@
  ********************************************************************************/
 
 import { inject } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
+import { Action, SelectAction } from "sprotty-protocol/lib/actions";
+import { IActionDispatcher } from "../../base/actions/action-dispatcher";
 import { IContextMenuServiceProvider, IContextMenuService } from "./context-menu-service";
 import { ContextMenuProviderRegistry } from "./menu-providers";
 import { MouseListener } from "../../base/views/mouse-tool";
 import { TYPES } from "../../base/types";
 import { SModelElement } from "../../base/model/smodel";
-import { isSelectable } from "../select/model";
+import { isSelectable, isSelected } from "../select/model";
 import { findParentByFeature } from "../../base/model/smodel-utils";
 
 export class ContextMenuMouseListener extends MouseListener {
-
+    @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     constructor(
         @inject(TYPES.IContextMenuServiceProvider) protected readonly contextMenuService: IContextMenuServiceProvider,
         @inject(TYPES.IContextMenuProviderRegistry) protected readonly menuProvider: ContextMenuProviderRegistry) {
@@ -46,6 +47,8 @@ export class ContextMenuMouseListener extends MouseListener {
             return;
         }
         const mousePosition = { x: event.x, y: event.y };
+        const root = target.root;
+        const id = target.id;
         let isTargetSelected = false;
         const selectableTarget = findParentByFeature(target, isSelectable);
         if (selectableTarget) {
@@ -53,7 +56,19 @@ export class ContextMenuMouseListener extends MouseListener {
             selectableTarget.selected = true;
         }
         const restoreSelection = () => { if (selectableTarget) selectableTarget.selected = isTargetSelected; };
-        const menuItems = await this.menuProvider.getItems(target.root, mousePosition);
-        menuService.show(menuItems, mousePosition, restoreSelection);
+
+        if(isSelectable(target)){
+            if(isSelected(target)){
+                const menuItems = await this.menuProvider.getItems(target.root, mousePosition);
+                menuService.show(menuItems, mousePosition, restoreSelection);
+            }else{
+                const options = {selectedElementsIDs: [id], deselectedElementsIDs: Array.from(root.index.all().filter(isSelected), (val) => {return val.id;})};
+                this.actionDispatcher.dispatch(SelectAction.create(options)).then(() => {
+                    this.menuProvider.getItems(root, mousePosition).then((items) => {
+                        menuService.show(items, mousePosition);
+                    });
+                });
+            }
+        }
     }
 }
