@@ -57,17 +57,15 @@ export class ContextMenuMouseListener extends MouseListener {
         }
         const restoreSelection = () => { if (selectableTarget) selectableTarget.selected = isTargetSelected; };
 
-        if(isSelectable(target)){
-            if(isSelected(target)){
+        if (isSelectable(target)) {
+            if (isSelected(target)) {
                 const menuItems = await this.menuProvider.getItems(target.root, mousePosition);
                 menuService.show(menuItems, mousePosition, restoreSelection);
-            }else{
+            } else {
                 const options = {selectedElementsIDs: [id], deselectedElementsIDs: Array.from(root.index.all().filter(isSelected), (val) => {return val.id;})};
-                this.actionDispatcher.dispatch(SelectAction.create(options)).then(() => {
-                    this.menuProvider.getItems(root, mousePosition).then((items) => {
-                        menuService.show(items, mousePosition);
-                    });
-                });
+                await this.actionDispatcher.dispatch(SelectAction.create(options));
+                const items = await this.menuProvider.getItems(root, mousePosition);
+                menuService.show(items, mousePosition);
             }
         }
     }
