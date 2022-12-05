@@ -2,6 +2,10 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-elk](https://github.com/eclipse/sprotty/blob/master//packages/sprotty-elk/CHANGELOG.md).
 
+### v0.13.0 (TBD)
+
+* Remove codicon.css, document and explain future usage [#312](https://github.com/eclipse/sprotty/pull/292/): You now have to manually add the dependency of `@vscode/codicons` to your application and reference it in your di.config, see classdiagram [di.config.ts](../../examples/classdiagram/src/di.config.ts)
+
 ### v0.12.0 (Jun. 2022)
 
 * Aligned dependency to `inversify` ([#292](https://github.com/eclipse/sprotty/pull/292/)): version constraint is now `^5.1.1` in all sprotty packages.

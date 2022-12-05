@@ -3,6 +3,7 @@
   "version": "0.12.0",
   "private": "true",
   "dependencies": {
+    "@vscode/codicons": "^0.0.32",
     "core-js": "^3.25.3",
     "express": "^4.18.1",
     "reflect-metadata": "^0.1.13",

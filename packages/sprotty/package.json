@@ -52,7 +52,6 @@
     "directory": "packages/sprotty"
   },
   "dependencies": {
-    "@vscode/codicons": "^0.0.25",
     "autocompleter": "^5.1.0",
     "file-saver": "^2.0.2",
     "inversify": "^5.1.1",
