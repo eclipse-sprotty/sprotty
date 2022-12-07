@@ -14,15 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
+import { inject, injectable } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
 import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
-import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { SParentElement, SChildElement } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
+import { SParentElement, SChildElement } from '../../base/model/smodel';
+import { TYPES } from '../../base/types';
 
 /**
  * Create an element with the given schema and add it to the diagram.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
  export interface CreateElementAction extends Action {
     kind: typeof CreateElementAction.KIND
@@ -30,7 +32,7 @@ import { TYPES } from "../../base/types";
     elementSchema: SModelElementSchema
 }
 export namespace CreateElementAction {
-    export const KIND = "createElement";
+    export const KIND = 'createElement';
 
     export function create(elementSchema: SModelElementSchema, options: { containerId: string }): CreateElementAction {
         return {

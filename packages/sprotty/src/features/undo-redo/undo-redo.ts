@@ -14,12 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from "sprotty-protocol/lib/actions";
-import { matchesKeystroke } from "../../utils/keyboard";
-import { KeyListener } from "../../base/views/key-tool";
-import { SModelElement } from "../../base/model/smodel";
-import { isMac } from "../../utils/browser";
+import { Action } from 'sprotty-protocol/lib/actions';
+import { matchesKeystroke } from '../../utils/keyboard';
+import { KeyListener } from '../../base/views/key-tool';
+import { SModelElement } from '../../base/model/smodel';
+import { isMac } from '../../utils/browser';
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface UndoAction extends Action {
     kind: typeof UndoAction.KIND;
 }
@@ -33,6 +36,9 @@ export namespace UndoAction {
     }
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface RedoAction extends Action {
     kind: typeof RedoAction.KIND;
 }

@@ -313,6 +313,28 @@ export interface ElementAndAlignment {
 }
 
 /**
+ * Transport logging data to be stored elsewhere.
+ */
+export interface LoggingAction extends Action {
+    kind: typeof LoggingAction.KIND;
+    severity: string
+    time: string
+    caller: string
+    message: string
+    params: string[]
+}
+export namespace LoggingAction {
+    export const KIND = 'logging';
+
+    export function create(options: { severity: string, time: string, caller: string, message: string, params: string[] }): LoggingAction {
+        return {
+            kind: KIND,
+            ...options
+        };
+    }
+}
+
+/**
  * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting
  * SelectCommand changes the `selected` state accordingly, so the elements can be rendered differently.
  * This action is also forwarded to the diagram server, if present, so it may react on the selection change.
@@ -502,6 +524,185 @@ export namespace SetViewportAction {
             elementId,
             newViewport,
             animate: options.animate ?? true
+        };
+    }
+}
+
+/**
+ * Action to render the selected elements in front of others by manipulating the z-order.
+ */
+ export interface BringToFrontAction extends Action {
+    kind: typeof BringToFrontAction.KIND;
+    elementIDs: string[]
+}
+export namespace BringToFrontAction {
+    export const KIND = 'bringToFront';
+
+    export function create(elementIDs: string[]): BringToFrontAction {
+        return {
+            kind: KIND,
+            elementIDs
+        };
+    }
+}
+
+/**
+ * Undo the previous operation on the stack of operations.
+ */
+export interface UndoAction extends Action {
+    kind: typeof UndoAction.KIND;
+}
+export namespace UndoAction {
+    export const KIND = 'undo';
+
+    export function create(): UndoAction {
+        return {
+            kind: KIND
+        };
+    }
+}
+
+/**
+ * Redo a previously undone operation.
+ */
+export interface RedoAction extends Action {
+    kind: typeof RedoAction.KIND;
+}
+export namespace RedoAction {
+    export const KIND = 'redo';
+
+    export function create(): RedoAction {
+        return {
+            kind: KIND
+        };
+    }
+}
+
+/**
+ * Move an arbitrary set of elements to new positions.
+ */
+export interface MoveAction extends Action {
+    kind: typeof MoveAction.KIND
+    moves: ElementMove[]
+    animate: boolean
+    finished: boolean
+}
+export namespace MoveAction {
+    export const KIND = 'move';
+
+    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean } = {}): MoveAction {
+        return {
+            kind: KIND,
+            moves,
+            animate: options.animate ?? true,
+            finished: options.finished ?? false
+        };
+    }
+}
+
+export interface ElementMove {
+    elementId: string
+    elementType?: string
+    fromPosition?: Point
+    toPosition: Point
+}
+
+/**
+ * Triggered when the user puts the mouse pointer over an element.
+ */
+export interface HoverFeedbackAction extends Action {
+    kind: typeof HoverFeedbackAction.KIND
+    mouseoverElement: string
+    mouseIsOver: boolean
+}
+export namespace HoverFeedbackAction {
+    export const KIND = 'hoverFeedback';
+
+    export function create(options: { mouseoverElement: string, mouseIsOver: boolean }): HoverFeedbackAction {
+        return {
+            kind: KIND,
+            mouseoverElement: options.mouseoverElement,
+            mouseIsOver: options.mouseIsOver
+        };
+    }
+}
+
+/**
+ * Create an element with the given schema and add it to the diagram.
+ */
+export interface CreateElementAction extends Action {
+    kind: typeof CreateElementAction.KIND
+    containerId: string
+    elementSchema: SModelElement
+}
+export namespace CreateElementAction {
+    export const KIND = 'createElement';
+
+    export function create(elementSchema: SModelElement, options: { containerId: string }): CreateElementAction {
+        return {
+            kind: KIND,
+            elementSchema,
+            containerId: options.containerId
+        };
+    }
+}
+
+/**
+ * Delete a set of elements identified by their IDs.
+ */
+export interface DeleteElementAction extends Action {
+    kind: typeof DeleteElementAction.KIND
+    elementIds: string[]
+}
+export namespace DeleteElementAction {
+    export const KIND = 'delete';
+
+    export function create(elementIds: string[]): DeleteElementAction {
+        return {
+            kind: KIND,
+            elementIds
+        };
+    }
+}
+
+/**
+ * Apply a text change to a label element.
+ */
+export interface ApplyLabelEditAction extends Action {
+    kind: typeof ApplyLabelEditAction.KIND;
+    labelId: string,
+    text: string
+}
+export namespace ApplyLabelEditAction {
+    export const KIND = 'applyLabelEdit';
+
+    export function create(labelId: string, text: string): ApplyLabelEditAction {
+        return {
+            kind: KIND,
+            labelId,
+            text
+        };
+    }
+}
+
+/**
+ * Change the source or target node of a routable element (edge of a graph).
+ */
+export interface ReconnectAction extends Action {
+    kind: typeof ReconnectAction.KIND
+    routableId: string
+    newSourceId?: string
+    newTargetId?: string
+}
+export namespace ReconnectAction {
+    export const KIND = 'reconnect';
+
+    export function create(options: { routableId: string, newSourceId?: string, newTargetId?: string }): ReconnectAction {
+        return {
+            kind: KIND,
+            routableId: options.routableId,
+            newSourceId: options.newSourceId,
+            newTargetId: options.newTargetId
         };
     }
 }

@@ -14,33 +14,35 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, optional } from "inversify";
-import { VNode } from "snabbdom";
-import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { Action, SelectAction, SelectAllAction } from "sprotty-protocol/lib/actions";
-import { Animation, CompoundAnimation } from "../../base/animations/animation";
-import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from "../../base/commands/command";
+import { inject, injectable, optional } from 'inversify';
+import { VNode } from 'snabbdom';
+import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction } from 'sprotty-protocol/lib/actions';
+import { Animation, CompoundAnimation } from '../../base/animations/animation';
+import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from '../../base/commands/command';
 import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smodel';
-import { findParentByFeature, translatePoint } from "../../base/model/smodel-utils";
-import { TYPES } from "../../base/types";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { setAttr } from "../../base/views/vnode-utils";
-import { SEdge } from "../../graph/sgraph";
-import { CommitModelAction } from "../../model-source/commit-model";
-import { findChildrenAtPosition, isAlignable } from "../bounds/model";
-import { isCreatingOnDrag } from "../edit/create-on-drag";
-import { DeleteElementAction } from "../edit/delete";
-import { SwitchEditModeAction } from "../edit/edit-routing";
-import { ReconnectAction, ReconnectCommand } from "../edit/reconnect";
-import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElement, SRoutingHandle } from "../routing/model";
-import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from "../routing/routing";
-import { isEdgeLayoutable } from "../edge-layout/model";
-import { isSelectable } from "../select/model";
-import { isViewport } from "../viewport/model";
+import { findParentByFeature, translatePoint } from '../../base/model/smodel-utils';
+import { TYPES } from '../../base/types';
+import { MouseListener } from '../../base/views/mouse-tool';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
+import { setAttr } from '../../base/views/vnode-utils';
+import { SEdge } from '../../graph/sgraph';
+import { CommitModelAction } from '../../model-source/commit-model';
+import { findChildrenAtPosition, isAlignable } from '../bounds/model';
+import { CreatingOnDrag, isCreatingOnDrag } from '../edit/create-on-drag';
+import { SwitchEditModeAction } from '../edit/edit-routing';
+import { ReconnectCommand } from '../edit/reconnect';
+import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElement, SRoutingHandle } from '../routing/model';
+import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from '../routing/routing';
+import { isEdgeLayoutable } from '../edge-layout/model';
+import { isSelectable } from '../select/model';
+import { isViewport } from '../viewport/model';
 import { isLocateable, isMoveable, Locateable } from './model';
-import { ISnapper } from "./snap";
+import { ISnapper } from './snap';
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface MoveAction extends Action {
     kind: typeof MoveAction.KIND
     moves: ElementMove[]
@@ -62,6 +64,7 @@ export namespace MoveAction {
 
 export interface ElementMove {
     elementId: string
+    elementType?: string
     fromPosition?: Point
     toPosition: Point
 }
@@ -395,8 +398,7 @@ export class MoveMouseListener extends MouseListener {
     startDragPosition: Point | undefined;
     elementId2startPos = new Map<string, Point>();
 
-    override mouseDown(target: SModelElement, event: MouseEvent): Action[] {
-        const result: Action[] = [];
+    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         if (event.button === 0) {
             const moveable = findParentByFeature(target, isMoveable);
             const isRoutingHandle = target instanceof SRoutingHandle;
@@ -407,17 +409,27 @@ export class MoveMouseListener extends MouseListener {
             }
             this.hasDragged = false;
             if (isCreatingOnDrag(target)) {
-                result.push(SelectAllAction.create({ select: false }));
-                result.push(target.createAction(edgeInProgressID));
-                result.push(SelectAction.create({ selectedElementsIDs: [edgeInProgressID] }));
-                result.push(SwitchEditModeAction.create({ elementsToActivate: [edgeInProgressID] }));
-                result.push(SelectAction.create({ selectedElementsIDs: [edgeInProgressTargetHandleID] }));
-                result.push(SwitchEditModeAction.create({ elementsToActivate: [edgeInProgressTargetHandleID] }));
+                this.startCreatingOnDrag(target, event);
             } else if (isRoutingHandle) {
-                result.push(SwitchEditModeAction.create({ elementsToActivate: [target.id] }));
+                this.activateRoutingHandle(target, event);
             }
         }
+        return [];
+    }
+
+    protected startCreatingOnDrag(target: CreatingOnDrag, event: MouseEvent): (Action | Promise<Action>)[] {
+        const result: Action[] = [];
+        result.push(SelectAllAction.create({ select: false }));
+        result.push(target.createAction(edgeInProgressID));
+        result.push(SelectAction.create({ selectedElementsIDs: [edgeInProgressID] }));
+        result.push(SwitchEditModeAction.create({ elementsToActivate: [edgeInProgressID] }));
+        result.push(SelectAction.create({ selectedElementsIDs: [edgeInProgressTargetHandleID] }));
+        result.push(SwitchEditModeAction.create({ elementsToActivate: [edgeInProgressTargetHandleID] }));
         return result;
+    }
+
+    protected activateRoutingHandle(target: SRoutingHandle, event: MouseEvent): (Action | Promise<Action>)[] {
+        return [SwitchEditModeAction.create({ elementsToActivate: [target.id] })];
     }
 
     override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
@@ -476,28 +488,9 @@ export class MoveMouseListener extends MouseListener {
         this.elementId2startPos.forEach((startPosition, elementId) => {
             const element = target.root.index.getById(elementId);
             if (element) {
-                const toPosition = this.snap({
-                    x: startPosition.x + delta.x,
-                    y: startPosition.y + delta.y
-                }, element, !event.shiftKey);
-                if (isMoveable(element)) {
-                    elementMoves.push({
-                        elementId: element.id,
-                        fromPosition: {
-                            x: element.position.x,
-                            y: element.position.y
-                        },
-                        toPosition
-                    });
-                } else if (element instanceof SRoutingHandle) {
-                    const point = this.getHandlePosition(element);
-                    if (point !== undefined) {
-                        elementMoves.push({
-                            elementId: element.id,
-                            fromPosition: point,
-                            toPosition
-                        });
-                    }
+                const move = this.createElementMove(element, startPosition, delta, event);
+                if (move) {
+                    elementMoves.push(move);
                 }
             }
         });
@@ -505,6 +498,35 @@ export class MoveMouseListener extends MouseListener {
             return MoveAction.create(elementMoves, { animate: false, finished: isFinished });
         else
             return undefined;
+    }
+
+    protected createElementMove(element: SModelElement, startPosition: Point, delta: Point, event: MouseEvent): ElementMove | undefined {
+        const toPosition = this.snap({
+            x: startPosition.x + delta.x,
+            y: startPosition.y + delta.y
+        }, element, !event.shiftKey);
+        if (isMoveable(element)) {
+            return {
+                elementId: element.id,
+                elementType: element.type,
+                fromPosition: {
+                    x: element.position.x,
+                    y: element.position.y
+                },
+                toPosition
+            };
+        } else if (element instanceof SRoutingHandle) {
+            const point = this.getHandlePosition(element);
+            if (point !== undefined) {
+                return {
+                    elementId: element.id,
+                    elementType: element.type,
+                    fromPosition: point,
+                    toPosition
+                };
+            }
+        }
+        return undefined;
     }
 
     protected snap(position: Point, element: SModelElement, isSnap: boolean): Point {
@@ -532,56 +554,66 @@ export class MoveMouseListener extends MouseListener {
         return [];
     }
 
-    override mouseUp(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        let hasReconnected = false;
         if (this.startDragPosition) {
             const moveAction = this.getElementMoves(target, event, true);
-            if (moveAction)
+            if (moveAction) {
                 result.push(moveAction);
-            target.root.index.all()
-                .forEach(element => {
-                    if (element instanceof SRoutingHandle) {
-                        const parent = element.parent;
-                        if (parent instanceof SRoutableElement && element.danglingAnchor) {
-                            const handlePos = this.getHandlePosition(element);
-                            if (handlePos) {
-                                const handlePosAbs = translatePoint(handlePos, element.parent, element.root);
-                                const newEnd = findChildrenAtPosition(target.root, handlePosAbs)
-                                    .find(e => isConnectable(e) && e.canConnect(parent, element.kind as ('source' | 'target')));
-                                if (newEnd && this.hasDragged) {
-                                    result.push(ReconnectAction.create({
-                                        routableId: element.parent.id,
-                                        newSourceId: element.kind === 'source' ? newEnd.id : parent.sourceId,
-                                        newTargetId: element.kind === 'target' ? newEnd.id : parent.targetId
-                                    }));
-                                    hasReconnected = true;
-                                }
-                            }
-                        }
-                        if (element.editMode)
-                            result.push(SwitchEditModeAction.create({ elementsToDeactivate: [element.id] }));
-                    }
-                });
+            }
+            target.root.index.all().forEach(element => {
+                if (element instanceof SRoutingHandle) {
+                    result.push(...this.deactivateRoutingHandle(element, target, event));
+                }
+            });
         }
-        if (!hasReconnected) {
+        if (!result.some(a => a.kind === ReconnectAction.KIND)) {
             const edgeInProgress = target.root.index.getById(edgeInProgressID);
             if (edgeInProgress instanceof SChildElement) {
-                const deleteIds: string[] = [];
-                deleteIds.push(edgeInProgressID);
-                edgeInProgress.children.forEach(c => {
-                    if (c instanceof SRoutingHandle && c.danglingAnchor)
-                        deleteIds.push(c.danglingAnchor.id);
-                });
-                result.push(DeleteElementAction.create(deleteIds));
+                result.push(this.deleteEdgeInProgress(edgeInProgress));
             }
         }
-        if (this.hasDragged)
+        if (this.hasDragged) {
             result.push(CommitModelAction.create());
+        }
         this.hasDragged = false;
         this.startDragPosition = undefined;
         this.elementId2startPos.clear();
         return result;
+    }
+
+    protected deactivateRoutingHandle(element: SRoutingHandle, target: SModelElement, event: MouseEvent): Action[] {
+        const result: Action[] = [];
+        const parent = element.parent;
+        if (parent instanceof SRoutableElement && element.danglingAnchor) {
+            const handlePos = this.getHandlePosition(element);
+            if (handlePos) {
+                const handlePosAbs = translatePoint(handlePos, element.parent, element.root);
+                const newEnd = findChildrenAtPosition(target.root, handlePosAbs)
+                    .find(e => isConnectable(e) && e.canConnect(parent, element.kind as ('source' | 'target')));
+                if (newEnd && this.hasDragged) {
+                    result.push(ReconnectAction.create({
+                        routableId: element.parent.id,
+                        newSourceId: element.kind === 'source' ? newEnd.id : parent.sourceId,
+                        newTargetId: element.kind === 'target' ? newEnd.id : parent.targetId
+                    }));
+                }
+            }
+        }
+        if (element.editMode) {
+            result.push(SwitchEditModeAction.create({ elementsToDeactivate: [element.id] }));
+        }
+        return result;
+    }
+
+    protected deleteEdgeInProgress(edgeInProgress: SChildElement): Action {
+        const deleteIds: string[] = [];
+        deleteIds.push(edgeInProgressID);
+        edgeInProgress.children.forEach(c => {
+            if (c instanceof SRoutingHandle && c.danglingAnchor)
+                deleteIds.push(c.danglingAnchor.id);
+        });
+        return DeleteElementAction.create(deleteIds);
     }
 
     override decorate(vnode: VNode, element: SModelElement): VNode {

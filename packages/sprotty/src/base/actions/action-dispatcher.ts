@@ -14,17 +14,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { Action, isAction, isRequestAction, isResponseAction, RejectAction, RequestAction, ResponseAction, SetModelAction } from "sprotty-protocol/lib/actions";
-import { Deferred } from "sprotty-protocol/lib/utils/async";
-import { TYPES } from "../types";
-import { ILogger } from "../../utils/logging";
+import { inject, injectable } from 'inversify';
+import {
+    Action, isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
+    ResponseAction, SetModelAction, UndoAction
+} from 'sprotty-protocol/lib/actions';
+import { Deferred } from 'sprotty-protocol/lib/utils/async';
+import { TYPES } from '../types';
+import { ILogger } from '../../utils/logging';
 import { EMPTY_ROOT } from '../model/smodel-factory';
-import { ICommandStack } from "../commands/command-stack";
-import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { RedoAction, UndoAction } from "../../features/undo-redo/undo-redo";
-import { ActionHandlerRegistry } from "./action-handler";
-import { IDiagramLocker } from "./diagram-locker";
+import { ICommandStack } from '../commands/command-stack';
+import { AnimationFrameSyncer } from '../animations/animation-frame-syncer';
+import { ActionHandlerRegistry } from './action-handler';
+import { IDiagramLocker } from './diagram-locker';
 
 export interface IActionDispatcher {
     dispatch(action: Action): Promise<void>

@@ -15,29 +15,28 @@
  ********************************************************************************/
 
 import { inject, injectable, optional } from 'inversify';
-import { VNode } from "snabbdom";
+import { VNode } from 'snabbdom';
 import {
-    Action, generateRequestId, RequestAction, ResponseAction, SelectAction as ProtocolSelectAction,
+    Action, BringToFrontAction, generateRequestId, RequestAction, ResponseAction, SelectAction as ProtocolSelectAction,
     SelectAllAction as ProtocolSelectAllActon
 } from 'sprotty-protocol/lib/actions';
-import { Command, CommandExecutionContext } from "../../base/commands/command";
+import { Command, CommandExecutionContext } from '../../base/commands/command';
 import { ModelRequestCommand } from '../../base/commands/request-command';
 import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
-import { findParentByFeature } from "../../base/model/smodel-utils";
+import { findParentByFeature } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
-import { KeyListener } from "../../base/views/key-tool";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { setClass } from "../../base/views/vnode-utils";
-import { isCtrlOrCmd } from "../../utils/browser";
+import { KeyListener } from '../../base/views/key-tool';
+import { MouseListener } from '../../base/views/mouse-tool';
+import { setClass } from '../../base/views/vnode-utils';
+import { isCtrlOrCmd } from '../../utils/browser';
 import { toArray } from '../../utils/iterable';
-import { matchesKeystroke } from "../../utils/keyboard";
+import { matchesKeystroke } from '../../utils/keyboard';
 import { ButtonHandlerRegistry } from '../button/button-handler';
 import { SButton } from '../button/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { SRoutingHandle } from '../routing/model';
 import { SRoutableElement } from '../routing/model';
-import { BringToFrontAction } from '../zorder/zorder';
-import { isSelectable, Selectable } from "./model";
+import { isSelectable, Selectable } from './model';
 
 /**
  * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting
@@ -202,49 +201,79 @@ export class SelectMouseListener extends MouseListener {
     wasSelected = false;
     hasDragged = false;
 
-    override mouseDown(target: SModelElement, event: MouseEvent): Action[] {
-        const result: Action[] = [];
-        if (event.button === 0) {
-            if (this.buttonHandlerRegistry !== undefined && target instanceof SButton && target.enabled) {
-                const buttonHandler = this.buttonHandlerRegistry.get(target.type);
-                if (buttonHandler !== undefined)
-                    return buttonHandler.buttonPressed(target);
+    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+        if (event.button !== 0) {
+            return [];
+        }
+        const buttonHandled = this.handleButton(target, event);
+        if (buttonHandled) {
+            return buttonHandled;
+        }
+        const selectableTarget = findParentByFeature(target, isSelectable);
+        if (selectableTarget !== undefined || target instanceof SModelRoot) {
+            this.hasDragged = false;
+            let deselectedElements: SModelElement[] = [];
+            // multi-selection?
+            if (!isCtrlOrCmd(event)) {
+                deselectedElements = toArray(target.root.index.all()
+                    .filter(element => isSelectable(element) && element.selected
+                        && !(selectableTarget instanceof SRoutingHandle && element === selectableTarget.parent as SModelElement)));
             }
-            const selectableTarget = findParentByFeature(target, isSelectable);
-            if (selectableTarget !== undefined || target instanceof SModelRoot) {
-                this.hasDragged = false;
-                let deselect: SModelElement[] = [];
-                // multi-selection?
-                if (!isCtrlOrCmd(event)) {
-                    deselect = toArray(target.root.index.all()
-                        .filter(element => isSelectable(element) && element.selected
-                            && !(selectableTarget instanceof SRoutingHandle && element === selectableTarget.parent as SModelElement)));
-                }
-                if (selectableTarget !== undefined) {
-                    if (!selectableTarget.selected) {
-                        this.wasSelected = false;
-                        result.push(new SelectAction([selectableTarget.id], deselect.map(e => e.id)));
-                        result.push(BringToFrontAction.create([selectableTarget.id]));
-                        const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
-                        if (selectableTarget instanceof SRoutableElement)
-                            result.push(SwitchEditModeAction.create({ elementsToActivate: [selectableTarget.id], elementsToDeactivate: routableDeselect }));
-                        else if (routableDeselect.length > 0)
-                            result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
-                    } else if (isCtrlOrCmd(event)) {
-                        this.wasSelected = false;
-                        result.push(new SelectAction([], [selectableTarget.id]));
-                        if (selectableTarget instanceof SRoutableElement)
-                            result.push(SwitchEditModeAction.create({ elementsToDeactivate: [selectableTarget.id] }));
-                    } else {
-                        this.wasSelected = true;
-                    }
+            if (selectableTarget !== undefined) {
+                if (!selectableTarget.selected) {
+                    this.wasSelected = false;
+                    return this.handleSelectTarget(selectableTarget, deselectedElements, event);
+                } else if (isCtrlOrCmd(event)) {
+                    this.wasSelected = false;
+                    return this.handleDeselectTarget(selectableTarget, event);
                 } else {
-                    result.push(new SelectAction([], deselect.map(e => e.id)));
-                    const routableDeselect = deselect.filter(e => e instanceof SRoutableElement).map(e => e.id);
-                    if (routableDeselect.length > 0)
-                        result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
+                    this.wasSelected = true;
                 }
+            } else {
+                return this.handleDeselectAll(deselectedElements, event);
             }
+        }
+        return [];
+    }
+
+    protected handleButton(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] | undefined {
+        if (this.buttonHandlerRegistry !== undefined && target instanceof SButton && target.enabled) {
+            const buttonHandler = this.buttonHandlerRegistry.get(target.type);
+            if (buttonHandler !== undefined) {
+                return buttonHandler.buttonPressed(target);
+            }
+        }
+        return undefined;
+    }
+
+    protected handleSelectTarget(selectableTarget: SModelElement & Selectable, deselectedElements: SModelElement[], event: MouseEvent): (Action | Promise<Action>)[] {
+        const result: Action[] = [];
+        result.push(new SelectAction([selectableTarget.id], deselectedElements.map(e => e.id)));
+        result.push(BringToFrontAction.create([selectableTarget.id]));
+        const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElement).map(e => e.id);
+        if (selectableTarget instanceof SRoutableElement) {
+            result.push(SwitchEditModeAction.create({ elementsToActivate: [selectableTarget.id], elementsToDeactivate: routableDeselect }));
+        } else if (routableDeselect.length > 0) {
+            result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
+        }
+        return result;
+    }
+
+    protected handleDeselectTarget(selectableTarget: SModelElement & Selectable, event: MouseEvent): (Action | Promise<Action>)[] {
+        const result: Action[] = [];
+        result.push(new SelectAction([], [selectableTarget.id]));
+        if (selectableTarget instanceof SRoutableElement) {
+            result.push(SwitchEditModeAction.create({ elementsToDeactivate: [selectableTarget.id] }));
+        }
+        return result;
+    }
+
+    protected handleDeselectAll(deselectedElements: SModelElement[], event: MouseEvent): (Action | Promise<Action>)[] {
+        const result: Action[] = [];
+        result.push(new SelectAction([], deselectedElements.map(e => e.id)));
+        const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElement).map(e => e.id);
+        if (routableDeselect.length > 0) {
+            result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
         }
         return result;
     }
@@ -269,8 +298,9 @@ export class SelectMouseListener extends MouseListener {
 
     override decorate(vnode: VNode, element: SModelElement): VNode {
         const selectableTarget = findParentByFeature(element, isSelectable);
-        if (selectableTarget !== undefined)
+        if (selectableTarget !== undefined) {
             setClass(vnode, 'selected', selectableTarget.selected);
+        }
         return vnode;
     }
 }

@@ -14,12 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { ILogger, LogLevel } from "../utils/logging";
-import { TYPES } from "../base/types";
-import { ModelSource } from "./model-source";
+import { injectable, inject } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
+import { ILogger, LogLevel } from '../utils/logging';
+import { TYPES } from '../base/types';
+import { ModelSource } from './model-source';
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface LoggingAction extends Action {
     kind: typeof LoggingAction.KIND;
     severity: string

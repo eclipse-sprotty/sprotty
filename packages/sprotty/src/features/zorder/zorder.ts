@@ -14,15 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { TYPES } from "../../base/types";
+import { injectable, inject } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
+import { TYPES } from '../../base/types';
 import { SModelRoot, SChildElement, SModelElement, SParentElement } from '../../base/model/smodel';
-import { Command, CommandExecutionContext } from "../../base/commands/command";
-import { SRoutableElement, SConnectableElement } from "../routing/model";
+import { Command, CommandExecutionContext } from '../../base/commands/command';
+import { SRoutableElement, SConnectableElement } from '../routing/model';
 
 /**
  * Action to render the selected elements in front of others by manipulating the z-order.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface BringToFrontAction extends Action {
     kind: typeof BringToFrontAction.KIND;

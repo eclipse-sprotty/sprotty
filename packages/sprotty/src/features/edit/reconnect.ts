@@ -14,13 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { TYPES } from "../../base/types";
-import { SRoutableElement } from "../routing/model";
-import { EdgeMemento, EdgeRouterRegistry } from "../routing/routing";
+import { inject, injectable } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
+import { TYPES } from '../../base/types';
+import { SRoutableElement } from '../routing/model';
+import { EdgeMemento, EdgeRouterRegistry } from '../routing/routing';
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface ReconnectAction extends Action {
     kind: typeof ReconnectAction.KIND
     routableId: string

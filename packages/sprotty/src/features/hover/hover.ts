@@ -37,6 +37,8 @@ import { hasPopupFeature, isHoverable } from "./model";
 
 /**
  * Triggered when the user puts the mouse pointer over an element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface HoverFeedbackAction extends Action {
     kind: typeof HoverFeedbackAction.KIND
