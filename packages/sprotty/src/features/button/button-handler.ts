@@ -22,7 +22,7 @@ import { SButton } from './model';
 import { isInjectable } from '../../utils/inversify';
 
 export interface IButtonHandler {
-    buttonPressed(button: SButton): Action[]
+    buttonPressed(button: SButton): (Action | Promise<Action>)[]
 }
 
 /** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */

@@ -14,17 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject } from "inversify";
-import { Action, isAction } from "sprotty-protocol/lib/actions";
-import { CommandExecutionContext, CommandReturn, Command } from "../../base/commands/command";
-import { SModelElement } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { KeyListener } from "../../base/views/key-tool";
-import { matchesKeystroke } from "../../utils/keyboard";
-import { isSelectable } from "../select/model";
-import { toArray } from "../../utils/iterable";
-import { EditableLabel, isEditableLabel, isWithEditableLabel } from "./model";
+import { inject } from 'inversify';
+import { Action, isAction } from 'sprotty-protocol/lib/actions';
+import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
+import { SModelElement } from '../../base/model/smodel';
+import { TYPES } from '../../base/types';
+import { MouseListener } from '../../base/views/mouse-tool';
+import { KeyListener } from '../../base/views/key-tool';
+import { matchesKeystroke } from '../../utils/keyboard';
+import { isSelectable } from '../select/model';
+import { toArray } from '../../utils/iterable';
+import { EditableLabel, isEditableLabel, isWithEditableLabel } from './model';
 
 export interface EditLabelAction extends Action {
     kind: typeof EditLabelAction.KIND
@@ -45,6 +45,9 @@ export function isEditLabelAction(element?: any): element is EditLabelAction {
     return isAction(element) && element.kind === EditLabelAction.KIND && 'labelId' in element;
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface ApplyLabelEditAction extends Action {
     kind: typeof ApplyLabelEditAction.KIND;
     labelId: string,

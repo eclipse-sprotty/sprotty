@@ -13,25 +13,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { inject, injectable, optional } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
-import { IActionHandler } from "../../base/actions/action-handler";
-import { ICommand } from "../../base/commands/command";
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
-import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry";
-import { DOMHelper } from "../../base/views/dom-helper";
-import { ViewerOptions } from "../../base/views/viewer-options";
-import { CommitModelAction } from "../../model-source/commit-model";
-import { matchesKeystroke, KeyCode, KeyboardModifier } from "../../utils/keyboard";
-import { getAbsoluteClientBounds } from "../bounds/model";
-import { getZoom } from "../viewport/zoom";
-import {
-    ApplyLabelEditAction, EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity
-} from "./edit-label";
-import { EditableLabel, isEditableLabel } from "./model";
+
+import { inject, injectable, optional } from 'inversify';
+import { Action, ApplyLabelEditAction } from 'sprotty-protocol/lib/actions';
+import { IActionDispatcherProvider } from '../../base/actions/action-dispatcher';
+import { IActionHandler } from '../../base/actions/action-handler';
+import { ICommand } from '../../base/commands/command';
+import { SModelElement, SModelRoot } from '../../base/model/smodel';
+import { TYPES } from '../../base/types';
+import { AbstractUIExtension } from '../../base/ui-extensions/ui-extension';
+import { SetUIExtensionVisibilityAction } from '../../base/ui-extensions/ui-extension-registry';
+import { DOMHelper } from '../../base/views/dom-helper';
+import { ViewerOptions } from '../../base/views/viewer-options';
+import { CommitModelAction } from '../../model-source/commit-model';
+import { matchesKeystroke, KeyCode, KeyboardModifier } from '../../utils/keyboard';
+import { getAbsoluteClientBounds } from '../bounds/model';
+import { getZoom } from '../viewport/zoom';
+import { EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity } from './edit-label';
+import { EditableLabel, isEditableLabel } from './model';
 
 /** Shows a UI extension for editing a label on emitted `EditLabelAction`s. */
 @injectable()
@@ -50,7 +49,7 @@ export interface IEditLabelValidationDecorator {
 
 @injectable()
 export class EditLabelUI extends AbstractUIExtension {
-    static readonly ID = "editLabelUi";
+    static readonly ID = 'editLabelUi';
 
     @inject(TYPES.IActionDispatcherProvider) public actionDispatcherProvider: IActionDispatcherProvider;
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
@@ -70,7 +69,7 @@ export class EditLabelUI extends AbstractUIExtension {
     protected previousLabelContent?: string;
 
     public id() { return EditLabelUI.ID; }
-    public containerClass() { return "label-edit"; }
+    public containerClass() { return 'label-edit'; }
 
     protected get labelId() { return this.label ? this.label.id : 'unknown'; }
 

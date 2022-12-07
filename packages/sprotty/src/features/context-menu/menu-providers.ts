@@ -14,14 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional } from "inversify";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { MenuItem } from "./context-menu-service";
-import { SModelRoot } from "../../base/model/smodel";
-import { LabeledAction } from "../../base/actions/action";
-import { TYPES } from "../../base/types";
-import { isDeletable, DeleteElementAction } from "../edit/delete";
-import { isSelected } from "../select/model";
+import { injectable, multiInject, optional } from 'inversify';
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
+import { MenuItem } from './context-menu-service';
+import { SModelRoot } from '../../base/model/smodel';
+import { LabeledAction } from '../../base/actions/action';
+import { TYPES } from '../../base/types';
+import { isDeletable } from '../edit/delete';
+import { isSelected } from '../select/model';
+import { DeleteElementAction } from 'sprotty-protocol';
 
 export interface IContextMenuItemProvider {
     getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<LabeledAction[]>;
@@ -42,7 +43,7 @@ export class ContextMenuProviderRegistry implements IContextMenuItemProvider {
         const menuItemsWithParentId = menuItems.filter(menuItem => menuItem.parentId);
         for (const menuItem of menuItemsWithParentId) {
             if (menuItem.parentId) {
-                const fragments = menuItem.parentId.split(".");
+                const fragments = menuItem.parentId.split('.');
                 let matchingParent: MenuItem | undefined = undefined;
                 let nextParents = menuItems;
                 for (const fragment of fragments) {
@@ -70,10 +71,10 @@ export class DeleteContextMenuItemProvider implements IContextMenuItemProvider {
         const selectedElements = Array.from(root.index.all().filter(isSelected).filter(isDeletable));
         return Promise.resolve([
             {
-                id: "delete",
-                label: "Delete",
-                sortString: "d",
-                group: "edit",
+                id: 'delete',
+                label: 'Delete',
+                sortString: 'd',
+                group: 'edit',
                 actions: [DeleteElementAction.create(selectedElements.map(e => e.id))],
                 isEnabled: () => selectedElements.length > 0
             }
