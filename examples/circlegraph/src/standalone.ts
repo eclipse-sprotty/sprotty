@@ -61,7 +61,7 @@ export default async function runCircleGraph() {
         };
     }
 
-    const container = createContainer((point: Point) => {
+    const container = createContainer((point?: Point) => {
         createNode(point);
     });
     const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
