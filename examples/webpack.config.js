@@ -1,7 +1,8 @@
 //@ts-check
 
-var webpack = require('webpack');
-var path = require('path');
+const webpack = require('webpack');
+const path = require('path');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 /** @type {import('webpack').Configuration} */
 const config = {
@@ -9,13 +10,7 @@ const config = {
     mode: 'development',
     devtool: 'source-map',
 
-    entry: [
-        'core-js/es/map',
-        'core-js/es/promise',
-        'core-js/es/string',
-        'core-js/es/symbol',
-        './browser-app.ts'
-    ],
+    entry: './browser-app.ts',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'resources')
@@ -44,7 +39,10 @@ const config = {
     },
 
     plugins: [
-        new webpack.ProgressPlugin()
+        new CircularDependencyPlugin({
+            exclude: /node_modules\/inversify/,
+            failOnError: true
+        })
     ],
     ignoreWarnings: [/Failed to parse source map/],
 

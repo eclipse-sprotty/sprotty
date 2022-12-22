@@ -27,6 +27,12 @@ import { Command, CommandResult } from "./command";
 
 const MySymbol = Symbol('MySymbol');
 
+class MyAction {
+    kind = MyCommand.KIND;
+
+    constructor(readonly value: string) {}
+}
+
 @injectable()
 class MyCommand extends Command {
     static KIND = 'MyCommand';
@@ -40,12 +46,6 @@ class MyCommand extends Command {
     execute(): CommandResult { return null!; }
     undo(): CommandResult { return null!; }
     redo(): CommandResult { return null!; }
-}
-
-class MyAction {
-    kind = MyCommand.KIND;
-
-    constructor(readonly value: string) {}
 }
 
 describe('CommandRegistration', () => {

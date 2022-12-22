@@ -103,13 +103,13 @@ export class SocketElkServer implements ELK {
         });
     }
 
-    knownLayoutAlgorithms(): Promise<ElkLayoutAlgorithmDescription> {
+    knownLayoutAlgorithms(): Promise<ElkLayoutAlgorithmDescription[]> {
         throw new Error('Method not implemented.');
     }
-    knownLayoutOptions(): Promise<ElkLayoutOptionDescription> {
+    knownLayoutOptions(): Promise<ElkLayoutOptionDescription[]> {
         throw new Error('Method not implemented.');
     }
-    knownLayoutCategories(): Promise<ElkLayoutCategoryDescription> {
+    knownLayoutCategories(): Promise<ElkLayoutCategoryDescription[]> {
         throw new Error('Method not implemented.');
     }
 
