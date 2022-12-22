@@ -33,7 +33,7 @@ import { ViewRegistry, RenderingTargetKind, IViewArgs } from "./views/view";
 import { ViewerCache } from "./views/viewer-cache";
 import { DOMHelper } from "./views/dom-helper";
 import { IdPostprocessor } from "./views/id-postprocessor";
-import { configureCommand, CommandActionHandlerInitializer } from "./commands/command-registration";
+import { configureCommand, CommandActionHandlerInitializer } from "./commands/command-registration";
 import { CssClassPostprocessor } from "./views/css-class-postprocessor";
 import { ToolManager, DefaultToolsEnablingKeyListener, ToolManagerActionHandler } from "./tool-manager/tool-manager";
 import { EnableDefaultToolsAction, EnableToolsAction } from "./tool-manager/tool";

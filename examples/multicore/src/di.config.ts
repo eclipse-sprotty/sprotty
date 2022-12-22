@@ -27,7 +27,7 @@ class FilteringSvgExporter extends SvgExporter {
     isExported(styleSheet: CSSStyleSheet): boolean {
         return styleSheet.href !== null && (
             styleSheet.href.endsWith('diagram.css')
-            || styleSheet.href.endsWith('sprotty.css')
+            || styleSheet.href.endsWith('sprotty.css')
             || styleSheet.href.endsWith('page.css')
         );
     }

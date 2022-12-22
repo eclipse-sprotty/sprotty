@@ -18,7 +18,7 @@ import { Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { Animation } from "../../base/animations/animation";
 import { SModelRoot, SModelElement } from "../../base/model/smodel";
 import { CommandExecutionContext } from "../../base/commands/command";
-import { BoundsAware } from './model';
+import { BoundsAware } from './model';
 
 export interface ResolvedElementResize {
     element: SModelElement & BoundsAware

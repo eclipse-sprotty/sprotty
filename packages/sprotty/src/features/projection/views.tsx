@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 /** @jsx html */
-import { html } from '../../lib/jsx';
+import { html } from '../../lib/jsx';
 
 import { injectable } from 'inversify';
 import { VNode, VNodeStyle, h } from 'snabbdom';

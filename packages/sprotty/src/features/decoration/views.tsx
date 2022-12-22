@@ -41,7 +41,7 @@ export class IssueMarkerView implements IView {
     protected getMaxSeverity(marker: SIssueMarker): SIssueSeverity {
         let currentSeverity: SIssueSeverity = 'info';
         for (const severity of marker.issues.map(s => s.severity)) {
-            if (severity === 'error' || (severity === 'warning' && currentSeverity === 'info'))
+            if (severity === 'error' || (severity === 'warning' && currentSeverity === 'info'))
                 currentSeverity = severity;
         }
         return currentSeverity;

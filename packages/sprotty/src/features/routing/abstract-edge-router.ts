@@ -88,7 +88,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
 
     protected abstract getOptions(edge: SRoutableElement): LinearRouteOptions;
 
-    pointAt(edge: SRoutableElement, t: number): Point | undefined {
+    pointAt(edge: SRoutableElement, t: number): Point | undefined {
         const segments = this.calculateSegment(edge, t);
         if (!segments)
             return undefined;
@@ -96,7 +96,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return Point.linear(segmentStart, segmentEnd, lambda);
     }
 
-    derivativeAt(edge: SRoutableElement, t: number): Point | undefined {
+    derivativeAt(edge: SRoutableElement, t: number): Point | undefined {
         const segments = this.calculateSegment(edge, t);
         if (!segments)
             return undefined;
@@ -107,8 +107,8 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         };
     }
 
-    protected calculateSegment(edge: SRoutableElement, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number} | undefined {
-        if (t < 0 || t > 1)
+    protected calculateSegment(edge: SRoutableElement, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number} | undefined {
+        if (t < 0 || t > 1)
             return undefined;
         const routedPoints = this.route(edge);
         if (routedPoints.length < 2)
@@ -116,7 +116,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         const segmentLengths: number[] = [];
         let totalLength = 0;
         for (let i = 0; i < routedPoints.length - 1; ++i) {
-            segmentLengths[i] = Point.euclideanDistance(routedPoints[i], routedPoints[i + 1]);
+            segmentLengths[i] = Point.euclideanDistance(routedPoints[i], routedPoints[i + 1]);
             totalLength += segmentLengths[i];
         }
         let currentLenght = 0;
@@ -124,7 +124,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         for (let i = 0; i < routedPoints.length - 1; ++i) {
             const newLength = currentLenght + segmentLengths[i];
             // avoid division by (almost) zero
-            if (segmentLengths[i] > 1E-8) {
+            if (segmentLengths[i] > 1E-8) {
                 if (newLength >= tAsLenght) {
                     const lambda = Math.max(0, (tAsLenght - currentLenght)) / segmentLengths[i];
                     return {
@@ -154,7 +154,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return handle;
     }
 
-    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined {
+    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined {
         switch (handle.kind) {
             case 'source':
                 if (edge.source instanceof SDanglingAnchor)
@@ -177,7 +177,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return undefined;
     }
 
-    protected abstract getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined;
+    protected abstract getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined;
 
     protected findRouteSegment(edge: SRoutableElement, route: RoutedPoint[], handleIndex: number): { start?: Point, end?: Point } {
         const getIndex = (rp: RoutedPoint) => {
@@ -254,7 +254,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
 
     protected resetRoutingPointsOnReconnect(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean,
         sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors): boolean {
-        if (routingPoints.length === 0 || edge.source instanceof SDanglingAnchor || edge.target instanceof SDanglingAnchor) {
+        if (routingPoints.length === 0 || edge.source instanceof SDanglingAnchor || edge.target instanceof SDanglingAnchor) {
             const options = this.getOptions(edge);
             const corners = this.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
             routingPoints.splice(0, routingPoints.length, ...corners);
@@ -368,7 +368,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
     }
 
     protected getSelfEdgeIndex(edge: SRoutableElement): number {
-        if (!edge.source || edge.source !== edge.target)
+        if (!edge.source || edge.source !== edge.target)
             return -1;
         return edge.source.outgoingEdges
             .filter(otherEdge => otherEdge.target === edge.source)

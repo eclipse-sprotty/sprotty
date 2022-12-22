@@ -79,8 +79,8 @@ export class ManhattanDiamondAnchor implements IAnchorComputer {
         };
         const c = Bounds.center(bounds);
 
-        let outline: Line | undefined = undefined;
-        let refLine: Line | undefined = undefined;
+        let outline: Line | undefined = undefined;
+        let refLine: Line | undefined = undefined;
         if (refPoint.x >= bounds.x && refPoint.x <= bounds.x + bounds.width) {
             if (bounds.x + 0.5 * bounds.width >= refPoint.x) {
                 refLine = new PointToPointLine(refPoint, { x: refPoint.x, y: c.y });
@@ -88,7 +88,7 @@ export class ManhattanDiamondAnchor implements IAnchorComputer {
                     outline = new PointToPointLine({ x: bounds.x, y: c.y }, { x: c.x, y: bounds.y });
                 else
                     outline = new PointToPointLine({ x: bounds.x, y: c.y }, { x: c.x, y: bounds.y + bounds.height });
-            } else {
+            } else {
                 refLine = new PointToPointLine(refPoint, { x: refPoint.x, y: c.y });
                 if (refPoint.y < c.y)
                     outline = new PointToPointLine({ x: bounds.x + bounds.width, y: c.y }, { x: c.x, y: bounds.y });

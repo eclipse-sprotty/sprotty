@@ -32,7 +32,7 @@ export class SDecoration extends SShapeElement implements Decoration {
     static readonly DEFAULT_FEATURES = [decorationFeature, boundsFeature, hoverFeedbackFeature, popupFeature];
 }
 
-export type SIssueSeverity = 'error' | 'warning' | 'info';
+export type SIssueSeverity = 'error' | 'warning' | 'info';
 
 export class SIssueMarker extends SDecoration {
     issues: SIssue[];
