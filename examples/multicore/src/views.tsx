@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from 'sprotty/lib/lib/jsx';
+import { svg } from 'sprotty/lib/lib/jsx';
 
 import { VNode } from "snabbdom";
 import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, ShapeView, IViewArgs } from 'sprotty';

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { Action, CollapseExpandAction as ProtocolCollapseExpandAction, CollapseExpandAllAction as ProtocolCollapseExpandAllAction} from 'sprotty-protocol/lib/actions';
 import { SButton } from '../button/model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
@@ -59,9 +59,9 @@ export class ExpandButtonHandler implements IButtonHandler {
     buttonPressed(button: SButton): Action[] {
         const expandable = findParentByFeature(button, isExpandable);
         if (expandable !== undefined) {
-            return [ ProtocolCollapseExpandAction.create({
-                expandIds:   expandable.expanded ? [] : [ expandable.id ],
-                collapseIds:  expandable.expanded ? [ expandable.id ] : []
+            return [ ProtocolCollapseExpandAction.create({
+                expandIds:   expandable.expanded ? [] : [ expandable.id ],
+                collapseIds:  expandable.expanded ? [ expandable.id ] : []
             })];
         } else {
             return [];

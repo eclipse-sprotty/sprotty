@@ -61,7 +61,7 @@ export class DeleteElementCommand extends Command {
 
     resolvedDeletes: ResolvedDelete[] = [];
 
-    constructor(@inject(TYPES.Action) protected readonly action: DeleteElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: DeleteElementAction) {
         super();
     }
 

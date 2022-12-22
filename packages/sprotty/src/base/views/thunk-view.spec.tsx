@@ -44,7 +44,7 @@ describe('ThunkView', () => {
            return  <g id={renderCount++}></g>;
         }
 
-        selector() {
+        selector() {
             return 'g';
         }
 

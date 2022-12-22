@@ -115,7 +115,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
         }
     }
 
-    protected boundsInViewport(element: SModelElement, bounds: Bounds, viewport: SModelRoot & Viewport): Bounds {
+    protected boundsInViewport(element: SModelElement, bounds: Bounds, viewport: SModelRoot & Viewport): Bounds {
         if (element instanceof SChildElement && element.parent !== viewport)
             return this.boundsInViewport(element.parent, element.parent.localToParent(bounds) as Bounds, viewport);
         else

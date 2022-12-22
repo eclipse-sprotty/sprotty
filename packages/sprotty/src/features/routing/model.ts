@@ -112,18 +112,28 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
 
     /**
      * The incoming edges of this connectable element. They are resolved by the index, which must
-     * be an `SGraphIndex`.
+     * be an `SGraphIndex` for efficient lookup.
      */
     get incomingEdges(): FluentIterable<SEdge> {
-        return (this.index as SGraphIndex).getIncomingEdges(this);
+        const index = this.index;
+        if (index instanceof SGraphIndex) {
+            return index.getIncomingEdges(this);
+        }
+        const allEdges = index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        return allEdges.filter(e => e.targetId === this.id);
     }
 
     /**
      * The outgoing edges of this connectable element. They are resolved by the index, which must
-     * be an `SGraphIndex`.
+     * be an `SGraphIndex` for efficient lookup.
      */
     get outgoingEdges(): FluentIterable<SEdge> {
-        return (this.index as SGraphIndex).getOutgoingEdges(this);
+        const index = this.index;
+        if (index instanceof SGraphIndex) {
+            return index.getOutgoingEdges(this);
+        }
+        const allEdges = index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        return allEdges.filter(e => e.sourceId === this.id);
     }
 
     canConnect(routable: SRoutableElement, role: 'source' | 'target') {
@@ -131,7 +141,7 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
     }
 }
 
-export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%' |
+export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%' |
     'bezier-control-after' | 'bezier-control-before' | 'bezier-junction' | 'bezier-add' | 'bezier-remove';
 
 export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {

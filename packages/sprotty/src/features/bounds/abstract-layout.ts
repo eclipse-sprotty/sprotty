@@ -114,7 +114,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
         return currentOffset;
     }
 
-    protected getDx(hAlign: HAlignment, bounds: Bounds, maxWidth: number): number {
+    protected getDx(hAlign: HAlignment, bounds: Bounds, maxWidth: number): number {
         switch (hAlign) {
             case 'left':
                 return 0;
@@ -125,7 +125,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
         }
     }
 
-    protected getDy(vAlign: VAlignment, bounds: Bounds, maxHeight: number): number {
+    protected getDy(vAlign: VAlignment, bounds: Bounds, maxHeight: number): number {
         switch (vAlign) {
             case 'top':
                 return 0;
@@ -147,7 +147,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
     protected getLayoutOptions(element: SModelElement): T {
         let current = element;
         const allOptions: T[] = [];
-        while (current !== undefined) {
+        while (current !== undefined) {
             const layoutOptions = (current as any).layoutOptions;
             if (layoutOptions !== undefined)
                 allOptions.push(layoutOptions);

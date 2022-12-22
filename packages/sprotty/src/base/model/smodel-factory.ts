@@ -25,9 +25,9 @@ import { SChildElement, SModelElement, SModelRoot, SParentElement, isParent, Fea
  * internally by sprotty.
  */
 export interface IModelFactory {
-    createElement(schema: SModelElementSchema | SModelElement, parent?: SParentElement): SChildElement
+    createElement(schema: SModelElementSchema | SModelElement, parent?: SParentElement): SChildElement
 
-    createRoot(schema: SModelRootSchema | SModelRoot): SModelRoot
+    createRoot(schema: SModelRootSchema | SModelRoot): SModelRoot
 
     createSchema(element: SModelElement): SModelElementSchema
 }
@@ -41,7 +41,7 @@ export class SModelFactory implements IModelFactory {
 
     @inject(TYPES.SModelRegistry) protected readonly registry: SModelRegistry;
 
-    createElement(schema: SModelElementSchema | SModelElement, parent?: SParentElement): SChildElement {
+    createElement(schema: SModelElementSchema | SModelElement, parent?: SParentElement): SChildElement {
         let child: SChildElement;
         if (this.registry.hasKey(schema.type)) {
             const regElement = this.registry.get(schema.type, undefined);
@@ -54,7 +54,7 @@ export class SModelFactory implements IModelFactory {
         return this.initializeChild(child, schema, parent);
     }
 
-    createRoot(schema: SModelRootSchema | SModelRoot): SModelRoot {
+    createRoot(schema: SModelRootSchema | SModelRoot): SModelRoot {
         let root: SModelRoot;
         if (this.registry.hasKey(schema.type)) {
             const regElement = this.registry.get(schema.type, undefined);

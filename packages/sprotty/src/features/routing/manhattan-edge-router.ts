@@ -99,14 +99,14 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         return undefined;
     }
 
-    protected getFraction(kind: RoutingHandleKind): number | undefined {
+    protected getFraction(kind: RoutingHandleKind): number | undefined {
         switch (kind) {
             case 'manhattan-50%': return 0.5;
             default: return undefined;
         }
     }
 
-    protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]) {
+    protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]) {
         const route = this.route(edge);
         const routingPoints = edge.routingPoints;
         const minimalPointDistance = this.getOptions(edge).minimalPointDistance;
@@ -246,7 +246,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             : almostEquals(routingPoints[routingPoints.length - 1].x, routingPoints[routingPoints.length - 2].x);
         } else {
             const nearestSide = otherAnchors.getNearestSide(refPoint);
-            isHorizontal = nearestSide === Side.TOP || nearestSide === Side.BOTTOM;
+            isHorizontal = nearestSide === Side.TOP || nearestSide === Side.BOTTOM;
         }
         if (isHorizontal) {
             if (refPoint.y < currentAnchors.get(Side.TOP).y || refPoint.y > currentAnchors.get(Side.BOTTOM).y) {
@@ -300,7 +300,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         const selfEdge = super.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
         if (selfEdge.length > 0)
             return selfEdge;
-        const bestAnchors = this.getBestConnectionAnchors(edge, sourceAnchors, targetAnchors, options);
+        const bestAnchors = this.getBestConnectionAnchors(edge, sourceAnchors, targetAnchors, options);
         const sourceSide = bestAnchors.source;
         const targetSide = bestAnchors.target;
         const corners: Point[] = [];

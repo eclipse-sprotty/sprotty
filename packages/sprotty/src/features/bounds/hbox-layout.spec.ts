@@ -23,7 +23,7 @@ import { StatefulLayouter, LayoutRegistry } from './layout';
 import { BoundsData } from './hidden-bounds-updater';
 import { EMPTY_DIMENSION } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
-import { Dimension } from '../../utils/geometry';
+import { Dimension } from '../../utils/geometry';
 import { layoutableChildFeature } from './model';
 import { TYPES } from '../../base/types';
 import { Container } from 'inversify';

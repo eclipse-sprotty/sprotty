@@ -19,9 +19,9 @@ import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SParentElement, SChildElement } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, HAlignment } from './layout-options';
-import { BoundsData } from './hidden-bounds-updater';
+import { BoundsData } from './hidden-bounds-updater';
 import { LayoutContainer, isLayoutableChild } from './model';
-import { StatefulLayouter } from './layout';
+import { StatefulLayouter } from './layout';
 
 export interface VBoxLayoutOptions extends AbstractLayoutOptions {
     vGap: number

@@ -25,7 +25,7 @@ export class OpenMouseListener extends MouseListener {
     override doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const openableTarget = findParentByFeature(target, isOpenable);
         if (openableTarget !== undefined) {
-            return [ OpenAction.create(openableTarget.id) ];
+            return [ OpenAction.create(openableTarget.id) ];
         }
         return [];
     }

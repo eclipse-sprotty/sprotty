@@ -100,7 +100,7 @@ export class ChipModelFactory extends SGraphFactory {
 
     isCoreSchema(schema: SModelElementSchema): schema is CoreSchema {
         const basicType = getBasicType(schema);
-        return basicType === 'core' || basicType === 'simplecore';
+        return basicType === 'core' || basicType === 'simplecore';
     }
 
     isChannelSchema(schema: SModelElementSchema): schema is ChannelSchema {

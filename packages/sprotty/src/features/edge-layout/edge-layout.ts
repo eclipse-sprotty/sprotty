@@ -66,7 +66,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
         return vnode;
     }
 
-    protected getRotatedAlignment(element: EdgeLayoutable & SModelElement & BoundsAware, placement: EdgePlacement, flip: boolean) {
+    protected getRotatedAlignment(element: EdgeLayoutable & SModelElement & BoundsAware, placement: EdgePlacement, flip: boolean) {
         let x = isAlignable(element) ? element.alignment.x : 0;
         let y = isAlignable(element) ? element.alignment.y : 0;
         const bounds = element.bounds;
@@ -111,7 +111,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
     protected getEdgePlacement(element: SModelElement): EdgePlacement {
         let current = element;
         const allPlacements: EdgePlacement[] = [];
-        while (current !== undefined) {
+        while (current !== undefined) {
             const placement = (current as any).edgePlacement;
             if (placement !== undefined)
                 allPlacements.push(placement);
@@ -124,7 +124,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
             (a, b) => { return {...a, ...b}; }, DEFAULT_EDGE_PLACEMENT);
     }
 
-    protected getAlignment(label: EdgeLayoutable & SModelElement & BoundsAware, placement: EdgePlacement, angle: number): Point {
+    protected getAlignment(label: EdgeLayoutable & SModelElement & BoundsAware, placement: EdgePlacement, angle: number): Point {
         const bounds = label.bounds;
         const x = isAlignable(label) ? label.alignment.x - bounds.width : 0;
         const y = isAlignable(label) ? label.alignment.y - bounds.height : 0;

@@ -69,7 +69,7 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
      * @param newRoot the new model.
      * @return the previous model.
      */
-    abstract commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema;
+    abstract commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema;
 }
 
 
@@ -98,7 +98,7 @@ export class ComputedBoundsApplicator {
         e.alignment = { x: newAlignment.x, y: newAlignment.y };
     }
 
-    protected applyBounds(element: SModelElementSchema, newPosition: Point | undefined, newSize: Dimension) {
+    protected applyBounds(element: SModelElementSchema, newPosition: Point | undefined, newSize: Dimension) {
         const e = element as any;
         if (newPosition)
             e.position = {...newPosition};
