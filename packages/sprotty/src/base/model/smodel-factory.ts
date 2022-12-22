@@ -21,6 +21,43 @@ import { FactoryRegistry } from '../../utils/registry';
 import { SChildElement, SModelElement, SModelRoot, SParentElement, isParent, FeatureSet } from './smodel';
 
 /**
+ * Model element classes registered here are considered automatically when constructring a model from its schema.
+ */
+@injectable()
+export class SModelRegistry extends FactoryRegistry<SModelElement, void> {
+    constructor(@multiInject(TYPES.SModelElementRegistration) @optional() registrations: SModelElementRegistration[]) {
+        super();
+
+        registrations.forEach(registration => {
+            let defaultFeatures = this.getDefaultFeatures(registration.constr);
+            if (!defaultFeatures && registration.features && registration.features.enable)
+                defaultFeatures = [];
+            if (defaultFeatures) {
+                const featureSet = createFeatureSet(defaultFeatures, registration.features);
+                this.register(registration.type, () => {
+                    const element = new registration.constr();
+                    element.features = featureSet;
+                    return element;
+                });
+            } else {
+                this.register(registration.type, () => new registration.constr());
+            }
+        });
+    }
+
+    protected getDefaultFeatures(constr: SModelElementConstructor): ReadonlyArray<symbol> | undefined {
+        let obj = constr;
+        do {
+            const defaultFeatures = obj.DEFAULT_FEATURES;
+            if (defaultFeatures)
+                return defaultFeatures;
+            obj = Object.getPrototypeOf(obj);
+        } while (obj);
+        return undefined;
+    }
+}
+
+/**
  * A model factory transforms a serializable model schema into the model representation that is used
  * internally by sprotty.
  */
@@ -150,43 +187,6 @@ export interface SModelElementConstructor {
 export interface CustomFeatures {
     enable?: symbol[]
     disable?: symbol[]
-}
-
-/**
- * Model element classes registered here are considered automatically when constructring a model from its schema.
- */
-@injectable()
-export class SModelRegistry extends FactoryRegistry<SModelElement, void> {
-    constructor(@multiInject(TYPES.SModelElementRegistration) @optional() registrations: SModelElementRegistration[]) {
-        super();
-
-        registrations.forEach(registration => {
-            let defaultFeatures = this.getDefaultFeatures(registration.constr);
-            if (!defaultFeatures && registration.features && registration.features.enable)
-                defaultFeatures = [];
-            if (defaultFeatures) {
-                const featureSet = createFeatureSet(defaultFeatures, registration.features);
-                this.register(registration.type, () => {
-                    const element = new registration.constr();
-                    element.features = featureSet;
-                    return element;
-                });
-            } else {
-                this.register(registration.type, () => new registration.constr());
-            }
-        });
-    }
-
-    protected getDefaultFeatures(constr: SModelElementConstructor): ReadonlyArray<symbol> | undefined {
-        let obj = constr;
-        do {
-            const defaultFeatures = obj.DEFAULT_FEATURES;
-            if (defaultFeatures)
-                return defaultFeatures;
-            obj = Object.getPrototypeOf(obj);
-        } while (obj);
-        return undefined;
-    }
 }
 
 export function createFeatureSet(defaults: ReadonlyArray<symbol>, custom?: CustomFeatures): FeatureSet {

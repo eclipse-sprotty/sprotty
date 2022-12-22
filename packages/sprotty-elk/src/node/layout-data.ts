@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ElkEdge, ElkExtendedEdge, ElkNode, ElkPrimitiveEdge, ElkShape } from 'elkjs/lib/elk-api';
+import { ElkExtendedEdge, ElkNode, ElkPrimitiveEdge, ElkShape } from 'elkjs/lib/elk-api';
 import { Dimension, Point } from 'sprotty-protocol';
 
 /**
@@ -66,7 +66,7 @@ export function applyLayoutData(data: LayoutData, node: ElkNode): void {
             }
             if (port.labels) {
                 for (const label of port.labels) {
-                    const labelDataElem = data[label.id];
+                    const labelDataElem = label.id && data[label.id];
                     if (isShapeLayout(labelDataElem)) {
                         applyShapeLayout(labelDataElem, label);
                     }
@@ -76,7 +76,7 @@ export function applyLayoutData(data: LayoutData, node: ElkNode): void {
     }
     if (node.labels) {
         for (const label of node.labels) {
-            const labelDataElem = data[label.id];
+            const labelDataElem = label.id && data[label.id];
             if (isShapeLayout(labelDataElem)) {
                 applyShapeLayout(labelDataElem, label);
             }
@@ -90,7 +90,7 @@ export function applyLayoutData(data: LayoutData, node: ElkNode): void {
             }
             if (edge.labels) {
                 for (const label of edge.labels) {
-                    const labelDataElem = data[label.id];
+                    const labelDataElem = label.id && data[label.id];
                     if (isShapeLayout(labelDataElem)) {
                         applyShapeLayout(labelDataElem, label);
                     }
@@ -114,16 +114,8 @@ function applyShapeLayout(dataElem: ShapeLayoutElement, shape: ElkShape): void {
     }
 }
 
-function applyEdgeLayout(dataElem: EdgeLayoutElement, edge: ElkEdge): void {
-    if (isPrimitiveEdge(edge)) {
-        if (dataElem.route.length >= 1) {
-            edge.sourcePoint = dataElem.route[0];
-        }
-        edge.bendPoints = dataElem.route.slice(1, -1);
-        if (dataElem.route.length >= 2) {
-            edge.targetPoint = dataElem.route[dataElem.route.length - 1];
-        }
-    } else if (isExtendedEdge(edge) && edge.sections.length > 0) {
+function applyEdgeLayout(dataElem: EdgeLayoutElement, edge: ElkExtendedEdge): void {
+    if (edge.sections && edge.sections.length > 0) {
         const section = edge.sections[0];
         if (dataElem.route.length >= 1) {
             section.startPoint = dataElem.route[0];
@@ -132,16 +124,20 @@ function applyEdgeLayout(dataElem: EdgeLayoutElement, edge: ElkEdge): void {
         if (dataElem.route.length >= 2) {
             section.endPoint = dataElem.route[dataElem.route.length - 1];
         }
+    } else if (isPrimitiveEdge(edge)) {
+        if (dataElem.route.length >= 1) {
+            edge.sourcePoint = dataElem.route[0];
+        }
+        edge.bendPoints = dataElem.route.slice(1, -1);
+        if (dataElem.route.length >= 2) {
+            edge.targetPoint = dataElem.route[dataElem.route.length - 1];
+        }
     }
 }
 
-function isPrimitiveEdge(edge: ElkEdge): edge is ElkPrimitiveEdge {
+function isPrimitiveEdge(edge: unknown): edge is ElkPrimitiveEdge {
     return typeof (edge as ElkPrimitiveEdge).source === 'string'
         && typeof (edge as ElkPrimitiveEdge).target === 'string';
-}
-
-function isExtendedEdge(edge: ElkEdge): edge is ElkExtendedEdge {
-    return Array.isArray((edge as ElkExtendedEdge).sources) && Array.isArray((edge as ElkExtendedEdge).targets);
 }
 
 /**

@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import {
-    ELK, ElkNode, ElkGraphElement, ElkEdge, ElkLabel, ElkPort, ElkShape, ElkPrimitiveEdge,
-    ElkExtendedEdge, LayoutOptions
+    ELK, ElkNode, ElkGraphElement, ElkLabel, ElkPort, ElkShape, ElkExtendedEdge, LayoutOptions, ElkPrimitiveEdge
 } from 'elkjs/lib/elk-api';
 import { IModelLayoutEngine } from 'sprotty-protocol/lib/diagram-services';
 import { SEdge, SGraph, SLabel, SModelElement, SNode, SPort, SShapeElement } from 'sprotty-protocol/lib/model';
@@ -69,7 +68,7 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
                         .map(c => this.transformToElk(c, index)) as ElkNode[];
                     elkGraph.edges = sgraph.children
                         .filter(c => this.getBasicType(c) === 'edge' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkEdge[];
+                        .map(c => this.transformToElk(c, index)) as ElkExtendedEdge[];
                 }
                 return elkGraph;
             }
@@ -86,7 +85,7 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
                         .map(c => this.transformToElk(c, index)) as ElkNode[];
                     elkNode.edges = snode.children
                         .filter(c => this.getBasicType(c) === 'edge' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkEdge[];
+                        .map(c => this.transformToElk(c, index)) as ElkExtendedEdge[];
                     elkNode.labels = snode.children
                         .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
                         .map(c => this.transformToElk(c, index)) as ElkLabel[];
@@ -100,28 +99,12 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
 
             case 'edge': {
                 const sedge = smodel as SEdge;
-                const elkEdge: ElkPrimitiveEdge = {
+                const elkEdge: ElkExtendedEdge = {
                     id: sedge.id,
-                    source: sedge.sourceId,
-                    target: sedge.targetId,
+                    sources: [sedge.sourceId],
+                    targets: [sedge.targetId],
                     layoutOptions: this.configurator.apply(sedge, index)
                 };
-                const sourceElement = index.getById(sedge.sourceId);
-                if (sourceElement && this.getBasicType(sourceElement) === 'port') {
-                    const parent = index.getParent(sourceElement.id);
-                    if (parent && this.getBasicType(parent) === 'node') {
-                        elkEdge.source = parent.id;
-                        elkEdge.sourcePort = sourceElement.id;
-                    }
-                }
-                const targetElement = index.getById(sedge.targetId);
-                if (targetElement && this.getBasicType(targetElement) === 'port') {
-                    const parent = index.getParent(targetElement.id);
-                    if (parent && this.getBasicType(parent) === 'node') {
-                        elkEdge.target = parent.id;
-                        elkEdge.targetPort = targetElement.id;
-                    }
-                }
                 if (sedge.children) {
                     elkEdge.labels = sedge.children
                         .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
@@ -129,9 +112,12 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
                 }
                 const points = sedge.routingPoints;
                 if (points && points.length >= 2) {
-                    elkEdge.sourcePoint = points[0];
-                    elkEdge.bendPoints = points.slice(1, points.length - 1);
-                    elkEdge.targetPoint = points[points.length - 1];
+                    elkEdge.sections = [{
+                        id: sedge.id + ':section',
+                        startPoint: points[0],
+                        bendPoints: points.slice(1, points.length - 1),
+                        endPoint: points[points.length - 1]
+                    }];
                 }
                 return elkEdge;
             }
@@ -214,7 +200,7 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
 
         if (elkShape.labels) {
             for (const elkLabel of elkShape.labels) {
-                const slabel = index.getById(elkLabel.id);
+                const slabel = elkLabel.id && index.getById(elkLabel.id);
                 if (slabel) {
                     this.applyShape(slabel as SLabel, elkLabel, index);
                 }
@@ -222,30 +208,29 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
         }
     }
 
-    protected applyEdge(sedge: SEdge, elkEdge: ElkEdge, index: SModelIndex): void {
+    protected applyEdge(sedge: SEdge, elkEdge: ElkExtendedEdge, index: SModelIndex): void {
         const points: Point[] = [];
-        if ((elkEdge as any).sections && (elkEdge as any).sections.length > 0) {
-            const section = (elkEdge as ElkExtendedEdge).sections[0];
+        if (elkEdge.sections && elkEdge.sections.length > 0) {
+            const section = elkEdge.sections[0];
             if (section.startPoint)
                 points.push(section.startPoint);
             if (section.bendPoints)
                 points.push(...section.bendPoints);
             if (section.endPoint)
                 points.push(section.endPoint);
-        } else {
-            const section = elkEdge as ElkPrimitiveEdge;
-            if (section.sourcePoint)
-                points.push(section.sourcePoint);
-            if (section.bendPoints)
-                points.push(...section.bendPoints);
-            if (section.targetPoint)
-                points.push(section.targetPoint);
+        } else if (isPrimitiveEdge(elkEdge)) {
+            if (elkEdge.sourcePoint)
+                points.push(elkEdge.sourcePoint);
+            if (elkEdge.bendPoints)
+                points.push(...elkEdge.bendPoints);
+            if (elkEdge.targetPoint)
+                points.push(elkEdge.targetPoint);
         }
         sedge.routingPoints = points;
 
         if (elkEdge.labels) {
             elkEdge.labels.forEach((elkLabel) => {
-                const sLabel = index.getById(elkLabel.id);
+                const sLabel = elkLabel.id && index.getById(elkLabel.id);
                 if (sLabel) {
                     this.applyShape(sLabel, elkLabel, index);
                 }
@@ -253,6 +238,11 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
         }
     }
 
+}
+
+function isPrimitiveEdge(edge: unknown): edge is ElkPrimitiveEdge {
+    return typeof (edge as ElkPrimitiveEdge).source === 'string'
+        && typeof (edge as ElkPrimitiveEdge).target === 'string';
 }
 
 /**
