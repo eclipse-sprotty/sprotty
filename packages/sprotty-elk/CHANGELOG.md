@@ -2,14 +2,23 @@
 
 This change log covers only the `elkjs` layout of Sprotty. See also the change log of [sprotty](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
 
+### v0.13.0 (Dec. 2022)
+
+ * Updated to elkjs 0.8.2 ([#329](https://github.com/eclipse/sprotty/pull/329)). This update has breaking API changes.
+
+Fixed issues: https://github.com/eclipse/sprotty/milestone/9?closed=1
+
+-----
+
 ### v0.12.0 (Jun. 2022)
 
-New features:
-* Implemented client for running ELK layout in a separate process ([#282](https://github.com/eclipse/sprotty/pull/282)).
-Adds `SocketElkServer` and `StdioElkServer` that enable to run the ELK layout engine in a separate Java process
-* Aligned dependency to `inversify`: version constraint is now `^5.1.1` in all sprotty packages.
+ * Implemented client for running ELK layout in a separate process ([#282](https://github.com/eclipse/sprotty/pull/282)).
+Adds `SocketElkServer` and `StdioElkServer` that enable to run the ELK layout engine in a separate Java process.
+ * Aligned dependency to `inversify`: version constraint is now `^5.1.1` in all sprotty packages.
 
-Fixed issues: https://github.com/eclipse/sprotty/issues?q=milestone%3Av0.12.0+is%3Aclosed+label%3Asprotty-elk
+Fixed issues: https://github.com/eclipse/sprotty/milestone/8?closed=1
+
+-----
 
 ### v0.11.0 (Nov. 2021)
 

@@ -2,15 +2,25 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-elk](https://github.com/eclipse/sprotty/blob/master//packages/sprotty-elk/CHANGELOG.md).
 
-### v0.13.0 (TBD)
+### v0.13.0 (Dec. 2022)
 
-* Remove codicon.css, document and explain future usage [#312](https://github.com/eclipse/sprotty/pull/292/): You now have to manually add the dependency of `@vscode/codicons` to your application and reference it in your di.config, see classdiagram [di.config.ts](../../examples/classdiagram/src/di.config.ts)
+ * Removed dependency to `@vscode/codicons` ([#312](https://github.com/eclipse/sprotty/pull/312)): You now have to add the dependency to your application and include it via import or other means. See classdiagram [di.config.ts](../../examples/classdiagram/src/di.config.ts) for an example.
+ * New function `configureButtonHandler` to register a button handler for a button type ([#303](https://github.com/eclipse/sprotty/pull/303))
+ * Added `dragover` and `drop` events to mouse listeners ([#309](https://github.com/eclipse/sprotty/pull/309))
+ * Moved more actions from `sprotty` to `sprotty-protocol` to make them available in backend applications ([#326](https://github.com/eclipse/sprotty/pull/326)).
+
+
+Fixed issues: https://github.com/eclipse/sprotty/milestone/9?closed=1
+
+-----
 
 ### v0.12.0 (Jun. 2022)
 
-* Aligned dependency to `inversify` ([#292](https://github.com/eclipse/sprotty/pull/292/)): version constraint is now `^5.1.1` in all sprotty packages.
+ * Aligned dependency to `inversify` ([#292](https://github.com/eclipse/sprotty/pull/292)): version constraint is now `^5.1.1` in all sprotty packages.
 
-Fixed issues: https://github.com/eclipse/sprotty/issues?q=milestone%3Av0.12.0+is%3Aclosed+label%3Asprotty
+Fixed issues: https://github.com/eclipse/sprotty/milestone/8?closed=1
+
+-----
 
 ### v0.11.1 (Nov. 2021)
 
