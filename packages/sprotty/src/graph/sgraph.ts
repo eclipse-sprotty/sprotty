@@ -90,6 +90,24 @@ export class SNode extends SConnectableElement implements Selectable, Fadeable, 
         return this.children.find(c => c instanceof SPort) === undefined;
     }
 
+    override get incomingEdges(): FluentIterable<SEdge> {
+        const index = this.index;
+        if (index instanceof SGraphIndex) {
+            return index.getIncomingEdges(this);
+        }
+        const allEdges = this.index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        return allEdges.filter(e => e.targetId === this.id);
+    }
+
+    override get outgoingEdges(): FluentIterable<SEdge> {
+        const index = this.index;
+        if (index instanceof SGraphIndex) {
+            return index.getOutgoingEdges(this);
+        }
+        const allEdges = this.index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        return allEdges.filter(e => e.sourceId === this.id);
+    }
+
 }
 
 /**
@@ -114,6 +132,22 @@ export class SPort extends SConnectableElement implements Selectable, Fadeable, 
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
+
+    override get incomingEdges(): FluentIterable<SEdge> {
+        const index = this.index;
+        if (index instanceof SGraphIndex) {
+            return index.getIncomingEdges(this);
+        }
+        return super.incomingEdges.filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+    }
+
+    override get outgoingEdges(): FluentIterable<SEdge> {
+        const index = this.index;
+        if (index instanceof SGraphIndex) {
+            return index.getOutgoingEdges(this);
+        }
+        return super.outgoingEdges.filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+    }
 
 }
 

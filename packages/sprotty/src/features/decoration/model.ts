@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelExtension } from "../../base/model/smodel-extension";
-import { hoverFeedbackFeature, popupFeature } from "../hover/model";
-import { SModelElement } from "../../base/model/smodel";
-import { SShapeElement, boundsFeature } from "../bounds/model";
+import { SModelExtension } from '../../base/model/smodel-extension';
+import { SModelElement } from '../../base/model/smodel';
+import { SShapeElement, boundsFeature } from '../bounds/model';
+import { hoverFeedbackFeature, popupFeature } from '../hover/model';
 
 export const decorationFeature = Symbol('decorationFeature');
 

@@ -17,7 +17,6 @@
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SChildElement, SModelElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { SEdge, SGraphIndex } from '../../graph/sgraph';
 import { FluentIterable } from '../../utils/iterable';
 import { SShapeElement } from '../bounds/model';
 import { deletableFeature } from '../edit/delete';
@@ -114,12 +113,8 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
      * The incoming edges of this connectable element. They are resolved by the index, which must
      * be an `SGraphIndex` for efficient lookup.
      */
-    get incomingEdges(): FluentIterable<SEdge> {
-        const index = this.index;
-        if (index instanceof SGraphIndex) {
-            return index.getIncomingEdges(this);
-        }
-        const allEdges = index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+    get incomingEdges(): FluentIterable<SRoutableElement> {
+        const allEdges = this.index.all().filter(e => e instanceof SRoutableElement) as FluentIterable<SRoutableElement>;
         return allEdges.filter(e => e.targetId === this.id);
     }
 
@@ -127,12 +122,8 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
      * The outgoing edges of this connectable element. They are resolved by the index, which must
      * be an `SGraphIndex` for efficient lookup.
      */
-    get outgoingEdges(): FluentIterable<SEdge> {
-        const index = this.index;
-        if (index instanceof SGraphIndex) {
-            return index.getOutgoingEdges(this);
-        }
-        const allEdges = index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+    get outgoingEdges(): FluentIterable<SRoutableElement> {
+        const allEdges = this.index.all().filter(e => e instanceof SRoutableElement) as FluentIterable<SRoutableElement>;
         return allEdges.filter(e => e.sourceId === this.id);
     }
 

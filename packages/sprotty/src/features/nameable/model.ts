@@ -13,8 +13,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { SModelElement } from "../../base/model/smodel";
-import { SModelExtension } from "../../base/model/smodel-extension";
+
+import { SModelElement } from '../../base/model/smodel';
+import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const nameFeature = Symbol('nameableFeature');
 

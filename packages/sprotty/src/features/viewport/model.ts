@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Scrollable, Zoomable } from "sprotty-protocol/lib/model";
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
+import { Scrollable, Zoomable } from 'sprotty-protocol/lib/model';
+import { SModelElement, SModelRoot } from '../../base/model/smodel';
 
 export const viewportFeature = Symbol('viewportFeature');
 

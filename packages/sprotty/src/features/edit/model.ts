@@ -16,8 +16,8 @@
 
 import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElement } from '../../base/model/smodel';
-import { SRoutableElement } from '../routing/model';
 import { SModelExtension } from '../../base/model/smodel-extension';
+import { SRoutableElement } from '../routing/model';
 
 export const editFeature = Symbol('editFeature');
 
