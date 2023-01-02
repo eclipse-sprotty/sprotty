@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, DeleteElementAction as ProtocolDeleteElementAction} from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { SModelElement, SParentElement, SChildElement } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
@@ -57,11 +57,11 @@ export class ResolvedDelete {
 
 @injectable()
 export class DeleteElementCommand extends Command {
-    static readonly KIND = DeleteElementAction.KIND;
+    static readonly KIND = ProtocolDeleteElementAction.KIND;
 
     resolvedDeletes: ResolvedDelete[] = [];
 
-    constructor(@inject(TYPES.Action) protected readonly action: DeleteElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolDeleteElementAction) {
         super();
     }
 

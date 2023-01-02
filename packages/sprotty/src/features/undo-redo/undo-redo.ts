@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, UndoAction as ProtocolUndoAction, RedoAction as ProtocolRedoAction } from 'sprotty-protocol/lib/actions';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { KeyListener } from '../../base/views/key-tool';
 import { SModelElement } from '../../base/model/smodel';
@@ -55,9 +55,9 @@ export namespace RedoAction {
 export class UndoRedoKeyListener extends KeyListener {
     override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
-            return [UndoAction.create()];
+            return [ProtocolUndoAction.create()];
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))
-            return [RedoAction.create()];
+            return [ProtocolRedoAction.create()];
         return [];
     }
 }

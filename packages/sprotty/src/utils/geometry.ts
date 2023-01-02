@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Bounds as ProtocolBounds, Point as ProtocolPoint, toDegrees as protocolToDegrees } from "sprotty-protocol";
 /**
  * A Point is composed of the (x,y) coordinates of an object.
  *
@@ -394,30 +395,30 @@ export function linear(p0: Point, p1: Point, lambda: number): Point {
  */
 export class Diamond {
 
-    constructor(protected bounds: Bounds) { }
+    constructor(protected bounds: ProtocolBounds) { }
 
-    get topPoint(): Point {
+    get topPoint(): ProtocolPoint {
         return {
             x: this.bounds.x + this.bounds.width / 2,
             y: this.bounds.y
         };
     }
 
-    get rightPoint(): Point {
+    get rightPoint(): ProtocolPoint {
         return {
             x: this.bounds.x + this.bounds.width,
             y: this.bounds.y + this.bounds.height / 2
         };
     }
 
-    get bottomPoint(): Point {
+    get bottomPoint(): ProtocolPoint {
         return {
             x: this.bounds.x + this.bounds.width / 2,
             y: this.bounds.y + this.bounds.height
         };
     }
 
-    get leftPoint(): Point {
+    get leftPoint(): ProtocolPoint {
         return {
             x: this.bounds.x,
             y: this.bounds.y + this.bounds.height / 2
@@ -445,8 +446,8 @@ export class Diamond {
      * @param {Point} refPoint a reference point
      * @returns {Line} a line representing the closest side
      */
-    closestSideLine(refPoint: Point): Line {
-        const c = center(this.bounds);
+    closestSideLine(refPoint: ProtocolPoint): Line {
+        const c = ProtocolBounds.center(this.bounds);
         if (refPoint.x > c.x) {
             if (refPoint.y > c.y) {
                 return this.bottomRightSideLine;
@@ -481,7 +482,7 @@ export type CardinalDirection =
  */
 export class PointToPointLine implements Line {
 
-    constructor(public p1: Point, public p2: Point) { }
+    constructor(public p1: ProtocolPoint, public p2: ProtocolPoint) { }
 
     get a(): number {
         return this.p1.y - this.p2.y;
@@ -525,7 +526,7 @@ export class PointToPointLine implements Line {
      * The direction of this line, such as 'north', 'south', or 'south-west'.
      */
     get direction(): CardinalDirection {
-        const hDegrees = toDegrees(this.angle);
+        const hDegrees = protocolToDegrees(this.angle);
         const degrees = hDegrees < 0 ? 360 + hDegrees : hDegrees;
         // degrees are relative to the x-axis
         if (degrees === 90) {
@@ -552,7 +553,7 @@ export class PointToPointLine implements Line {
      * @param otherLine the other line
      * @returns the intersection point between `this` line and the `otherLine` if exists, or `undefined`.
      */
-    intersection(otherLine: PointToPointLine): Point | undefined {
+    intersection(otherLine: PointToPointLine): ProtocolPoint | undefined {
         if (this.hasIndistinctPoints(otherLine)) {
             return undefined;
         }
@@ -593,10 +594,10 @@ export class PointToPointLine implements Line {
      * or end points with the `otherLine`
      */
     hasIndistinctPoints(otherLine: PointToPointLine): boolean {
-        return pointEquals(this.p1, otherLine.p1) ||
-            pointEquals(this.p1, otherLine.p2) ||
-            pointEquals(this.p2, otherLine.p1) ||
-            pointEquals(this.p2, otherLine.p2);
+        return ProtocolPoint.equals(this.p1, otherLine.p1) ||
+            ProtocolPoint.equals(this.p1, otherLine.p2) ||
+            ProtocolPoint.equals(this.p2, otherLine.p1) ||
+            ProtocolPoint.equals(this.p2, otherLine.p2);
     }
 }
 
@@ -606,7 +607,7 @@ export class PointToPointLine implements Line {
  * @param {Line} l2 - Another line
  * @returns {Point} The intersection point of `l1` and `l2`
  */
-export function intersection(l1: Line, l2: Line): Point {
+export function intersection(l1: Line, l2: Line): ProtocolPoint {
     return {
         x: (l1.c * l2.b - l2.c * l1.b) / (l1.a * l2.b - l2.a * l1.b),
         y: (l1.a * l2.c - l2.a * l1.c) / (l1.a * l2.b - l2.a * l1.b)

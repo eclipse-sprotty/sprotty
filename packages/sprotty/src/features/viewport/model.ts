@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Scrollable, Zoomable } from 'sprotty-protocol/lib/model';
+import { Scrollable, Zoomable, Viewport as ProtocolViewport } from 'sprotty-protocol/lib/model';
 import { SModelElement, SModelRoot } from '../../base/model/smodel';
 
 export const viewportFeature = Symbol('viewportFeature');
@@ -25,7 +25,7 @@ export const viewportFeature = Symbol('viewportFeature');
 export interface Viewport extends Scrollable, Zoomable {
 }
 
-export function isViewport(element: SModelElement): element is SModelRoot & Viewport {
+export function isViewport(element: SModelElement): element is SModelRoot & ProtocolViewport {
     return element instanceof SModelRoot
         && element.hasFeature(viewportFeature)
         && 'zoom' in element

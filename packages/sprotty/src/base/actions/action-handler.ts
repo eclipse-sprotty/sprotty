@@ -19,7 +19,7 @@ import { TYPES } from "../types";
 import { MultiInstanceRegistry } from "../../utils/registry";
 import { isInjectable } from "../../utils/inversify";
 import { ICommand } from "../commands/command";
-import { Action } from "./action";
+import { Action } from "sprotty-protocol";
 
 /**
  * An action handler accepts an action and reacts to it by returning either a command to be

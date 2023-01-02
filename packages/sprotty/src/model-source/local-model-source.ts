@@ -20,7 +20,8 @@ import {
     Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
     SetModelAction, SetPopupModelAction, UpdateModelAction
 } from 'sprotty-protocol/lib/actions';
-import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, Viewport } from 'sprotty-protocol/lib/model';
+import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, Viewport} from 'sprotty-protocol/lib/model';
+import { IModelLayoutEngine as ProtocolIModelLayoutEngine } from 'sprotty-protocol';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelIndex, findElement } from 'sprotty-protocol/lib/utils/model-utils';
 import { ILogger } from "../utils/logging";
@@ -45,7 +46,7 @@ export class LocalModelSource extends ModelSource {
     @inject(TYPES.ILogger) protected readonly logger: ILogger;
     @inject(ComputedBoundsApplicator) protected readonly computedBoundsApplicator: ComputedBoundsApplicator;
     @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider;
-    @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine;
+    @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: ProtocolIModelLayoutEngine;
 
     protected currentRoot: SModelRootSchema = EMPTY_ROOT;
 

@@ -17,7 +17,7 @@
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction } from 'sprotty-protocol/lib/actions';
+import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction as ProtocolMoveAction } from 'sprotty-protocol/lib/actions';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from '../../base/commands/command';
 import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smodel';
@@ -83,14 +83,14 @@ export interface ResolvedHandleMove {
 
 @injectable()
 export class MoveCommand extends MergeableCommand {
-    static readonly KIND = MoveAction.KIND;
+    static readonly KIND = ProtocolMoveAction.KIND;
 
     @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
     protected resolvedMoves: Map<string, ResolvedElementMove> = new Map;
     protected edgeMementi: EdgeMemento[] = [];
 
-    constructor(@inject(TYPES.Action) protected readonly action: MoveAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolMoveAction) {
         super();
     }
 
@@ -475,7 +475,7 @@ export class MoveMouseListener extends MouseListener {
         return false;
     }
 
-    protected getElementMoves(target: SModelElement, event: MouseEvent, isFinished: boolean): MoveAction | undefined {
+    protected getElementMoves(target: SModelElement, event: MouseEvent, isFinished: boolean): ProtocolMoveAction | undefined {
         if (!this.startDragPosition)
             return undefined;
         const elementMoves: ElementMove[] = [];
@@ -495,7 +495,7 @@ export class MoveMouseListener extends MouseListener {
             }
         });
         if (elementMoves.length > 0)
-            return MoveAction.create(elementMoves, { animate: false, finished: isFinished });
+            return ProtocolMoveAction.create(elementMoves, { animate: false, finished: isFinished });
         else
             return undefined;
     }

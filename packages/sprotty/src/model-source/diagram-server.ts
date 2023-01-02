@@ -16,7 +16,7 @@
 
 import { saveAs } from 'file-saver';
 import { inject, injectable } from "inversify";
-import { OpenAction } from 'sprotty-protocol';
+import { OpenAction, ActionMessage as ProtocolActionMessage, isActionMessage as isProtocolActionMessage } from 'sprotty-protocol';
 import {
     Action, CollapseExpandAction, CollapseExpandAllAction, ComputedBoundsAction, RequestModelAction,
     RequestPopupModelAction, SetModelAction, UpdateModelAction
@@ -107,7 +107,7 @@ export abstract class DiagramServerProxy extends ModelSource {
     }
 
     protected forwardToServer(action: Action): void {
-        const message: ActionMessage = {
+        const message: ProtocolActionMessage = {
             clientId: this.clientId,
             action: action
         };
@@ -115,11 +115,11 @@ export abstract class DiagramServerProxy extends ModelSource {
         this.sendMessage(message);
     }
 
-    protected abstract sendMessage(message: ActionMessage): void;
+    protected abstract sendMessage(message: ProtocolActionMessage): void;
 
     protected messageReceived(data: any): void {
         const object = typeof(data) === 'string' ? JSON.parse(data) : data;
-        if (isActionMessage(object) && object.action) {
+        if (isProtocolActionMessage(object) && object.action) {
             if (!object.clientId || object.clientId === this.clientId) {
                 (object.action as any)[receivedFromServerProperty] = true;
                 this.logger.log(this, 'receiving', object);

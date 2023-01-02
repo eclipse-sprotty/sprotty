@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable } from "inversify";
+import { hasOwnProperty } from "sprotty-protocol";
 import { ILogger } from "../../utils/logging";
 import { SModelRoot } from "../model/smodel";
 import { TYPES } from "../types";
@@ -26,6 +27,11 @@ export interface IUIExtension {
     id(): string;
     show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void;
     hide(): void;
+    enableOnStartup?: boolean
+}
+
+export function isUIExtension(object: unknown): object is IUIExtension {
+    return hasOwnProperty(object, 'id') && hasOwnProperty(object, 'show') && hasOwnProperty(object, 'hide');
 }
 
 /**

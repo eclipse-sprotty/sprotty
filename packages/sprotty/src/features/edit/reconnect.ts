@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, ReconnectAction as ProtocolReconnectAction} from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { TYPES } from '../../base/types';
 import { SRoutableElement } from '../routing/model';
@@ -45,13 +45,13 @@ export namespace ReconnectAction {
 
 @injectable()
 export class ReconnectCommand extends Command {
-    static readonly KIND = ReconnectAction.KIND;
+    static readonly KIND = ProtocolReconnectAction.KIND;
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
     memento: EdgeMemento | undefined;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ReconnectAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolReconnectAction) {
         super();
     }
 

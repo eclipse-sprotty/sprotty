@@ -255,7 +255,7 @@ export class SelectMouseListener extends MouseListener {
 
     protected handleSelectTarget(selectableTarget: SModelElement & Selectable, deselectedElements: SModelElement[], event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        result.push(new SelectAction([selectableTarget.id], deselectedElements.map(e => e.id)));
+        result.push(ProtocolSelectAction.create({ selectedElementsIDs: [selectableTarget.id], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
         result.push(BringToFrontAction.create([selectableTarget.id]));
         const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElement).map(e => e.id);
         if (selectableTarget instanceof SRoutableElement) {
@@ -268,7 +268,7 @@ export class SelectMouseListener extends MouseListener {
 
     protected handleDeselectTarget(selectableTarget: SModelElement & Selectable, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        result.push(new SelectAction([], [selectableTarget.id]));
+        result.push(ProtocolSelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: [selectableTarget.id] }));
         if (selectableTarget instanceof SRoutableElement) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: [selectableTarget.id] }));
         }
@@ -277,7 +277,7 @@ export class SelectMouseListener extends MouseListener {
 
     protected handleDeselectAll(deselectedElements: SModelElement[], event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        result.push(new SelectAction([], deselectedElements.map(e => e.id)));
+        result.push(ProtocolSelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
         const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElement).map(e => e.id);
         if (routableDeselect.length > 0) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
@@ -339,7 +339,7 @@ export class GetSelectionCommand extends ModelRequestCommand {
 export class SelectKeyboardListener extends KeyListener {
     override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyA', 'ctrlCmd')) {
-            return [new SelectAllAction()];
+            return [ ProtocolSelectAllActon.create()];
         }
         return [];
     }

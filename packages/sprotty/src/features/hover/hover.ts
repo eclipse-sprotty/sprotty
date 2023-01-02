@@ -18,7 +18,7 @@ import { inject, injectable } from "inversify";
 import {
     Action, generateRequestId, RequestAction,
     ResponseAction, RequestPopupModelAction as ProtocolRequestPopupModelAction,
-    SetPopupModelAction as ProtocolSetPopupModelAction
+    SetPopupModelAction as ProtocolSetPopupModelAction, HoverFeedbackAction as ProtocolHoverFeedbackAction
 } from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
@@ -59,9 +59,9 @@ export namespace HoverFeedbackAction {
 
 @injectable()
 export class HoverFeedbackCommand extends SystemCommand {
-    static readonly KIND = HoverFeedbackAction.KIND;
+    static readonly KIND = ProtocolHoverFeedbackAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected readonly action: HoverFeedbackAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolHoverFeedbackAction) {
         super();
     }
 
@@ -186,7 +186,7 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
             this.state.mouseOutTimer = window.setTimeout(() => {
                 this.state.popupOpen = false;
                 this.state.previousPopupElement = undefined;
-                resolve(new SetPopupModelAction({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id }));
+                resolve(ProtocolSetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id }));
             }, this.options.popupCloseDelay);
         });
     }
@@ -244,7 +244,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
         return new Promise((resolve) => {
             this.state.mouseOverTimer = window.setTimeout(() => {
                 const popupBounds = this.computePopupBounds(target, { x: event.pageX, y: event.pageY });
-                resolve(new RequestPopupModelAction(target.id, popupBounds));
+                resolve(ProtocolRequestPopupModelAction.create({ elementId: target.id, bounds: popupBounds }));
 
                 this.state.popupOpen = true;
                 this.state.previousPopupElement = target;
@@ -268,12 +268,12 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 result.push(this.startMouseOverTimer(popupTarget, event));
             }
             if (this.lastHoverFeedbackElementId) {
-                result.push(HoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
+                result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
                 this.lastHoverFeedbackElementId = undefined;
             }
             const hoverTarget = findParentByFeature(target, isHoverable);
             if (hoverTarget !== undefined) {
-                result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: true }));
+                result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: true }));
                 this.lastHoverFeedbackElementId = hoverTarget.id;
             }
         }
@@ -294,9 +294,9 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 this.stopMouseOverTimer();
                 const hoverTarget = findParentByFeature(target, isHoverable);
                 if (hoverTarget !== undefined) {
-                    result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: false }));
+                    result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: false }));
                     if (this.lastHoverFeedbackElementId && this.lastHoverFeedbackElementId !== hoverTarget.id) {
-                        result.push(HoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
+                        result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
                     }
                     this.lastHoverFeedbackElementId = undefined;
                 }
@@ -357,7 +357,7 @@ export class PopupHoverMouseListener extends AbstractHoverMouseListener {
 export class HoverKeyListener extends KeyListener {
     override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [new SetPopupModelAction({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })];
+            return [ProtocolSetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })];
         }
         return [];
     }
@@ -369,9 +369,9 @@ export class ClosePopupActionHandler implements IActionHandler {
 
     handle(action: Action): void | ICommand | Action {
         if (action.kind === SetPopupModelCommand.KIND) {
-            this.popupOpen = (action as SetPopupModelAction).newRoot.type !== EMPTY_ROOT.type;
+            this.popupOpen = (action as ProtocolSetPopupModelAction).newRoot.type !== EMPTY_ROOT.type;
         } else if (this.popupOpen) {
-            return new SetPopupModelAction({ id: EMPTY_ROOT.id, type: EMPTY_ROOT.type });
+            return  ProtocolSetPopupModelAction.create({ id: EMPTY_ROOT.id, type: EMPTY_ROOT.type });
         }
     }
 }
