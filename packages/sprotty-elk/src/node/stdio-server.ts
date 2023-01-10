@@ -84,7 +84,7 @@ export class StdioElkServer implements ELK {
                             // The layout server responded an error
                             reject(response);
                         } else {
-                            applyLayoutData(response, graph);
+                            this.applyLayout(response, graph);
                             resolve(graph);
                         }
                     } catch (err) {
@@ -94,6 +94,10 @@ export class StdioElkServer implements ELK {
             };
             process.stdout.on('data', dataCallback);
         });
+    }
+
+    protected applyLayout(data: LayoutData, graph: ElkNode) {
+        applyLayoutData(data, graph);
     }
 
     protected createProcess(): Promise<ChildProcess> {

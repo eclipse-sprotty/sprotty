@@ -115,23 +115,32 @@ function applyShapeLayout(dataElem: ShapeLayoutElement, shape: ElkShape): void {
 }
 
 function applyEdgeLayout(dataElem: EdgeLayoutElement, edge: ElkExtendedEdge): void {
+    const { route } = dataElem;
     if (edge.sections && edge.sections.length > 0) {
         const section = edge.sections[0];
-        if (dataElem.route.length >= 1) {
-            section.startPoint = dataElem.route[0];
+        if (route.length >= 1) {
+            section.startPoint = route[0];
         }
-        section.bendPoints = dataElem.route.slice(1, -1);
-        if (dataElem.route.length >= 2) {
-            section.endPoint = dataElem.route[dataElem.route.length - 1];
+        section.bendPoints = route.slice(1, -1);
+        if (route.length >= 2) {
+            section.endPoint = route[route.length - 1];
         }
     } else if (isPrimitiveEdge(edge)) {
-        if (dataElem.route.length >= 1) {
-            edge.sourcePoint = dataElem.route[0];
+        if (route.length >= 1) {
+            edge.sourcePoint = route[0];
         }
-        edge.bendPoints = dataElem.route.slice(1, -1);
-        if (dataElem.route.length >= 2) {
-            edge.targetPoint = dataElem.route[dataElem.route.length - 1];
+        edge.bendPoints = route.slice(1, -1);
+        if (route.length >= 2) {
+            edge.targetPoint = route[route.length - 1];
         }
+    } else {
+        // No layout present yet: create a new section
+        edge.sections = [{
+            id: `${edge.id}:layout`,
+            startPoint: route[0],
+            bendPoints: route.slice(1, -1),
+            endPoint: route[route.length - 1]
+        }];
     }
 }
 

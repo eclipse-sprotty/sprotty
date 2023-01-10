@@ -1,5 +1,9 @@
 ports:
   - port: 8080
+    name: Examples Server
+  - port: 5008
+    name: ELK Server
+    onOpen: ignore
 
 tasks:
   - init: |
