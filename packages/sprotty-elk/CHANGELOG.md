@@ -2,6 +2,10 @@
 
 This change log covers only the `elkjs` layout of Sprotty. See also the change log of [sprotty](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
 
+### v0.13.1 (Jan. 2023)
+
+ * Fixed edge layout with elk-server ([#334](https://github.com/eclipse/sprotty/pull/334)).
+
 ### v0.13.0 (Dec. 2022)
 
  * Updated to elkjs 0.8.2 ([#329](https://github.com/eclipse/sprotty/pull/329)). This update has breaking API changes.
