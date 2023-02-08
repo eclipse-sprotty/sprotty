@@ -409,9 +409,9 @@ export class MoveMouseListener extends MouseListener {
             }
             this.hasDragged = false;
             if (isCreatingOnDrag(target)) {
-                this.startCreatingOnDrag(target, event);
+                return this.startCreatingOnDrag(target, event);
             } else if (isRoutingHandle) {
-                this.activateRoutingHandle(target, event);
+                return this.activateRoutingHandle(target, event);
             }
         }
         return [];
