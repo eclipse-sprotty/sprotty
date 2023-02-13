@@ -180,14 +180,7 @@ export class ScrollMouseListener extends MouseListener {
     }
 
     protected getScrollbar(event: MouseEvent): HTMLElement | undefined {
-        let element = event.target as HTMLElement | null;
-        while (element) {
-            if (element.classList && element.classList.contains('sprotty-projection-bar')) {
-                return element;
-            }
-            element = element.parentElement;
-        }
-        return undefined;
+        return findViewportScrollbar(event);
     }
 
     protected getScrollbarOrientation(scrollbar: HTMLElement): 'horizontal' | 'vertical' {
@@ -208,4 +201,15 @@ export class ScrollMouseListener extends MouseListener {
         return undefined;
     }
 
+}
+
+export function findViewportScrollbar(event: MouseEvent): HTMLElement | undefined {
+    let element = event.target as HTMLElement | null;
+    while (element) {
+        if (element.classList && element.classList.contains('sprotty-projection-bar')) {
+            return element;
+        }
+        element = element.parentElement;
+    }
+    return undefined;
 }

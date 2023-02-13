@@ -36,6 +36,7 @@ import { SButton } from '../button/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { SRoutingHandle } from '../routing/model';
 import { SRoutableElement } from '../routing/model';
+import { findViewportScrollbar } from '../viewport/scroll';
 import { isSelectable, Selectable } from './model';
 
 /**
@@ -212,12 +213,12 @@ export class SelectMouseListener extends MouseListener {
         const selectableTarget = findParentByFeature(target, isSelectable);
         if (selectableTarget !== undefined || target instanceof SModelRoot) {
             this.hasDragged = false;
+        }
+        if (selectableTarget !== undefined) {
             let deselectedElements: SModelElement[] = [];
             // multi-selection?
             if (!isCtrlOrCmd(event)) {
-                deselectedElements = toArray(target.root.index.all()
-                    .filter(element => isSelectable(element) && element.selected
-                        && !(selectableTarget instanceof SRoutingHandle && element === selectableTarget.parent as SModelElement)));
+                deselectedElements = this.collectElementsToDeselect(target, selectableTarget);
             }
             if (selectableTarget !== undefined) {
                 if (!selectableTarget.selected) {
@@ -234,6 +235,12 @@ export class SelectMouseListener extends MouseListener {
             }
         }
         return [];
+    }
+
+    protected collectElementsToDeselect(target: SModelElement, selectableTarget: (SModelElement & Selectable) | undefined): SModelElement[] {
+        return toArray(target.root.index.all()
+        .filter(element => isSelectable(element) && element.selected
+            && !(selectableTarget instanceof SRoutingHandle && element === selectableTarget.parent as SModelElement)));
     }
 
     protected handleButton(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] | undefined {
@@ -283,12 +290,17 @@ export class SelectMouseListener extends MouseListener {
         return [];
     }
 
-    override mouseUp(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         if (event.button === 0) {
             if (!this.hasDragged) {
                 const selectableTarget = findParentByFeature(target, isSelectable);
-                if (selectableTarget !== undefined && this.wasSelected) {
-                    return [new SelectAction([selectableTarget.id], [])];
+                if (selectableTarget !== undefined) {
+                    if (this.wasSelected) {
+                        return [new SelectAction([selectableTarget.id], [])];
+                    }
+                } else if (target instanceof SModelRoot && !findViewportScrollbar(event)) {
+                    // Mouse up on root but not over ViewPort's scroll bars > deselect all
+                    return this.handleDeselectAll(this.collectElementsToDeselect(target, undefined), event);
                 }
             }
         }
