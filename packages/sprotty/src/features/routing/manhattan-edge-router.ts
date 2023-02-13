@@ -118,10 +118,14 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             switch (handle.kind) {
                 case 'manhattan-50%':
                     if (index < 0) {
-                        if (almostEquals(route[0].x, route[1].x))
+                        if (routingPoints.length === 0) {
+                            routingPoints.push({ x: correctedX, y: correctedY });
+                            handle.pointIndex = 0;
+                        } else if (almostEquals(route[0].x, route[1].x)) {
                             this.alignX(routingPoints, 0, correctedX);
-                        else
+                        } else {
                             this.alignY(routingPoints, 0, correctedY);
+                        }
                     } else if (index < routingPoints.length - 1) {
                         if (almostEquals(routingPoints[index].x, routingPoints[index + 1].x)) {
                             this.alignX(routingPoints, index, correctedX);
@@ -131,10 +135,11 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
                             this.alignY(routingPoints, index + 1, correctedY);
                         }
                     } else {
-                        if (almostEquals(route[route.length - 2].x, route[route.length - 1].x))
+                        if (almostEquals(route[route.length - 2].x, route[route.length - 1].x)) {
                             this.alignX(routingPoints, routingPoints.length - 1, correctedX);
-                        else
+                        } else {
                             this.alignY(routingPoints, routingPoints.length - 1, correctedY);
+                        }
                     }
                     break;
             }
