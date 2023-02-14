@@ -8,9 +8,6 @@ import { TaskNode } from './model';
 @injectable()
 export class TaskNodeView implements IView {
     render(node: Readonly<SNode & TaskNode>, context: RenderingContext): VNode {
-        const width = 100;
-        const height = 100;
-        const position = 50;
         return <g>
             <rect class-sprotty-node={true} class-task={true}
                 class-running={node.isRunning}
@@ -19,7 +16,7 @@ export class TaskNodeView implements IView {
                 height={node.size.height}
             >
             </rect>
-            <text x={position} y={position + 5}>{node.name}</text>
+            <text x={50} y={50 + 5}>{node.name}</text>
         </g>;
     }
 }
