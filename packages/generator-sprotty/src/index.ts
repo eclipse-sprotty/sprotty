@@ -7,6 +7,7 @@ const USER_DIR = '.';
 
 const PROJECT_NAME = /<%= project-name %>/g;
 const HTML_ELEMENT_ID = /<%= html-element-id %>/g;
+const OUT_PATH = /<%= out-path %>/g;
 
 const PROJECT_PATH = /<%= project-path %>/g;
 
@@ -20,20 +21,29 @@ function description(...d: string[]): string {
     return chalk.reset(chalk.dim(d.join(' ') + '\n')) + chalk.blueBright('?');
 }
 
-export class SprottyGenerator extends Generator {
+class SprottyGenerator extends Generator {
     private answers: Answers;
-
-    constructor(args: string | string[], options: Generator.GeneratorOptions) {
-        super(args, options);
-    }
 
     writing(): void {
         this.sourceRoot(path.join(__dirname, TEMPLATE_DIR));
 
-        for (const path of ['.', '.vscode', '.eslintrc.json', '.vscodeignore']) {
+        for (const path of ['package.json', 'tsconfig.json', 'src']) {
             this.fs.copy(
                 this.templatePath(path),
                 this._projectPath(path),
+                {
+                    process: content =>
+                        this._replaceTemplateWords(content),
+                    processDestinationPath: path =>
+                        this._replaceTemplateNames(path),
+                }
+            );
+        }
+        console.log('generate static: ' + this.answers.generateStatic)
+        if(this.answers.generateStatic) {
+            this.fs.copy(
+                this.templatePath('static'),
+                this._projectPath('static'),
                 {
                     process: content =>
                         this._replaceTemplateWords(content),
@@ -49,7 +59,6 @@ export class SprottyGenerator extends Generator {
 
         const opts = { cwd: extensionPath };
         this.spawnCommandSync('npm', ['install'], opts);
-        this.spawnCommandSync('npm', ['run', 'langium:generate'], opts);
         this.spawnCommandSync('npm', ['run', 'build'], opts);
     }
 
@@ -87,7 +96,8 @@ export class SprottyGenerator extends Generator {
     _replaceTemplateWords(content: Buffer): string {
         return content.toString()
             .replace(PROJECT_NAME, this.answers.projectName)
-            .replace(HTML_ELEMENT_ID, this.answers.mainElementId);
+            .replace(HTML_ELEMENT_ID, this.answers.mainElementId)
+            .replace(OUT_PATH, this.answers.generateStatic ? 'static' : 'out');
     }
 
     _replaceTemplateNames(path: string): string {
@@ -95,3 +105,5 @@ export class SprottyGenerator extends Generator {
     }
 
 }
+
+export = SprottyGenerator

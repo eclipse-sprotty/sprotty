@@ -1,11 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "sourceMap": true,
-  },
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "app"
@@ -17,5 +12,4 @@
       "app",
       "/node_modules"
   ],
-  "lib": ["ES2022"]
 }

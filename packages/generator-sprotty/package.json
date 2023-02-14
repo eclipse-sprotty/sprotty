@@ -19,8 +19,8 @@
     "types": "app/index.d.ts",
     "scripts": {
       "clean": "shx rm -rf app",
-      "build": "tsc",
-      "watch": "tsc --watch",
+      "build": "tsc --skipLibCheck",
+      "watch": "tsc --watch --skipLibCheck",
       "lint": "eslint src test --ext .ts",
       "run": "yo sprotty",
       "test": "vitest run",
@@ -32,7 +32,7 @@
       "chalk": "~4.1.2",
       "lodash": "~4.17.21",
       "which": "~2.0.2",
-      "yeoman-generator": "~5.7.0"
+      "yeoman-generator": "~5.8.0"
     },
     "devDependencies": {
       "@types/lodash": "~4.14.191",
