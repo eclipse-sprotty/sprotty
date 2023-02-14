@@ -214,7 +214,7 @@ export function createRandomId(length: number = 8): string {
  * Used to speed up model element lookup by id.
  */
  export interface IModelIndex {
-    add(element:ProtocolSModelElement): void
+    add(element: ProtocolSModelElement): void
     remove(element: ProtocolSModelElement): void
     contains(element: ProtocolSModelElement): boolean
     getById(id: string): ProtocolSModelElement | undefined

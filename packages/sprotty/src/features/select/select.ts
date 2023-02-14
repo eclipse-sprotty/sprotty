@@ -296,7 +296,7 @@ export class SelectMouseListener extends MouseListener {
                 const selectableTarget = findParentByFeature(target, isSelectable);
                 if (selectableTarget !== undefined) {
                     if (this.wasSelected) {
-                        return [new SelectAction([selectableTarget.id], [])];
+                        return [ProtocolSelectAction.create({selectedElementsIDs:[selectableTarget.id],deselectedElementsIDs:[]})];
                     }
                 } else if (target instanceof SModelRoot && !findViewportScrollbar(event)) {
                     // Mouse up on root but not over ViewPort's scroll bars > deselect all

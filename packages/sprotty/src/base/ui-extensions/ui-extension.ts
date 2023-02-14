@@ -31,7 +31,9 @@ export interface IUIExtension {
 }
 
 export function isUIExtension(object: unknown): object is IUIExtension {
-    return hasOwnProperty(object, 'id') && hasOwnProperty(object, 'show') && hasOwnProperty(object, 'hide');
+    return hasOwnProperty<string, Function>(object, 'id', 'function')
+    && hasOwnProperty<string, Function>(object, 'show', 'function')
+    && hasOwnProperty<string, Function>(object, 'hide', 'function');
 }
 
 /**
