@@ -17,11 +17,11 @@
 import { Action, SetViewportAction } from "sprotty-protocol/lib/actions";
 import { Viewport } from "sprotty-protocol/lib/model";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { getWindowScroll } from "../../utils/browser";
 import { SModelElement, SModelRoot } from "../../base/model/smodel";
-import { MouseListener } from "../../base/views/mouse-tool";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from "../../base/model/smodel-utils";
+import { MouseListener } from "../../base/views/mouse-tool";
+import { getWindowScroll } from "../../utils/browser";
 import { isViewport } from "./model";
 
 /**
@@ -51,20 +51,38 @@ export class ZoomMouseListener extends MouseListener {
 
     override wheel(target: SModelElement, event: WheelEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
-        if (viewport) {
-            const newZoom = this.getZoomFactor(event);
-            const viewportOffset = this.getViewportOffset(target.root, event);
-            const offsetFactor = 1.0 / (newZoom * viewport.zoom) - 1.0 / viewport.zoom;
-            const newViewport: Viewport = {
-                scroll: {
-                    x: viewport.scroll.x - offsetFactor * viewportOffset.x,
-                    y: viewport.scroll.y - offsetFactor * viewportOffset.y
-                },
-                zoom: viewport.zoom * newZoom
-            };
-            return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
+        if (!viewport) {
+            return [];
         }
-        return [];
+        const newViewport = this.isScrollMode(event) ? this.processScroll(viewport, event) : this.processZoom(viewport, target, event);
+        return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
+    }
+
+    protected isScrollMode(event: WheelEvent) {
+        return event.altKey;
+    }
+
+    protected processScroll(viewport: Viewport, event: WheelEvent): Viewport {
+        return {
+            scroll: {
+                x: viewport.scroll.x + event.deltaX,
+                y: viewport.scroll.y + event.deltaY
+            },
+            zoom: viewport.zoom
+        };
+    }
+
+    protected processZoom(viewport: Viewport, target: SModelElement, event: WheelEvent): Viewport {
+        const newZoom = this.getZoomFactor(event);
+        const viewportOffset = this.getViewportOffset(target.root, event);
+        const offsetFactor = 1.0 / (newZoom * viewport.zoom) - 1.0 / viewport.zoom;
+        return {
+            scroll: {
+                x: viewport.scroll.x - offsetFactor * viewportOffset.x,
+                y: viewport.scroll.y - offsetFactor * viewportOffset.y
+            },
+            zoom: viewport.zoom * newZoom
+        };
     }
 
     protected getViewportOffset(root: SModelRoot, event: WheelEvent): Point {
