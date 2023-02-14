@@ -1,0 +1,15 @@
+{
+    "name": "<%= project-name %>",
+    "description": "Please enter a brief description here",
+    "scripts": {
+      "build": "esbuild ./index.ts --bundle --sourcemap --outfile=./out/index.js"
+    },
+    "devDependencies": {
+      "typescript": "4.9.5",
+      "esbuild": "^0.17.8"
+    },
+    "dependencies": {
+      "sprotty": "0.13.0",
+      "reflect-metadata": "^0.1.13"
+    }
+  }

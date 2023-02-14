@@ -1,0 +1,15 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "commonjs",
+      "types": [
+        "reflect-metadata"
+      ],
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "experimentalDecorators": true,
+      "jsx": "react"
+    },
+    "lib": ["ES2022","DOM"]
+  }

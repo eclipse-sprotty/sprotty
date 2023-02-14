@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "sourceMap": true,
+  },
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "app"
+  },
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "app",
+      "/node_modules"
+  ],
+  "lib": ["ES2022"]
+}
