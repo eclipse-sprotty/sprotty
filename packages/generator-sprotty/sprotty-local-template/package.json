@@ -9,7 +9,7 @@
       "esbuild": "^0.17.8"
     },
     "dependencies": {
-      "sprotty": "0.13.0",
+      "sprotty": "^0.13.0",
       "reflect-metadata": "^0.1.13"
     }
   }
