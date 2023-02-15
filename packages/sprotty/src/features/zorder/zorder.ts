@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, inject } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, BringToFrontAction as ProtocolBringToFrontAction} from 'sprotty-protocol/lib/actions';
 import { TYPES } from '../../base/types';
 import { SModelRoot, SChildElement, SModelElement, SParentElement } from '../../base/model/smodel';
 import { Command, CommandExecutionContext } from '../../base/commands/command';
@@ -48,11 +48,11 @@ export type ZOrderElement = {
 
 @injectable()
 export class BringToFrontCommand extends Command {
-    static readonly KIND = BringToFrontAction.KIND;
+    static readonly KIND = ProtocolBringToFrontAction.KIND;
 
     protected selected: ZOrderElement[] = [];
 
-    constructor(@inject(TYPES.Action) public action: BringToFrontAction) {
+    constructor(@inject(TYPES.Action) public action: ProtocolBringToFrontAction) {
         super();
     }
 

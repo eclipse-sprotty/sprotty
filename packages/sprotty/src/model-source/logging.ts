@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, inject } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, LoggingAction as ProtocolLoggingAction } from 'sprotty-protocol/lib/actions';
 import { ILogger, LogLevel } from '../utils/logging';
 import { TYPES } from '../base/types';
 import { ModelSource } from './model-source';
@@ -78,7 +78,7 @@ export class ForwardingLogger implements ILogger {
 
     protected forward(thisArg: any, message: string, logLevel: LogLevel, params: any[]) {
         const date = new Date();
-        const action = LoggingAction.create({
+        const action = ProtocolLoggingAction.create({
             message,
             severity: LogLevel[logLevel],
             time: date.toLocaleTimeString(),

@@ -15,6 +15,7 @@
  ********************************************************************************/
 
 import { Bounds, isBounds, Point } from "sprotty-protocol/lib/utils/geometry";
+import { SModelElement as ProtocolSModelElement } from "sprotty-protocol";
 import { mapIterable, FluentIterable } from "../../utils/iterable";
 
 /**
@@ -81,8 +82,8 @@ export interface FeatureSet {
     has(feature: symbol): boolean
 }
 
-export function isParent(element: SModelElementSchema | SModelElement):
-        element is SModelElementSchema & { children: SModelElementSchema[] } {
+export function isParent(element: ProtocolSModelElement | SModelElement):
+        element is ProtocolSModelElement & { children: ProtocolSModelElement[] } {
     const children = (element as any).children;
     return children !== undefined && children.constructor === Array;
 }
@@ -213,10 +214,10 @@ export function createRandomId(length: number = 8): string {
  * Used to speed up model element lookup by id.
  */
  export interface IModelIndex {
-    add(element: SModelElementSchema): void
-    remove(element: SModelElementSchema): void
-    contains(element: SModelElementSchema): boolean
-    getById(id: string): SModelElementSchema | undefined
+    add(element: ProtocolSModelElement): void
+    remove(element: ProtocolSModelElement): void
+    contains(element: ProtocolSModelElement): boolean
+    getById(id: string): ProtocolSModelElement | undefined
 }
 
 /**

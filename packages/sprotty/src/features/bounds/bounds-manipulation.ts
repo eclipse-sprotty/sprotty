@@ -16,7 +16,7 @@
 
 import { inject, injectable } from "inversify";
 import {
-    Action, generateRequestId, RequestAction, ResponseAction} from 'sprotty-protocol/lib/actions';
+    Action, generateRequestId, RequestAction, ResponseAction, ComputedBoundsAction as ProtocolComputedBoundsAction} from 'sprotty-protocol/lib/actions';
 import * as protocol from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
@@ -198,6 +198,6 @@ export class RequestBoundsCommand extends HiddenCommand {
     }
 
     get blockUntil(): (action: Action) => boolean {
-        return action => action.kind === ComputedBoundsAction.KIND;
+        return action => action.kind === ProtocolComputedBoundsAction.KIND;
     }
 }

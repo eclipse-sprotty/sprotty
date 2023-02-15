@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, CreateElementAction as ProtocolCreateElementAction } from 'sprotty-protocol/lib/actions';
 import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { SParentElement, SChildElement } from '../../base/model/smodel';
@@ -45,12 +45,12 @@ export namespace CreateElementAction {
 
 @injectable()
 export class CreateElementCommand extends Command {
-    static readonly KIND = CreateElementAction.KIND;
+    static readonly KIND = ProtocolCreateElementAction.KIND;
 
     container: SParentElement;
     newElement: SChildElement;
 
-    constructor(@inject(TYPES.Action) protected readonly action: CreateElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolCreateElementAction) {
         super();
     }
 

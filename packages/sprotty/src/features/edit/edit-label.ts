@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject } from 'inversify';
-import { Action, isAction } from 'sprotty-protocol/lib/actions';
+import { Action, isAction, ApplyLabelEditAction as ProtocolApplyLabelEditAction } from 'sprotty-protocol/lib/actions';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { SModelElement } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
@@ -66,8 +66,8 @@ export namespace ApplyLabelEditAction {
     }
 }
 
-export function isApplyLabelEditAction(element?: any): element is ApplyLabelEditAction {
-    return isAction(element) && element.kind === ApplyLabelEditAction.KIND && 'labelId' in element && 'text' in element;
+export function isApplyLabelEditAction(element?: any): element is ProtocolApplyLabelEditAction {
+    return isAction(element) && element.kind === ProtocolApplyLabelEditAction.KIND && 'labelId' in element && 'text' in element;
 }
 
 
@@ -78,11 +78,11 @@ export class ResolvedLabelEdit {
 }
 
 export class ApplyLabelEditCommand extends Command {
-    static readonly KIND = ApplyLabelEditAction.KIND;
+    static readonly KIND = ProtocolApplyLabelEditAction.KIND;
 
     protected resolvedLabelEdit: ResolvedLabelEdit;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ApplyLabelEditAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolApplyLabelEditAction) {
         super();
     }
 

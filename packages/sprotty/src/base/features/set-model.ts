@@ -33,7 +33,7 @@ import { InitializeCanvasBoundsCommand } from './initialize-canvas';
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export class RequestModelAction implements RequestAction<SetModelAction>, ProtocolRequestModelAction {
+export class RequestModelAction implements ProtocolRequestModelAction {
     static readonly KIND = 'requestModel';
     readonly kind = RequestModelAction.KIND;
 

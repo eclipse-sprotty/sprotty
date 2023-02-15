@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { generateRequestId as generateRequestId2 } from 'sprotty-protocol/lib/actions';
+import { generateRequestId as generateRequestId2, Action as ProtocolAction} from 'sprotty-protocol/lib/actions';
 import { JsonAny } from 'sprotty-protocol/lib/utils/json';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 
@@ -99,7 +99,7 @@ export class RejectAction implements ResponseAction {
  * to define an entry in the command palette or in the context menu.
  */
 export class LabeledAction {
-    constructor(readonly label: string, readonly actions: Action[], readonly icon?: string) { }
+    constructor(readonly label: string, readonly actions: ProtocolAction[], readonly icon?: string) { }
 }
 
 export function isLabeledAction(element: unknown): element is LabeledAction {
