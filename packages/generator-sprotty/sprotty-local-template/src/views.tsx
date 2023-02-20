@@ -16,7 +16,7 @@ export class TaskNodeView implements IView {
                 height={node.size.height}
             >
             </rect>
-            <text x={50} y={50 + 5}>{node.name}</text>
+            <text x={node.size.width / 2} y={node.size.height / 2 + 5}>{node.name}</text>
         </g>;
     }
 }
