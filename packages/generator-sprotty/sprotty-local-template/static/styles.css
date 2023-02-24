@@ -10,11 +10,11 @@
 }
 
 .sprotty-node.task.running {
-    fill: #f00;
+    fill: #aa2d2d;
 }
 
 .sprotty-node.task.finished {
-    fill: #0f0;
+    fill: #81BB41;
 }
 
 text {

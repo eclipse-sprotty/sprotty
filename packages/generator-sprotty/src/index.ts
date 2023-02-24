@@ -84,8 +84,8 @@ class SprottyGenerator extends Generator {
                 type: 'input',
                 name: 'projectName',
                 prefix: description(
-                    'Welcome to Sprotty!',
-                    'This tool generates a new Sprotty Project.\n',
+                    'Welcome to Sprotty!\n' +
+                    'This tool generates a new Sprotty Project.\n' +
                     'The project name identifies the npm package and can be used by other packages to depend on this project.'
                 ),
                 message: 'Your project name:',
@@ -94,13 +94,15 @@ class SprottyGenerator extends Generator {
             {
                 type: 'input',
                 name: 'mainElementId',
-                message: 'ID of your main html element for the sprotty diagram:',
+                prefix: description("Your Sprotty diagram will be rendered inside this element"),
+                message: 'Main HTML element ID',
                 default: 'sprotty-diagram',
             },
             {
                 type: 'confirm',
                 name: 'generateStatic',
-                message: 'generate static folder with index.html and styles.css',
+                prefix: description("Generate a static folder with index.html and styles.css for simple dev setup"),
+                message: 'generate static folder',
             },
         ])
     }

@@ -19,7 +19,7 @@
     "types": "app/index.d.ts",
     "scripts": {
       "prepare": "yarn run clean && yarn run build",
-      "clean": "shx rm -rf app",
+      "clean": "rimraf app",
       "build": "tsc --skipLibCheck",
       "watch": "tsc --watch --skipLibCheck",
       "lint": "eslint src test --ext .ts",
@@ -39,7 +39,8 @@
       "@types/which": "~2.0.1",
       "@types/yeoman-generator": "~5.2.11",
       "@types/yeoman-test": "~4.0.3",
-      "yeoman-test": "~7.3.0"
+      "yeoman-test": "~7.3.0",
+      "rimraf": "4.1.2"
     },
     "volta": {
       "node": "16.19.0",
