@@ -1,0 +1,58 @@
+{
+    "name": "generator-sprotty",
+    "version": "0.13.0",
+    "description": "Yeoman generator for Sprotty",
+    "engines": {
+      "node": ">=14.0.0"
+    },
+    "keywords": [
+      "yeoman-generator",
+      "diagram"
+    ],
+    "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
+    "files": [
+      "app",
+      "sprotty-local-template",
+      "src"
+    ],
+    "main": "app/index.js",
+    "types": "app/index.d.ts",
+    "scripts": {
+      "prepare": "yarn run clean && yarn run build",
+      "clean": "rimraf app",
+      "build": "tsc --skipLibCheck",
+      "watch": "tsc --watch --skipLibCheck",
+      "lint": "eslint src test --ext .ts",
+      "run": "yo sprotty",
+      "debug": "npx --node-arg=--inspect yo sprotty",
+      "test:cli": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\"",
+      "test": "jenkins-mocha --config ../../configs/.mocharc.json \"./src/**/*.spec.?(ts|tsx)\""
+    },
+    "dependencies": {
+      "chalk": "~4.1.2",
+      "lodash": "~4.17.21",
+      "which": "~2.0.2",
+      "yeoman-generator": "~5.8.0"
+    },
+    "devDependencies": {
+      "@types/lodash": "~4.14.191",
+      "@types/which": "~2.0.1",
+      "@types/yeoman-generator": "~5.2.11",
+      "@types/yeoman-test": "~4.0.3",
+      "yeoman-test": "~7.3.0",
+      "rimraf": "4.1.2"
+    },
+    "volta": {
+      "node": "16.19.0",
+      "npm": "8.19.3"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/eclipse-sprotty/sprotty",
+      "directory": "packages/generator-sprotty"
+    },
+    "author": {
+      "name": "TypeFox",
+      "url": "https://www.typefox.io"
+    }
+  }

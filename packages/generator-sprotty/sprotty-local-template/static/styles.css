@@ -1,0 +1,33 @@
+.sprotty-graph {
+    height: 100%;
+    width: 100%;
+}
+
+.sprotty-node.task {
+    fill: #c0e0fc;
+    stroke: #444;
+    stroke-width: 1;
+}
+
+.sprotty-node.task.running {
+    fill: #aa2d2d;
+}
+
+.sprotty-node.task.finished {
+    fill: #81BB41;
+}
+
+text {
+    stroke-width: 0;
+    stroke: #000;
+    fill: #000;
+    font-family: sans-serif;
+    font-size: 10pt;
+    text-anchor: middle;
+}
+
+.sprotty-edge {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1px;
+}
