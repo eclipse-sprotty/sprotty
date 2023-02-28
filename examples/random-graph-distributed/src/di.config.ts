@@ -18,16 +18,15 @@ import { Container, ContainerModule } from 'inversify';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
     loadDefaultModules, SNode, SEdge, SLabel, configureModelElement,
-    SGraph, RectangularNodeView, PolylineEdgeView
+    SGraph, RectangularNodeView, PolylineEdgeView, WebSocketDiagramServerProxy
 } from 'sprotty';
-import { HttpDiagramServerProxy } from './http-model-source';
 
 export default (containerId: string) => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
     const randomGraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        bind(TYPES.ModelSource).to(HttpDiagramServerProxy).inSingletonScope();
+        bind(TYPES.ModelSource).to(WebSocketDiagramServerProxy).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 

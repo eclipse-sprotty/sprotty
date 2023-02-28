@@ -14,18 +14,26 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { IActionDispatcher, TYPES } from 'sprotty';
-import { RequestModelAction } from 'sprotty-protocol';
+import { IActionDispatcher, TYPES, WebSocketDiagramServerProxy } from 'sprotty';
+import { RequestModelAction, FitToScreenAction } from 'sprotty-protocol';
 import createContainer from './di.config';
 
 export default function runRandomGraphDistributed() {
     const container = createContainer('sprotty');
 
+    const source = container.get<WebSocketDiagramServerProxy>(TYPES.ModelSource);
+    const websocket = new WebSocket("ws://127.0.0.1:8080");
+
+    source.listen(websocket);
+
     const actionDispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-    actionDispatcher.request(RequestModelAction.create()).then(response => {
-        actionDispatcher.dispatch(response);
-    }, err => {
-        console.error(err);
-        document.getElementById('sprotty')!.innerText = String(err);
-    });
+    websocket.addEventListener('open', () => {
+        actionDispatcher.request(RequestModelAction.create())
+            .then(response => actionDispatcher.dispatch(response))
+            .then(response => actionDispatcher.dispatch(FitToScreenAction.create([])))
+            .catch(err => {
+                console.error(err);
+                document.getElementById('sprotty')!.innerText = String(err);
+            })
+    }, { once: true });
 }
