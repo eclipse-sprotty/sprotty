@@ -97,7 +97,7 @@ export class SocketElkServer implements ELK {
                 this.socket = undefined;
                 reject(err);
             });
-            socket.connect(this.port);
+            socket.connect(this.port, "127.0.0.1");
             this.socket = socket;
             socket.on('ready', () => resolve(socket));
         });
