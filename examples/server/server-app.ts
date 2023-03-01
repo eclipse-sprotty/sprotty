@@ -35,16 +35,23 @@ const services: DiagramServices = {
 // This is called from the `random-graph-distributed` example by `WebSocketDiagramServerProxy`
 const wsServer = new Server({ noServer: true });
 wsServer.on('connection', socket => {
+
+    const clientIdToDiagramServer = new Map<string, DiagramServer>();
+    const createDiagramServer = (clientId: string) => {
+        return new DiagramServer(async (action: Action) => {
+            const msg = JSON.stringify({ clientId, action });
+            socket.send(msg);
+        }, services);
+    }
+
     socket.on('error', console.error);
     socket.on('message', message => {
         try {
-            const incomingMessage = JSON.parse(message.toString()) as ActionMessage;
-            // Create a diagram server and process the incoming message
-            const diagramServer = new DiagramServer(async (action: Action) => {
-                const msg = JSON.stringify({ clientId: incomingMessage.clientId, action });
-                socket.send(msg);
-            }, services);
-            diagramServer.accept(incomingMessage.action);
+            const { clientId, action } = JSON.parse(message.toString()) as ActionMessage;
+            if (!clientIdToDiagramServer.has(clientId)) {
+                clientIdToDiagramServer.set(clientId, createDiagramServer(clientId));
+            }
+            clientIdToDiagramServer.get(clientId)!.accept(action);
         } catch (err) {
             console.error(err);
             socket.send(JSON.stringify(err));

@@ -1,6 +1,7 @@
 {
   "name": "sprotty-examples",
   "version": "0.13.0",
+  "private": "true",
   "dependencies": {
     "@types/ws": "^8.5.4",
     "@vscode/codicons": "^0.0.32",
