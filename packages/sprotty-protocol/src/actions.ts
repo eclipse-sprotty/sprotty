@@ -463,16 +463,18 @@ export interface CenterAction extends Action {
     elementIds: string[]
     animate: boolean
     retainZoom: boolean
+    zoomScale?: number
 }
 export namespace CenterAction {
     export const KIND = 'center';
 
-    export function create(elementIds: string[], options: { animate?: boolean, retainZoom?: boolean } = {}): CenterAction {
+    export function create(elementIds: string[], options: { animate?: boolean, retainZoom?: boolean, zoomScale?: number } = {}): CenterAction {
         return {
             kind: KIND,
             elementIds,
             animate: options.animate ?? true,
-            retainZoom: options.retainZoom ?? false
+            retainZoom: options.retainZoom ?? false,
+            zoomScale: options.zoomScale
         };
     }
 }
