@@ -36,22 +36,18 @@ const services: DiagramServices = {
 const wsServer = new Server({ noServer: true });
 wsServer.on('connection', socket => {
 
-    const clientIdToDiagramServer = new Map<string, DiagramServer>();
-    const createDiagramServer = (clientId: string) => {
-        return new DiagramServer(async (action: Action) => {
-            const msg = JSON.stringify({ clientId, action });
-            socket.send(msg);
-        }, services);
-    }
+    let clientId: string | undefined;
+    const diagramServer = new DiagramServer(async (action: Action) => {
+        const msg = JSON.stringify({ clientId, action });
+        socket.send(msg);
+    }, services);
 
     socket.on('error', console.error);
     socket.on('message', message => {
         try {
-            const { clientId, action } = JSON.parse(message.toString()) as ActionMessage;
-            if (!clientIdToDiagramServer.has(clientId)) {
-                clientIdToDiagramServer.set(clientId, createDiagramServer(clientId));
-            }
-            clientIdToDiagramServer.get(clientId)!.accept(action);
+            const actionMessage = JSON.parse(message.toString()) as ActionMessage;
+            clientId = actionMessage.clientId;
+            diagramServer.accept(actionMessage.action);
         } catch (err) {
             console.error(err);
             socket.send(JSON.stringify(err));
