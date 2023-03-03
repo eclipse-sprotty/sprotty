@@ -44,7 +44,8 @@ export class CenterAction implements Action, ProtocolCenterAction {
 
     constructor(public readonly elementIds: string[],
                 public readonly animate: boolean = true,
-                public readonly retainZoom: boolean = false) {
+                public readonly retainZoom: boolean = false,
+                public readonly zoomScale?: number) {
     }
 }
 
@@ -177,7 +178,12 @@ export class CenterCommand extends BoundsAwareViewportCommand {
         if (!Dimension.isValid(model.canvasBounds)) {
             return undefined;
         }
-        const zoom = (this.action.retainZoom && isViewport(model)) ? model.zoom : 1;
+        let zoom = 1;
+        if (this.action.retainZoom && isViewport(model)) {
+            zoom = model.zoom;
+        } else if (this.action.zoomScale) {
+            zoom = this.action.zoomScale;
+        }
         const c = Bounds.center(bounds);
         return {
             scroll: {
