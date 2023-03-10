@@ -22,7 +22,7 @@ export default function runRandomGraphDistributed() {
     const container = createContainer('sprotty');
 
     const source = container.get<WebSocketDiagramServerProxy>(TYPES.ModelSource);
-    const websocket = new WebSocket("ws://127.0.0.1:8080");
+    const websocket = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}`);
 
     source.listen(websocket);
 
