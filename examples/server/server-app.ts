@@ -20,51 +20,49 @@ import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk/lib/elk-layout';
 import { SocketElkServer } from 'sprotty-elk/lib/node';
 import { Action, ActionMessage, DiagramServer, DiagramServices } from 'sprotty-protocol';
 import { RandomGraphGenerator } from './random-graph-generator';
+import { Server } from 'ws';
 
 const serverApp = express();
 serverApp.use(express.json());
 
-// POST endpoint for fetching random graphs
-// Note: This approach works only for the initial RequestModelAction, but not for further
-// interaction between client and server. Use a WebSocket connection for more complex use cases.
 const elkFactory: ElkFactory = () => new SocketElkServer();
 const services: DiagramServices = {
     DiagramGenerator: new RandomGraphGenerator(),
     ModelLayoutEngine: new ElkLayoutEngine(elkFactory)
 }
-serverApp.post('/random-graph', (req, res) => {
-    let responseTimeout: NodeJS.Timeout;
-    try {
-        const incomingMessage = req.body as ActionMessage;
-        let responded = false;
 
-        // Create a diagram server and process the incoming message
-        const diagramServer = new DiagramServer(async (action: Action) => {
-            if (responded) {
-                console.warn('Cannot process additional action:', action);
-            } else {
-                // Send the first outgoing action as response
-                res.json([{ clientId: incomingMessage.clientId, action }]);
-                responded = true;
-            }
-        }, services);
-        diagramServer.accept(incomingMessage.action);
+// Create a WebSocket Server
+// This is called from the `random-graph-distributed` example by `WebSocketDiagramServerProxy`
+const wsServer = new Server({ noServer: true });
+wsServer.on('connection', socket => {
 
-        responseTimeout = setTimeout(() => {
-            if (!responded) {
-                res.json([]);
-                responded = true;
-            }
-        }, 10_000);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send(err);
-        clearTimeout(responseTimeout!);
-    }
+    let clientId: string | undefined;
+    const diagramServer = new DiagramServer(async (action: Action) => {
+        const msg = JSON.stringify({ clientId, action });
+        socket.send(msg);
+    }, services);
+
+    socket.on('error', console.error);
+    socket.on('message', message => {
+        try {
+            const actionMessage = JSON.parse(message.toString()) as ActionMessage;
+            clientId = actionMessage.clientId;
+            diagramServer.accept(actionMessage.action);
+        } catch (err) {
+            console.error(err);
+            socket.send(JSON.stringify(err));
+        }
+    });
 });
 
 serverApp.use(express.static(path.join(__dirname, '..')));
 
-serverApp.listen(8080, () => {
+const server = serverApp.listen(8080, () => {
     console.log('Sprotty examples are available at http://localhost:8080');
+});
+
+server.on('upgrade', (request, socket, head) => {
+    wsServer.handleUpgrade(request, socket, head, socket => {
+        wsServer.emit('connection', socket, request);
+    });
 });
