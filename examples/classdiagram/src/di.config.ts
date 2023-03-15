@@ -42,7 +42,8 @@ export default (containerId: string) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.IPopupModelProvider).to(PopupModelProvider);
-        bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);
+        bind(RevealNamedElementActionProvider).toSelf().inSingletonScope();
+        bind(TYPES.ICommandPaletteActionProvider).toService(RevealNamedElementActionProvider);
         bind(TYPES.ISnapper).to(CenterGridSnapper);
         bind(TYPES.IEditLabelValidator).to(ClassDiagramLabelValidator);
         bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);

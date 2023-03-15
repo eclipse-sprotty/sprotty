@@ -33,21 +33,30 @@ const routingModule = new ContainerModule((bind, _unbind, isBound) => {
 
     bind(ManhattanEdgeRouter).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRouter).toService(ManhattanEdgeRouter);
-    bind(TYPES.IAnchorComputer).to(ManhattanEllipticAnchor).inSingletonScope();
-    bind(TYPES.IAnchorComputer).to(ManhattanRectangularAnchor).inSingletonScope();
-    bind(TYPES.IAnchorComputer).to(ManhattanDiamondAnchor).inSingletonScope();
+    bind(ManhattanEllipticAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(ManhattanEllipticAnchor);
+    bind(ManhattanRectangularAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(ManhattanRectangularAnchor);
+    bind(ManhattanDiamondAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(ManhattanDiamondAnchor);
 
     bind(PolylineEdgeRouter).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRouter).toService(PolylineEdgeRouter);
-    bind(TYPES.IAnchorComputer).to(EllipseAnchor);
-    bind(TYPES.IAnchorComputer).to(RectangleAnchor);
-    bind(TYPES.IAnchorComputer).to(DiamondAnchor);
+    bind(EllipseAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(EllipseAnchor);
+    bind(RectangleAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(RectangleAnchor);
+    bind(DiamondAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(DiamondAnchor);
 
     bind(BezierEdgeRouter).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRouter).toService(BezierEdgeRouter);
-    bind(TYPES.IAnchorComputer).to(BezierEllipseAnchor);
-    bind(TYPES.IAnchorComputer).to(BezierRectangleAnchor);
-    bind(TYPES.IAnchorComputer).to(BezierDiamondAnchor);
+    bind(BezierEllipseAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(BezierEllipseAnchor);
+    bind(BezierRectangleAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(BezierRectangleAnchor);
+    bind(BezierDiamondAnchor).toSelf().inSingletonScope();
+    bind(TYPES.IAnchorComputer).toService(BezierDiamondAnchor);
 
     configureCommand({ bind, isBound }, AddRemoveBezierSegmentCommand);
 });
