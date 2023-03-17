@@ -23,7 +23,8 @@ import { configureCommand } from "../../base/commands/command-registration";
 const exportSvgModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(ExportSvgKeyListener).toSelf().inSingletonScope();
     bind(TYPES.KeyListener).toService(ExportSvgKeyListener);
-    bind(TYPES.HiddenVNodePostprocessor).to(ExportSvgPostprocessor).inSingletonScope();
+    bind(ExportSvgPostprocessor).toSelf().inSingletonScope();
+    bind(TYPES.HiddenVNodePostprocessor).toService(ExportSvgPostprocessor);
     configureCommand({ bind, isBound }, ExportSvgCommand);
     bind(TYPES.SvgExporter).to(SvgExporter).inSingletonScope();
 });

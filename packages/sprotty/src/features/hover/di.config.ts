@@ -28,7 +28,8 @@ import { SetViewportCommand } from "../viewport/viewport";
 import { MoveCommand } from "../move/move";
 
 const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.PopupVNodePostprocessor).to(PopupPositionUpdater).inSingletonScope();
+    bind(PopupPositionUpdater).toSelf().inSingletonScope();
+    bind(TYPES.PopupVNodePostprocessor).toService(PopupPositionUpdater);
     bind(HoverMouseListener).toSelf().inSingletonScope();
     bind(TYPES.MouseListener).toService(HoverMouseListener);
     bind(PopupHoverMouseListener).toSelf().inSingletonScope();

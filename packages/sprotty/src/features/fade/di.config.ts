@@ -19,7 +19,8 @@ import { TYPES } from "../../base/types";
 import { ElementFader } from "./fade";
 
 const fadeModule = new ContainerModule(bind => {
-    bind(TYPES.IVNodePostprocessor).to(ElementFader).inSingletonScope();
+    bind(ElementFader).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(ElementFader);
 });
 
 export default fadeModule;

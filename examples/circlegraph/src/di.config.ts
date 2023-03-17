@@ -33,7 +33,8 @@ export default (nodeCreator: (point?: Point)=>void) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(NodeCreator).toConstantValue(nodeCreator);
-        bind(TYPES.MouseListener).to(DroppableMouseListener);
+        bind(DroppableMouseListener).toSelf().inSingletonScope();
+        bind(TYPES.MouseListener).toService(DroppableMouseListener);
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
