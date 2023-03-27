@@ -46,23 +46,25 @@ export class ContextMenuMouseListener extends MouseListener {
             // IContextMenuService is not bound => do nothing
             return;
         }
-        const mousePosition = { x: event.x, y: event.y };
-        const root = target.root;
-        const id = target.id;
+
         let isTargetSelected = false;
         const selectableTarget = findParentByFeature(target, isSelectable);
         if (selectableTarget) {
             isTargetSelected = selectableTarget.selected;
             selectableTarget.selected = true;
         }
-        const restoreSelection = () => { if (selectableTarget) selectableTarget.selected = isTargetSelected; };
 
+        const root = target.root;
+        const mousePosition = { x: event.x, y: event.y };
         if (target.id === root.id || isSelected(selectableTarget)) {
             const menuItems = await this.menuProvider.getItems(root, mousePosition);
+            const restoreSelection = () => { if (selectableTarget) selectableTarget.selected = isTargetSelected; };
             menuService.show(menuItems, mousePosition, restoreSelection);
         } else {
-            const options = { selectedElementsIDs: [id], deselectedElementsIDs: Array.from(root.index.all().filter(isSelected), (val) => { return val.id; }) };
-            await this.actionDispatcher.dispatch(SelectAction.create(options));
+            if (isSelectable(target)) {
+                const options = { selectedElementsIDs: [target.id], deselectedElementsIDs: Array.from(root.index.all().filter(isSelected), (val) => { return val.id; }) };
+                await this.actionDispatcher.dispatch(SelectAction.create(options));
+            }
             const items = await this.menuProvider.getItems(root, mousePosition);
             menuService.show(items, mousePosition);
         }
