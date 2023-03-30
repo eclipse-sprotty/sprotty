@@ -24,12 +24,13 @@ import {
     RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
 } from 'sprotty';
 import edgeIntersectionModule from "sprotty/lib/features/edge-intersection/di.config";
-import { IconView, NodeView} from "./views";
-import { PopupModelProvider } from "./popup";
-import { ClassDiagramModelSource } from './model-source';
-import { ClassDiagramLabelValidator, ClassDiagramLabelValidationDecorator } from './label-validation';
-import { Icon, ClassNode, ClassLabel, PropertyLabel } from "./model";
 import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
+import { ClassDiagramLabelValidationDecorator, ClassDiagramLabelValidator } from './label-validation';
+import { ClassContextMenuItemProvider, ClassContextMenuService } from './menu';
+import { ClassLabel, ClassNode, Icon, PropertyLabel } from "./model";
+import { ClassDiagramModelSource } from './model-source';
+import { PopupModelProvider } from "./popup";
+import { IconView, NodeView } from "./views";
 
 export default (containerId: string) => {
     require("sprotty/css/sprotty.css");
@@ -49,6 +50,8 @@ export default (containerId: string) => {
         bind(TYPES.IEditLabelValidationDecorator).to(ClassDiagramLabelValidationDecorator);
         bind(BezierMouseListener).toSelf().inSingletonScope();
         bind(TYPES.MouseListener).toService(BezierMouseListener);
+        bind(TYPES.IContextMenuService).to(ClassContextMenuService);
+        bind(TYPES.IContextMenuItemProvider).to(ClassContextMenuItemProvider);
 
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);

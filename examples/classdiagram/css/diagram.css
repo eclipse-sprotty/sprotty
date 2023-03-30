@@ -88,37 +88,37 @@
     stroke-width: 3px;
 }
 
-.sprotty-edge > .sprotty-routing-handle {
+.sprotty-edge>.sprotty-routing-handle {
     fill: #884;
     stroke: none;
     z-index: 1000;
 }
 
-.sprotty-edge > .sprotty-routing-handle[data-kind='line'] {
+.sprotty-edge>.sprotty-routing-handle[data-kind='line'] {
     opacity: 0.35;
 }
 
-.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-add'] {
+.sprotty-edge>.sprotty-routing-handle[data-kind='bezier-add'] {
     fill: #2B2;
 }
 
-.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-remove'] {
+.sprotty-edge>.sprotty-routing-handle[data-kind='bezier-remove'] {
     fill: #B00;
 }
 
-.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-control-before'] {
+.sprotty-edge>.sprotty-routing-handle[data-kind='bezier-control-before'] {
     fill: #44E;
 }
 
-.sprotty-edge > .sprotty-routing-handle[data-kind='bezier-control-after'] {
+.sprotty-edge>.sprotty-routing-handle[data-kind='bezier-control-after'] {
     fill: #44E;
 }
 
-.sprotty-edge > .sprotty-routing-handle.selected {
+.sprotty-edge>.sprotty-routing-handle.selected {
     fill: #66a;
 }
 
-.sprotty-edge > .sprotty-routing-handle.mouseover {
+.sprotty-edge>.sprotty-routing-handle.mouseover {
     stroke: #112;
     stroke-width: 1;
 }
@@ -136,6 +136,43 @@
     margin-bottom: 10px;
 }
 
-.sprotty-popup-body > p {
+.sprotty-popup-body>p {
     margin-bottom: 2px;
+}
+
+.class-context-menu {
+    background-color: #dee2e6;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    border: 1px solid #adb5bd;
+    border-radius: 3px;
+    padding: 1px;
+}
+
+.class-context-menu-item {
+    background-color: #dee2e6;
+    padding: 2px;
+    padding-left: 15px;
+    padding-right: 15px;
+    min-width: 100px;
+    font-family: sans-serif;
+    cursor: default;
+}
+
+.class-context-menu-item.disabled-action {
+    color: darkgray;
+}
+
+.class-context-menu-item:empty {
+    padding: 0px;
+    border-bottom: 1.5px solid #adb5bd;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.class-context-menu-item:hover:not(.disabled-action) {
+    color: green;
 }

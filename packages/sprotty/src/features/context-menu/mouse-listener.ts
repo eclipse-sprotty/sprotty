@@ -17,13 +17,13 @@
 import { inject } from "inversify";
 import { Action, SelectAction } from "sprotty-protocol/lib/actions";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { IContextMenuServiceProvider, IContextMenuService } from "./context-menu-service";
-import { ContextMenuProviderRegistry } from "./menu-providers";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { TYPES } from "../../base/types";
 import { SModelElement } from "../../base/model/smodel";
-import { isSelectable, isSelected } from "../select/model";
 import { findParentByFeature } from "../../base/model/smodel-utils";
+import { TYPES } from "../../base/types";
+import { MouseListener } from "../../base/views/mouse-tool";
+import { isSelectable, isSelected } from "../select/model";
+import { IContextMenuService, IContextMenuServiceProvider } from "./context-menu-service";
+import { ContextMenuProviderRegistry } from "./menu-providers";
 
 export class ContextMenuMouseListener extends MouseListener {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
@@ -46,27 +46,27 @@ export class ContextMenuMouseListener extends MouseListener {
             // IContextMenuService is not bound => do nothing
             return;
         }
-        const mousePosition = { x: event.x, y: event.y };
-        const root = target.root;
-        const id = target.id;
+
         let isTargetSelected = false;
         const selectableTarget = findParentByFeature(target, isSelectable);
         if (selectableTarget) {
             isTargetSelected = selectableTarget.selected;
             selectableTarget.selected = true;
         }
-        const restoreSelection = () => { if (selectableTarget) selectableTarget.selected = isTargetSelected; };
 
-        if (isSelectable(target)) {
-            if (isSelected(target)) {
-                const menuItems = await this.menuProvider.getItems(target.root, mousePosition);
-                menuService.show(menuItems, mousePosition, restoreSelection);
-            } else {
-                const options = {selectedElementsIDs: [id], deselectedElementsIDs: Array.from(root.index.all().filter(isSelected), (val) => {return val.id;})};
+        const root = target.root;
+        const mousePosition = { x: event.x, y: event.y };
+        if (target.id === root.id || isSelected(selectableTarget)) {
+            const menuItems = await this.menuProvider.getItems(root, mousePosition);
+            const restoreSelection = () => { if (selectableTarget) selectableTarget.selected = isTargetSelected; };
+            menuService.show(menuItems, mousePosition, restoreSelection);
+        } else {
+            if (isSelectable(target)) {
+                const options = { selectedElementsIDs: [target.id], deselectedElementsIDs: Array.from(root.index.all().filter(isSelected), (val) => { return val.id; }) };
                 await this.actionDispatcher.dispatch(SelectAction.create(options));
-                const items = await this.menuProvider.getItems(root, mousePosition);
-                menuService.show(items, mousePosition);
             }
+            const items = await this.menuProvider.getItems(root, mousePosition);
+            menuService.show(items, mousePosition);
         }
     }
 }
