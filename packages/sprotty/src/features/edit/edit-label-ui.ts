@@ -269,7 +269,7 @@ function getEditableLabels(contextElementIds: string[], root: Readonly<SModelRoo
 }
 
 function scaledFont(font: string, zoom: number): string {
-    return font.replace(/([0-9]+[.]?[0-9]*)/, (match) => {
+    return font.replace(/\d+(\.\d+)?/, (match) => {
         return String(Number.parseInt(match, 10) * zoom);
     });
 }
