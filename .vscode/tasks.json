@@ -46,7 +46,7 @@
         {
             "label": "Build Sprotty examples",
             "type": "shell",
-            "command": "yarn examples:build",
+            "command": "yarn --cwd examples build",
             "group": "build",
             "presentation": {
                 "focus": false,
