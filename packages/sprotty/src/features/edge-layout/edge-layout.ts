@@ -128,8 +128,9 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
         const bounds = label.bounds;
         const x = isAlignable(label) ? label.alignment.x - bounds.width : 0;
         const y = isAlignable(label) ? label.alignment.y - bounds.height : 0;
-        if (placement.side === 'on')
-            return { x: x + 0.5 * bounds.height, y: y + 0.5 * bounds.height};
+        if (placement.side === 'on') {
+            return { x: x + 0.5 * bounds.width, y: y + 0.5 * bounds.height};
+        }
         const quadrant = this.getQuadrant(angle);
         const midLeft = { x: placement.offset, y: y + 0.5 * bounds.height };
         const topLeft = { x: placement.offset, y: y + bounds.height + placement.offset };
