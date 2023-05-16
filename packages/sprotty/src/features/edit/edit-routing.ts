@@ -18,9 +18,9 @@ import { inject, injectable } from "inversify";
 import { Action } from "sprotty-protocol/lib/actions";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
+import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
 import { TYPES } from "../../base/types";
-import { SRoutableElement, SRoutingHandle } from "../routing/model";
+import { SRoutableElementImpl, SRoutingHandleImpl } from "../routing/model";
 import { EdgeRouterRegistry } from "../routing/routing";
 import { canEditRouting } from './model';
 
@@ -47,9 +47,9 @@ export class SwitchEditModeCommand extends Command {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    protected elementsToActivate: SModelElement[] = [];
-    protected elementsToDeactivate: SModelElement[] = [];
-    protected handlesToRemove: { handle: SRoutingHandle, parent: SRoutableElement, point?: Point }[] = [];
+    protected elementsToActivate: SModelElementImpl[] = [];
+    protected elementsToDeactivate: SModelElementImpl[] = [];
+    protected handlesToRemove: { handle: SRoutingHandleImpl, parent: SRoutableElementImpl, point?: Point }[] = [];
 
     constructor(@inject(TYPES.Action) protected readonly action: SwitchEditModeAction) {
         super();
@@ -66,7 +66,7 @@ export class SwitchEditModeCommand extends Command {
             const element = index.getById(id);
             if (element !== undefined)
                 this.elementsToDeactivate.push(element);
-            if (element instanceof SRoutingHandle && element.parent instanceof SRoutableElement) {
+            if (element instanceof SRoutingHandleImpl && element.parent instanceof SRoutableElementImpl) {
                 const parent = element.parent;
                 if (this.shouldRemoveHandle(element, parent)) {
                     this.handlesToRemove.push({ handle: element, parent });
@@ -78,17 +78,17 @@ export class SwitchEditModeCommand extends Command {
         return this.doExecute(context);
     }
 
-    protected doExecute(context: CommandExecutionContext): SModelRoot {
+    protected doExecute(context: CommandExecutionContext): SModelRootImpl {
         this.handlesToRemove.forEach(entry => {
             entry.point = entry.parent.routingPoints.splice(entry.handle.pointIndex, 1)[0];
         });
         this.elementsToDeactivate.forEach(element => {
-            if (element instanceof SRoutableElement)
-                element.removeAll(child => child instanceof SRoutingHandle);
-            else if (element instanceof SRoutingHandle) {
+            if (element instanceof SRoutableElementImpl)
+                element.removeAll(child => child instanceof SRoutingHandleImpl);
+            else if (element instanceof SRoutingHandleImpl) {
                 element.editMode = false;
                 if (element.danglingAnchor) {
-                    if (element.parent instanceof SRoutableElement && element.danglingAnchor.original)  {
+                    if (element.parent instanceof SRoutableElementImpl && element.danglingAnchor.original)  {
                         if (element.parent.source === element.danglingAnchor)
                             element.parent.sourceId = element.danglingAnchor.original.id;
                         else if (element.parent.target === element.danglingAnchor)
@@ -100,16 +100,16 @@ export class SwitchEditModeCommand extends Command {
             }
         });
         this.elementsToActivate.forEach(element => {
-            if (canEditRouting(element) && element instanceof SParentElement) {
+            if (canEditRouting(element) && element instanceof SParentElementImpl) {
                 const router = this.edgeRouterRegistry.get(element.routerKind);
                 router.createRoutingHandles(element);
-            } else if (element instanceof SRoutingHandle)
+            } else if (element instanceof SRoutingHandleImpl)
                 element.editMode = true;
         });
         return context.root;
     }
 
-    protected shouldRemoveHandle(handle: SRoutingHandle, parent: SRoutableElement): boolean {
+    protected shouldRemoveHandle(handle: SRoutingHandleImpl, parent: SRoutableElementImpl): boolean {
         if (handle.kind === 'junction') {
             const route = this.edgeRouterRegistry.route(parent);
             return route.find(rp => rp.pointIndex === handle.pointIndex) === undefined;
@@ -123,16 +123,16 @@ export class SwitchEditModeCommand extends Command {
                 entry.parent.routingPoints.splice(entry.handle.pointIndex, 0, entry.point);
         });
         this.elementsToActivate.forEach(element => {
-            if (element instanceof SRoutableElement)
-                element.removeAll(child => child instanceof SRoutingHandle);
-            else if (element instanceof SRoutingHandle)
+            if (element instanceof SRoutableElementImpl)
+                element.removeAll(child => child instanceof SRoutingHandleImpl);
+            else if (element instanceof SRoutingHandleImpl)
                 element.editMode = false;
         });
         this.elementsToDeactivate.forEach(element => {
             if (canEditRouting(element)) {
                 const router = this.edgeRouterRegistry.get(element.routerKind);
                 router.createRoutingHandles(element);
-            } else if (element instanceof SRoutingHandle)
+            } else if (element instanceof SRoutingHandleImpl)
                 element.editMode = true;
         });
         return context.root;

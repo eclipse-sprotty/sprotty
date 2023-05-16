@@ -18,7 +18,7 @@ import { inject, injectable } from "inversify";
 import { Action } from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { CommandExecutionContext, CommandReturn, SystemCommand } from "../base/commands/command";
-import { SModelRoot } from "../base/model/smodel";
+import { SModelRootImpl } from "../base/model/smodel";
 import { TYPES } from "../base/types";
 import { ModelSource } from "./model-source";
 
@@ -61,7 +61,7 @@ export class CommitModelCommand extends SystemCommand {
         return this.doCommit(this.newModel, context.root, true);
     }
 
-    protected doCommit(model: SModelRootSchema, result: SModelRoot, doSetOriginal: boolean): CommandReturn {
+    protected doCommit(model: SModelRootSchema, result: SModelRootImpl, doSetOriginal: boolean): CommandReturn {
         const commitResult = this.modelSource.commitModel(model);
         if (commitResult instanceof Promise) {
             return commitResult.then(originalModel => {

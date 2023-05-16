@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,22 +15,22 @@
  ********************************************************************************/
 
 import {
-    SGraphFactory, SChildElement, SModelRoot, SParentElement, getBasicType, PreRenderedElement, HtmlRoot,
+    SGraphFactory, SChildElementImpl, SModelRootImpl, SParentElementImpl, PreRenderedElementImpl, HtmlRootImpl,
     createFeatureSet, Direction
 } from 'sprotty';
 import {
     SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, HtmlRoot as HtmlRootSchema,
-    PreRenderedElement as PreRenderedElementSchema
+    PreRenderedElement as PreRenderedElementSchema, getBasicType
 } from 'sprotty-protocol';
 import {
     Channel, ChannelSchema, Core, CoreSchema, Crossbar, CrossbarSchema, Processor, ProcessorSchema
-} from "./chipmodel";
-import { CORE_WIDTH, CORE_DISTANCE } from "./views";
+} from './chipmodel';
+import { CORE_WIDTH, CORE_DISTANCE } from './views';
 
 
 export class ChipModelFactory extends SGraphFactory {
 
-    override createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
+    override createElement(schema: SModelElementSchema, parent?: SParentElementImpl): SChildElementImpl {
         try {
             if (this.isCoreSchema(schema)) {
                 this.validate(schema, parent);
@@ -51,7 +51,7 @@ export class ChipModelFactory extends SGraphFactory {
             } else if (this.isCrossbarSchema(schema)) {
                 return this.initializeChild(new Crossbar(), schema, parent);
             } else if (this.isPreRenderedSchema(schema)) {
-                return this.initializeChild(new PreRenderedElement(), schema, parent);
+                return this.initializeChild(new PreRenderedElementImpl(), schema, parent);
             }
         } catch (e) {
             console.error(e.message);
@@ -59,19 +59,19 @@ export class ChipModelFactory extends SGraphFactory {
         return super.createElement(schema, parent);
     }
 
-    override createRoot(schema: SModelRootSchema): SModelRoot {
+    override createRoot(schema: SModelRootSchema): SModelRootImpl {
         if (this.isProcessorSchema(schema)) {
             const processor = this.initializeRoot(new Processor(), schema);
             processor.features = createFeatureSet(Processor.DEFAULT_FEATURES);
             return processor;
         } else if (this.isHtmlRootSchema(schema)) {
-            return this.initializeRoot(new HtmlRoot(), schema);
+            return this.initializeRoot(new HtmlRootImpl(), schema);
         } else {
             return super.createRoot(schema);
         }
     }
 
-    private validate(coreOrChannel: CoreSchema | ChannelSchema, processor?: SParentElement) {
+    private validate(coreOrChannel: CoreSchema | ChannelSchema, processor?: SParentElementImpl) {
         if (processor) {
             if (!(processor instanceof Processor))
                 throw new Error('Parent model element must be a Processor');

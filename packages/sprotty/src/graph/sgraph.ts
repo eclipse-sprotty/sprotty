@@ -18,10 +18,10 @@ import {
     SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, SShapeElement as SShapeElementSchema
 } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { ModelIndexImpl, SChildElement, SModelElement } from '../base/model/smodel';
+import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel';
 import {
     Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
-    ModelLayoutOptions, SShapeElement
+    ModelLayoutOptions, SShapeElementImpl
 } from '../features/bounds/model';
 import { edgeLayoutFeature, EdgePlacement } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
@@ -29,7 +29,7 @@ import { editFeature } from '../features/edit/model';
 import { Fadeable, fadeFeature } from '../features/fade/model';
 import { Hoverable, hoverFeedbackFeature, popupFeature } from '../features/hover/model';
 import { moveFeature } from '../features/move/model';
-import { connectableFeature, SConnectableElement, SRoutableElement } from '../features/routing/model';
+import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model';
 import { Selectable, selectFeature } from '../features/select/model';
 import { ViewportRootElement } from '../features/viewport/viewport-root';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
@@ -50,13 +50,16 @@ export interface SGraphSchema extends SModelRootSchema {
 /**
  * Root element for graph-like models.
  */
-export class SGraph extends ViewportRootElement {
+export class SGraphImpl extends ViewportRootElement {
     layoutOptions?: ModelLayoutOptions;
 
     constructor(index = new SGraphIndex()) {
         super(index);
     }
 }
+
+/** @deprecated Use `SGraphImpl` instead. */
+export const SGraph = SGraphImpl;
 
 /**
  * Serializable schema for SNode.
@@ -76,39 +79,42 @@ export interface SNodeSchema extends SShapeElementSchema {
  * another node via an SEdge. Such a connection can be direct, i.e. the node is the source or target of
  * the edge, or indirect through a port, i.e. it contains an SPort which is the source or target of the edge.
  */
-export class SNode extends SConnectableElement implements Selectable, Fadeable, Hoverable {
+export class SNodeImpl extends SConnectableElementImpl implements Selectable, Fadeable, Hoverable {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
 
-    override children: SChildElement[];
+    override children: SChildElementImpl[];
     layout?: string;
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    override canConnect(routable: SRoutableElement, role: string) {
-        return this.children.find(c => c instanceof SPort) === undefined;
+    override canConnect(routable: SRoutableElementImpl, role: string) {
+        return this.children.find(c => c instanceof SPortImpl) === undefined;
     }
 
-    override get incomingEdges(): FluentIterable<SEdge> {
+    override get incomingEdges(): FluentIterable<SEdgeImpl> {
         const index = this.index;
         if (index instanceof SGraphIndex) {
             return index.getIncomingEdges(this);
         }
-        const allEdges = this.index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        const allEdges = this.index.all().filter(e => e instanceof SEdgeImpl) as FluentIterable<SEdgeImpl>;
         return allEdges.filter(e => e.targetId === this.id);
     }
 
-    override get outgoingEdges(): FluentIterable<SEdge> {
+    override get outgoingEdges(): FluentIterable<SEdgeImpl> {
         const index = this.index;
         if (index instanceof SGraphIndex) {
             return index.getOutgoingEdges(this);
         }
-        const allEdges = this.index.all().filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        const allEdges = this.index.all().filter(e => e instanceof SEdgeImpl) as FluentIterable<SEdgeImpl>;
         return allEdges.filter(e => e.sourceId === this.id);
     }
 
 }
+
+/** @deprecated Use `SNodeImpl` instead. */
+export const SNode = SNodeImpl;
 
 /**
  * Serializable schema for SPort.
@@ -125,7 +131,7 @@ export interface SPortSchema extends SShapeElementSchema {
 /**
  * A port is a connection point for edges. It should always be contained in an SNode.
  */
-export class SPort extends SConnectableElement implements Selectable, Fadeable, Hoverable {
+export class SPortImpl extends SConnectableElementImpl implements Selectable, Fadeable, Hoverable {
     static readonly DEFAULT_FEATURES = [connectableFeature, selectFeature, boundsFeature, fadeFeature,
         hoverFeedbackFeature];
 
@@ -133,23 +139,26 @@ export class SPort extends SConnectableElement implements Selectable, Fadeable, 
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-    override get incomingEdges(): FluentIterable<SEdge> {
+    override get incomingEdges(): FluentIterable<SEdgeImpl> {
         const index = this.index;
         if (index instanceof SGraphIndex) {
             return index.getIncomingEdges(this);
         }
-        return super.incomingEdges.filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        return super.incomingEdges.filter(e => e instanceof SEdgeImpl) as FluentIterable<SEdgeImpl>;
     }
 
-    override get outgoingEdges(): FluentIterable<SEdge> {
+    override get outgoingEdges(): FluentIterable<SEdgeImpl> {
         const index = this.index;
         if (index instanceof SGraphIndex) {
             return index.getOutgoingEdges(this);
         }
-        return super.outgoingEdges.filter(e => e instanceof SEdge) as FluentIterable<SEdge>;
+        return super.outgoingEdges.filter(e => e instanceof SEdgeImpl) as FluentIterable<SEdgeImpl>;
     }
 
 }
+
+/** @deprecated Use `SPortImpl` instead. */
+export const SPort = SPortImpl;
 
 /**
  * Serializable schema for SEdge.
@@ -171,7 +180,7 @@ export interface SEdgeSchema extends SModelElementSchema {
  * each of which can be either a node or a port. The source and target elements are referenced via their
  * ids and can be resolved with the index stored in the root element.
  */
-export class SEdge extends SRoutableElement implements Fadeable, Selectable, Hoverable, BoundsAware {
+export class SEdgeImpl extends SRoutableElementImpl implements Fadeable, Selectable, Hoverable, BoundsAware {
     static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
         hoverFeedbackFeature];
 
@@ -180,6 +189,9 @@ export class SEdge extends SRoutableElement implements Fadeable, Selectable, Hov
     opacity: number = 1;
 
 }
+
+/** @deprecated Use `SEdgeImpl` instead. */
+export const SEdge = SEdgeImpl;
 
 /**
  * Serializable schema for SLabel.
@@ -194,7 +206,7 @@ export interface SLabelSchema extends SShapeElementSchema {
 /**
  * A label can be attached to a node, edge, or port, and contains some text to be rendered in its view.
  */
-export class SLabel extends SShapeElement implements Selectable, Alignable, Fadeable {
+export class SLabelImpl extends SShapeElementImpl implements Selectable, Alignable, Fadeable {
     static readonly DEFAULT_FEATURES = [boundsFeature, alignFeature, layoutableChildFeature,
         edgeLayoutFeature, fadeFeature];
 
@@ -205,6 +217,9 @@ export class SLabel extends SShapeElement implements Selectable, Alignable, Fade
     edgePlacement?: EdgePlacement;
 
 }
+
+/** @deprecated Use `SLabelImpl` instead. */
+export const SLabel = SLabelImpl;
 
 /**
  * Serializable schema for SCompartment.
@@ -219,28 +234,31 @@ export interface SCompartmentSchema extends SShapeElementSchema {
  * A compartment is used to group multiple child elements such as labels of a node. Usually a `vbox`
  * or `hbox` layout is used to arrange these children.
  */
-export class SCompartment extends SShapeElement implements Fadeable {
+export class SCompartmentImpl extends SShapeElementImpl implements Fadeable {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature,
         fadeFeature];
 
-    override children: SChildElement[];
+    override children: SChildElementImpl[];
     layout?: string;
     override layoutOptions?: {[key: string]: string | number | boolean};
     opacity = 1;
 
 }
 
+/** @deprecated Use `SCompartmentImpl` instead. */
+export const SCompartment = SCompartmentImpl;
+
 /**
  * A specialized model index that tracks outgoing and incoming edges.
  */
 export class SGraphIndex extends ModelIndexImpl {
 
-    private outgoing: Map<string, SEdge[]> = new Map;
-    private incoming: Map<string, SEdge[]> = new Map;
+    private outgoing: Map<string, SEdgeImpl[]> = new Map;
+    private incoming: Map<string, SEdgeImpl[]> = new Map;
 
-    override add(element: SModelElement): void {
+    override add(element: SModelElementImpl): void {
         super.add(element);
-        if (element instanceof SEdge) {
+        if (element instanceof SEdgeImpl) {
             // Register the edge in the outgoing map
             if (element.sourceId) {
                 const sourceArr = this.outgoing.get(element.sourceId);
@@ -260,9 +278,9 @@ export class SGraphIndex extends ModelIndexImpl {
         }
     }
 
-    override remove(element: SModelElement): void {
+    override remove(element: SModelElementImpl): void {
         super.remove(element);
-        if (element instanceof SEdge) {
+        if (element instanceof SEdgeImpl) {
             // Remove the edge from the outgoing map
             const sourceArr = this.outgoing.get(element.sourceId);
             if (sourceArr !== undefined) {
@@ -288,7 +306,7 @@ export class SGraphIndex extends ModelIndexImpl {
         }
     }
 
-    override getAttachedElements(element: SModelElement): FluentIterable<SModelElement> {
+    override getAttachedElements(element: SModelElementImpl): FluentIterable<SModelElementImpl> {
         return new FluentIterableImpl(
             () => ({
                 outgoing: this.outgoing.get(element.id),
@@ -319,12 +337,11 @@ export class SGraphIndex extends ModelIndexImpl {
         );
     }
 
-    getIncomingEdges(element: SConnectableElement): FluentIterable<SEdge> {
+    getIncomingEdges(element: SConnectableElementImpl): FluentIterable<SEdgeImpl> {
         return this.incoming.get(element.id) || [];
     }
 
-    getOutgoingEdges(element: SConnectableElement): FluentIterable<SEdge> {
+    getOutgoingEdges(element: SConnectableElementImpl): FluentIterable<SEdgeImpl> {
         return this.outgoing.get(element.id) || [];
     }
 }
-

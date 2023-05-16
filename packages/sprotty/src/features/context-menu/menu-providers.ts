@@ -17,7 +17,7 @@
 import { injectable, multiInject, optional } from 'inversify';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { MenuItem } from './context-menu-service';
-import { SModelRoot } from '../../base/model/smodel';
+import { SModelRootImpl } from '../../base/model/smodel';
 import { LabeledAction } from '../../base/actions/action';
 import { TYPES } from '../../base/types';
 import { isDeletable } from '../edit/delete';
@@ -25,7 +25,7 @@ import { isSelected } from '../select/model';
 import { DeleteElementAction } from 'sprotty-protocol';
 
 export interface IContextMenuItemProvider {
-    getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<LabeledAction[]>;
+    getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point): Promise<LabeledAction[]>;
 }
 
 @injectable()
@@ -33,7 +33,7 @@ export class ContextMenuProviderRegistry implements IContextMenuItemProvider {
 
     constructor(@multiInject(TYPES.IContextMenuItemProvider) @optional() protected menuProviders: IContextMenuItemProvider[] = []) { }
 
-    getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point) {
+    getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point) {
         const menues = this.menuProviders.map(provider => provider.getItems(root, lastMousePosition));
         return Promise.all(menues).then(this.flattenAndRestructure);
     }
@@ -67,7 +67,7 @@ export class ContextMenuProviderRegistry implements IContextMenuItemProvider {
 
 @injectable()
 export class DeleteContextMenuItemProvider implements IContextMenuItemProvider {
-    getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<MenuItem[]> {
+    getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point): Promise<MenuItem[]> {
         const selectedElements = Array.from(root.index.all().filter(isSelected).filter(isDeletable));
         return Promise.resolve([
             {

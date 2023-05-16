@@ -21,9 +21,9 @@ import {
 } from 'sprotty-protocol/lib/model';
 import { getBasicType } from 'sprotty-protocol/lib/utils/model-utils';
 import { SModelFactory, createFeatureSet } from "../base/model/smodel-factory";
-import { SChildElement, SModelRoot, SParentElement } from "../base/model/smodel";
-import { SCompartment, SEdge, SGraph, SLabel, SNode, SPort } from "./sgraph";
-import { SButton, SButtonSchema } from '../features/button/model';
+import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from "../base/model/smodel";
+import { SCompartmentImpl, SEdgeImpl, SGraphImpl, SLabelImpl, SNodeImpl, SPortImpl } from "./sgraph";
+import { SButtonImpl, SButtonSchema } from '../features/button/model';
 
 /**
  * @deprecated
@@ -33,57 +33,57 @@ import { SButton, SButtonSchema } from '../features/button/model';
 @injectable()
 export class SGraphFactory extends SModelFactory {
 
-    protected readonly defaultGraphFeatures = createFeatureSet(SGraph.DEFAULT_FEATURES);
-    protected readonly defaultNodeFeatures = createFeatureSet(SNode.DEFAULT_FEATURES);
-    protected readonly defaultPortFeatures = createFeatureSet(SPort.DEFAULT_FEATURES);
-    protected readonly defaultEdgeFeatures = createFeatureSet(SEdge.DEFAULT_FEATURES);
-    protected readonly defaultLabelFeatures = createFeatureSet(SLabel.DEFAULT_FEATURES);
-    protected readonly defaultCompartmentFeatures = createFeatureSet(SCompartment.DEFAULT_FEATURES);
-    protected readonly defaultButtonFeatures = createFeatureSet(SButton.DEFAULT_FEATURES);
+    protected readonly defaultGraphFeatures = createFeatureSet(SGraphImpl.DEFAULT_FEATURES);
+    protected readonly defaultNodeFeatures = createFeatureSet(SNodeImpl.DEFAULT_FEATURES);
+    protected readonly defaultPortFeatures = createFeatureSet(SPortImpl.DEFAULT_FEATURES);
+    protected readonly defaultEdgeFeatures = createFeatureSet(SEdgeImpl.DEFAULT_FEATURES);
+    protected readonly defaultLabelFeatures = createFeatureSet(SLabelImpl.DEFAULT_FEATURES);
+    protected readonly defaultCompartmentFeatures = createFeatureSet(SCompartmentImpl.DEFAULT_FEATURES);
+    protected readonly defaultButtonFeatures = createFeatureSet(SButtonImpl.DEFAULT_FEATURES);
 
-    override createElement(schema: SModelElementSchema, parent?: SParentElement): SChildElement {
-        let child: SChildElement;
+    override createElement(schema: SModelElementSchema, parent?: SParentElementImpl): SChildElementImpl {
+        let child: SChildElementImpl;
         if (this.registry.hasKey(schema.type)) {
             const regElement = this.registry.get(schema.type, undefined);
-            if (!(regElement instanceof SChildElement))
+            if (!(regElement instanceof SChildElementImpl))
                 throw new Error(`Element with type ${schema.type} was expected to be an SChildElement.`);
             child = regElement;
         } else if (this.isNodeSchema(schema)) {
-            child = new SNode();
+            child = new SNodeImpl();
             child.features = this.defaultNodeFeatures;
         } else if (this.isPortSchema(schema)) {
-            child = new SPort();
+            child = new SPortImpl();
             child.features = this.defaultPortFeatures;
         } else if (this.isEdgeSchema(schema)) {
-            child = new SEdge();
+            child = new SEdgeImpl();
             child.features = this.defaultEdgeFeatures;
         } else if (this.isLabelSchema(schema)) {
-            child = new SLabel();
+            child = new SLabelImpl();
             child.features = this.defaultLabelFeatures;
         } else if (this.isCompartmentSchema(schema)) {
-            child = new SCompartment();
+            child = new SCompartmentImpl();
             child.features = this.defaultCompartmentFeatures;
         } else if (this.isButtonSchema(schema)) {
-            child = new SButton();
+            child = new SButtonImpl();
             child.features = this.defaultButtonFeatures;
         } else {
-            child = new SChildElement();
+            child = new SChildElementImpl();
         }
         return this.initializeChild(child, schema, parent);
     }
 
-    override createRoot(schema: SModelRootSchema): SModelRoot {
-        let root: SModelRoot;
+    override createRoot(schema: SModelRootSchema): SModelRootImpl {
+        let root: SModelRootImpl;
         if (this.registry.hasKey(schema.type)) {
             const regElement = this.registry.get(schema.type, undefined);
-            if (!(regElement instanceof SModelRoot))
+            if (!(regElement instanceof SModelRootImpl))
                 throw new Error(`Element with type ${schema.type} was expected to be an SModelRoot.`);
             root = regElement;
         } else if (this.isGraphSchema(schema)) {
-            root = new SGraph();
+            root = new SGraphImpl();
             root.features = this.defaultGraphFeatures;
         } else {
-            root = new SModelRoot();
+            root = new SModelRootImpl();
         }
         return this.initializeRoot(root, schema);
     }

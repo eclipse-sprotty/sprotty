@@ -16,7 +16,7 @@
 
 import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
-import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { DOMHelper } from '../../base/views/dom-helper';
@@ -59,42 +59,42 @@ export interface Alignable extends SModelExtension {
     alignment: Point
 }
 
-export function isBoundsAware(element: SModelElement): element is SModelElement & BoundsAware {
+export function isBoundsAware(element: SModelElementImpl): element is SModelElementImpl & BoundsAware {
     return 'bounds' in element;
 }
 
-export function isLayoutContainer(element: SModelElement): element is SParentElement & LayoutContainer {
+export function isLayoutContainer(element: SModelElementImpl): element is SParentElementImpl & LayoutContainer {
     return isBoundsAware(element)
         && element.hasFeature(layoutContainerFeature)
         && 'layout' in element;
 }
 
-export function isLayoutableChild(element: SModelElement): element is SChildElement & LayoutableChild {
+export function isLayoutableChild(element: SModelElementImpl): element is SChildElementImpl & LayoutableChild {
     return isBoundsAware(element)
         && element.hasFeature(layoutableChildFeature);
 }
 
-export function isSizeable(element: SModelElement): element is SModelElement & BoundsAware {
+export function isSizeable(element: SModelElementImpl): element is SModelElementImpl & BoundsAware {
     return element.hasFeature(boundsFeature) && isBoundsAware(element);
 }
 
-export function isAlignable(element: SModelElement): element is SModelElement & Alignable {
+export function isAlignable(element: SModelElementImpl): element is SModelElementImpl & Alignable {
     return element.hasFeature(alignFeature)
         && 'alignment' in element;
 }
 
-export function getAbsoluteBounds(element: SModelElement): Bounds {
+export function getAbsoluteBounds(element: SModelElementImpl): Bounds {
     const boundsAware = findParentByFeature(element, isBoundsAware);
     if (boundsAware !== undefined) {
         let bounds = boundsAware.bounds;
-        let current: SModelElement = boundsAware;
-        while (current instanceof SChildElement) {
+        let current: SModelElementImpl = boundsAware;
+        while (current instanceof SChildElementImpl) {
             const parent = current.parent;
             bounds = parent.localToParent(bounds);
             current = parent;
         }
         return bounds;
-    } else if (element instanceof SModelRoot) {
+    } else if (element instanceof SModelRootImpl) {
         const canvasBounds = element.canvasBounds;
         return { x: 0, y: 0, width: canvasBounds.width, height: canvasBounds.height };
     } else {
@@ -111,7 +111,7 @@ export function getAbsoluteBounds(element: SModelElement): Bounds {
  * @param domHelper The dom helper to obtain the SVG element's id.
  * @param viewerOptions The viewer options to obtain sprotty's container div id.
  */
-export function getAbsoluteClientBounds(element: SModelElement, domHelper: DOMHelper, viewerOptions: ViewerOptions): Bounds {
+export function getAbsoluteClientBounds(element: SModelElementImpl, domHelper: DOMHelper, viewerOptions: ViewerOptions): Bounds {
     let x = 0;
     let y = 0;
     let width = 0;
@@ -140,17 +140,17 @@ export function getAbsoluteClientBounds(element: SModelElement, domHelper: DOMHe
     return { x, y, width, height };
 }
 
-export function findChildrenAtPosition(parent: SParentElement, point: Point): SModelElement[] {
-    const matches: SModelElement[] = [];
+export function findChildrenAtPosition(parent: SParentElementImpl, point: Point): SModelElementImpl[] {
+    const matches: SModelElementImpl[] = [];
     doFindChildrenAtPosition(parent, point, matches);
     return matches;
 }
 
-function doFindChildrenAtPosition(parent: SParentElement, point: Point, matches: SModelElement[]) {
+function doFindChildrenAtPosition(parent: SParentElementImpl, point: Point, matches: SModelElementImpl[]) {
     parent.children.forEach(child => {
         if (isBoundsAware(child) && Bounds.includes(child.bounds, point))
             matches.push(child);
-        if (child instanceof SParentElement) {
+        if (child instanceof SParentElementImpl) {
             const newPoint = child.parentToLocal(point);
             doFindChildrenAtPosition(child, newPoint, matches);
         }
@@ -171,7 +171,8 @@ export interface SShapeElementSchema extends SModelElementSchema {
 /**
  * Abstract class for elements with a position and a size.
  */
-export abstract class SShapeElement extends SChildElement implements BoundsAware, Locateable, LayoutableChild {
+export abstract class SShapeElementImpl extends SChildElementImpl implements BoundsAware, Locateable, LayoutableChild {
+
     position: Point = Point.ORIGIN;
     size: Dimension = Dimension.EMPTY;
     layoutOptions?: ModelLayoutOptions;
@@ -223,4 +224,8 @@ export abstract class SShapeElement extends SChildElement implements BoundsAware
         }
         return result;
     }
+
 }
+
+/** @deprecated Use `SShapeElementImpl` instead. */
+export const SShapeElement = SShapeElementImpl;

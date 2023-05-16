@@ -19,7 +19,7 @@ import { TYPES } from "../../base/types";
 import { configureCommand } from "../../base/commands/command-registration";
 import { configureActionHandler } from "../../base/actions/action-handler";
 import { configureModelElement } from "../../base/views/view";
-import { SDanglingAnchor } from "../../features/routing/model";
+import { SDanglingAnchorImpl } from "../../features/routing/model";
 import { EmptyGroupView } from "../../lib/svg-views";
 import { DeleteElementCommand } from "./delete";
 import { EditLabelMouseListener, ApplyLabelEditCommand, EditLabelKeyListener, EditLabelAction } from "./edit-label";
@@ -32,7 +32,7 @@ export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand(context, SwitchEditModeCommand);
     configureCommand(context, ReconnectCommand);
     configureCommand(context, DeleteElementCommand);
-    configureModelElement(context, 'dangling-anchor', SDanglingAnchor, EmptyGroupView);
+    configureModelElement(context, 'dangling-anchor', SDanglingAnchorImpl, EmptyGroupView);
 });
 
 export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {

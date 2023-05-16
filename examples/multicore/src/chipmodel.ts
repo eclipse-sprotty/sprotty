@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import {
-    SShapeElement, SChildElement, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
+    SShapeElementImpl, SChildElementImpl, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
     layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
-    ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature, JsonMap
+    ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature
 } from 'sprotty';
-import { Bounds, SModelElement, SModelRoot } from 'sprotty-protocol';
+import { Bounds, SModelElement, SModelRoot, JsonMap } from 'sprotty-protocol';
 import { CORE_DISTANCE, CORE_WIDTH } from "./views";
 
 export interface ProcessorSchema extends SModelRoot {
@@ -59,7 +59,7 @@ export interface CoreSchema extends SModelElement {
     children: SModelElement[]
 }
 
-export class Core extends SShapeElement implements Selectable, Fadeable, Hoverable, LayoutContainer {
+export class Core extends SShapeElementImpl implements Selectable, Fadeable, Hoverable, LayoutContainer {
     static readonly DEFAULT_FEATURES = [selectFeature, fadeFeature, layoutContainerFeature,
         hoverFeedbackFeature, popupFeature];
 
@@ -80,7 +80,7 @@ export interface CrossbarSchema extends SModelElement {
     load: number
 }
 
-export class Crossbar extends SChildElement {
+export class Crossbar extends SChildElementImpl {
     direction: Direction;
     load: number = 0;
 }
@@ -93,7 +93,7 @@ export interface ChannelSchema extends SModelElement {
     load: number
 }
 
-export class Channel extends SChildElement implements Selectable {
+export class Channel extends SChildElementImpl implements Selectable {
     static readonly DEFAULT_FEATURES = [selectFeature];
 
     column: number = 0;

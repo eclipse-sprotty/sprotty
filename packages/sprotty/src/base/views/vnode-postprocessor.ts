@@ -17,7 +17,7 @@
 import { injectable } from "inversify";
 import { VNode } from "snabbdom";
 import { Action } from "sprotty-protocol/lib/actions";
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { setAttr } from "./vnode-utils";
 
 /**
@@ -25,14 +25,14 @@ import { setAttr } from "./vnode-utils";
  * Used to register listeners and add animations.
  */
 export interface IVNodePostprocessor {
-    decorate(vnode: VNode, element: SModelElement): VNode
+    decorate(vnode: VNode, element: SModelElementImpl): VNode
     postUpdate(cause?: Action): void
 }
 
 @injectable()
 export class FocusFixPostprocessor implements IVNodePostprocessor {
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (vnode.sel && vnode.sel.startsWith('svg'))
             // allows to set focus in Firefox
             setAttr(vnode, 'tabindex', 0);

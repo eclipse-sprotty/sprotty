@@ -16,7 +16,7 @@
 
 import { injectable } from 'inversify';
 import { Action, CollapseExpandAction as ProtocolCollapseExpandAction, CollapseExpandAllAction as ProtocolCollapseExpandAllAction} from 'sprotty-protocol/lib/actions';
-import { SButton } from '../button/model';
+import { SButtonImpl } from '../button/model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isExpandable } from './model';
 import { IButtonHandler } from '../button/button-handler';
@@ -56,7 +56,7 @@ export class CollapseExpandAllAction implements Action,ProtocolCollapseExpandAll
 export class ExpandButtonHandler implements IButtonHandler {
     static TYPE = 'button:expand';
 
-    buttonPressed(button: SButton): Action[] {
+    buttonPressed(button: SButtonImpl): Action[] {
         const expandable = findParentByFeature(button, isExpandable);
         if (expandable !== undefined) {
             return [ ProtocolCollapseExpandAction.create({

@@ -18,7 +18,7 @@ import { injectable } from "inversify";
 import { Action } from "sprotty-protocol/lib/actions";
 import { ILogger } from "../../utils/logging";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { SModelRoot } from "../model/smodel";
+import { SModelRootImpl } from "../model/smodel";
 import { IModelFactory } from "../model/smodel-factory";
 import { IViewer } from "../views/viewer";
 
@@ -59,7 +59,7 @@ export interface ICommand {
  * chaining, it is essential that a command does not make any assumption
  * on the state of the model before execute() is called.
  */
-export type CommandReturn = SModelRoot | Promise<SModelRoot> | CommandResult;
+export type CommandReturn = SModelRootImpl | Promise<SModelRootImpl> | CommandResult;
 
 /**
  * The `CommandResult` allows to specify whether the model has changed
@@ -67,7 +67,7 @@ export type CommandReturn = SModelRoot | Promise<SModelRoot> | CommandResult;
  * an action is given, it is passed to the viewer in order to link any
  * subsequent response action to the original request.
  */
-export type CommandResult = { model: SModelRoot, modelChanged: boolean, cause?: Action };
+export type CommandResult = { model: SModelRootImpl, modelChanged: boolean, cause?: Action };
 
 /**
  * Base class for all commands.
@@ -133,7 +133,7 @@ export abstract class MergeableCommand extends Command {
  */
 @injectable()
 export abstract class HiddenCommand extends Command {
-    abstract override execute(context: CommandExecutionContext): SModelRoot | CommandResult;
+    abstract override execute(context: CommandExecutionContext): SModelRootImpl | CommandResult;
 
     undo(context: CommandExecutionContext): CommandReturn {
         context.logger.error(this, 'Cannot undo a hidden command');
@@ -179,7 +179,7 @@ export abstract class ResetCommand extends Command {
  */
 export interface CommandExecutionContext {
     /** The current Sprotty model (i.e. the main model that is visible to the user) */
-    root: SModelRoot
+    root: SModelRootImpl
 
     /** Used to turn sprotty schema elements (e.g. from the action) into model elements */
     modelFactory: IModelFactory

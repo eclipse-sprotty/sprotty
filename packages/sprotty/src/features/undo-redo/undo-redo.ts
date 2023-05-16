@@ -17,7 +17,7 @@
 import { Action, UndoAction as ProtocolUndoAction, RedoAction as ProtocolRedoAction } from 'sprotty-protocol/lib/actions';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { KeyListener } from '../../base/views/key-tool';
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { isMac } from '../../utils/browser';
 
 /**
@@ -53,7 +53,7 @@ export namespace RedoAction {
 }
 
 export class UndoRedoKeyListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
             return [ProtocolUndoAction.create()];
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))

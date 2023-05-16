@@ -22,7 +22,7 @@ import {
 } from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext } from '../../base/commands/command';
 import { ModelRequestCommand } from '../../base/commands/request-command';
-import { SChildElement, SModelElement, SModelRoot, SParentElement } from '../../base/model/smodel';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
 import { KeyListener } from '../../base/views/key-tool';
@@ -32,10 +32,10 @@ import { isCtrlOrCmd } from '../../utils/browser';
 import { toArray } from '../../utils/iterable';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { ButtonHandlerRegistry } from '../button/button-handler';
-import { SButton } from '../button/model';
+import { SButtonImpl } from '../button/model';
 import { SwitchEditModeAction } from '../edit/edit-routing';
-import { SRoutingHandle } from '../routing/model';
-import { SRoutableElement } from '../routing/model';
+import { SRoutingHandleImpl } from '../routing/model';
+import { SRoutableElementImpl } from '../routing/model';
 import { findViewportScrollbar } from '../viewport/scroll';
 import { isSelectable, Selectable } from './model';
 
@@ -109,31 +109,31 @@ export namespace SelectionResult {
 export class SelectCommand extends Command {
     static readonly KIND = ProtocolSelectAction.KIND;
 
-    protected selected: (SChildElement & Selectable)[] = [];
-    protected deselected: (SChildElement & Selectable)[] = [];
+    protected selected: (SChildElementImpl & Selectable)[] = [];
+    protected deselected: (SChildElementImpl & Selectable)[] = [];
 
     constructor(@inject(TYPES.Action) public action: ProtocolSelectAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): SModelRootImpl {
         const model = context.root;
         this.action.selectedElementsIDs.forEach(id => {
             const element = model.index.getById(id);
-            if (element instanceof SChildElement && isSelectable(element)) {
+            if (element instanceof SChildElementImpl && isSelectable(element)) {
                 this.selected.push(element);
             }
         });
         this.action.deselectedElementsIDs.forEach(id => {
             const element = model.index.getById(id);
-            if (element instanceof SChildElement && isSelectable(element)) {
+            if (element instanceof SChildElementImpl && isSelectable(element)) {
                 this.deselected.push(element);
             }
         });
         return this.redo(context);
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): SModelRootImpl {
         for (const element of this.selected) {
             element.selected = false;
         }
@@ -143,7 +143,7 @@ export class SelectCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): SModelRootImpl {
         for (const element of this.deselected) {
             element.selected = false;
         }
@@ -164,12 +164,12 @@ export class SelectAllCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): SModelRootImpl {
         this.selectAll(context.root, this.action.select);
         return context.root;
     }
 
-    protected selectAll(element: SParentElement, newState: boolean): void {
+    protected selectAll(element: SParentElementImpl, newState: boolean): void {
         if (isSelectable(element)) {
             this.previousSelection[element.id] = element.selected;
             element.selected = newState;
@@ -179,7 +179,7 @@ export class SelectAllCommand extends Command {
         }
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): SModelRootImpl {
         const index = context.root.index;
         Object.keys(this.previousSelection).forEach(id => {
             const element = index.getById(id);
@@ -189,7 +189,7 @@ export class SelectAllCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): SModelRootImpl {
         this.selectAll(context.root, this.action.select);
         return context.root;
     }
@@ -202,7 +202,7 @@ export class SelectMouseListener extends MouseListener {
     wasSelected = false;
     hasDragged = false;
 
-    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         if (event.button !== 0) {
             return [];
         }
@@ -211,11 +211,11 @@ export class SelectMouseListener extends MouseListener {
             return buttonHandled;
         }
         const selectableTarget = findParentByFeature(target, isSelectable);
-        if (selectableTarget !== undefined || target instanceof SModelRoot) {
+        if (selectableTarget !== undefined || target instanceof SModelRootImpl) {
             this.hasDragged = false;
         }
         if (selectableTarget !== undefined) {
-            let deselectedElements: SModelElement[] = [];
+            let deselectedElements: SModelElementImpl[] = [];
             // multi-selection?
             if (!isCtrlOrCmd(event)) {
                 deselectedElements = this.collectElementsToDeselect(target, selectableTarget);
@@ -237,14 +237,14 @@ export class SelectMouseListener extends MouseListener {
         return [];
     }
 
-    protected collectElementsToDeselect(target: SModelElement, selectableTarget: (SModelElement & Selectable) | undefined): SModelElement[] {
+    protected collectElementsToDeselect(target: SModelElementImpl, selectableTarget: (SModelElementImpl & Selectable) | undefined): SModelElementImpl[] {
         return toArray(target.root.index.all()
         .filter(element => isSelectable(element) && element.selected
-            && !(selectableTarget instanceof SRoutingHandle && element === selectableTarget.parent as SModelElement)));
+            && !(selectableTarget instanceof SRoutingHandleImpl && element === selectableTarget.parent as SModelElementImpl)));
     }
 
-    protected handleButton(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] | undefined {
-        if (this.buttonHandlerRegistry !== undefined && target instanceof SButton && target.enabled) {
+    protected handleButton(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] | undefined {
+        if (this.buttonHandlerRegistry !== undefined && target instanceof SButtonImpl && target.enabled) {
             const buttonHandler = this.buttonHandlerRegistry.get(target.type);
             if (buttonHandler !== undefined) {
                 return buttonHandler.buttonPressed(target);
@@ -253,12 +253,12 @@ export class SelectMouseListener extends MouseListener {
         return undefined;
     }
 
-    protected handleSelectTarget(selectableTarget: SModelElement & Selectable, deselectedElements: SModelElement[], event: MouseEvent): (Action | Promise<Action>)[] {
+    protected handleSelectTarget(selectableTarget: SModelElementImpl & Selectable, deselectedElements: SModelElementImpl[], event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
         result.push(ProtocolSelectAction.create({ selectedElementsIDs: [selectableTarget.id], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
         result.push(BringToFrontAction.create([selectableTarget.id]));
-        const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElement).map(e => e.id);
-        if (selectableTarget instanceof SRoutableElement) {
+        const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElementImpl).map(e => e.id);
+        if (selectableTarget instanceof SRoutableElementImpl) {
             result.push(SwitchEditModeAction.create({ elementsToActivate: [selectableTarget.id], elementsToDeactivate: routableDeselect }));
         } else if (routableDeselect.length > 0) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
@@ -266,31 +266,31 @@ export class SelectMouseListener extends MouseListener {
         return result;
     }
 
-    protected handleDeselectTarget(selectableTarget: SModelElement & Selectable, event: MouseEvent): (Action | Promise<Action>)[] {
+    protected handleDeselectTarget(selectableTarget: SModelElementImpl & Selectable, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
         result.push(ProtocolSelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: [selectableTarget.id] }));
-        if (selectableTarget instanceof SRoutableElement) {
+        if (selectableTarget instanceof SRoutableElementImpl) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: [selectableTarget.id] }));
         }
         return result;
     }
 
-    protected handleDeselectAll(deselectedElements: SModelElement[], event: MouseEvent): (Action | Promise<Action>)[] {
+    protected handleDeselectAll(deselectedElements: SModelElementImpl[], event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
         result.push(ProtocolSelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
-        const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElement).map(e => e.id);
+        const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElementImpl).map(e => e.id);
         if (routableDeselect.length > 0) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
         }
         return result;
     }
 
-    override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseMove(target: SModelElementImpl, event: MouseEvent): Action[] {
         this.hasDragged = true;
         return [];
     }
 
-    override mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseUp(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         if (event.button === 0) {
             if (!this.hasDragged) {
                 const selectableTarget = findParentByFeature(target, isSelectable);
@@ -298,7 +298,7 @@ export class SelectMouseListener extends MouseListener {
                     if (this.wasSelected) {
                         return [ProtocolSelectAction.create({selectedElementsIDs:[selectableTarget.id],deselectedElementsIDs:[]})];
                     }
-                } else if (target instanceof SModelRoot && !findViewportScrollbar(event)) {
+                } else if (target instanceof SModelRootImpl && !findViewportScrollbar(event)) {
                     // Mouse up on root but not over ViewPort's scroll bars > deselect all
                     return this.handleDeselectAll(this.collectElementsToDeselect(target, undefined), event);
                 }
@@ -308,7 +308,7 @@ export class SelectMouseListener extends MouseListener {
         return [];
     }
 
-    override decorate(vnode: VNode, element: SModelElement): VNode {
+    override decorate(vnode: VNode, element: SModelElementImpl): VNode {
         const selectableTarget = findParentByFeature(element, isSelectable);
         if (selectableTarget !== undefined) {
             setClass(vnode, 'selected', selectableTarget.selected);
@@ -337,7 +337,7 @@ export class GetSelectionCommand extends ModelRequestCommand {
 }
 
 export class SelectKeyboardListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyA', 'ctrlCmd')) {
             return [ ProtocolSelectAllActon.create()];
         }

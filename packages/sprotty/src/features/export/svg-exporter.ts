@@ -21,7 +21,7 @@ import { ViewerOptions } from '../../base/views/viewer-options';
 import { isBoundsAware } from '../bounds/model';
 import { ActionDispatcher } from '../../base/actions/action-dispatcher';
 import { TYPES } from '../../base/types';
-import { SModelRoot } from '../../base/model/smodel';
+import { SModelRootImpl } from '../../base/model/smodel';
 import { ILogger } from '../../utils/logging';
 
 export interface ExportSvgAction extends ResponseAction {
@@ -48,7 +48,7 @@ export class SvgExporter {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: ActionDispatcher;
     @inject(TYPES.ILogger) protected log: ILogger;
 
-    export(root: SModelRoot, request?: RequestAction<ExportSvgAction>): void {
+    export(root: SModelRootImpl, request?: RequestAction<ExportSvgAction>): void {
         if (typeof document !== 'undefined') {
             const div = document.getElementById(this.options.hiddenDiv);
             if (div !== null && div.firstElementChild && div.firstElementChild.tagName === 'svg') {
@@ -59,7 +59,7 @@ export class SvgExporter {
         }
     }
 
-    protected createSvg(svgElementOrig: SVGSVGElement, root: SModelRoot): string {
+    protected createSvg(svgElementOrig: SVGSVGElement, root: SModelRootImpl): string {
         const serializer = new XMLSerializer();
         const svgCopy = serializer.serializeToString(svgElementOrig);
         const iframe: HTMLIFrameElement = document.createElement('iframe');
@@ -105,7 +105,7 @@ export class SvgExporter {
         }
     }
 
-    protected getBounds(root: SModelRoot) {
+    protected getBounds(root: SModelRootImpl) {
         const allBounds: Bounds[] = [ Bounds.EMPTY ];
         root.children.forEach(element => {
             if (isBoundsAware(element)) {

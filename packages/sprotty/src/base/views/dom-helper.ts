@@ -17,7 +17,7 @@
 import { inject, injectable } from "inversify";
 import { ViewerOptions } from "./viewer-options";
 import { TYPES } from "../types";
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 
 @injectable()
 export class DOMHelper {
@@ -30,7 +30,7 @@ export class DOMHelper {
         return prefix;
     }
 
-    createUniqueDOMElementId(element: SModelElement): string {
+    createUniqueDOMElementId(element: SModelElementImpl): string {
         return this.getPrefix() + element.id;
     }
 

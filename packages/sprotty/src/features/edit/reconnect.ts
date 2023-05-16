@@ -18,7 +18,7 @@ import { inject, injectable } from 'inversify';
 import { Action, ReconnectAction as ProtocolReconnectAction} from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { TYPES } from '../../base/types';
-import { SRoutableElement } from '../routing/model';
+import { SRoutableElementImpl } from '../routing/model';
 import { EdgeMemento, EdgeRouterRegistry } from '../routing/routing';
 
 /**
@@ -63,7 +63,7 @@ export class ReconnectCommand extends Command {
     private doExecute(context: CommandExecutionContext) {
         const index = context.root.index;
         const edge = index.getById(this.action.routableId);
-        if (edge instanceof SRoutableElement) {
+        if (edge instanceof SRoutableElementImpl) {
             const router = this.edgeRouterRegistry.get(edge.routerKind);
             const before = router.takeSnapshot(edge);
             router.applyReconnect(edge, this.action.newSourceId, this.action.newTargetId);

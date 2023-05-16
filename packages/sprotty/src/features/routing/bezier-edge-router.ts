@@ -18,14 +18,14 @@ import { inject, injectable } from 'inversify';
 import { Action } from 'sprotty-protocol/lib/actions';
 import { centerOfLine, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { ResolvedHandleMove } from '../move/move';
-import { SDanglingAnchor, SRoutableElement, SRoutingHandle } from './model';
-import { SModelElement } from '../../base/model/smodel';
+import { SDanglingAnchorImpl, SRoutableElementImpl, SRoutingHandleImpl } from './model';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { EdgeRouterRegistry, RoutedPoint } from './routing';
 import { AbstractEdgeRouter, LinearRouteOptions } from './abstract-edge-router';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { TYPES } from "../../base/types";
-import { SEdge } from '../../graph/sgraph';
+import { SEdgeImpl } from '../../graph/sgraph';
 
 @injectable()
 export class BezierEdgeRouter extends AbstractEdgeRouter {
@@ -37,7 +37,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         return BezierEdgeRouter.KIND;
     }
 
-    route(edge: SRoutableElement): RoutedPoint[] {
+    route(edge: SRoutableElementImpl): RoutedPoint[] {
         if (!edge.source || !edge.target)
             return [];
         const rpCount = edge.routingPoints.length;
@@ -93,14 +93,14 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         return [ h1, h2 ];
     }
 
-    createRoutingHandles(edge: SRoutableElement): void {
+    createRoutingHandles(edge: SRoutableElementImpl): void {
         // route ensure there are at least 2 routed points
         this.route(edge);
 
         this.rebuildHandles(edge);
     }
 
-    private rebuildHandles(edge: SRoutableElement) {
+    private rebuildHandles(edge: SRoutableElementImpl) {
         this.addHandle(edge, 'source', 'routing-point', -2);
         this.addHandle(edge, 'bezier-control-after', 'bezier-routing-point', 0);
         this.addHandle(edge, 'bezier-add', 'bezier-create-routing-point', 0);
@@ -123,7 +123,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         this.addHandle(edge, 'target', 'routing-point', -1);
     }
 
-    getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle) {
+    getInnerHandlePosition(edge: SRoutableElementImpl, route: RoutedPoint[], handle: SRoutingHandleImpl) {
        if (handle.kind === 'bezier-control-before' || handle.kind === 'bezier-junction' || handle.kind === 'bezier-control-after') {
             for (let i = 0; i < route.length; i++) {
                 const p = route[i];
@@ -140,7 +140,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         return undefined;
     }
 
-    protected findBezierControl(edge: SRoutableElement, route: RoutedPoint[], handleIndex: number): Point {
+    protected findBezierControl(edge: SRoutableElementImpl, route: RoutedPoint[], handleIndex: number): Point {
         let result: Point = { x: route[0].x, y: route[0].y };
         if (handleIndex > 0) {
             for (const rp of route) {
@@ -153,7 +153,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         return result;
     }
 
-    override applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
+    override applyHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]): void {
         moves.forEach(move => {
             const handle = move.handle;
             let orgPosition = { x: 0, y: 0 };
@@ -181,9 +181,9 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
                     ctrlPointIndex = 0;
                     relativePos = edge.routingPoints[ctrlPointIndex];
 
-                    if (!(edge.source instanceof SDanglingAnchor)) {
+                    if (!(edge.source instanceof SDanglingAnchorImpl)) {
                         // detach source
-                        const anchor = new SDanglingAnchor();
+                        const anchor = new SDanglingAnchorImpl();
                         anchor.id = edge.id + '_dangling-source';
                         anchor.original = edge.source;
                         anchor.position = move.toPosition;
@@ -202,9 +202,9 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
                     ctrlPointIndex = edge.routingPoints.length - 1;
                     relativePos = edge.routingPoints[ctrlPointIndex];
 
-                    if (!(edge.target instanceof SDanglingAnchor)) {
+                    if (!(edge.target instanceof SDanglingAnchorImpl)) {
                         // detach target
-                        const anchor = new SDanglingAnchor();
+                        const anchor = new SDanglingAnchorImpl();
                         anchor.id = edge.id + '_dangling-target';
                         anchor.original = edge.target;
                         anchor.position = moveToPos;
@@ -225,11 +225,11 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         });
     }
 
-    protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
+    protected applyInnerHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]): void {
         // not required
     }
 
-    protected getOptions(edge: SRoutableElement): LinearRouteOptions {
+    protected getOptions(edge: SRoutableElementImpl): LinearRouteOptions {
         return  {
             minimalPointDistance: 2,
             standardDistance: 0.1,
@@ -244,7 +244,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         };
     }
 
-    public createNewBezierSegment(index: number, edge: SRoutableElement): void {
+    public createNewBezierSegment(index: number, edge: SRoutableElementImpl): void {
         const routingPoints = edge.routingPoints;
 
         let bezierJunctionPos, start, end: Point;
@@ -266,21 +266,21 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         this.moveBezierControlPair(h1, index + 1, edge);
 
         // simple solution for now: just rebuildHandles
-        edge.removeAll(c => c instanceof SRoutingHandle);
+        edge.removeAll(c => c instanceof SRoutingHandleImpl);
         this.rebuildHandles(edge);
     }
 
-    public removeBezierSegment(index: number, edge: SRoutableElement): void {
+    public removeBezierSegment(index: number, edge: SRoutableElementImpl): void {
         const routingPoints = edge.routingPoints;
 
         routingPoints.splice(index - 1, 3);
 
         // simple solution for now: just rebuildHandles
-        edge.removeAll(c => c instanceof SRoutingHandle);
+        edge.removeAll(c => c instanceof SRoutingHandleImpl);
         this.rebuildHandles(edge);
     }
 
-    private moveBezierControlPair(newPos: Point, ctrlPointIndex: number, edge: SRoutableElement) {
+    private moveBezierControlPair(newPos: Point, ctrlPointIndex: number, edge: SRoutableElementImpl) {
         if (ctrlPointIndex >= 0 && ctrlPointIndex < edge.routingPoints.length) {
             // find neighbors
             const before = ctrlPointIndex - 1;
@@ -301,7 +301,7 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
         }
     }
 
-    private setBezierMirror(edge: SRoutableElement, newPos: Point, pointIndex: number, before: boolean) {
+    private setBezierMirror(edge: SRoutableElementImpl, newPos: Point, pointIndex: number, before: boolean) {
         edge.routingPoints[pointIndex] = newPos;
         const jct = edge.routingPoints[before ? (pointIndex + 1) : (pointIndex - 1)];
         edge.routingPoints[before ? (pointIndex + 2) : (pointIndex - 2)] = {
@@ -317,9 +317,9 @@ export class BezierEdgeRouter extends AbstractEdgeRouter {
  */
 export class BezierMouseListener extends MouseListener {
 
-    override mouseDown(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseDown(target: SModelElementImpl, event: MouseEvent): Action[] {
         const result = [];
-        if (target instanceof SRoutingHandle && (target.kind === 'bezier-add' || target.kind === 'bezier-remove')) {
+        if (target instanceof SRoutingHandleImpl && (target.kind === 'bezier-add' || target.kind === 'bezier-remove')) {
             if (target.type === 'bezier-create-routing-point') {
                 result.push(AddRemoveBezierSegmentAction.create('add', target.id));
             } else if (target.type === 'bezier-remove-routing-point') {
@@ -360,17 +360,17 @@ export class AddRemoveBezierSegmentCommand extends Command {
         const index = context.root.index;
         const target = index.getById(this.action.targetId);
 
-        if (this.edgeRouterRegistry && target instanceof SRoutingHandle) {
-            const raw = this.edgeRouterRegistry.get((target.parent as SRoutableElement).routerKind);
+        if (this.edgeRouterRegistry && target instanceof SRoutingHandleImpl) {
+            const raw = this.edgeRouterRegistry.get((target.parent as SRoutableElementImpl).routerKind);
             if (raw instanceof BezierEdgeRouter) {
                 const router = raw;
 
                 for (const child of context.root.children) {
                     if (child.id === target.parent.id) {
                         if (this.action.actionTask === 'add') {
-                            router.createNewBezierSegment(target.pointIndex, child as SEdge);
+                            router.createNewBezierSegment(target.pointIndex, child as SEdgeImpl);
                         } else if (this.action.actionTask === 'remove') {
-                            router.removeBezierSegment(target.pointIndex, child as SEdge);
+                            router.removeBezierSegment(target.pointIndex, child as SEdgeImpl);
                         }
                         break;
                     }

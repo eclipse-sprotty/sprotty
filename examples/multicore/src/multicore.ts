@@ -19,7 +19,7 @@ import { SLabel, UpdateModelAction } from 'sprotty-protocol';
 import {
     ChannelSchema, CoreSchema, CrossbarSchema, ProcessorSchema
 } from './chipmodel';
-import createContainer from "./di.config";
+import createContainer from './di.config';
 
 export default function runMulticore() {
     const container = createContainer();

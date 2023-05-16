@@ -19,7 +19,7 @@ import { Action } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
 import { EMPTY_ROOT, IModelFactory } from "../model/smodel-factory";
-import { SModelRoot } from "../model/smodel";
+import { SModelRootImpl } from "../model/smodel";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer, IViewerProvider } from "../views/viewer";
 import { CommandStackOptions } from './command-stack-options';
@@ -44,28 +44,28 @@ export interface ICommandStack {
      * such that it can be rolled back later and the redo stack is
      * cleared.
      */
-    execute(command: ICommand): Promise<SModelRoot>
+    execute(command: ICommand): Promise<SModelRootImpl>
 
     /**
      * Executes all of the given commands. As opposed to calling
      * execute() multiple times, the Viewer is only updated once after
      * the last command has been executed.
      */
-    executeAll(commands: ICommand[]): Promise<SModelRoot>
+    executeAll(commands: ICommand[]): Promise<SModelRootImpl>
 
     /**
      * Takes the topmost command from the undo stack, undoes its
      * changes and pushes it ot the redo stack. Returns a Promise for
      * the changed model.
      */
-    undo(): Promise<SModelRoot>
+    undo(): Promise<SModelRootImpl>
 
     /**
      * Takes the topmost command from the redo stack, redoes its
      * changes and pushes it ot the undo stack. Returns a Promise for
      * the changed model.
      */
-    redo(): Promise<SModelRoot>
+    redo(): Promise<SModelRootImpl>
 }
 
 /**
@@ -150,13 +150,13 @@ export class CommandStack implements ICommandStack {
         });
     }
 
-    protected get currentModel(): Promise<SModelRoot> {
+    protected get currentModel(): Promise<SModelRootImpl> {
         return this.currentPromise.then(
             state => state.main.model
         );
     }
 
-    executeAll(commands: ICommand[]): Promise<SModelRoot> {
+    executeAll(commands: ICommand[]): Promise<SModelRootImpl> {
         commands.forEach(
             command => {
                 this.logger.log(this, 'Executing', command);
@@ -166,13 +166,13 @@ export class CommandStack implements ICommandStack {
         return this.thenUpdate();
     }
 
-    execute(command: ICommand): Promise<SModelRoot> {
+    execute(command: ICommand): Promise<SModelRootImpl> {
         this.logger.log(this, 'Executing', command);
         this.handleCommand(command, command.execute, this.mergeOrPush);
         return this.thenUpdate();
     }
 
-    undo(): Promise<SModelRoot> {
+    undo(): Promise<SModelRootImpl> {
         this.undoOffStackSystemCommands();
         this.undoPreceedingSystemCommands();
         const command = this.undoStack[this.undoStack.length - 1];
@@ -186,7 +186,7 @@ export class CommandStack implements ICommandStack {
         return this.thenUpdate();
     }
 
-    redo(): Promise<SModelRoot> {
+    redo(): Promise<SModelRootImpl> {
         this.undoOffStackSystemCommands();
         const command = this.redoStack.pop();
         if (command !== undefined) {
@@ -237,7 +237,7 @@ export class CommandStack implements ICommandStack {
                         newState[target] = { model: newModel, modelChanged: true };
                         resolve(newState);
                     });
-                } else if (commandResult instanceof SModelRoot) {
+                } else if (commandResult instanceof SModelRootImpl) {
                     if (target === 'main')
                         beforeResolve.call(this, command, context);
                     newState[target] = { model: commandResult, modelChanged: true };
@@ -266,7 +266,7 @@ export class CommandStack implements ICommandStack {
      * Notifies the Viewer to render the new model and/or the new hidden model
      * and returns a Promise for the new model.
      */
-    protected thenUpdate(): Promise<SModelRoot> {
+    protected thenUpdate(): Promise<SModelRootImpl> {
         this.currentPromise = this.currentPromise.then(state => {
             const newState = copyState(state);
             if (state.hidden.modelChanged) {
@@ -292,7 +292,7 @@ export class CommandStack implements ICommandStack {
     /**
      * Notify the `ModelViewer` that the model has changed.
      */
-    update(model: SModelRoot, cause?: Action): void {
+    update(model: SModelRootImpl, cause?: Action): void {
         if (this.modelViewer === undefined) {
             this.modelViewer = this.viewerProvider.modelViewer;
         }
@@ -302,7 +302,7 @@ export class CommandStack implements ICommandStack {
     /**
      * Notify the `HiddenModelViewer` that the hidden model has changed.
      */
-    updateHidden(model: SModelRoot, cause?: Action): void {
+    updateHidden(model: SModelRootImpl, cause?: Action): void {
         if (this.hiddenModelViewer === undefined) {
             this.hiddenModelViewer = this.viewerProvider.hiddenModelViewer;
         }
@@ -312,7 +312,7 @@ export class CommandStack implements ICommandStack {
     /**
      * Notify the `PopupModelViewer` that the popup model has changed.
      */
-    updatePopup(model: SModelRoot, cause?: Action): void {
+    updatePopup(model: SModelRootImpl, cause?: Action): void {
         if (this.popupModelViewer === undefined) {
             this.popupModelViewer = this.viewerProvider.popupModelViewer;
         }
@@ -409,7 +409,7 @@ export class CommandStack implements ICommandStack {
     /**
      * Assembles the context object that is passed to the commands execution method.
      */
-    protected createContext(currentModel: SModelRoot): CommandExecutionContext {
+    protected createContext(currentModel: SModelRootImpl): CommandExecutionContext {
         return {
             root: currentModel,
             modelChanged: this,

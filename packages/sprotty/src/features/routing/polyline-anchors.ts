@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { IAnchorComputer, ELLIPTIC_ANCHOR_KIND, RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND } from "./anchor";
-import { SConnectableElement } from "./model";
+import { SConnectableElementImpl } from "./model";
 import { PointToPointLine, Diamond, intersection } from "../../utils/geometry";
 import { injectable } from "inversify";
 import { PolylineEdgeRouter } from "./polyline-edge-router";
@@ -28,7 +28,7 @@ export class EllipseAnchor implements IAnchorComputer {
         return PolylineEdgeRouter.KIND + ':' + ELLIPTIC_ANCHOR_KIND;
     }
 
-    getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
+    getAnchor(connectable: SConnectableElementImpl, refPoint: Point, offset: number = 0): Point {
         const bounds = connectable.bounds;
         const c = Bounds.center(bounds);
         const dx = c.x - refPoint.x;
@@ -50,7 +50,7 @@ export class RectangleAnchor implements IAnchorComputer {
         return PolylineEdgeRouter.KIND + ':' + RECTANGULAR_ANCHOR_KIND;
     }
 
-    getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
+    getAnchor(connectable: SConnectableElementImpl, refPoint: Point, offset: number = 0): Point {
         const bounds = connectable.bounds;
         const c = Bounds.center(bounds);
         const finder = new NearestPointFinder(c, refPoint);
@@ -119,7 +119,7 @@ export class DiamondAnchor implements IAnchorComputer {
         return PolylineEdgeRouter.KIND + ':' + DIAMOND_ANCHOR_KIND;
     }
 
-    getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number): Point {
+    getAnchor(connectable: SConnectableElementImpl, refPoint: Point, offset: number): Point {
         const bounds = connectable.bounds;
         const referenceLine = new PointToPointLine(Bounds.center(bounds), refPoint);
         const closestDiamondSide = new Diamond(bounds).closestSideLine(refPoint);

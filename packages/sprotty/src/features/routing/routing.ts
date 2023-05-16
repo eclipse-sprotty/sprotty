@@ -16,13 +16,13 @@
 
 import { injectable, multiInject, optional } from "inversify";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { SParentElement } from "../../base/model/smodel";
+import { SParentElementImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { findArgValue, IViewArgs } from "../../base/views/view";
 import { InstanceRegistry } from "../../utils/registry";
 import { ResolvedHandleMove } from "../move/move";
-import { SRoutingHandle } from "../routing/model";
-import { SConnectableElement, SRoutableElement } from "./model";
+import { SRoutingHandleImpl } from "../routing/model";
+import { SConnectableElementImpl, SRoutableElementImpl } from "./model";
 import { PolylineEdgeRouter } from "./polyline-edge-router";
 
 /**
@@ -44,16 +44,16 @@ export interface RoutedPoint extends Point {
  * Stores the state of an edge at a specific time.
  */
 export interface EdgeSnapshot {
-    routingHandles: SRoutingHandle[]
+    routingHandles: SRoutingHandleImpl[]
     routingPoints: Point[]
     routedPoints: RoutedPoint[]
     router: IEdgeRouter
-    source?: SConnectableElement
-    target?: SConnectableElement
+    source?: SConnectableElementImpl
+    target?: SConnectableElementImpl
 }
 
 export interface EdgeMemento {
-    edge: SRoutableElement
+    edge: SRoutableElementImpl
     before: EdgeSnapshot
     after: EdgeSnapshot
 }
@@ -69,7 +69,7 @@ export interface IEdgeRouter {
     /**
      * Calculates the route of the given edge.
      */
-    route(edge: SRoutableElement): RoutedPoint[]
+    route(edge: SRoutableElementImpl): RoutedPoint[]
 
     /**
      * Calculates a point on the edge
@@ -77,7 +77,7 @@ export interface IEdgeRouter {
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
-    pointAt(edge: SRoutableElement, t: number): Point | undefined
+    pointAt(edge: SRoutableElementImpl, t: number): Point | undefined
 
     /**
      * Calculates the derivative at a point on the edge.
@@ -85,48 +85,48 @@ export interface IEdgeRouter {
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)
      * @returns the point or undefined if t is out of bounds or it cannot be computed
      */
-    derivativeAt(edge: SRoutableElement, t: number): Point | undefined
+    derivativeAt(edge: SRoutableElementImpl, t: number): Point | undefined
 
     /**
      * Retuns the position of the given handle based on the routing points of the edge.
      */
-    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined
+    getHandlePosition(edge: SRoutableElementImpl, route: RoutedPoint[], handle: SRoutingHandleImpl): Point | undefined
 
     /**
      * Creates the routing handles for the given target.
      */
-    createRoutingHandles(edge: SRoutableElement): void
+    createRoutingHandles(edge: SRoutableElementImpl): void
 
     /**
      * Updates the routing points and handles of the given edge with regard to the given moves.
      */
-    applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void
+    applyHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]): void
 
     /**
      * Updates the routing points and handles of the given edge with regard to the given moves.
      */
-    applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string): void
+    applyReconnect(edge: SRoutableElementImpl, newSourceId?: string, newTargetId?: string): void
 
     /**
      * Remove/add points in order to keep routing constraints consistent, or reset RPs on reconnect.
      */
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean): void;
+    cleanupRoutingPoints(edge: SRoutableElementImpl, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean): void;
     /**
      * Creates a snapshot of the given edge, storing all the data needed to restore it to
      * its current state.
      */
-    takeSnapshot(edge: SRoutableElement): EdgeSnapshot;
+    takeSnapshot(edge: SRoutableElementImpl): EdgeSnapshot;
 
     /**
      * Applies a snapshot to the current edge.
      */
-    applySnapshot(edge: SRoutableElement, edgeSnapshot: EdgeSnapshot): void;
+    applySnapshot(edge: SRoutableElementImpl, edgeSnapshot: EdgeSnapshot): void;
 }
 
 export interface IMultipleEdgesRouter extends IEdgeRouter {
     routeAll(
-        edges: SRoutableElement[],
-        parent: Readonly<SParentElement>
+        edges: SRoutableElementImpl[],
+        parent: Readonly<SParentElementImpl>
     ): EdgeRouting;
 }
 
@@ -166,7 +166,7 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
      * @param parent the parent to traverse for edges
      * @returns the routes of all edges that are children of `parent`
      */
-    routeAllChildren(parent: Readonly<SParentElement>): EdgeRouting {
+    routeAllChildren(parent: Readonly<SParentElementImpl>): EdgeRouting {
         const routing = this.doRouteAllChildren(parent);
         for (const postProcessor of this.postProcessors) {
             postProcessor.apply(routing);
@@ -180,23 +180,23 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
      * @param parent the parent to traverse for edges
      * @returns the routes of all edges that are children of `parent`
      */
-    protected doRouteAllChildren(parent: Readonly<SParentElement>) {
+    protected doRouteAllChildren(parent: Readonly<SParentElementImpl>) {
         const routing = new EdgeRouting();
-        const routersEdges = new Map<string, SRoutableElement[]>();
+        const routersEdges = new Map<string, SRoutableElementImpl[]>();
 
         const elementsToProcess = [parent];
         while (elementsToProcess.length > 0) {
-            const element = elementsToProcess.shift() as SParentElement;
+            const element = elementsToProcess.shift() as SParentElementImpl;
             for (const child of element.children) {
-                if (child instanceof SRoutableElement) {
+                if (child instanceof SRoutableElementImpl) {
                     const routerKind = child.routerKind || this.defaultKind;
                     if (routersEdges.has(routerKind)) {
-                        (routersEdges.get(routerKind) as SRoutableElement[]).push(child);
+                        (routersEdges.get(routerKind) as SRoutableElementImpl[]).push(child);
                     } else {
                         routersEdges.set(routerKind, [child]);
                     }
                 }
-                if (child instanceof SParentElement) {
+                if (child instanceof SParentElementImpl) {
                     elementsToProcess.push(child);
                 }
             }
@@ -222,7 +222,7 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
      * @param args arguments that may contain an `EdgeRouting` already
      * @returns the route of the specified `edge`
      */
-    route(edge: Readonly<SRoutableElement>, args?: IViewArgs): RoutedPoint[] {
+    route(edge: Readonly<SRoutableElementImpl>, args?: IViewArgs): RoutedPoint[] {
         const edgeRouting = findArgValue<EdgeRouting>(args, 'edgeRouting');
         if (edgeRouting) {
             const route = edgeRouting.get(edge.id);

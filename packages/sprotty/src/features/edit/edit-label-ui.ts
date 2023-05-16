@@ -19,7 +19,7 @@ import { Action, ApplyLabelEditAction } from 'sprotty-protocol/lib/actions';
 import { IActionDispatcherProvider } from '../../base/actions/action-dispatcher';
 import { IActionHandler } from '../../base/actions/action-handler';
 import { ICommand } from '../../base/commands/command';
-import { SModelElement, SModelRoot } from '../../base/model/smodel';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
 import { AbstractUIExtension } from '../../base/ui-extensions/ui-extension';
 import { SetUIExtensionVisibilityAction } from '../../base/ui-extensions/ui-extension-registry';
@@ -60,7 +60,7 @@ export class EditLabelUI extends AbstractUIExtension {
     protected inputElement: HTMLInputElement;
     protected textAreaElement: HTMLTextAreaElement;
 
-    protected label?: EditableLabel & SModelElement;
+    protected label?: EditableLabel & SModelElementImpl;
     protected labelElement: HTMLElement | null;
     protected validationTimeout?: number = undefined;
     protected isActive: boolean = false;
@@ -176,7 +176,7 @@ export class EditLabelUI extends AbstractUIExtension {
         }
     }
 
-    override show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+    override show(root: Readonly<SModelRootImpl>, ...contextElementIds: string[]) {
         if (!hasEditableLabel(contextElementIds, root) || this.isActive) {
             return;
         }
@@ -196,7 +196,7 @@ export class EditLabelUI extends AbstractUIExtension {
         }
     }
 
-    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRootImpl>, ...contextElementIds: string[]) {
         this.label = getEditableLabels(contextElementIds, root)[0];
         this.previousLabelContent = this.label.text;
         this.setPosition(containerElement);
@@ -260,11 +260,11 @@ export class EditLabelUI extends AbstractUIExtension {
     }
 }
 
-function hasEditableLabel(contextElementIds: string[], root: Readonly<SModelRoot>) {
+function hasEditableLabel(contextElementIds: string[], root: Readonly<SModelRootImpl>) {
     return getEditableLabels(contextElementIds, root).length === 1;
 }
 
-function getEditableLabels(contextElementIds: string[], root: Readonly<SModelRoot>) {
+function getEditableLabels(contextElementIds: string[], root: Readonly<SModelRootImpl>) {
     return contextElementIds.map(id => root.index.getById(id)).filter(isEditableLabel);
 }
 

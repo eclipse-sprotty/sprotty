@@ -18,9 +18,9 @@ import { Action, CenterAction as ProtocolCenterAction, FitToScreenAction as Prot
 import { Viewport } from "sprotty-protocol/lib/model";
 import { Bounds, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { matchesKeystroke } from "../../utils/keyboard";
-import { SChildElement } from '../../base/model/smodel';
+import { SChildElementImpl } from '../../base/model/smodel';
 import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
 import { KeyListener } from "../../base/views/key-tool";
 import { isBoundsAware } from "../bounds/model";
 import { isSelectable } from "../select/model";
@@ -78,7 +78,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
         super();
     }
 
-    protected initialize(model: SModelRoot) {
+    protected initialize(model: SModelRootImpl) {
         if (isViewport(model)) {
             this.oldViewport = {
                 scroll: model.scroll,
@@ -116,14 +116,14 @@ export abstract class BoundsAwareViewportCommand extends Command {
         }
     }
 
-    protected boundsInViewport(element: SModelElement, bounds: Bounds, viewport: SModelRoot & Viewport): Bounds {
-        if (element instanceof SChildElement && element.parent !== viewport)
+    protected boundsInViewport(element: SModelElementImpl, bounds: Bounds, viewport: SModelRootImpl & Viewport): Bounds {
+        if (element instanceof SChildElementImpl && element.parent !== viewport)
             return this.boundsInViewport(element.parent, element.parent.localToParent(bounds) as Bounds, viewport);
         else
             return bounds;
     }
 
-    protected abstract getNewViewport(bounds: Bounds, model: SModelRoot): Viewport | undefined;
+    protected abstract getNewViewport(bounds: Bounds, model: SModelRootImpl): Viewport | undefined;
 
     protected abstract getElementIds(): string[];
 
@@ -174,7 +174,7 @@ export class CenterCommand extends BoundsAwareViewportCommand {
         return this.action.elementIds;
     }
 
-    getNewViewport(bounds: Bounds, model: SModelRoot): Viewport | undefined {
+    getNewViewport(bounds: Bounds, model: SModelRootImpl): Viewport | undefined {
         if (!Dimension.isValid(model.canvasBounds)) {
             return undefined;
         }
@@ -206,7 +206,7 @@ export class FitToScreenCommand extends BoundsAwareViewportCommand {
         return this.action.elementIds;
     }
 
-    getNewViewport(bounds: Bounds, model: SModelRoot): Viewport | undefined {
+    getNewViewport(bounds: Bounds, model: SModelRootImpl): Viewport | undefined {
         if (!Dimension.isValid(model.canvasBounds)) {
             return undefined;
         }
@@ -233,7 +233,7 @@ export class FitToScreenCommand extends BoundsAwareViewportCommand {
 }
 
 export class CenterKeyboardListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyC', 'ctrlCmd', 'shift'))
             return [ProtocolCenterAction.create([])];
         if (matchesKeystroke(event, 'KeyF', 'ctrlCmd', 'shift'))

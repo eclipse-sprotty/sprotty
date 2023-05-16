@@ -17,9 +17,9 @@
 import { injectable, inject } from 'inversify';
 import { Action, BringToFrontAction as ProtocolBringToFrontAction} from 'sprotty-protocol/lib/actions';
 import { TYPES } from '../../base/types';
-import { SModelRoot, SChildElement, SModelElement, SParentElement } from '../../base/model/smodel';
+import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
 import { Command, CommandExecutionContext } from '../../base/commands/command';
-import { SRoutableElement, SConnectableElement } from '../routing/model';
+import { SRoutableElementImpl, SConnectableElementImpl } from '../routing/model';
 
 /**
  * Action to render the selected elements in front of others by manipulating the z-order.
@@ -42,7 +42,7 @@ export namespace BringToFrontAction {
 }
 
 export type ZOrderElement = {
-    element: SChildElement
+    element: SChildElementImpl
     index: number
 };
 
@@ -56,17 +56,17 @@ export class BringToFrontCommand extends Command {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): SModelRootImpl {
         const model = context.root;
         this.action.elementIDs.forEach(id => {
             const element = model.index.getById(id);
-            if (element instanceof SRoutableElement) {
+            if (element instanceof SRoutableElementImpl) {
                 if (element.source)
                     this.addToSelection(element.source);
                 if (element.target)
                     this.addToSelection(element.target);
             }
-            if (element instanceof SChildElement) {
+            if (element instanceof SChildElementImpl) {
                 this.addToSelection(element);
             }
             this.includeConnectedEdges(element);
@@ -74,26 +74,26 @@ export class BringToFrontCommand extends Command {
         return this.redo(context);
     }
 
-    protected includeConnectedEdges(element?: SModelElement): void {
-        if (element instanceof SConnectableElement) {
+    protected includeConnectedEdges(element?: SModelElementImpl): void {
+        if (element instanceof SConnectableElementImpl) {
             element.incomingEdges.forEach(edge => this.addToSelection(edge));
             element.outgoingEdges.forEach(edge => this.addToSelection(edge));
         }
-        if (element instanceof SParentElement) {
+        if (element instanceof SParentElementImpl) {
             for (const child of element.children) {
                 this.includeConnectedEdges(child);
             }
         }
     }
 
-    protected addToSelection(element: SChildElement): void {
+    protected addToSelection(element: SChildElementImpl): void {
         this.selected.push({
             element: element,
             index: element.parent.children.indexOf(element)
         });
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): SModelRootImpl {
         for (let i = this.selected.length - 1; i >= 0; i--) {
             const selection = this.selected[i];
             const element = selection.element;
@@ -102,7 +102,7 @@ export class BringToFrontCommand extends Command {
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): SModelRootImpl {
         for (let i = 0; i < this.selected.length; i++) {
             this.bringToFront(this.selected[i]);
         }

@@ -16,12 +16,12 @@
 
 import { inject, injectable } from "inversify";
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElement, SParentElement } from "../../base/model/smodel";
+import { SModelElementImpl, SParentElementImpl } from "../../base/model/smodel";
 import { translateBounds, translatePoint } from "../../base/model/smodel-utils";
 import { ResolvedHandleMove } from "../move/move";
-import { RoutingHandleKind, SDanglingAnchor, SRoutingHandle, edgeInProgressID, edgeInProgressTargetHandleID } from "./model";
+import { RoutingHandleKind, SDanglingAnchorImpl, SRoutingHandleImpl, edgeInProgressID, edgeInProgressTargetHandleID } from "./model";
 import { AnchorComputerRegistry, IAnchorComputer } from "./anchor";
-import { SConnectableElement, SRoutableElement } from "./model";
+import { SConnectableElementImpl, SRoutableElementImpl } from "./model";
 import { EdgeSnapshot, IEdgeRouter, RoutedPoint } from "./routing";
 
 export interface LinearRouteOptions {
@@ -39,7 +39,7 @@ export class DefaultAnchors {
     readonly top: RoutedPoint;
     readonly bottom: RoutedPoint;
 
-    constructor(readonly element: SConnectableElement, edgeParent: SParentElement, readonly kind: 'source' | 'target') {
+    constructor(readonly element: SConnectableElementImpl, edgeParent: SParentElementImpl, readonly kind: 'source' | 'target') {
         const bounds = element.bounds;
         this.bounds = translateBounds(bounds, element.parent, edgeParent);
         this.left = { x: this.bounds.x, y: this.bounds.y + 0.5 * this.bounds.height, kind };
@@ -82,13 +82,13 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
 
     abstract get kind(): string;
 
-    abstract route(edge: SRoutableElement): RoutedPoint[];
+    abstract route(edge: SRoutableElementImpl): RoutedPoint[];
 
-    abstract createRoutingHandles(edge: SRoutableElement): void;
+    abstract createRoutingHandles(edge: SRoutableElementImpl): void;
 
-    protected abstract getOptions(edge: SRoutableElement): LinearRouteOptions;
+    protected abstract getOptions(edge: SRoutableElementImpl): LinearRouteOptions;
 
-    pointAt(edge: SRoutableElement, t: number): Point | undefined {
+    pointAt(edge: SRoutableElementImpl, t: number): Point | undefined {
         const segments = this.calculateSegment(edge, t);
         if (!segments)
             return undefined;
@@ -96,7 +96,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return Point.linear(segmentStart, segmentEnd, lambda);
     }
 
-    derivativeAt(edge: SRoutableElement, t: number): Point | undefined {
+    derivativeAt(edge: SRoutableElementImpl, t: number): Point | undefined {
         const segments = this.calculateSegment(edge, t);
         if (!segments)
             return undefined;
@@ -107,7 +107,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         };
     }
 
-    protected calculateSegment(edge: SRoutableElement, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number} | undefined {
+    protected calculateSegment(edge: SRoutableElementImpl, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number} | undefined {
         if (t < 0 || t > 1)
             return undefined;
         const routedPoints = this.route(edge);
@@ -143,8 +143,8 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         };
     }
 
-    protected addHandle(edge: SRoutableElement, kind: RoutingHandleKind, type: string, routingPointIndex: number): SRoutingHandle {
-        const handle = new SRoutingHandle();
+    protected addHandle(edge: SRoutableElementImpl, kind: RoutingHandleKind, type: string, routingPointIndex: number): SRoutingHandleImpl {
+        const handle = new SRoutingHandleImpl();
         handle.kind = kind;
         handle.pointIndex = routingPointIndex;
         handle.type = type;
@@ -154,15 +154,15 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return handle;
     }
 
-    getHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined {
+    getHandlePosition(edge: SRoutableElementImpl, route: RoutedPoint[], handle: SRoutingHandleImpl): Point | undefined {
         switch (handle.kind) {
             case 'source':
-                if (edge.source instanceof SDanglingAnchor)
+                if (edge.source instanceof SDanglingAnchorImpl)
                     return edge.source.position;
                 else
                     return route[0];
             case 'target':
-                if (edge.target instanceof SDanglingAnchor)
+                if (edge.target instanceof SDanglingAnchorImpl)
                     return edge.target.position;
                  else {
                     return route[route.length - 1];
@@ -177,9 +177,9 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return undefined;
     }
 
-    protected abstract getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle): Point | undefined;
+    protected abstract getInnerHandlePosition(edge: SRoutableElementImpl, route: RoutedPoint[], handle: SRoutingHandleImpl): Point | undefined;
 
-    protected findRouteSegment(edge: SRoutableElement, route: RoutedPoint[], handleIndex: number): { start?: Point, end?: Point } {
+    protected findRouteSegment(edge: SRoutableElementImpl, route: RoutedPoint[], handleIndex: number): { start?: Point, end?: Point } {
         const getIndex = (rp: RoutedPoint) => {
             if (rp.pointIndex !== undefined)
                 return rp.pointIndex;
@@ -199,7 +199,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return { start, end };
     }
 
-    getTranslatedAnchor(connectable: SConnectableElement, refPoint: Point, refContainer: SParentElement, edge: SRoutableElement, anchorCorrection: number = 0): Point {
+    getTranslatedAnchor(connectable: SConnectableElementImpl, refPoint: Point, refContainer: SParentElementImpl, edge: SRoutableElementImpl, anchorCorrection: number = 0): Point {
         const translatedRefPoint = translatePoint(refPoint, refContainer, connectable.parent);
         const anchorComputer = this.getAnchorComputer(connectable);
         const strokeCorrection = 0.5 * connectable.strokeWidth;
@@ -207,26 +207,26 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return translatePoint(anchor, connectable.parent, edge.parent);
     }
 
-    protected getAnchorComputer(connectable: SConnectableElement): IAnchorComputer {
+    protected getAnchorComputer(connectable: SConnectableElementImpl): IAnchorComputer {
        return this.anchorRegistry.get(this.kind, connectable.anchorKind);
     }
 
-    applyHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void {
+    applyHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]): void {
         const remainingMoves = moves.slice();
         moves.forEach(move => {
             const handle = move.handle;
-            if (handle.kind === 'source' && !(edge.source instanceof SDanglingAnchor)) {
+            if (handle.kind === 'source' && !(edge.source instanceof SDanglingAnchorImpl)) {
                 // detach source
-                const anchor = new SDanglingAnchor();
+                const anchor = new SDanglingAnchorImpl();
                 anchor.id = edge.id + '_dangling-source';
                 anchor.original = edge.source;
                 anchor.position = move.toPosition;
                 handle.root.add(anchor);
                 handle.danglingAnchor = anchor;
                 edge.sourceId = anchor.id;
-            } else if (handle.kind === 'target' && !(edge.target instanceof SDanglingAnchor)) {
+            } else if (handle.kind === 'target' && !(edge.target instanceof SDanglingAnchorImpl)) {
                 // detach target
-                const anchor = new SDanglingAnchor();
+                const anchor = new SDanglingAnchorImpl();
                 anchor.id = edge.id + '_dangling-target';
                 anchor.original = edge.target;
                 anchor.position = move.toPosition;
@@ -244,24 +244,24 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         this.cleanupRoutingPoints(edge, edge.routingPoints, true, true);
     }
 
-    protected abstract applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]): void;
+    protected abstract applyInnerHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]): void;
 
-    cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
+    cleanupRoutingPoints(edge: SRoutableElementImpl, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
         this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors);
     }
 
-    protected resetRoutingPointsOnReconnect(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean,
+    protected resetRoutingPointsOnReconnect(edge: SRoutableElementImpl, routingPoints: Point[], updateHandles: boolean,
         sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors): boolean {
-        if (routingPoints.length === 0 || edge.source instanceof SDanglingAnchor || edge.target instanceof SDanglingAnchor) {
+        if (routingPoints.length === 0 || edge.source instanceof SDanglingAnchorImpl || edge.target instanceof SDanglingAnchorImpl) {
             const options = this.getOptions(edge);
             const corners = this.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
             routingPoints.splice(0, routingPoints.length, ...corners);
             if (updateHandles) {
                 let maxPointIndex = -2;
                 edge.children.forEach(child => {
-                    if (child instanceof SRoutingHandle) {
+                    if (child instanceof SRoutingHandleImpl) {
                         if (child.kind === 'target')
                             child.pointIndex = routingPoints.length;
                         else if (child.kind === 'line' && child.pointIndex >= routingPoints.length)
@@ -278,18 +278,18 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return false;
     }
 
-    applyReconnect(edge: SRoutableElement, newSourceId?: string, newTargetId?: string) {
+    applyReconnect(edge: SRoutableElementImpl, newSourceId?: string, newTargetId?: string) {
         let hasChanged = false;
         if (newSourceId) {
             const newSource = edge.root.index.getById(newSourceId);
-            if (newSource instanceof SConnectableElement) {
+            if (newSource instanceof SConnectableElementImpl) {
                 edge.sourceId = newSource.id;
                 hasChanged = true;
             }
         }
         if (newTargetId) {
             const newTarget = edge.root.index.getById(newTargetId);
-            if (newTarget instanceof SConnectableElement) {
+            if (newTarget instanceof SConnectableElementImpl) {
                 edge.targetId = newTarget.id;
                 hasChanged = true;
             }
@@ -305,12 +305,12 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         }
     }
 
-    takeSnapshot(edge: SRoutableElement): EdgeSnapshot {
+    takeSnapshot(edge: SRoutableElementImpl): EdgeSnapshot {
         return {
             routingPoints: edge.routingPoints.slice(),
             routingHandles: edge.children
-                .filter(child => child instanceof SRoutingHandle)
-                .map(child => child as SRoutingHandle),
+                .filter(child => child instanceof SRoutingHandleImpl)
+                .map(child => child as SRoutingHandleImpl),
             routedPoints: this.route(edge),
             router: this,
             source: edge.source,
@@ -318,9 +318,9 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         };
     }
 
-    applySnapshot(edge: SRoutableElement, snapshot: EdgeSnapshot): void {
+    applySnapshot(edge: SRoutableElementImpl, snapshot: EdgeSnapshot): void {
         edge.routingPoints = snapshot.routingPoints;
-        edge.removeAll(child => child instanceof SRoutingHandle);
+        edge.removeAll(child => child instanceof SRoutingHandleImpl);
         edge.routerKind = snapshot.router.kind;
         snapshot.routingHandles.forEach(handle => edge.add(handle));
         if (snapshot.source)
@@ -328,11 +328,11 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         if (snapshot.target)
             edge.targetId = snapshot.target.id;
         // update index
-        edge.root.index.remove(edge as SModelElement);
-        edge.root.index.add(edge as SModelElement);
+        edge.root.index.remove(edge as SModelElementImpl);
+        edge.root.index.add(edge as SModelElementImpl);
     }
 
-    protected calculateDefaultCorners(edge: SRoutableElement, sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors, options: LinearRouteOptions): Point[] {
+    protected calculateDefaultCorners(edge: SRoutableElementImpl, sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors, options: LinearRouteOptions): Point[] {
         const selfEdgeIndex = this.getSelfEdgeIndex(edge);
         if (selfEdgeIndex >= 0) {
             const standardDist = options.standardDistance;
@@ -367,7 +367,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         return [];
     }
 
-    protected getSelfEdgeIndex(edge: SRoutableElement): number {
+    protected getSelfEdgeIndex(edge: SRoutableElementImpl): number {
         if (!edge.source || edge.source !== edge.target)
             return -1;
         return edge.source.outgoingEdges
@@ -375,7 +375,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
             .indexOf(edge);
     }
 
-    protected commitRoute(edge: SRoutableElement, routedPoints: RoutedPoint[]) {
+    protected commitRoute(edge: SRoutableElementImpl, routedPoints: RoutedPoint[]) {
         const newRoutingPoints: Point[] = [];
         for (let i = 1; i < routedPoints.length - 1; ++i)
             newRoutingPoints.push({ x: routedPoints[i].x, y: routedPoints[i].y });

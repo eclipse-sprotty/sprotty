@@ -19,14 +19,14 @@ import { VNode } from "snabbdom";
 import { TYPES } from "../../base/types";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { ViewerOptions } from "../../base/views/viewer-options";
-import { SModelElement } from "../../base/model/smodel";
+import { SModelElementImpl } from "../../base/model/smodel";
 
 @injectable()
 export class PopupPositionUpdater implements IVNodePostprocessor {
 
     @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         return vnode;
     }
 

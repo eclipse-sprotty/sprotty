@@ -21,12 +21,12 @@ import { VNode } from 'snabbdom';
 import { IView, RenderingContext } from '../../base/views/view';
 import { isExpandable } from './model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
-import { SButton } from '../button/model';
+import { SButtonImpl } from '../button/model';
 import { injectable } from 'inversify';
 
 @injectable()
 export class ExpandButtonView implements IView {
-    render(button: SButton, context: RenderingContext): VNode {
+    render(button: SButtonImpl, context: RenderingContext): VNode {
         const expandable = findParentByFeature(button, isExpandable);
         const path = (expandable !== undefined && expandable.expanded)
             ? 'M 1,5 L 8,12 L 15,5 Z'

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule, injectable, inject } from "inversify";
+import { Container, ContainerModule, injectable, inject } from 'inversify';
 import {
     TYPES, configureViewerOptions, SGraphView, ConsoleLogger, LogLevel, loadDefaultModules,
-    LocalModelSource, CircularNode, configureModelElement, SGraph, SEdge, selectFeature, PolylineEdgeView, MouseListener, SModelElement
+    LocalModelSource, CircularNode, configureModelElement, SGraphImpl, SEdgeImpl, selectFeature,
+    PolylineEdgeView, MouseListener, SModelElementImpl
 } from 'sprotty';
-import { Action, Point } from "sprotty-protocol";
-import { CircleNodeView } from "./views";
+import { Action, Point } from 'sprotty-protocol';
+import { CircleNodeView } from './views';
 
 const NodeCreator = Symbol('NodeCreator');
 
 export default (nodeCreator: (point?: Point)=>void) => {
-    require("sprotty/css/sprotty.css");
-    require("../css/diagram.css");
+    require('sprotty/css/sprotty.css');
+    require('../css/diagram.css');
 
     const circlegraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
@@ -36,11 +37,13 @@ export default (nodeCreator: (point?: Point)=>void) => {
         bind(DroppableMouseListener).toSelf().inSingletonScope();
         bind(TYPES.MouseListener).toService(DroppableMouseListener);
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(context, 'graph', SGraph, SGraphView);
+
+        configureModelElement(context, 'graph', SGraphImpl, SGraphView);
         configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
-        configureModelElement(context, 'edge:straight', SEdge, PolylineEdgeView, {
+        configureModelElement(context, 'edge:straight', SEdgeImpl, PolylineEdgeView, {
             disable: [selectFeature]
         });
+
         configureViewerOptions(context, {
             needsClientLayout: false
         });
@@ -57,12 +60,12 @@ class DroppableMouseListener extends MouseListener {
 
     @inject(NodeCreator) nodeCreator: (point?: Point)=>void;
 
-    override dragOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override dragOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         event.preventDefault();
         return [];
     }
 
-    override drop(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override drop(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         this.nodeCreator({ x: event.offsetX, y:event.offsetY })
         return [];
     }

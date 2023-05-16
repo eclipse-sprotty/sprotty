@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Action } from "sprotty-protocol/lib/actions";
-import { SModelElement } from "../../base/model/smodel";
+import { SModelElementImpl } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 
 export const creatingOnDragFeature = Symbol('creatingOnDragFeature');
@@ -24,6 +24,6 @@ export interface CreatingOnDrag extends SModelExtension {
     createAction(id: string): Action;
 }
 
-export function isCreatingOnDrag<T extends SModelElement>(element: T): element is T & CreatingOnDrag {
+export function isCreatingOnDrag<T extends SModelElementImpl>(element: T): element is T & CreatingOnDrag {
     return element.hasFeature(creatingOnDragFeature) && (element as any).createAction !== undefined;
 }

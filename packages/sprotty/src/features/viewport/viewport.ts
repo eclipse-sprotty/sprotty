@@ -18,7 +18,7 @@ import { injectable, inject } from "inversify";
 import { Action, generateRequestId, RequestAction, ResponseAction, SetViewportAction as ProtocolSetViewPortAction} from "sprotty-protocol/lib/actions";
 import { Viewport } from "sprotty-protocol/lib/model";
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
 import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
 import { Animation } from "../../base/animations/animation";
 import { isViewport } from "./model";
@@ -77,7 +77,7 @@ export namespace ViewportResult {
 export class SetViewportCommand extends MergeableCommand {
     static readonly KIND = ProtocolSetViewPortAction.KIND;
 
-    protected element: SModelElement & Viewport;
+    protected element: SModelElementImpl & Viewport;
     protected oldViewport: Viewport;
     protected newViewport: Viewport;
 
@@ -145,7 +145,7 @@ export class ViewportAnimation extends Animation {
 
     protected zoomFactor: number;
 
-    constructor(protected element: SModelElement & Viewport,
+    constructor(protected element: SModelElementImpl & Viewport,
                 protected oldViewport: Viewport,
                 protected newViewport: Viewport,
                 protected override context: CommandExecutionContext) {
@@ -153,7 +153,7 @@ export class ViewportAnimation extends Animation {
         this.zoomFactor = Math.log(newViewport.zoom / oldViewport.zoom);
     }
 
-    tween(t: number, context: CommandExecutionContext): SModelRoot {
+    tween(t: number, context: CommandExecutionContext): SModelRootImpl {
         this.element.scroll = {
             x: (1 - t) * this.oldViewport.scroll.x + t * this.newViewport.scroll.x,
             y: (1 - t) * this.oldViewport.scroll.y + t * this.newViewport.scroll.y

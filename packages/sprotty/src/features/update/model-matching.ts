@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { SModelRoot, SModelElement, isParent, IModelIndex } from '../../base/model/smodel';
+import { SModelRootImpl, SModelElementImpl, isParent, IModelIndex } from '../../base/model/smodel';
 import { SModelIndex } from 'sprotty-protocol';
 
 export interface Match {
@@ -34,14 +34,14 @@ export function forEachMatch(matchResult: MatchResult, callback: (id: string, ma
 }
 
 export class ModelMatcher {
-    match(left: SModelRootSchema | SModelRoot, right: SModelRootSchema | SModelRoot): MatchResult {
+    match(left: SModelRootSchema | SModelRootImpl, right: SModelRootSchema | SModelRootImpl): MatchResult {
         const result: MatchResult = {};
         this.matchLeft(left, result);
         this.matchRight(right, result);
         return result;
     }
 
-    protected matchLeft(element: SModelElementSchema | SModelElement, result: MatchResult, parentId?: string): void {
+    protected matchLeft(element: SModelElementSchema | SModelElementImpl, result: MatchResult, parentId?: string): void {
         let match = result[element.id];
         if (match !== undefined) {
             match.left = element;
@@ -60,7 +60,7 @@ export class ModelMatcher {
         }
     }
 
-    protected matchRight(element: SModelElementSchema | SModelElement, result: MatchResult, parentId?: string) {
+    protected matchRight(element: SModelElementSchema | SModelElementImpl, result: MatchResult, parentId?: string) {
         let match = result[element.id];
         if (match !== undefined) {
             match.right = element;
@@ -81,7 +81,7 @@ export class ModelMatcher {
 }
 
 export function applyMatches(root: SModelRootSchema, matches: Match[], index?: IModelIndex): void {
-    if (root instanceof SModelRoot) {
+    if (root instanceof SModelRootImpl) {
         index = root.index;
     } else if (index === undefined) {
         index = new SModelIndex();

@@ -18,11 +18,11 @@ import { injectable, interfaces, multiInject, optional } from 'inversify';
 import { Action } from 'sprotty-protocol/lib/actions';
 import { InstanceRegistry } from '../../utils/registry';
 import { TYPES } from '../../base/types';
-import { SButton } from './model';
+import { SButtonImpl } from './model';
 import { isInjectable } from '../../utils/inversify';
 
 export interface IButtonHandler {
-    buttonPressed(button: SButton): (Action | Promise<Action>)[]
+    buttonPressed(button: SButtonImpl): (Action | Promise<Action>)[]
 }
 
 /** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */

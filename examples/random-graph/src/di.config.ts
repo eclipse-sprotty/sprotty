@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2021 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,8 @@ import { Container, ContainerModule } from 'inversify';
 import ElkConstructor from 'elkjs/lib/elk.bundled';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
-    loadDefaultModules, LocalModelSource, SNode, SEdge, SLabel, configureModelElement,
-    SGraph, RectangularNodeView, edgeIntersectionModule, PolylineEdgeViewWithGapsOnIntersections
+    loadDefaultModules, LocalModelSource, SNodeImpl, SEdgeImpl, SLabelImpl, configureModelElement,
+    SGraphImpl, RectangularNodeView, edgeIntersectionModule, PolylineEdgeViewWithGapsOnIntersections
 } from 'sprotty';
 import { ElkFactory, ElkLayoutEngine, elkLayoutModule } from 'sprotty-elk/lib/inversify';
 
@@ -39,10 +39,10 @@ export default (containerId: string) => {
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'graph', SGraph, SGraphView);
-        configureModelElement(container, 'node', SNode, RectangularNodeView);
-        configureModelElement(container, 'edge', SEdge, PolylineEdgeViewWithGapsOnIntersections);
-        configureModelElement(container, 'label', SLabel, SLabelView);
+        configureModelElement(container, 'graph', SGraphImpl, SGraphView);
+        configureModelElement(container, 'node', SNodeImpl, RectangularNodeView);
+        configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections);
+        configureModelElement(container, 'label', SLabelImpl, SLabelView);
 
         configureViewerOptions(context, {
             needsClientLayout: true,

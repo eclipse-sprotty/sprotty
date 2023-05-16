@@ -19,7 +19,7 @@ import { VNode } from "snabbdom";
 import { Action, isAction } from "sprotty-protocol/lib/actions";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { IActionDispatcher } from "../actions/action-dispatcher";
-import { SModelElement, SModelRoot } from "../model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../model/smodel";
 import { TYPES } from "../types";
 import { DOMHelper } from "./dom-helper";
 import { IVNodePostprocessor } from "./vnode-postprocessor";
@@ -43,7 +43,7 @@ export class MouseTool implements IVNodePostprocessor {
             this.mouseListeners.splice(index, 1);
     }
 
-    protected getTargetElement(model: SModelRoot, event: MouseEvent): SModelElement | undefined {
+    protected getTargetElement(model: SModelRootImpl, event: MouseEvent): SModelElementImpl | undefined {
         let target = event.target as Element;
         const index = model.index;
         while (target) {
@@ -57,7 +57,7 @@ export class MouseTool implements IVNodePostprocessor {
         return undefined;
     }
 
-    protected handleEvent(methodName: MouseEventKind, model: SModelRoot, event: MouseEvent) {
+    protected handleEvent(methodName: MouseEventKind, model: SModelRootImpl, event: MouseEvent) {
         this.focusOnMouseEvent(methodName, model);
         const element = this.getTargetElement(model, event);
         if (!element)
@@ -79,7 +79,7 @@ export class MouseTool implements IVNodePostprocessor {
         }
     }
 
-    protected focusOnMouseEvent<K extends keyof MouseListener>(methodName: K, model: SModelRoot) {
+    protected focusOnMouseEvent<K extends keyof MouseListener>(methodName: K, model: SModelRootImpl) {
         if (document && methodName === 'mouseDown') {
             const domElement = document.getElementById(this.domHelper.createUniqueDOMElementId(model));
             if (domElement !== null && typeof domElement.focus === 'function')
@@ -87,49 +87,49 @@ export class MouseTool implements IVNodePostprocessor {
         }
     }
 
-    mouseOver(model: SModelRoot, event: MouseEvent) {
+    mouseOver(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseOver', model, event);
     }
 
-    mouseOut(model: SModelRoot, event: MouseEvent) {
+    mouseOut(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseOut', model, event);
     }
 
-    mouseEnter(model: SModelRoot, event: MouseEvent) {
+    mouseEnter(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseEnter', model, event);
     }
 
-    mouseLeave(model: SModelRoot, event: MouseEvent) {
+    mouseLeave(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseLeave', model, event);
     }
 
-    mouseDown(model: SModelRoot, event: MouseEvent) {
+    mouseDown(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseDown', model, event);
     }
 
-    mouseMove(model: SModelRoot, event: MouseEvent) {
+    mouseMove(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseMove', model, event);
     }
 
-    mouseUp(model: SModelRoot, event: MouseEvent) {
+    mouseUp(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('mouseUp', model, event);
     }
 
-    wheel(model: SModelRoot, event: WheelEvent) {
+    wheel(model: SModelRootImpl, event: WheelEvent) {
         this.handleEvent('wheel', model, event);
     }
 
-    contextMenu(model: SModelRoot, event: MouseEvent) {
+    contextMenu(model: SModelRootImpl, event: MouseEvent) {
         event.preventDefault();
         this.handleEvent('contextMenu', model, event);
     }
 
-    doubleClick(model: SModelRoot, event: MouseEvent) {
+    doubleClick(model: SModelRootImpl, event: MouseEvent) {
         this.handleEvent('doubleClick', model, event);
     }
 
-    decorate(vnode: VNode, element: SModelElement) {
-        if (element instanceof SModelRoot) {
+    decorate(vnode: VNode, element: SModelElementImpl) {
+        if (element instanceof SModelRootImpl) {
             on(vnode, 'mouseover', this.mouseOver.bind(this, element));
             on(vnode, 'mouseout', this.mouseOut.bind(this, element));
             on(vnode, 'mouseenter', this.mouseEnter.bind(this, element));
@@ -167,55 +167,55 @@ export type MouseEventKind =
 @injectable()
 export class MouseListener {
 
-    mouseOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    mouseOut(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseOut(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    mouseEnter(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseEnter(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    mouseLeave(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseLeave(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseMove(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    mouseUp(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    wheel(target: SModelElement, event: WheelEvent): (Action | Promise<Action>)[] {
+    wheel(target: SModelElementImpl, event: WheelEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    doubleClick(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    contextMenu(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    dragOver(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    dragOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    drop(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    drop(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
     }
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         return vnode;
     }
 }
@@ -225,7 +225,7 @@ export class MousePositionTracker extends MouseListener {
 
     protected lastPosition: Point | undefined;
 
-    override mouseMove(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseMove(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         this.lastPosition = target.root.parentToLocal({ x: event.offsetX, y: event.offsetY });
         return [];
     }

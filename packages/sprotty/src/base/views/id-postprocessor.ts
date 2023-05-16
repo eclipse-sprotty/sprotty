@@ -18,7 +18,7 @@ import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
 import { TYPES } from "../types";
 import { ILogger } from "../../utils/logging";
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { DOMHelper } from "./dom-helper";
 import { getAttrs } from "./vnode-utils";
@@ -29,7 +29,7 @@ export class IdPostprocessor implements IVNodePostprocessor {
     @inject(TYPES.ILogger) protected logger: ILogger;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         const attrs = getAttrs(vnode);
         if (attrs.id !== undefined)
             this.logger.warn(vnode, 'Overriding id of vnode (' + attrs.id + '). Make sure not to set it manually in view.');

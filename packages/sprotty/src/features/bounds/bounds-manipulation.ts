@@ -21,7 +21,7 @@ import * as protocol from "sprotty-protocol/lib/actions";
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
 import { CommandExecutionContext, CommandResult, CommandReturn, HiddenCommand, SystemCommand } from "../../base/commands/command";
-import { SModelElement } from "../../base/model/smodel";
+import { SModelElementImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { Alignable, BoundsAware, isBoundsAware } from './model';
 
@@ -114,14 +114,14 @@ export class LayoutAction implements Action, protocol.LayoutAction {
 }
 
 export interface ResolvedElementAndBounds {
-    element: SModelElement & BoundsAware
+    element: SModelElementImpl & BoundsAware
     oldBounds: Bounds
     newPosition?: Point
     newSize: Dimension
 }
 
 export interface ResolvedElementAndAlignment {
-    element: SModelElement & Alignable
+    element: SModelElementImpl & Alignable
     oldAlignment: Point
     newAlignment: Point
 }

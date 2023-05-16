@@ -32,12 +32,12 @@ import {
     isIntersectingRoutedPoint
 } from '../features/edge-intersection/intersection-finder';
 import { isEdgeLayoutable } from '../features/edge-layout/model';
-import { SRoutableElement, SRoutingHandle } from '../features/routing/model';
+import { SRoutableElementImpl, SRoutingHandleImpl } from '../features/routing/model';
 import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
 import { RoutableView } from '../features/routing/views';
 import { svg } from '../lib/jsx';
 import { PointToPointLine } from '../utils/geometry';
-import { SCompartment, SEdge, SGraph, SLabel } from "./sgraph";
+import { SCompartmentImpl, SEdgeImpl, SGraphImpl, SLabelImpl } from "./sgraph";
 
 /**
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.
@@ -47,7 +47,7 @@ export class SGraphView implements IView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(model: Readonly<SGraph>, context: RenderingContext): VNode {
+    render(model: Readonly<SGraphImpl>, context: RenderingContext): VNode {
         const edgeRouting = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg class-sprotty-graph={true}>
@@ -64,7 +64,7 @@ export class PolylineEdgeView extends RoutableView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(edge: Readonly<SEdge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    render(edge: Readonly<SEdgeImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const route = this.edgeRouterRegistry.route(edge, args);
         if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
@@ -85,7 +85,7 @@ export class PolylineEdgeView extends RoutableView {
         </g>;
     }
 
-    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
+    protected renderLine(edge: SEdgeImpl, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
         const firstPoint = segments[0];
         let path = `M ${firstPoint.x},${firstPoint.y}`;
         for (let i = 1; i < segments.length; i++) {
@@ -95,12 +95,12 @@ export class PolylineEdgeView extends RoutableView {
         return <path d={path} />;
     }
 
-    protected renderAdditionals(edge: SEdge, segments: Point[], context: RenderingContext): VNode[] {
+    protected renderAdditionals(edge: SEdgeImpl, segments: Point[], context: RenderingContext): VNode[] {
         // here we need to render the control points?
         return [];
     }
 
-    protected renderDanglingEdge(message: string, edge: SEdge, context: RenderingContext): VNode {
+    protected renderDanglingEdge(message: string, edge: SEdgeImpl, context: RenderingContext): VNode {
         return <text class-sprotty-edge-dangling={true} title={message}>?</text>;
     }
 }
@@ -125,7 +125,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     protected skipOffsetBefore = 3;
     protected skipOffsetAfter = 2;
 
-    protected override renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
+    protected override renderLine(edge: SEdgeImpl, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
         let path = '';
         for (let i = 0; i < segments.length; i++) {
             const p = segments[i];
@@ -145,7 +145,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
     /**
      * Returns a path that takes the intersections into account by drawing a line jump or a gap for intersections on that path.
      */
-    protected intersectionPath(edge: SEdge, segments: Point[], intersectingPoint: IntersectingRoutedPoint, args?: IViewArgs): string {
+    protected intersectionPath(edge: SEdgeImpl, segments: Point[], intersectingPoint: IntersectingRoutedPoint, args?: IViewArgs): string {
         if (intersectingPoint.intersections.length < 1) {
             return '';
         }
@@ -217,16 +217,16 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
         return !this.shouldDrawLineJumpOnIntersection(currentLineSegment, otherLineSegment);
     }
 
-    protected getLineSegment(edge: SRoutableElement, intersection: Intersection, args?: IViewArgs, segments?: Point[]): PointToPointLine {
+    protected getLineSegment(edge: SRoutableElementImpl, intersection: Intersection, args?: IViewArgs, segments?: Point[]): PointToPointLine {
         const route = segments ? segments : this.edgeRouterRegistry.route(edge, args);
         const index = intersection.routable1 === edge.id ? intersection.segmentIndex1 : intersection.segmentIndex2;
         return new PointToPointLine(route[index], route[index + 1]);
     }
 
-    protected getOtherLineSegment(currentEdge: SEdge, intersection: Intersection, args?: IViewArgs): PointToPointLine | undefined {
+    protected getOtherLineSegment(currentEdge: SEdgeImpl, intersection: Intersection, args?: IViewArgs): PointToPointLine | undefined {
         const otherEdgeId = intersection.routable1 === currentEdge.id ? intersection.routable2 : intersection.routable1;
         const otherEdge = currentEdge.index.getById(otherEdgeId);
-        if (!(otherEdge instanceof SRoutableElement)) {
+        if (!(otherEdge instanceof SRoutableElementImpl)) {
             return undefined;
         }
         return this.getLineSegment(otherEdge, intersection, args);
@@ -295,7 +295,7 @@ export class BezierCurveEdgeView extends RoutableView {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    render(edge: Readonly<SEdge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    render(edge: Readonly<SEdgeImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const route = this.edgeRouterRegistry.route(edge, args);
         if (route.length === 0) {
             return this.renderDanglingEdge("Cannot compute route", edge, context);
@@ -316,7 +316,7 @@ export class BezierCurveEdgeView extends RoutableView {
         </g>;
     }
 
-    protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
+    protected renderLine(edge: SEdgeImpl, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
         /**
          * Example for two splines:
          * SVG:
@@ -359,11 +359,11 @@ export class BezierCurveEdgeView extends RoutableView {
         return ` S${c.x},${c.y} ${p.x},${p.y}`;
     }
 
-    protected renderAdditionals(edge: SEdge, segments: Point[], context: RenderingContext): VNode[] {
+    protected renderAdditionals(edge: SEdgeImpl, segments: Point[], context: RenderingContext): VNode[] {
         return [];
     }
 
-    protected renderDanglingEdge(message: string, edge: SEdge, context: RenderingContext): VNode {
+    protected renderDanglingEdge(message: string, edge: SEdgeImpl, context: RenderingContext): VNode {
         return <text class-sprotty-edge-dangling={true} title={message}>?</text>;
     }
 }
@@ -375,9 +375,9 @@ export class SRoutingHandleView implements IView {
 
     minimalPointDistance: number = 10;
 
-    render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+    render(handle: Readonly<SRoutingHandleImpl>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
         if (args && args.route) {
-            if (handle.parent instanceof SRoutableElement) {
+            if (handle.parent instanceof SRoutableElementImpl) {
                 const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
                 const theRoute = args.route === undefined ? this.edgeRouterRegistry.route(handle.parent, args) : args.route;
                 const position = router.getHandlePosition(handle.parent, theRoute, handle);
@@ -401,7 +401,7 @@ export class SRoutingHandleView implements IView {
 
 @injectable()
 export class SLabelView extends ShapeView {
-    render(label: Readonly<SLabel>, context: RenderingContext): VNode | undefined {
+    render(label: Readonly<SLabelImpl>, context: RenderingContext): VNode | undefined {
         if (!isEdgeLayoutable(label) && !this.isVisible(label, context)) {
             return undefined;
         }
@@ -416,7 +416,7 @@ export class SLabelView extends ShapeView {
 
 @injectable()
 export class SCompartmentView implements IView {
-    render(compartment: Readonly<SCompartment>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    render(compartment: Readonly<SCompartmentImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const translate = `translate(${compartment.bounds.x}, ${compartment.bounds.y})`;
         const vnode = <g transform={translate} class-sprotty-comp="{true}">
             {context.renderChildren(compartment)}
@@ -431,10 +431,10 @@ export class SCompartmentView implements IView {
 @injectable()
 export class SBezierCreateHandleView extends SRoutingHandleView {
 
-    override render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+    override render(handle: Readonly<SRoutingHandleImpl>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
         if (args) {
             const theRoute = args.route;
-            if (theRoute && handle.parent instanceof SRoutableElement) {
+            if (theRoute && handle.parent instanceof SRoutableElementImpl) {
                 const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
                 const position = router.getHandlePosition(handle.parent, theRoute, handle);
                 if (position !== undefined) {
@@ -463,10 +463,10 @@ export class SBezierCreateHandleView extends SRoutingHandleView {
 @injectable()
 export class SBezierControlHandleView extends SRoutingHandleView {
 
-    override render(handle: Readonly<SRoutingHandle>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
+    override render(handle: Readonly<SRoutingHandleImpl>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
         if (args) {
             const theRoute = args.route;
-            if (theRoute && handle.parent instanceof SRoutableElement) {
+            if (theRoute && handle.parent instanceof SRoutableElementImpl) {
                 const router = this.edgeRouterRegistry.get(handle.parent.routerKind);
                 const position = router.getHandlePosition(handle.parent, theRoute, handle) as any;
                 if (position !== undefined) {

@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { SModelElement } from '../../base/model/smodel';
-import { SShapeElement, boundsFeature } from '../bounds/model';
+import { SModelElementImpl } from '../../base/model/smodel';
+import { SShapeElementImpl, boundsFeature } from '../bounds/model';
 import { hoverFeedbackFeature, popupFeature } from '../hover/model';
 
 export const decorationFeature = Symbol('decorationFeature');
@@ -24,11 +24,11 @@ export const decorationFeature = Symbol('decorationFeature');
 export interface Decoration extends SModelExtension {
 }
 
-export function isDecoration<T extends SModelElement>(e: T): e is T & Decoration {
+export function isDecoration<T extends SModelElementImpl>(e: T): e is T & Decoration {
     return e.hasFeature(decorationFeature);
 }
 
-export class SDecoration extends SShapeElement implements Decoration {
+export class SDecoration extends SShapeElementImpl implements Decoration {
     static readonly DEFAULT_FEATURES = [decorationFeature, boundsFeature, hoverFeedbackFeature, popupFeature];
 }
 

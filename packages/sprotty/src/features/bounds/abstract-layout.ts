@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SParentElement, SModelElement, SChildElement } from "../../base/model/smodel";
+import { SParentElementImpl, SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
 import { isLayoutContainer, isLayoutableChild, LayoutContainer, isBoundsAware } from "./model";
 import { ILayout, StatefulLayouter } from './layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
@@ -25,7 +25,7 @@ import { injectable } from "inversify";
 @injectable()
 export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements ILayout {
 
-    layout(container: SParentElement & LayoutContainer,
+    layout(container: SParentElementImpl & LayoutContainer,
            layouter: StatefulLayouter) {
         const boundsData = layouter.getBoundsData(container);
         const options = this.getLayoutOptions(container);
@@ -44,13 +44,13 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
             boundsData.boundsChanged = true;
         }
     }
-    protected abstract layoutChild(child: SChildElement,
+    protected abstract layoutChild(child: SChildElementImpl,
                                 boundsData: BoundsData, bounds: Bounds,
                                 childOptions: T, containerOptions: T,
                                 currentOffset: Point,
                                 maxWidth: number, maxHeight: number): Point;
 
-    protected getFinalContainerBounds(container: SParentElement & LayoutContainer,
+    protected getFinalContainerBounds(container: SParentElementImpl & LayoutContainer,
                                     lastOffset: Point,
                                     options: T,
                                     maxWidth: number,
@@ -64,7 +64,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
     }
 
     protected getFixedContainerBounds(
-            container: SModelElement,
+            container: SModelElementImpl,
             layoutOptions: T,
             layouter: StatefulLayouter): Bounds {
         let currentContainer = container;
@@ -76,7 +76,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
                 if (Dimension.isValid(bounds))
                     return bounds;
             }
-            if (currentContainer instanceof SChildElement) {
+            if (currentContainer instanceof SChildElementImpl) {
                 currentContainer = currentContainer.parent;
             } else {
                 layouter.log.error(currentContainer, 'Cannot detect fixed bounds');
@@ -85,11 +85,11 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
         }
     }
 
-    protected abstract getChildrenSize(container: SParentElement & LayoutContainer,
+    protected abstract getChildrenSize(container: SParentElementImpl & LayoutContainer,
                                containerOptions: T,
                                layouter: StatefulLayouter): Dimension;
 
-    protected layoutChildren(container: SParentElement & LayoutContainer,
+    protected layoutChildren(container: SParentElementImpl & LayoutContainer,
                             layouter: StatefulLayouter,
                             containerOptions: T,
                             maxWidth: number,
@@ -136,7 +136,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
         }
     }
 
-    protected getChildLayoutOptions(child: SChildElement, containerOptions: T): T {
+    protected getChildLayoutOptions(child: SChildElementImpl, containerOptions: T): T {
         const layoutOptions = (child as any).layoutOptions;
         if (layoutOptions === undefined)
             return containerOptions;
@@ -144,14 +144,14 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
             return this.spread(containerOptions, layoutOptions);
     }
 
-    protected getLayoutOptions(element: SModelElement): T {
+    protected getLayoutOptions(element: SModelElementImpl): T {
         let current = element;
         const allOptions: T[] = [];
         while (current !== undefined) {
             const layoutOptions = (current as any).layoutOptions;
             if (layoutOptions !== undefined)
                 allOptions.push(layoutOptions);
-            if (current instanceof SChildElement)
+            if (current instanceof SChildElementImpl)
                 current = current.parent;
             else
                 break;

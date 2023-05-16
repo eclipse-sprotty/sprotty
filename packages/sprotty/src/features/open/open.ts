@@ -16,13 +16,13 @@
 
 import { Action, OpenAction } from 'sprotty-protocol/lib/actions';
 import { MouseListener } from '../../base/views/mouse-tool';
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isOpenable } from './model';
 
 
 export class OpenMouseListener extends MouseListener {
-    override doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override doubleClick(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         const openableTarget = findParentByFeature(target, isOpenable);
         if (openableTarget !== undefined) {
             return [ OpenAction.create(openableTarget.id) ];

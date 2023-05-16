@@ -22,12 +22,12 @@ import { VNode } from "snabbdom";
 import { IView, RenderingContext } from "../base/views/view";
 import { setNamespace, setAttr } from "../base/views/vnode-utils";
 import { ShapeView } from "../features/bounds/views";
-import { ForeignObjectElement, PreRenderedElement, ShapedPreRenderedElement } from "./model";
+import { ForeignObjectElementImpl, PreRenderedElementImpl, ShapedPreRenderedElementImpl } from "./model";
 
 @injectable()
 export class PreRenderedView extends ShapeView {
-    render(model: Readonly<PreRenderedElement>, context: RenderingContext): VNode | undefined {
-        if (model instanceof ShapedPreRenderedElement && !this.isVisible(model, context)) {
+    render(model: Readonly<PreRenderedElementImpl>, context: RenderingContext): VNode | undefined {
+        if (model instanceof ShapedPreRenderedElementImpl && !this.isVisible(model, context)) {
             return undefined;
         }
         const node = virtualize(model.code);
@@ -48,7 +48,7 @@ export class PreRenderedView extends ShapeView {
  */
 @injectable()
 export class ForeignObjectView implements IView {
-    render(model: ForeignObjectElement, context: RenderingContext): VNode | undefined{
+    render(model: ForeignObjectElementImpl, context: RenderingContext): VNode | undefined{
         const foreignObjectContents = virtualize(model.code);
         if (foreignObjectContents === null) return undefined;
         const node = <g>

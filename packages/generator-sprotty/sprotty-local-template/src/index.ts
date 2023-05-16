@@ -1,7 +1,7 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
-import { LocalModelSource, TYPES } from 'sprotty'
-import createContainer from './di.config'
+import { LocalModelSource, TYPES } from 'sprotty';
+import createContainer from './di.config';
 import { graph } from './model-source';
 
 document.addEventListener("DOMContentLoaded", () => {

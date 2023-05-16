@@ -18,33 +18,33 @@ import { injectable } from "inversify";
 import { VNode } from "snabbdom";
 import { Animation } from "../../base/animations/animation";
 import { CommandExecutionContext } from "../../base/commands/command";
-import { SModelRoot, SModelElement, SChildElement } from "../../base/model/smodel";
+import { SModelRootImpl, SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { setAttr } from "../../base/views/vnode-utils";
 import { Fadeable, isFadeable } from "./model";
 
 export interface ResolvedElementFade {
-    element: SModelElement & Fadeable
+    element: SModelElementImpl & Fadeable
     type: 'in' | 'out'
 }
 
 export class FadeAnimation extends Animation {
 
-    constructor(protected model: SModelRoot,
+    constructor(protected model: SModelRootImpl,
                 public elementFades: ResolvedElementFade[],
                 context: CommandExecutionContext,
                 protected removeAfterFadeOut: boolean = false) {
         super(context);
     }
 
-    tween(t: number, context: CommandExecutionContext): SModelRoot {
+    tween(t: number, context: CommandExecutionContext): SModelRootImpl {
         for (const elementFade of this.elementFades) {
             const element = elementFade.element;
             if (elementFade.type === 'in') {
                 element.opacity = t;
             } else if (elementFade.type === 'out') {
                 element.opacity = 1 - t;
-                if (t === 1 && this.removeAfterFadeOut && element instanceof SChildElement) {
+                if (t === 1 && this.removeAfterFadeOut && element instanceof SChildElementImpl) {
                     element.parent.remove(element);
                 }
             }
@@ -57,7 +57,7 @@ export class FadeAnimation extends Animation {
 @injectable()
 export class ElementFader implements IVNodePostprocessor {
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (isFadeable(element) && element.opacity !== 1) {
             setAttr(vnode, 'opacity', element.opacity);
         }

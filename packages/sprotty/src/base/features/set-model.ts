@@ -22,7 +22,7 @@ import {
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { JsonPrimitive } from "sprotty-protocol/lib/utils/json";
 import { CommandExecutionContext, ResetCommand } from "../commands/command";
-import { SModelRoot } from "../model/smodel";
+import { SModelRootImpl } from "../model/smodel";
 import { TYPES } from "../types";
 import { InitializeCanvasBoundsCommand } from './initialize-canvas';
 
@@ -63,24 +63,24 @@ export class SetModelAction implements ResponseAction, ProtocolSetModelAction {
 export class SetModelCommand extends ResetCommand {
     static readonly KIND = ProtocolSetModelAction.KIND;
 
-    oldRoot: SModelRoot;
-    newRoot: SModelRoot;
+    oldRoot: SModelRootImpl;
+    newRoot: SModelRootImpl;
 
     constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetModelAction) {
         super();
     }
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): SModelRootImpl {
         this.oldRoot = context.modelFactory.createRoot(context.root);
         this.newRoot = context.modelFactory.createRoot(this.action.newRoot);
         return this.newRoot;
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): SModelRootImpl {
         return this.oldRoot;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): SModelRootImpl {
         return this.newRoot;
     }
 

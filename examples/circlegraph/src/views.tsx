@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,15 @@
 /** @jsx svg */
 import { svg } from 'sprotty/lib/lib/jsx';
 import { injectable } from 'inversify';
-import { VNode } from "snabbdom";
-import { RenderingContext, SNode, ShapeView } from 'sprotty';
+import { VNode } from 'snabbdom';
+import { RenderingContext, SNodeImpl, ShapeView } from 'sprotty';
 
 /**
  * A very simple example node consisting of a plain circle.
  */
 @injectable()
 export class CircleNodeView extends ShapeView {
-    render(node: SNode, context: RenderingContext): VNode | undefined {
+    render(node: SNodeImpl, context: RenderingContext): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
@@ -40,7 +40,7 @@ export class CircleNodeView extends ShapeView {
         </g>;
     }
 
-    protected getRadius(node: SNode): number {
+    protected getRadius(node: SNodeImpl): number {
         const d = Math.min(node.size.width, node.size.height);
         return d > 0 ? d / 2 : 0;
     }

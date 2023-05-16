@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, isBounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElement as ProtocolSModelElement } from "sprotty-protocol";
-import { mapIterable, FluentIterable } from "../../utils/iterable";
+import { Bounds, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelElement as ProtocolSModelElement } from 'sprotty-protocol';
+import { mapIterable, FluentIterable } from '../../utils/iterable';
 
 /**
  * The schema of an SModelElement describes its serializable form. The actual model is created from
@@ -43,26 +43,26 @@ export interface SModelRootSchema extends SModelElementSchema {
 }
 
 /**
- * Base class for all elements of the diagram model.
+ * Base class for all elements of the internal diagram model.
  * Each model element must have a unique ID and a type that is used to look up its view.
  */
-export class SModelElement {
+export class SModelElementImpl {
     type: string;
     id: string;
     features?: FeatureSet;
     cssClasses?: string[];
 
-    get root(): SModelRoot {
-        let current: SModelElement | undefined = this;
+    get root(): SModelRootImpl {
+        let current: SModelElementImpl | undefined = this;
         while (current) {
-            if (current instanceof SModelRoot)
+            if (current instanceof SModelRootImpl)
                 return current;
-            else if (current instanceof SChildElement)
+            else if (current instanceof SChildElementImpl)
                 current = current.parent;
             else
                 current = undefined;
         }
-        throw new Error("Element has no root");
+        throw new Error('Element has no root');
     }
 
     get index(): ModelIndexImpl {
@@ -78,11 +78,14 @@ export class SModelElement {
     }
 }
 
+/** @deprecated Use `SModelElementImpl` instead. */
+export const SModelElement = SModelElementImpl;
+
 export interface FeatureSet {
     has(feature: symbol): boolean
 }
 
-export function isParent(element: ProtocolSModelElement | SModelElement):
+export function isParent(element: ProtocolSModelElement | SModelElementImpl):
         element is ProtocolSModelElement & { children: ProtocolSModelElement[] } {
     const children = (element as any).children;
     return children !== undefined && children.constructor === Array;
@@ -91,11 +94,11 @@ export function isParent(element: ProtocolSModelElement | SModelElement):
 /**
  * A parent element may contain child elements, thus the diagram model forms a tree.
  */
-export class SParentElement extends SModelElement {
-    readonly children: ReadonlyArray<SChildElement> = [];
+export class SParentElementImpl extends SModelElementImpl {
+    readonly children: ReadonlyArray<SChildElementImpl> = [];
 
-    add(child: SChildElement, index?: number) {
-        const children = this.children as SChildElement[];
+    add(child: SChildElementImpl, index?: number) {
+        const children = this.children as SChildElementImpl[];
         if (index === undefined) {
             children.push(child);
         } else {
@@ -104,12 +107,12 @@ export class SParentElement extends SModelElement {
             }
             children.splice(index, 0, child);
         }
-        (child as {parent: SParentElement}).parent = this;
+        (child as {parent: SParentElementImpl}).parent = this;
         this.index.add(child);
     }
 
-    remove(child: SChildElement) {
-        const children = this.children as SChildElement[];
+    remove(child: SChildElementImpl) {
+        const children = this.children as SChildElementImpl[];
         const i = children.indexOf(child);
         if (i < 0) {
             throw new Error(`No such child ${child.id}`);
@@ -118,8 +121,8 @@ export class SParentElement extends SModelElement {
         this.index.remove(child);
     }
 
-    removeAll(filter?: (e: SChildElement) => boolean) {
-        const children = this.children as SChildElement[];
+    removeAll(filter?: (e: SChildElementImpl) => boolean) {
+        const children = this.children as SChildElementImpl[];
         if (filter !== undefined) {
             for (let i = children.length - 1; i >= 0; i--) {
                 if (filter(children[i])) {
@@ -135,8 +138,8 @@ export class SParentElement extends SModelElement {
         }
     }
 
-    move(child: SChildElement, newIndex: number) {
-        const children = this.children as SChildElement[];
+    move(child: SChildElementImpl, newIndex: number) {
+        const children = this.children as SChildElementImpl[];
         const i = children.indexOf(child);
         if (i === -1) {
             throw new Error(`No such child ${child.id}`);
@@ -172,20 +175,26 @@ export class SParentElement extends SModelElement {
     }
 }
 
+/** @deprecated Use `SParentElementImpl` instead. */
+export const SParentElement = SParentElementImpl;
+
 /**
  * A child element is contained in a parent element. All elements except the model root are child
  * elements. In order to keep the model class hierarchy simple, every child element is also a
  * parent element, although for many elements the array of children is empty (i.e. they are
  * leafs in the model element tree).
  */
-export class SChildElement extends SParentElement {
-    readonly parent: SParentElement;
+export class SChildElementImpl extends SParentElementImpl {
+    readonly parent: SParentElementImpl;
 }
+
+/** @deprecated Use `SChildElementImpl` instead. */
+export const SChildElement = SChildElementImpl;
 
 /**
  * Base class for the root element of the diagram model tree.
  */
-export class SModelRoot extends SParentElement {
+export class SModelRootImpl extends SParentElementImpl {
     revision?: number;
 
     canvasBounds: Bounds = Bounds.EMPTY;
@@ -200,9 +209,12 @@ export class SModelRoot extends SParentElement {
     }
 }
 
-const ID_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
+/** @deprecated Use `SModelRootImpl` instead. */
+export const SModelRoot = SModelRootImpl;
+
+const ID_CHARS = '0123456789abcdefghijklmnopqrstuvwxyz';
 export function createRandomId(length: number = 8): string {
-    let id = "";
+    let id = '';
     for (let i = 0; i < length; i++) {
         id += ID_CHARS.charAt(Math.floor(Math.random() * ID_CHARS.length));
     }
@@ -225,46 +237,46 @@ export function createRandomId(length: number = 8): string {
  */
 export class ModelIndexImpl implements IModelIndex {
 
-    private readonly id2element: Map<string, SModelElement> = new Map();
+    private readonly id2element: Map<string, SModelElementImpl> = new Map();
 
-    add(element: SModelElement): void {
+    add(element: SModelElementImpl): void {
         if (!element.id) {
             do {
                 element.id = createRandomId();
             } while (this.contains(element));
         } else if (this.contains(element)) {
-            throw new Error("Duplicate ID in model: " + element.id);
+            throw new Error('Duplicate ID in model: ' + element.id);
         }
         this.id2element.set(element.id, element);
-        if (element instanceof SParentElement) {
+        if (element instanceof SParentElementImpl) {
             for (const child of element.children) {
                 this.add(child as any);
             }
         }
     }
 
-    remove(element: SModelElement): void {
+    remove(element: SModelElementImpl): void {
         this.id2element.delete(element.id);
-        if (element instanceof SParentElement) {
+        if (element instanceof SParentElementImpl) {
             for (const child of element.children) {
                 this.remove(child as any);
             }
         }
     }
 
-    contains(element: SModelElement): boolean {
+    contains(element: SModelElementImpl): boolean {
         return this.id2element.has(element.id);
     }
 
-    getById(id: string): SModelElement | undefined {
+    getById(id: string): SModelElementImpl | undefined {
         return this.id2element.get(id);
     }
 
-    getAttachedElements(element: SModelElement): FluentIterable<SModelElement> {
+    getAttachedElements(element: SModelElementImpl): FluentIterable<SModelElementImpl> {
         return [];
     }
 
-    all(): FluentIterable<SModelElement> {
-        return mapIterable(this.id2element, ([key, value]: [string, SModelElement]) => value);
+    all(): FluentIterable<SModelElementImpl> {
+        return mapIterable(this.id2element, ([key, value]: [string, SModelElementImpl]) => value);
     }
 }

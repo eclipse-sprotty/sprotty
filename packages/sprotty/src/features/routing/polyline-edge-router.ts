@@ -16,11 +16,11 @@
 
 import { inject, injectable } from "inversify";
 import { angleBetweenPoints, Bounds, centerOfLine, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SRoutingHandle } from "./model";
+import { SRoutingHandleImpl } from "./model";
 import { ResolvedHandleMove } from "../move/move";
 import { AnchorComputerRegistry } from "./anchor";
 import { AbstractEdgeRouter, LinearRouteOptions } from "./abstract-edge-router";
-import { SRoutableElement } from "./model";
+import { SRoutableElementImpl } from "./model";
 import { RoutedPoint } from "./routing";
 
 export interface PolylineRouteOptions extends LinearRouteOptions {
@@ -39,7 +39,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         return PolylineEdgeRouter.KIND;
     }
 
-    protected getOptions(edge: SRoutableElement): PolylineRouteOptions {
+    protected getOptions(edge: SRoutableElementImpl): PolylineRouteOptions {
         return {
             minimalPointDistance: 2,
             removeAngleThreshold: 0.1,
@@ -48,7 +48,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         };
     }
 
-    route(edge: SRoutableElement): RoutedPoint[] {
+    route(edge: SRoutableElementImpl): RoutedPoint[] {
         const source = edge.source;
         const target = edge.target;
         if (source === undefined || target === undefined) {
@@ -97,7 +97,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
      * Remove routed points that are in edit mode and for which the angle between the preceding and
      * following points falls below a threshold.
      */
-    protected filterEditModeHandles(route: RoutedPoint[], edge: SRoutableElement, options: PolylineRouteOptions): RoutedPoint[] {
+    protected filterEditModeHandles(route: RoutedPoint[], edge: SRoutableElementImpl, options: PolylineRouteOptions): RoutedPoint[] {
         if (edge.children.length === 0)
             return route;
 
@@ -105,8 +105,8 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         while (i < route.length) {
             const curr = route[i];
             if (curr.pointIndex !== undefined) {
-                const handle: SRoutingHandle | undefined = edge.children.find(child =>
-                    child instanceof SRoutingHandle && child.kind === 'junction' && child.pointIndex === curr.pointIndex) as any;
+                const handle: SRoutingHandleImpl | undefined = edge.children.find(child =>
+                    child instanceof SRoutingHandleImpl && child.kind === 'junction' && child.pointIndex === curr.pointIndex) as any;
                 if (handle !== undefined && handle.editMode && i > 0 && i < route.length - 1) {
                     const prev = route[i - 1], next = route[i + 1];
                     const prevDiff: Point = { x: prev.x - curr.x, y: prev.y - curr.y };
@@ -123,7 +123,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         return route;
     }
 
-    createRoutingHandles(edge: SRoutableElement): void {
+    createRoutingHandles(edge: SRoutableElementImpl): void {
         const rpCount = edge.routingPoints.length;
         this.addHandle(edge, 'source', 'routing-point', -2);
         this.addHandle(edge, 'line', 'volatile-routing-point', -1);
@@ -134,7 +134,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         this.addHandle(edge, 'target', 'routing-point', rpCount);
     }
 
-    getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle) {
+    getInnerHandlePosition(edge: SRoutableElementImpl, route: RoutedPoint[], handle: SRoutingHandleImpl) {
         if (handle.kind === 'line') {
             const { start, end } = this.findRouteSegment(edge, route, handle.pointIndex);
             if (start !== undefined && end !== undefined)
@@ -143,7 +143,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
         return undefined;
     }
 
-    applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]) {
+    applyInnerHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]) {
         moves.forEach(move => {
             const handle = move.handle;
             const points = edge.routingPoints;
@@ -154,7 +154,7 @@ export class PolylineEdgeRouter extends AbstractEdgeRouter {
                 handle.type = 'routing-point';
                 points.splice(index + 1, 0, move.fromPosition || points[Math.max(index, 0)]);
                 edge.children.forEach(child => {
-                    if (child instanceof SRoutingHandle && (child === handle || child.pointIndex > index))
+                    if (child instanceof SRoutingHandleImpl && (child === handle || child.pointIndex > index))
                         child.pointIndex++;
                 });
                 this.addHandle(edge, 'line', 'volatile-routing-point', index);

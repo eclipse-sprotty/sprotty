@@ -20,19 +20,19 @@ import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction as ProtocolMoveAction } from 'sprotty-protocol/lib/actions';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from '../../base/commands/command';
-import { SChildElement, SModelElement, SModelRoot } from '../../base/model/smodel';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { findParentByFeature, translatePoint } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { setAttr } from '../../base/views/vnode-utils';
-import { SEdge } from '../../graph/sgraph';
+import { SEdgeImpl } from '../../graph/sgraph';
 import { CommitModelAction } from '../../model-source/commit-model';
 import { findChildrenAtPosition, isAlignable } from '../bounds/model';
 import { CreatingOnDrag, isCreatingOnDrag } from '../edit/create-on-drag';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { ReconnectCommand } from '../edit/reconnect';
-import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElement, SRoutingHandle } from '../routing/model';
+import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElementImpl, SRoutingHandleImpl } from '../routing/model';
 import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from '../routing/routing';
 import { isEdgeLayoutable } from '../edge-layout/model';
 import { isSelectable } from '../select/model';
@@ -70,13 +70,13 @@ export interface ElementMove {
 }
 
 export interface ResolvedElementMove {
-    element: SModelElement & Locateable
+    element: SModelElementImpl & Locateable
     fromPosition: Point
     toPosition: Point
 }
 
 export interface ResolvedHandleMove {
-    handle: SRoutingHandle
+    handle: SRoutingHandleImpl
     fromPosition: Point
     toPosition: Point
 }
@@ -96,13 +96,13 @@ export class MoveCommand extends MergeableCommand {
 
     execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
-        const edge2handleMoves = new Map<SRoutableElement, ResolvedHandleMove[]>();
-        const attachedEdgeShifts = new Map<SRoutableElement, Point>();
+        const edge2handleMoves = new Map<SRoutableElementImpl, ResolvedHandleMove[]>();
+        const attachedEdgeShifts = new Map<SRoutableElementImpl, Point>();
         this.action.moves.forEach(move => {
             const element = index.getById(move.elementId);
-            if (element instanceof SRoutingHandle && this.edgeRouterRegistry) {
+            if (element instanceof SRoutingHandleImpl && this.edgeRouterRegistry) {
                 const edge = element.parent;
-                if (edge instanceof SRoutableElement) {
+                if (edge instanceof SRoutableElementImpl) {
                     const resolvedMove = this.resolveHandleMove(element, edge, move);
                     if (resolvedMove) {
                         let movesByEdge = edge2handleMoves.get(edge);
@@ -119,7 +119,7 @@ export class MoveCommand extends MergeableCommand {
                     this.resolvedMoves.set(resolvedMove.element.id, resolvedMove);
                     if (this.edgeRouterRegistry) {
                         index.getAttachedElements(element).forEach(edge => {
-                            if (edge instanceof SRoutableElement) {
+                            if (edge instanceof SRoutableElementImpl) {
                                 const existingDelta = attachedEdgeShifts.get(edge);
                                 const newDelta = Point.subtract(resolvedMove.toPosition, resolvedMove.fromPosition);
                                 const delta = (existingDelta)
@@ -143,7 +143,7 @@ export class MoveCommand extends MergeableCommand {
         return context.root;
     }
 
-    protected resolveHandleMove(handle: SRoutingHandle, edge: SRoutableElement, move: ElementMove): ResolvedHandleMove | undefined {
+    protected resolveHandleMove(handle: SRoutingHandleImpl, edge: SRoutableElementImpl, move: ElementMove): ResolvedHandleMove | undefined {
         let fromPosition = move.fromPosition;
         if (!fromPosition) {
             const router = this.edgeRouterRegistry!.get(edge.routerKind);
@@ -158,7 +158,7 @@ export class MoveCommand extends MergeableCommand {
         return undefined;
     }
 
-    protected resolveElementMove(element: SModelElement & Locateable, move: ElementMove): ResolvedElementMove | undefined {
+    protected resolveElementMove(element: SModelElementImpl & Locateable, move: ElementMove): ResolvedElementMove | undefined {
         const fromPosition = move.fromPosition
             || { x: element.position.x, y: element.position.y };
         return {
@@ -168,7 +168,7 @@ export class MoveCommand extends MergeableCommand {
         };
     }
 
-    protected doMove(edge2move: Map<SRoutableElement, ResolvedHandleMove[]>, attachedEdgeShifts: Map<SRoutableElement, Point>) {
+    protected doMove(edge2move: Map<SRoutableElementImpl, ResolvedHandleMove[]>, attachedEdgeShifts: Map<SRoutableElementImpl, Point>) {
         this.resolvedMoves.forEach(res => {
             res.element.position = res.toPosition;
         });
@@ -211,14 +211,14 @@ export class MoveCommand extends MergeableCommand {
         });
     }
 
-    undo(context: CommandExecutionContext): Promise<SModelRoot> {
+    undo(context: CommandExecutionContext): Promise<SModelRootImpl> {
         return new CompoundAnimation(context.root, context, [
             new MoveAnimation(context.root, this.resolvedMoves, context, true),
             new MorphEdgesAnimation(context.root, this.edgeMementi, context, true)
         ]).start();
     }
 
-    redo(context: CommandExecutionContext): Promise<SModelRoot> {
+    redo(context: CommandExecutionContext): Promise<SModelRootImpl> {
         return new CompoundAnimation(context.root, context, [
             new MoveAnimation(context.root, this.resolvedMoves, context, false),
             new MorphEdgesAnimation(context.root, this.edgeMementi, context, false)
@@ -264,7 +264,7 @@ export class MoveCommand extends MergeableCommand {
 
 export class MoveAnimation extends Animation {
 
-    constructor(protected model: SModelRoot,
+    constructor(protected model: SModelRootImpl,
                 public elementMoves: Map<string, ResolvedElementMove>,
                 context: CommandExecutionContext,
                 protected reverse: boolean = false) {
@@ -299,7 +299,7 @@ export class MorphEdgesAnimation extends Animation {
 
     protected expanded: ExpandedEdgeMorph[] = [];
 
-    constructor(protected model: SModelRoot,
+    constructor(protected model: SModelRootImpl,
                 originalMementi: EdgeMemento[],
                 context: CommandExecutionContext,
                 protected reverse: boolean = false) {
@@ -330,7 +330,7 @@ export class MorphEdgesAnimation extends Animation {
 
     override start() {
         this.expanded.forEach(morph => {
-            morph.memento.edge.removeAll(e => e instanceof SRoutingHandle);
+            morph.memento.edge.removeAll(e => e instanceof SRoutingHandleImpl);
         });
         return super.start();
     }
@@ -398,10 +398,10 @@ export class MoveMouseListener extends MouseListener {
     startDragPosition: Point | undefined;
     elementId2startPos = new Map<string, Point>();
 
-    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         if (event.button === 0) {
             const moveable = findParentByFeature(target, isMoveable);
-            const isRoutingHandle = target instanceof SRoutingHandle;
+            const isRoutingHandle = target instanceof SRoutingHandleImpl;
             if (moveable !== undefined || isRoutingHandle || isCreatingOnDrag(target)) {
                 this.startDragPosition = { x: event.pageX, y: event.pageY };
             } else {
@@ -428,11 +428,11 @@ export class MoveMouseListener extends MouseListener {
         return result;
     }
 
-    protected activateRoutingHandle(target: SRoutingHandle, event: MouseEvent): (Action | Promise<Action>)[] {
+    protected activateRoutingHandle(target: SRoutingHandleImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [SwitchEditModeAction.create({ elementsToActivate: [target.id] })];
     }
 
-    override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseMove(target: SModelElementImpl, event: MouseEvent): Action[] {
         const result: Action[] = [];
         if (event.buttons === 0)
             this.mouseUp(target, event);
@@ -448,15 +448,15 @@ export class MoveMouseListener extends MouseListener {
         return result;
     }
 
-    protected collectStartPositions(root: SModelRoot) {
-        const selectedElements = new Set<SModelElement>(root.index.all()
+    protected collectStartPositions(root: SModelRootImpl) {
+        const selectedElements = new Set<SModelElementImpl>(root.index.all()
             .filter(element => isSelectable(element) && element.selected));
 
         selectedElements.forEach(element => {
             if (!this.isChildOfSelected(selectedElements, element)) {
                 if (isMoveable(element))
                     this.elementId2startPos.set(element.id, element.position);
-                else if (element instanceof SRoutingHandle) {
+                else if (element instanceof SRoutingHandleImpl) {
                     const position = this.getHandlePosition(element);
                     if (position)
                         this.elementId2startPos.set(element.id, position);
@@ -465,8 +465,8 @@ export class MoveMouseListener extends MouseListener {
         });
     }
 
-    protected isChildOfSelected(selectedElements: Set<SModelElement>, element: SModelElement): boolean {
-        while (element instanceof SChildElement) {
+    protected isChildOfSelected(selectedElements: Set<SModelElementImpl>, element: SModelElementImpl): boolean {
+        while (element instanceof SChildElementImpl) {
             element = element.parent;
             if (isMoveable(element) && selectedElements.has(element)) {
                 return true;
@@ -475,7 +475,7 @@ export class MoveMouseListener extends MouseListener {
         return false;
     }
 
-    protected getElementMoves(target: SModelElement, event: MouseEvent, isFinished: boolean): ProtocolMoveAction | undefined {
+    protected getElementMoves(target: SModelElementImpl, event: MouseEvent, isFinished: boolean): ProtocolMoveAction | undefined {
         if (!this.startDragPosition)
             return undefined;
         const elementMoves: ElementMove[] = [];
@@ -500,7 +500,7 @@ export class MoveMouseListener extends MouseListener {
             return undefined;
     }
 
-    protected createElementMove(element: SModelElement, startPosition: Point, delta: Point, event: MouseEvent): ElementMove | undefined {
+    protected createElementMove(element: SModelElementImpl, startPosition: Point, delta: Point, event: MouseEvent): ElementMove | undefined {
         const toPosition = this.snap({
             x: startPosition.x + delta.x,
             y: startPosition.y + delta.y
@@ -515,7 +515,7 @@ export class MoveMouseListener extends MouseListener {
                 },
                 toPosition
             };
-        } else if (element instanceof SRoutingHandle) {
+        } else if (element instanceof SRoutingHandleImpl) {
             const point = this.getHandlePosition(element);
             if (point !== undefined) {
                 return {
@@ -529,17 +529,17 @@ export class MoveMouseListener extends MouseListener {
         return undefined;
     }
 
-    protected snap(position: Point, element: SModelElement, isSnap: boolean): Point {
+    protected snap(position: Point, element: SModelElementImpl, isSnap: boolean): Point {
         if (isSnap && this.snapper)
             return this.snapper.snap(position, element);
         else
             return position;
     }
 
-    protected getHandlePosition(handle: SRoutingHandle): Point | undefined {
+    protected getHandlePosition(handle: SRoutingHandleImpl): Point | undefined {
         if (this.edgeRouterRegistry) {
             const parent = handle.parent;
-            if (!(parent instanceof SRoutableElement))
+            if (!(parent instanceof SRoutableElementImpl))
                 return undefined;
             const router = this.edgeRouterRegistry.get(parent.routerKind);
             const route = router.route(parent);
@@ -548,13 +548,13 @@ export class MoveMouseListener extends MouseListener {
         return undefined;
     }
 
-    override mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
-        if (target instanceof SModelRoot && event.buttons === 0 && !this.startDragPosition)
+    override mouseEnter(target: SModelElementImpl, event: MouseEvent): Action[] {
+        if (target instanceof SModelRootImpl && event.buttons === 0 && !this.startDragPosition)
             this.mouseUp(target, event);
         return [];
     }
 
-    override mouseUp(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseUp(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
         if (this.startDragPosition) {
             const moveAction = this.getElementMoves(target, event, true);
@@ -562,14 +562,14 @@ export class MoveMouseListener extends MouseListener {
                 result.push(moveAction);
             }
             target.root.index.all().forEach(element => {
-                if (element instanceof SRoutingHandle) {
+                if (element instanceof SRoutingHandleImpl) {
                     result.push(...this.deactivateRoutingHandle(element, target, event));
                 }
             });
         }
         if (!result.some(a => a.kind === ReconnectAction.KIND)) {
             const edgeInProgress = target.root.index.getById(edgeInProgressID);
-            if (edgeInProgress instanceof SChildElement) {
+            if (edgeInProgress instanceof SChildElementImpl) {
                 result.push(this.deleteEdgeInProgress(edgeInProgress));
             }
         }
@@ -582,10 +582,10 @@ export class MoveMouseListener extends MouseListener {
         return result;
     }
 
-    protected deactivateRoutingHandle(element: SRoutingHandle, target: SModelElement, event: MouseEvent): Action[] {
+    protected deactivateRoutingHandle(element: SRoutingHandleImpl, target: SModelElementImpl, event: MouseEvent): Action[] {
         const result: Action[] = [];
         const parent = element.parent;
-        if (parent instanceof SRoutableElement && element.danglingAnchor) {
+        if (parent instanceof SRoutableElementImpl && element.danglingAnchor) {
             const handlePos = this.getHandlePosition(element);
             if (handlePos) {
                 const handlePosAbs = translatePoint(handlePos, element.parent, element.root);
@@ -606,17 +606,17 @@ export class MoveMouseListener extends MouseListener {
         return result;
     }
 
-    protected deleteEdgeInProgress(edgeInProgress: SChildElement): Action {
+    protected deleteEdgeInProgress(edgeInProgress: SChildElementImpl): Action {
         const deleteIds: string[] = [];
         deleteIds.push(edgeInProgressID);
         edgeInProgress.children.forEach(c => {
-            if (c instanceof SRoutingHandle && c.danglingAnchor)
+            if (c instanceof SRoutingHandleImpl && c.danglingAnchor)
                 deleteIds.push(c.danglingAnchor.id);
         });
         return DeleteElementAction.create(deleteIds);
     }
 
-    override decorate(vnode: VNode, element: SModelElement): VNode {
+    override decorate(vnode: VNode, element: SModelElementImpl): VNode {
         return vnode;
     }
 }
@@ -624,13 +624,13 @@ export class MoveMouseListener extends MouseListener {
 @injectable()
 export class LocationPostprocessor implements IVNodePostprocessor {
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
-        if (isEdgeLayoutable(element) && element.parent instanceof SEdge) {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
+        if (isEdgeLayoutable(element) && element.parent instanceof SEdgeImpl) {
             // The element is handled by EdgeLayoutDecorator
             return vnode;
         }
         let translate: string = '';
-        if (isLocateable(element) && element instanceof SChildElement && element.parent !== undefined) {
+        if (isLocateable(element) && element instanceof SChildElementImpl && element.parent !== undefined) {
             const pos = element.position;
             if (pos.x !== 0 || pos.y !== 0) {
                 translate = 'translate(' + pos.x + ', ' + pos.y + ')';

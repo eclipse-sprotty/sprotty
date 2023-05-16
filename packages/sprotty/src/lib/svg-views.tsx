@@ -20,14 +20,14 @@ import { svg } from './jsx';
 import { VNode } from "snabbdom";
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { IView, IViewArgs, RenderingContext } from "../base/views/view";
-import { SNode, SPort } from "../graph/sgraph";
+import { SNodeImpl, SPortImpl } from "../graph/sgraph";
 import { ViewportRootElement } from "../features/viewport/viewport-root";
-import { SShapeElement } from '../features/bounds/model';
+import { SShapeElementImpl } from '../features/bounds/model';
 import { ShapeView } from '../features/bounds/views';
 import { Hoverable } from '../features/hover/model';
 import { Selectable } from '../features/select/model';
 import { Diamond } from '../utils/geometry';
-import { SModelElement } from '../base/model/smodel';
+import { SModelElementImpl } from '../base/model/smodel';
 import { injectable } from 'inversify';
 
 @injectable()
@@ -44,20 +44,20 @@ export class SvgViewportView implements IView {
 
 @injectable()
 export class CircularNodeView extends ShapeView {
-    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    render(node: Readonly<SShapeElementImpl & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
         const radius = this.getRadius(node);
         return <g>
-            <circle class-sprotty-node={node instanceof SNode} class-sprotty-port={node instanceof SPort}
+            <circle class-sprotty-node={node instanceof SNodeImpl} class-sprotty-port={node instanceof SPortImpl}
                     class-mouseover={node.hoverFeedback} class-selected={node.selected}
                     r={radius} cx={radius} cy={radius}></circle>
             {context.renderChildren(node)}
         </g>;
     }
 
-    protected getRadius(node: SShapeElement): number {
+    protected getRadius(node: SShapeElementImpl): number {
         const d = Math.min(node.size.width, node.size.height);
         return d > 0 ? d / 2 : 0;
     }
@@ -65,12 +65,12 @@ export class CircularNodeView extends ShapeView {
 
 @injectable()
 export class RectangularNodeView extends ShapeView {
-    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    render(node: Readonly<SShapeElementImpl & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
         return <g>
-            <rect class-sprotty-node={node instanceof SNode} class-sprotty-port={node instanceof SPort}
+            <rect class-sprotty-node={node instanceof SNodeImpl} class-sprotty-port={node instanceof SPortImpl}
                   class-mouseover={node.hoverFeedback} class-selected={node.selected}
                   x="0" y="0" width={Math.max(node.size.width, 0)} height={Math.max(node.size.height, 0)}></rect>
             {context.renderChildren(node)}
@@ -80,14 +80,14 @@ export class RectangularNodeView extends ShapeView {
 
 @injectable()
 export class DiamondNodeView extends ShapeView {
-    render(node: Readonly<SShapeElement & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    render(node: Readonly<SShapeElementImpl & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
         const diamond = new Diamond({ height: Math.max(node.size.height, 0), width: Math.max(node.size.width, 0), x: 0, y: 0 });
         const points = `${svgStr(diamond.topPoint)} ${svgStr(diamond.rightPoint)} ${svgStr(diamond.bottomPoint)} ${svgStr(diamond.leftPoint)}`;
         return <g>
-            <polygon class-sprotty-node={node instanceof SNode} class-sprotty-port={node instanceof SPort}
+            <polygon class-sprotty-node={node instanceof SNodeImpl} class-sprotty-port={node instanceof SPortImpl}
                   class-mouseover={node.hoverFeedback} class-selected={node.selected}
                   points={points} />
             {context.renderChildren(node)}
@@ -101,7 +101,7 @@ function svgStr(point: Point) {
 
 @injectable()
 export class EmptyGroupView implements IView {
-    render(model: Readonly<SModelElement>, context: RenderingContext): VNode {
+    render(model: Readonly<SModelElementImpl>, context: RenderingContext): VNode {
         return <g></g>;
     }
 }

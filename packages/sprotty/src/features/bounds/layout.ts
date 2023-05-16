@@ -19,7 +19,7 @@ import { Bounds } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../../base/types";
 import { ILogger } from '../../utils/logging';
 import { InstanceRegistry } from "../../utils/registry";
-import { SParentElement, SModelElement } from "../../base/model/smodel";
+import { SParentElementImpl, SModelElementImpl } from "../../base/model/smodel";
 import { isLayoutContainer, LayoutContainer } from "./model";
 import { BoundsData } from "./hidden-bounds-updater";
 import { isInjectable } from "../../utils/inversify";
@@ -52,16 +52,16 @@ export class Layouter {
     @inject(TYPES.LayoutRegistry) protected layoutRegistry: LayoutRegistry;
     @inject(TYPES.ILogger) protected logger: ILogger;
 
-    layout(element2boundsData: Map<SModelElement​​ , BoundsData>) {
+    layout(element2boundsData: Map<SModelElementImpl​​ , BoundsData>) {
         new StatefulLayouter(element2boundsData, this.layoutRegistry, this.logger).layout();
     }
 }
 
 export class StatefulLayouter {
 
-    private toBeLayouted: (SParentElement & LayoutContainer)[];
+    private toBeLayouted: (SParentElementImpl & LayoutContainer)[];
 
-    constructor(private readonly element2boundsData: Map<SModelElement​​ , BoundsData>,
+    constructor(private readonly element2boundsData: Map<SModelElementImpl​​ , BoundsData>,
                 private readonly layoutRegistry: LayoutRegistry,
                 public readonly log: ILogger) {
         this.toBeLayouted = [];
@@ -72,7 +72,7 @@ export class StatefulLayouter {
             });
     }
 
-    getBoundsData(element: SModelElement): BoundsData {
+    getBoundsData(element: SModelElementImpl): BoundsData {
         let boundsData = this.element2boundsData.get(element);
         let bounds = (element as any).bounds;
         if (isLayoutContainer(element) && this.toBeLayouted.indexOf(element) >= 0) {
@@ -96,7 +96,7 @@ export class StatefulLayouter {
         }
     }
 
-    protected doLayout(element: SParentElement & LayoutContainer): Bounds {
+    protected doLayout(element: SParentElementImpl & LayoutContainer): Bounds {
         const index = this.toBeLayouted.indexOf(element);
         if (index >= 0)
             this.toBeLayouted.splice(index, 1);
@@ -114,7 +114,7 @@ export class StatefulLayouter {
 }
 
 export interface ILayout {
-    layout(container: SParentElement & LayoutContainer,
+    layout(container: SParentElementImpl & LayoutContainer,
            layouter: StatefulLayouter): void
 }
 

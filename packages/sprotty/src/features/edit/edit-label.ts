@@ -17,7 +17,7 @@
 import { inject } from 'inversify';
 import { Action, isAction, ApplyLabelEditAction as ProtocolApplyLabelEditAction } from 'sprotty-protocol/lib/actions';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { KeyListener } from '../../base/views/key-tool';
@@ -113,7 +113,7 @@ export class ApplyLabelEditCommand extends Command {
 }
 
 export interface IEditLabelValidator {
-    validate(value: string, label: EditableLabel & SModelElement): Promise<EditLabelValidationResult>;
+    validate(value: string, label: EditableLabel & SModelElementImpl): Promise<EditLabelValidationResult>;
 }
 
 export interface EditLabelValidationResult {
@@ -124,7 +124,7 @@ export interface EditLabelValidationResult {
 export type Severity = 'ok' | 'warning' | 'error';
 
 export class EditLabelMouseListener extends MouseListener {
-    override doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override doubleClick(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         const editableLabel = getEditableLabel(target);
         if (editableLabel) {
             return [EditLabelAction.create(editableLabel.id)];
@@ -134,11 +134,11 @@ export class EditLabelMouseListener extends MouseListener {
 }
 
 export class EditLabelKeyListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'F2')) {
             const editableLabels = toArray(element.index.all()
                 .filter(e => isSelectable(e) && e.selected)).map(getEditableLabel)
-                .filter((e): e is EditableLabel & SModelElement => e !== undefined);
+                .filter((e): e is EditableLabel & SModelElementImpl => e !== undefined);
             if (editableLabels.length === 1) {
                 return [EditLabelAction.create(editableLabels[0].id)];
             }
@@ -147,7 +147,7 @@ export class EditLabelKeyListener extends KeyListener {
     }
 }
 
-export function getEditableLabel(element: SModelElement): EditableLabel & SModelElement | undefined {
+export function getEditableLabel(element: SModelElementImpl): EditableLabel & SModelElementImpl | undefined {
     if (isEditableLabel(element)) {
         return element;
     } else if (isWithEditableLabel(element) && element.editableLabel) {

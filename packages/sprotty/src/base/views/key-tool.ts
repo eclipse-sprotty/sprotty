@@ -19,7 +19,7 @@ import { VNode } from "snabbdom";
 import { Action } from "sprotty-protocol/lib/actions";
 import { TYPES } from "../types";
 import { IActionDispatcher } from "../actions/action-dispatcher";
-import { SModelElement, SModelRoot } from "../model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../model/smodel";
 import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { on } from "./vnode-utils";
 
@@ -40,7 +40,7 @@ export class KeyTool implements IVNodePostprocessor {
             this.keyListeners.splice(index, 1);
     }
 
-    protected handleEvent<K extends keyof KeyListener>(methodName: K, model: SModelRoot, event: KeyboardEvent) {
+    protected handleEvent<K extends keyof KeyListener>(methodName: K, model: SModelRootImpl, event: KeyboardEvent) {
         const actions = this.keyListeners
             .map(listener => listener[methodName].apply(listener, [model, event]))
             .reduce((a, b) => a.concat(b));
@@ -50,18 +50,18 @@ export class KeyTool implements IVNodePostprocessor {
         }
     }
 
-    keyDown(element: SModelRoot, event: KeyboardEvent): void {
+    keyDown(element: SModelRootImpl, event: KeyboardEvent): void {
         this.handleEvent('keyDown', element, event);
     }
 
-    keyUp(element: SModelRoot, event: KeyboardEvent): void {
+    keyUp(element: SModelRootImpl, event: KeyboardEvent): void {
         this.handleEvent('keyUp', element, event);
     }
 
     focus() {}
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
-        if (element instanceof SModelRoot) {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
+        if (element instanceof SModelRootImpl) {
             on(vnode, 'focus', this.focus.bind(this, element));
             on(vnode, 'keydown', this.keyDown.bind(this, element));
             on(vnode, 'keyup', this.keyUp.bind(this, element));
@@ -75,11 +75,11 @@ export class KeyTool implements IVNodePostprocessor {
 
 @injectable()
 export class KeyListener {
-    keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         return [];
     }
 
-    keyUp(element: SModelElement, event: KeyboardEvent): Action[] {
+    keyUp(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         return [];
     }
 }

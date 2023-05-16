@@ -20,7 +20,7 @@ import { Action, ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, Re
 import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { ILogger } from "../../utils/logging";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { SChildElement, SModelElement, SModelRoot } from "../../base/model/smodel";
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { Layouter } from "./layout";
@@ -52,11 +52,11 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.Layouter) protected layouter: Layouter;
 
-    private readonly element2boundsData: Map<SModelElement, BoundsData> = new Map;
+    private readonly element2boundsData: Map<SModelElementImpl, BoundsData> = new Map;
 
-    root: SModelRoot | undefined;
+    root: SModelRootImpl | undefined;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (isSizeable(element) || isLayoutContainer(element)) {
             this.element2boundsData.set(element, {
                 vnode: vnode,
@@ -65,7 +65,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
                 alignmentChanged: false
             });
         }
-        if (element instanceof SModelRoot)
+        if (element instanceof SModelRootImpl)
             this.root = element;
         return vnode;
     }
@@ -90,7 +90,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
                         }
                     };
                     // don't copy position if the element is layouted by the server
-                    if (element instanceof SChildElement && isLayoutContainer(element.parent)) {
+                    if (element instanceof SChildElementImpl && isLayoutContainer(element.parent)) {
                         resize.newPosition = {
                             x: boundsData.bounds.x,
                             y: boundsData.bounds.y,

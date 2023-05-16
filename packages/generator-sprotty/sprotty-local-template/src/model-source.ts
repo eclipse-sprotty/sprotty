@@ -1,5 +1,5 @@
-import { SEdge, SGraph, SNode } from "sprotty-protocol";
-import { TaskNode } from "./model";
+import { SEdge, SGraph, SNode } from 'sprotty-protocol';
+import { TaskNode } from './model';
 
 export const graph: SGraph = {
     type: 'graph',
