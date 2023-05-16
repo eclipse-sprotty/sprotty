@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { CommandExecutionContext } from "../commands/command";
-import { SModelRoot } from "../model/smodel";
+import { SModelRootImpl } from "../model/smodel";
 import { easeInOut } from "./easing";
 
 /**
@@ -27,9 +27,9 @@ export abstract class Animation {
     constructor(protected context: CommandExecutionContext, protected ease: (x: number) => number = easeInOut) {
     }
 
-    start(): Promise<SModelRoot> {
-        return new Promise<SModelRoot>(
-            (resolve: (model: SModelRoot) => void, reject: (model: SModelRoot) => void) => {
+    start(): Promise<SModelRootImpl> {
+        return new Promise<SModelRootImpl>(
+            (resolve: (model: SModelRootImpl) => void, reject: (model: SModelRootImpl) => void) => {
                 let start: number | undefined = undefined;
                 let frames = 0;
                 const lambda = (time: number) => {
@@ -67,12 +67,12 @@ export abstract class Animation {
      * @param t varies between 0 (start of animation) and 1 (end of animation)
      * @param context
      */
-    abstract tween(t: number, context: CommandExecutionContext): SModelRoot;
+    abstract tween(t: number, context: CommandExecutionContext): SModelRootImpl;
 }
 
 export class CompoundAnimation extends Animation {
 
-    constructor(protected model: SModelRoot,
+    constructor(protected model: SModelRootImpl,
                 protected override context: CommandExecutionContext,
                 public components: Animation[] = [],
                 protected override ease: (x: number) => number = easeInOut) {
@@ -84,7 +84,7 @@ export class CompoundAnimation extends Animation {
         return this;
     }
 
-    tween(t: number, context: CommandExecutionContext): SModelRoot {
+    tween(t: number, context: CommandExecutionContext): SModelRootImpl {
         for (const a of this.components) {
             a.tween(t, context);
         }

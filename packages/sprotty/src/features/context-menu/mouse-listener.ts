@@ -17,7 +17,7 @@
 import { inject } from "inversify";
 import { Action, SelectAction } from "sprotty-protocol/lib/actions";
 import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { SModelElement } from "../../base/model/smodel";
+import { SModelElementImpl } from "../../base/model/smodel";
 import { findParentByFeature } from "../../base/model/smodel-utils";
 import { TYPES } from "../../base/types";
 import { MouseListener } from "../../base/views/mouse-tool";
@@ -33,12 +33,12 @@ export class ContextMenuMouseListener extends MouseListener {
         super();
     }
 
-    override contextMenu(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override contextMenu(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         this.showContextMenu(target, event);
         return [];
     }
 
-    protected async showContextMenu(target: SModelElement, event: MouseEvent): Promise<void> {
+    protected async showContextMenu(target: SModelElementImpl, event: MouseEvent): Promise<void> {
         let menuService: IContextMenuService;
         try {
             menuService = await this.contextMenuService();

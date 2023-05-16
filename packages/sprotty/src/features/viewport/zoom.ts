@@ -17,7 +17,7 @@
 import { Action, SetViewportAction } from "sprotty-protocol/lib/actions";
 import { Viewport } from "sprotty-protocol/lib/model";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
 import { SModelExtension } from "../../base/model/smodel-extension";
 import { findParentByFeature } from "../../base/model/smodel-utils";
 import { MouseListener } from "../../base/views/mouse-tool";
@@ -34,11 +34,11 @@ export interface Zoomable extends SModelExtension {
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export function isZoomable(element: SModelElement | Zoomable): element is Zoomable {
+export function isZoomable(element: SModelElementImpl | Zoomable): element is Zoomable {
     return 'zoom' in element;
 }
 
-export function getZoom(label: SModelElement) {
+export function getZoom(label: SModelElementImpl) {
     let zoom = 1;
     const viewport = findParentByFeature(label, isViewport);
     if (viewport) {
@@ -49,7 +49,7 @@ export function getZoom(label: SModelElement) {
 
 export class ZoomMouseListener extends MouseListener {
 
-    override wheel(target: SModelElement, event: WheelEvent): Action[] {
+    override wheel(target: SModelElementImpl, event: WheelEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
         if (!viewport) {
             return [];
@@ -72,7 +72,7 @@ export class ZoomMouseListener extends MouseListener {
         };
     }
 
-    protected processZoom(viewport: Viewport, target: SModelElement, event: WheelEvent): Viewport {
+    protected processZoom(viewport: Viewport, target: SModelElementImpl, event: WheelEvent): Viewport {
         const newZoom = this.getZoomFactor(event);
         const viewportOffset = this.getViewportOffset(target.root, event);
         const offsetFactor = 1.0 / (newZoom * viewport.zoom) - 1.0 / viewport.zoom;
@@ -85,7 +85,7 @@ export class ZoomMouseListener extends MouseListener {
         };
     }
 
-    protected getViewportOffset(root: SModelRoot, event: WheelEvent): Point {
+    protected getViewportOffset(root: SModelRootImpl, event: WheelEvent): Point {
         const canvasBounds = root.canvasBounds;
         const windowScroll = getWindowScroll();
         return {

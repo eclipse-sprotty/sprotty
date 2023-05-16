@@ -17,7 +17,7 @@
 import { inject, injectable } from 'inversify';
 import { Action, DeleteElementAction as ProtocolDeleteElementAction} from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { SModelElement, SParentElement, SChildElement } from '../../base/model/smodel';
+import { SModelElementImpl, SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { TYPES } from '../../base/types';
 
@@ -26,8 +26,8 @@ export const deletableFeature = Symbol('deletableFeature');
 export interface Deletable extends SModelExtension {
 }
 
-export function isDeletable<T extends SModelElement>(element: T): element is T & Deletable & SChildElement {
-    return element instanceof SChildElement && element.hasFeature(deletableFeature);
+export function isDeletable<T extends SModelElementImpl>(element: T): element is T & Deletable & SChildElementImpl {
+    return element instanceof SChildElementImpl && element.hasFeature(deletableFeature);
 }
 
 /**
@@ -51,8 +51,8 @@ export namespace DeleteElementAction {
 }
 
 export class ResolvedDelete {
-    child: SChildElement;
-    parent: SParentElement;
+    child: SChildElementImpl;
+    parent: SParentElementImpl;
 }
 
 @injectable()

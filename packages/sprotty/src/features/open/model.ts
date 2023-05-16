@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 
 export const openFeature = Symbol('openFeature');
 
-export function isOpenable(element: SModelElement): element is SModelElement  {
+export function isOpenable(element: SModelElementImpl): element is SModelElementImpl  {
     return element.hasFeature(openFeature);
 }

@@ -16,12 +16,12 @@
 
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom";
-import { SModelElement, SChildElement } from "../../base/model/smodel";
+import { SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { isDecoration, Decoration } from "./model";
 import { setAttr } from "../../base/views/vnode-utils";
 import { isSizeable } from "../bounds/model";
-import { SRoutableElement } from "../routing/model";
+import { SRoutableElementImpl } from "../routing/model";
 import { EdgeRouterRegistry } from "../routing/routing";
 import { Point } from "sprotty-protocol";
 
@@ -30,7 +30,7 @@ export class DecorationPlacer implements IVNodePostprocessor {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (isDecoration(element)) {
             const position = this.getPosition(element);
             const translate = 'translate(' + position.x + ', ' + position.y + ')';
@@ -39,8 +39,8 @@ export class DecorationPlacer implements IVNodePostprocessor {
         return vnode;
     }
 
-    protected getPosition(element: SModelElement & Decoration): Point {
-        if (element instanceof SChildElement && element.parent instanceof SRoutableElement) {
+    protected getPosition(element: SModelElementImpl & Decoration): Point {
+        if (element instanceof SChildElementImpl && element.parent instanceof SRoutableElementImpl) {
             const route =  this.edgeRouterRegistry.route(element.parent);
             if (route.length > 1) {
                 const index = Math.floor(0.5  * (route.length - 1));

@@ -18,7 +18,7 @@ import { inject, injectable } from "inversify";
 import { Action, isAction } from 'sprotty-protocol/lib/actions';
 import { LabeledAction, isLabeledAction } from "../../base/actions/action";
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
-import { SModelElement, SModelRoot } from "../../base/model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
 import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry";
@@ -61,7 +61,7 @@ export class CommandPalette extends AbstractUIExtension {
     public id() { return CommandPalette.ID; }
     public containerClass() { return "command-palette"; }
 
-    override show(root: Readonly<SModelRoot>, ...contextElementIds: string[]) {
+    override show(root: Readonly<SModelRootImpl>, ...contextElementIds: string[]) {
         super.show(root, ...contextElementIds);
         this.paletteIndex = 0;
         this.contextActions = undefined;
@@ -93,7 +93,7 @@ export class CommandPalette extends AbstractUIExtension {
         this.paletteIndex++;
     }
 
-    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...selectedElementIds: string[]) {
+    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRootImpl>, ...selectedElementIds: string[]) {
         let x = this.xOffset;
         let y = this.yOffset;
         const selectedElements = toArray(root.index.all().filter(e => isSelectable(e) && e.selected));
@@ -111,7 +111,7 @@ export class CommandPalette extends AbstractUIExtension {
         containerElement.style.width = `${this.defaultWidth}px`;
     }
 
-    protected autocompleteSettings(root: Readonly<SModelRoot>): AutocompleteSettings<LabeledAction> {
+    protected autocompleteSettings(root: Readonly<SModelRootImpl>): AutocompleteSettings<LabeledAction> {
         return {
             input: this.inputElement,
             emptyMsg: this.noCommandsMsg,
@@ -135,7 +135,7 @@ export class CommandPalette extends AbstractUIExtension {
         this.hide();
     }
 
-    protected updateAutoCompleteActions(update: (items: LabeledAction[]) => void, text: string, root: Readonly<SModelRoot>) {
+    protected updateAutoCompleteActions(update: (items: LabeledAction[]) => void, text: string, root: Readonly<SModelRootImpl>) {
         this.onLoading();
         if (this.contextActions) {
             update(this.filterActions(text, this.contextActions));
@@ -240,7 +240,7 @@ function espaceForRegExp(value: string): string {
 }
 
 export class CommandPaletteKeyListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
             return [SetUIExtensionVisibilityAction.create({ extensionId: CommandPalette.ID, visible: false, contextElementsId: [] })];
         } else if (CommandPalette.isInvokePaletteKey(event)) {

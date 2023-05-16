@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { boundsFeature, layoutableChildFeature, SShapeElement } from '../bounds/model';
+import { boundsFeature, layoutableChildFeature, SShapeElementImpl } from '../bounds/model';
 import { fadeFeature } from '../fade/model';
 import { SShapeElement as SShapeElementSchema } from 'sprotty-protocol';
 
@@ -23,8 +23,11 @@ export interface SButtonSchema extends SShapeElementSchema {
     enabled: boolean
 }
 
-export class SButton extends SShapeElement {
+export class SButtonImpl extends SShapeElementImpl {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutableChildFeature, fadeFeature];
 
     enabled = true;
 }
+
+/** @deprecated Use `SButtonImpl` instead. */
+export const SButton = SButtonImpl;

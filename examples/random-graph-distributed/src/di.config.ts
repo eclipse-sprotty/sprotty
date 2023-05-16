@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2022 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,8 @@
 import { Container, ContainerModule } from 'inversify';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
-    loadDefaultModules, SNode, SEdge, SLabel, configureModelElement,
-    SGraph, RectangularNodeView, PolylineEdgeView, WebSocketDiagramServerProxy
+    loadDefaultModules, SNodeImpl, SEdgeImpl, SLabelImpl, configureModelElement,
+    SGraphImpl, RectangularNodeView, PolylineEdgeView, WebSocketDiagramServerProxy
 } from 'sprotty';
 
 export default (containerId: string) => {
@@ -31,10 +31,10 @@ export default (containerId: string) => {
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'graph', SGraph, SGraphView);
-        configureModelElement(container, 'node', SNode, RectangularNodeView);
-        configureModelElement(container, 'edge', SEdge, PolylineEdgeView);
-        configureModelElement(container, 'label', SLabel, SLabelView);
+        configureModelElement(container, 'graph', SGraphImpl, SGraphView);
+        configureModelElement(container, 'node', SNodeImpl, RectangularNodeView);
+        configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeView);
+        configureModelElement(container, 'label', SLabelImpl, SLabelView);
 
         configureViewerOptions(context, {
             needsClientLayout: false,

@@ -23,7 +23,7 @@ import { getWindowScroll } from '../../utils/browser';
 import { ILogger } from '../../utils/logging';
 import { IActionDispatcher } from '../actions/action-dispatcher';
 import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
-import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
+import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel';
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { TYPES } from '../types';
 import { isThunk } from './thunk-view';
@@ -34,7 +34,7 @@ import { copyClassesFromElement, copyClassesFromVNode, setAttr, setClass } from 
 
 
 export interface IViewer {
-    update(model: SModelRoot, cause?: Action): void
+    update(model: SModelRootImpl, cause?: Action): void
 }
 
 export interface IViewerProvider {
@@ -51,7 +51,7 @@ export class ModelRenderer implements RenderingContext {
         protected args: IViewArgs = {}) {
     }
 
-    decorate(vnode: VNode, element: Readonly<SModelElement>): VNode {
+    decorate(vnode: VNode, element: Readonly<SModelElementImpl>): VNode {
         if (isThunk(vnode)) {
             return vnode;
         }
@@ -60,7 +60,7 @@ export class ModelRenderer implements RenderingContext {
             vnode);
     }
 
-    renderElement(element: Readonly<SModelElement>): VNode | undefined {
+    renderElement(element: Readonly<SModelElementImpl>): VNode | undefined {
         const view = this.viewRegistry.get(element.type);
         const vnode = view.render(element, this, this.args);
         if (vnode) {
@@ -70,7 +70,7 @@ export class ModelRenderer implements RenderingContext {
         }
     }
 
-    renderChildren(element: Readonly<SParentElement>, args?: IViewArgs): VNode[] {
+    renderChildren(element: Readonly<SParentElementImpl>, args?: IViewArgs): VNode[] {
         const context = args ?
             new ModelRenderer(
                 this.viewRegistry,
@@ -140,7 +140,7 @@ export class ModelViewer implements IViewer {
 
     protected lastVDOM: VNode;
 
-    update(model: Readonly<SModelRoot>, cause?: Action): void {
+    update(model: Readonly<SModelRootImpl>, cause?: Action): void {
         this.logger.log(this, 'rendering', model);
         const newVDOM = <div id={this.options.baseDiv}>
             {this.renderer.renderElement(model)}
@@ -234,7 +234,7 @@ export class HiddenModelViewer implements IViewer {
 
     protected lastHiddenVDOM: VNode;
 
-    update(hiddenModel: Readonly<SModelRoot>, cause?: Action): void {
+    update(hiddenModel: Readonly<SModelRootImpl>, cause?: Action): void {
         this.logger.log(this, 'rendering hidden');
 
         let newVDOM: VNode;
@@ -288,7 +288,7 @@ export class PopupModelViewer implements IViewer {
 
     protected lastPopupVDOM: VNode;
 
-    update(model: Readonly<SModelRoot>, cause?: Action): void {
+    update(model: Readonly<SModelRootImpl>, cause?: Action): void {
         this.logger.log(this, 'rendering popup', model);
 
         const popupClosed = model.type === EMPTY_ROOT.type;

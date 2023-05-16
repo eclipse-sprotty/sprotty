@@ -18,7 +18,7 @@ import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { Line, PointToPointLine, intersection } from "../../utils/geometry";
 import { RECTANGULAR_ANCHOR_KIND, IAnchorComputer, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from "./anchor";
 import { ManhattanEdgeRouter } from "./manhattan-edge-router";
-import { SConnectableElement } from "./model";
+import { SConnectableElementImpl } from "./model";
 import { injectable } from "inversify";
 
 @injectable()
@@ -30,7 +30,7 @@ export class ManhattanRectangularAnchor implements IAnchorComputer {
         return ManhattanRectangularAnchor.KIND;
     }
 
-    getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number): Point {
+    getAnchor(connectable: SConnectableElementImpl, refPoint: Point, offset: number): Point {
         const b = connectable.bounds;
         if (b.width <= 0 || b.height <= 0) {
             return b;
@@ -66,7 +66,7 @@ export class ManhattanDiamondAnchor implements IAnchorComputer {
         return ManhattanDiamondAnchor.KIND;
     }
 
-    getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
+    getAnchor(connectable: SConnectableElementImpl, refPoint: Point, offset: number = 0): Point {
         const b = connectable.bounds;
         if (b.width <= 0 || b.height <= 0) {
             return b;
@@ -126,7 +126,7 @@ export class ManhattanEllipticAnchor implements IAnchorComputer {
         return ManhattanEllipticAnchor.KIND;
     }
 
-    getAnchor(connectable: SConnectableElement, refPoint: Point, offset: number = 0): Point {
+    getAnchor(connectable: SConnectableElementImpl, refPoint: Point, offset: number = 0): Point {
         const b = connectable.bounds;
         if (b.width <= 0 || b.height <= 0) {
             return b;

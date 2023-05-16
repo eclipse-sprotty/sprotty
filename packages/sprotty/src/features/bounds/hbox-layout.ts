@@ -16,7 +16,7 @@
 
 import { injectable } from 'inversify';
 import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SParentElement, SChildElement } from "../../base/model/smodel";
+import { SParentElementImpl, SChildElementImpl } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
 import { AbstractLayoutOptions, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
@@ -36,7 +36,7 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
 
     static KIND = 'hbox';
 
-    protected getChildrenSize(container: SParentElement & LayoutContainer,
+    protected getChildrenSize(container: SParentElementImpl & LayoutContainer,
                                containerOptions: HBoxLayoutOptions,
                                layouter: StatefulLayouter) {
         let maxWidth = 0;
@@ -63,7 +63,7 @@ export class HBoxLayouter extends AbstractLayout<HBoxLayoutOptions> {
         };
     }
 
-    protected layoutChild(child: SChildElement,
+    protected layoutChild(child: SChildElementImpl,
                         boundsData: BoundsData,
                         bounds: Bounds,
                         childOptions: HBoxLayoutOptions,

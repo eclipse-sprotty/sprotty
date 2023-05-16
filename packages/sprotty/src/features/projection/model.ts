@@ -17,7 +17,7 @@
 import { Viewport } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
-import { SChildElement, SModelRoot, SParentElement } from '../../base/model/smodel';
+import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { transformToRootBounds } from '../../base/model/smodel-utils';
 import { isBoundsAware } from '../bounds/model';
@@ -48,7 +48,7 @@ export interface ViewProjection {
 /**
  * Gather all projections of elements contained in the given parent element.
  */
-export function getProjections(parent: Readonly<SParentElement>): ViewProjection[] | undefined {
+export function getProjections(parent: Readonly<SParentElementImpl>): ViewProjection[] | undefined {
     let result: ViewProjection[] | undefined;
     for (const child of parent.children) {
         if (isProjectable(child) && child.projectionCssClasses.length > 0) {
@@ -83,7 +83,7 @@ export function getProjections(parent: Readonly<SParentElement>): ViewProjection
 /**
  * Compute the projected bounds of the given model element, that is the absolute position in the diagram.
  */
-export function getProjectedBounds(model: Readonly<SChildElement & Projectable>): Bounds | undefined {
+export function getProjectedBounds(model: Readonly<SChildElementImpl & Projectable>): Bounds | undefined {
     const parent = model.parent;
     if (model.projectedBounds) {
         let bounds = model.projectedBounds;
@@ -105,7 +105,7 @@ const MAX_COORD = 1_000_000_000;
  * Determine the total bounds of a model; this takes the viewport into consideration
  * so it can be shown in the projections.
  */
-export function getModelBounds(model: SModelRoot & Viewport): Bounds | undefined {
+export function getModelBounds(model: SModelRootImpl & Viewport): Bounds | undefined {
     let minX = MAX_COORD;
     let minY = MAX_COORD;
     let maxX = -MAX_COORD;

@@ -16,17 +16,17 @@
 
 import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelRoot, SChildElement } from "../base/model/smodel";
+import { SModelRootImpl, SChildElementImpl } from "../base/model/smodel";
 import { BoundsAware, boundsFeature, Alignable, alignFeature, isBoundsAware } from "../features/bounds/model";
 import { Locateable, moveFeature } from "../features/move/model";
 import { Selectable, selectFeature } from "../features/select/model";
-import { SNode, SPort } from '../graph/sgraph';
+import { SNodeImpl, SPortImpl } from '../graph/sgraph';
 import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from "../features/routing/anchor";
 
 /**
  * A node that is represented by a circle.
  */
-export class CircularNode extends SNode {
+export class CircularNode extends SNodeImpl {
     override get anchorKind() {
         return ELLIPTIC_ANCHOR_KIND;
     }
@@ -35,7 +35,7 @@ export class CircularNode extends SNode {
 /**
  * A node that is represented by a rectangle.
  */
-export class RectangularNode extends SNode {
+export class RectangularNode extends SNodeImpl {
     override get anchorKind() {
         return RECTANGULAR_ANCHOR_KIND;
     }
@@ -44,7 +44,7 @@ export class RectangularNode extends SNode {
 /**
  * A node that is represented by a diamond.
  */
-export class DiamondNode extends SNode {
+export class DiamondNode extends SNodeImpl {
     override get anchorKind() {
         return DIAMOND_ANCHOR_KIND;
     }
@@ -53,7 +53,7 @@ export class DiamondNode extends SNode {
 /**
  * A port that is represented by a circle.
  */
-export class CircularPort extends SPort {
+export class CircularPort extends SPortImpl {
     override get anchorKind() {
         return ELLIPTIC_ANCHOR_KIND;
     }
@@ -62,7 +62,7 @@ export class CircularPort extends SPort {
 /**
  * A port that is represented by a rectangle.
  */
-export class RectangularPort extends SPort {
+export class RectangularPort extends SPortImpl {
     override get anchorKind() {
         return RECTANGULAR_ANCHOR_KIND;
     }
@@ -80,9 +80,12 @@ export interface HtmlRootSchema extends SModelRootSchema {
 /**
  * Root model element class for HTML content. Usually this is rendered with a `div` DOM element.
  */
-export class HtmlRoot extends SModelRoot {
+export class HtmlRootImpl extends SModelRootImpl {
     classes: string[] = [];
 }
+
+/** @deprecated Use `HtmlRootImpl` instead. */
+export const HtmlRoot = HtmlRootImpl;
 
 /**
  * Serializable schema for PreRenderedElement.
@@ -97,9 +100,12 @@ export interface PreRenderedElementSchema extends SModelElementSchema {
  * Pre-rendered elements contain HTML or SVG code to be transferred to the DOM. This can be useful to
  * render complex figures or to compute the view on the server instead of the client code.
  */
-export class PreRenderedElement extends SChildElement {
+export class PreRenderedElementImpl extends SChildElementImpl {
     code: string;
 }
+
+/** @deprecated Use `PreRenderedElementImpl` instead. */
+export const PreRenderedElement = PreRenderedElementImpl;
 
 /**
  * Serializable schema for ShapedPreRenderedElement.
@@ -114,7 +120,7 @@ export interface ShapedPreRenderedElementSchema extends PreRenderedElementSchema
 /**
  * Same as PreRenderedElement, but with a position and a size.
  */
-export class ShapedPreRenderedElement extends PreRenderedElement implements BoundsAware, Locateable, Selectable, Alignable {
+export class ShapedPreRenderedElementImpl extends PreRenderedElementImpl implements BoundsAware, Locateable, Selectable, Alignable {
     static readonly DEFAULT_FEATURES = [moveFeature, boundsFeature, selectFeature, alignFeature];
 
     position: Point = Point.ORIGIN;
@@ -144,6 +150,9 @@ export class ShapedPreRenderedElement extends PreRenderedElement implements Boun
 
 }
 
+/** @deprecated Use `ShapedPreRenderedElementImpl` instead. */
+export const ShapedPreRenderedElement = ShapedPreRenderedElementImpl;
+
 /**
  * A `foreignObject` element to be transferred to the DOM within the SVG.
  *
@@ -155,7 +164,7 @@ export class ShapedPreRenderedElement extends PreRenderedElement implements Boun
  * its parent to fill the entire available room. Thus, this element requires specified bounds itself
  * or bounds to be available for its parent.
  */
-export class ForeignObjectElement extends ShapedPreRenderedElement {
+export class ForeignObjectElementImpl extends ShapedPreRenderedElementImpl {
     namespace: string;
     override get bounds(): Bounds {
         if (Dimension.isValid(this.size)) {
@@ -176,6 +185,9 @@ export class ForeignObjectElement extends ShapedPreRenderedElement {
         return Bounds.EMPTY;
     }
 }
+
+/** @deprecated Use `ForeignObjectElementImpl` instead. */
+export const ForeignObjectElement = ForeignObjectElementImpl;
 
 /**
  * Serializable schema for ForeignObjectElement.

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,14 @@
 /** @jsx svg */
 import { svg } from 'sprotty/lib/lib/jsx';
 
-import { RenderingContext, IView, RectangularNodeView, SNode, IViewArgs } from 'sprotty';
-import { VNode } from "snabbdom";
+import { RenderingContext, IView, RectangularNodeView, SNodeImpl, IViewArgs } from 'sprotty';
+import { VNode } from 'snabbdom';
 import { Icon } from './model';
 import { injectable } from 'inversify';
 
 @injectable()
 export class NodeView extends RectangularNodeView {
-    override render(node: Readonly<SNode>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    override render(node: Readonly<SNodeImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         if (!this.isVisible(node, context)) {
             return undefined;
         }
@@ -33,7 +33,7 @@ export class NodeView extends RectangularNodeView {
                   class-node-package={node.type === 'node:package'}
                   class-node-class={node.type === 'node:class'}
                   class-mouseover={node.hoverFeedback} class-selected={node.selected}
-                  x="0" y="0" width={Math.max(node.size.width, 0)} height={Math.max(node.size.height, 0)}></rect>
+                  x='0' y='0' width={Math.max(node.size.width, 0)} height={Math.max(node.size.height, 0)}></rect>
             {context.renderChildren(node)}
         </g>;
     }

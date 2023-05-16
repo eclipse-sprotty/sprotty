@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
-import { SRoutableElement } from '../routing/model';
+import { SRoutableElementImpl } from '../routing/model';
 
 export const editFeature = Symbol('editFeature');
 
-export function canEditRouting(element: SModelElement): element is SRoutableElement {
-    return element instanceof SRoutableElement && element.hasFeature(editFeature);
+export function canEditRouting(element: SModelElementImpl): element is SRoutableElementImpl {
+    return element instanceof SRoutableElementImpl && element.hasFeature(editFeature);
 }
 
 export const editLabelFeature = Symbol('editLabelFeature');
@@ -34,16 +34,16 @@ export interface EditableLabel extends SModelExtension {
     readonly editControlPositionCorrection?: Point;
 }
 
-export function isEditableLabel<T extends SModelElement>(element: T): element is T & EditableLabel {
+export function isEditableLabel<T extends SModelElementImpl>(element: T): element is T & EditableLabel {
     return 'text' in element && element.hasFeature(editLabelFeature);
 }
 
 export const withEditLabelFeature = Symbol('withEditLabelFeature');
 
 export interface WithEditableLabel extends SModelExtension {
-    readonly editableLabel?: EditableLabel & SModelElement;
+    readonly editableLabel?: EditableLabel & SModelElementImpl;
 }
 
-export function isWithEditableLabel<T extends SModelElement>(element: T): element is T & WithEditableLabel {
+export function isWithEditableLabel<T extends SModelElementImpl>(element: T): element is T & WithEditableLabel {
     return 'editableLabel' in element && element.hasFeature(withEditLabelFeature);
 }

@@ -16,18 +16,18 @@
 
 import { Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { Animation } from "../../base/animations/animation";
-import { SModelRoot, SModelElement } from "../../base/model/smodel";
+import { SModelRootImpl, SModelElementImpl } from "../../base/model/smodel";
 import { CommandExecutionContext } from "../../base/commands/command";
 import { BoundsAware } from './model';
 
 export interface ResolvedElementResize {
-    element: SModelElement & BoundsAware
+    element: SModelElementImpl & BoundsAware
     fromDimension: Dimension
     toDimension: Dimension
 }
 
 export class ResizeAnimation extends Animation {
-    constructor(protected model: SModelRoot,
+    constructor(protected model: SModelRootImpl,
         public elementResizes: Map<string, ResolvedElementResize>,
         context: CommandExecutionContext,
         protected reverse: boolean = false) {

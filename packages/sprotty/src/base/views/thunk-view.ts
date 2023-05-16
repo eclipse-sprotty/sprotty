@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { h, VNode, VNodeData } from "snabbdom";
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { RenderingContext, IView } from "./view";
 import { injectable } from "inversify";
 
@@ -30,19 +30,19 @@ export abstract class ThunkView implements IView {
      * Returns the array of values that are watched for changes.
      * If they haven't change since the last rendering, the VNode is neither recalculated nor patched.
      */
-    abstract watchedArgs(model: SModelElement): any[];
+    abstract watchedArgs(model: SModelElementImpl): any[];
 
     /**
      * Returns the selector of the VNode root, i.e. it's element type.
      */
-    abstract selector(model: SModelElement): string;
+    abstract selector(model: SModelElementImpl): string;
 
     /**
      * Calculate the VNode from the input data. Only called if the watched properties change.
      */
-    abstract doRender(model: SModelElement, context: RenderingContext): VNode;
+    abstract doRender(model: SModelElementImpl, context: RenderingContext): VNode;
 
-    render(model: SModelElement, context: RenderingContext): VNode {
+    render(model: SModelElementImpl, context: RenderingContext): VNode {
         return h(this.selector(model), {
             key: model.id,
             hook: {
@@ -54,7 +54,7 @@ export abstract class ThunkView implements IView {
         });
     }
 
-    protected renderAndDecorate(model: SModelElement, context: RenderingContext): VNode {
+    protected renderAndDecorate(model: SModelElementImpl, context: RenderingContext): VNode {
         const vnode = this.doRender(model, context);
         context.decorate(vnode, model);
         return vnode;

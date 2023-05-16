@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const expandFeature = Symbol('expandFeature');
@@ -26,6 +26,6 @@ export interface Expandable extends SModelExtension {
     expanded: boolean
 }
 
-export function isExpandable(element: SModelElement): element is SModelElement & Expandable {
+export function isExpandable(element: SModelElementImpl): element is SModelElementImpl & Expandable {
     return element.hasFeature(expandFeature) && 'expanded' in element;
 }

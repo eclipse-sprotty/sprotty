@@ -18,14 +18,14 @@ import { inject, injectable, multiInject, optional } from "inversify";
 import { CenterAction, SelectAction, SelectAllAction } from "sprotty-protocol/lib/actions";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { LabeledAction } from "../../base/actions/action";
-import { SModelRoot } from "../../base/model/smodel";
+import { SModelRootImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { toArray } from "../../utils/iterable";
 import { ILogger } from "../../utils/logging";
 import { isNameable, name } from "../nameable/model";
 
 export interface ICommandPaletteActionProvider {
-    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number): Promise<LabeledAction[]>;
+    getActions(root: Readonly<SModelRootImpl>, text: string, lastMousePosition?: Point, index?: number): Promise<LabeledAction[]>;
 }
 
 @injectable()
@@ -34,7 +34,7 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
     constructor(@multiInject(TYPES.ICommandPaletteActionProvider) @optional() protected actionProviders: ICommandPaletteActionProvider[] = []) {
     }
 
-    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number) {
+    getActions(root: Readonly<SModelRootImpl>, text: string, lastMousePosition?: Point, index?: number) {
         const actionLists = this.actionProviders.map(provider => provider.getActions(root, text, lastMousePosition, index));
         return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc));
     }
@@ -45,14 +45,14 @@ export class RevealNamedElementActionProvider implements ICommandPaletteActionPr
 
     constructor(@inject(TYPES.ILogger) protected logger: ILogger) { }
 
-    getActions(root: Readonly<SModelRoot>, text: string, lastMousePosition?: Point, index?: number) {
+    getActions(root: Readonly<SModelRootImpl>, text: string, lastMousePosition?: Point, index?: number) {
         if (index !== undefined && index % 2 === 0)
             return Promise.resolve(this.createSelectActions(root));
         else
             return Promise.resolve([new LabeledAction("Select all", [SelectAllAction.create()])]);
     }
 
-    createSelectActions(modelRoot: SModelRoot): LabeledAction[] {
+    createSelectActions(modelRoot: SModelRootImpl): LabeledAction[] {
         const nameables = toArray(modelRoot.index.all().filter(element => isNameable(element)));
         return nameables.map(nameable => new LabeledAction(`Reveal ${name(nameable)}`,
             [SelectAction.create({ selectedElementsIDs: [nameable.id] }), CenterAction.create([nameable.id])], 'eye'));

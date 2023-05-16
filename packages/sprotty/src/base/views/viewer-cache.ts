@@ -16,7 +16,7 @@
 
 import { inject, injectable } from "inversify";
 import { Action } from "sprotty-protocol/lib/actions";
-import { SModelRoot } from "../model/smodel";
+import { SModelRootImpl } from "../model/smodel";
 import { TYPES } from "../types";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { IViewer } from "./viewer";
@@ -33,9 +33,9 @@ export class ViewerCache implements IViewer {
     @inject(TYPES.IViewer) protected delegate: IViewer;
     @inject(TYPES.AnimationFrameSyncer) protected syncer: AnimationFrameSyncer;
 
-    protected cachedModel?: SModelRoot;
+    protected cachedModel?: SModelRootImpl;
 
-    update(model: SModelRoot, cause?: Action): void {
+    update(model: SModelRootImpl, cause?: Action): void {
         if (cause !== undefined) {
             // Forward the update immediately in order to pass the cause action
             this.delegate.update(model, cause);

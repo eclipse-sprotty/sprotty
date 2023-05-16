@@ -16,7 +16,7 @@
 
 import { injectable } from "inversify";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElement } from "../../base/model/smodel";
+import { SModelElementImpl } from "../../base/model/smodel";
 import { isBoundsAware } from "../bounds/model";
 
 /**
@@ -26,7 +26,7 @@ export interface ISnapper {
     /**
      * @retruns the closest snapped position that for the `element` located at `position`
      */
-    snap(position: Point, element: SModelElement): Point
+    snap(position: Point, element: SModelElementImpl): Point
 }
 
 /**
@@ -43,7 +43,7 @@ export class CenterGridSnapper implements ISnapper {
         return 10;
     }
 
-    snap(position: Point, element: SModelElement): Point {
+    snap(position: Point, element: SModelElementImpl): Point {
         if (element && isBoundsAware(element))
             return {
                 x: Math.round((position.x + 0.5 * element.bounds.width) / this.gridX) * this.gridX - 0.5 * element.bounds.width,

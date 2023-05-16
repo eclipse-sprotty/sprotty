@@ -18,7 +18,7 @@ import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
-import { SRoutableElement, getAbsoluteRouteBounds } from './model';
+import { SRoutableElementImpl, getAbsoluteRouteBounds } from './model';
 
 @injectable()
 export abstract class RoutableView implements IView {
@@ -27,7 +27,7 @@ export abstract class RoutableView implements IView {
      * in your `render` implementation to skip rendering in case the element is not visible.
      * This can greatly enhance performance for large models.
      */
-    isVisible(model: Readonly<SRoutableElement>, route: Point[], context: RenderingContext): boolean {
+    isVisible(model: Readonly<SRoutableElementImpl>, route: Point[], context: RenderingContext): boolean {
         if (context.targetKind === 'hidden') {
             // Don't hide any element for hidden rendering
             return true;
@@ -44,5 +44,5 @@ export abstract class RoutableView implements IView {
             && ab.y + ab.height >= 0;
     }
 
-    abstract render(model: Readonly<SRoutableElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
+    abstract render(model: Readonly<SRoutableElementImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
 }

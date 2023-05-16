@@ -18,7 +18,7 @@ import { injectable, multiInject } from "inversify";
 import { Point } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../../base/types";
 import { InstanceRegistry } from "../../utils/registry";
-import { SConnectableElement } from "./model";
+import { SConnectableElementImpl } from "./model";
 
 export const DIAMOND_ANCHOR_KIND = 'diamond';
 export const ELLIPTIC_ANCHOR_KIND = 'elliptic';
@@ -41,7 +41,7 @@ export interface IAnchorComputer {
      *               positive values should shift the anchor away from this element, negative values
      *               should shift the anchor more to the inside. Use this to adapt ot arrow heads.
      */
-    getAnchor(connectable: SConnectableElement, referencePoint: Point, offset?: number): Point;
+    getAnchor(connectable: SConnectableElementImpl, referencePoint: Point, offset?: number): Point;
 }
 
 

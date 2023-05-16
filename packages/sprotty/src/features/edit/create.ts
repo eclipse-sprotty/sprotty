@@ -18,7 +18,7 @@ import { inject, injectable } from 'inversify';
 import { Action, CreateElementAction as ProtocolCreateElementAction } from 'sprotty-protocol/lib/actions';
 import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { SParentElement, SChildElement } from '../../base/model/smodel';
+import { SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
 
 /**
@@ -47,8 +47,8 @@ export namespace CreateElementAction {
 export class CreateElementCommand extends Command {
     static readonly KIND = ProtocolCreateElementAction.KIND;
 
-    container: SParentElement;
-    newElement: SChildElement;
+    container: SParentElementImpl;
+    newElement: SChildElementImpl;
 
     constructor(@inject(TYPES.Action) protected readonly action: ProtocolCreateElementAction) {
         super();
@@ -56,7 +56,7 @@ export class CreateElementCommand extends Command {
 
     execute(context: CommandExecutionContext): CommandReturn {
         const container = context.root.index.getById(this.action.containerId);
-        if (container instanceof SParentElement) {
+        if (container instanceof SParentElementImpl) {
             this.container = container;
             this.newElement = context.modelFactory.createElement(this.action.elementSchema);
             this.container.add(this.newElement);

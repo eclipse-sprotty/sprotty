@@ -13,14 +13,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+
+import { injectable } from 'inversify';
 import {
-    IEditLabelValidator, EditableLabel, SModelElement, EditLabelValidationResult, Severity, IEditLabelValidationDecorator
+    IEditLabelValidator, EditableLabel, SModelElementImpl, EditLabelValidationResult, Severity, IEditLabelValidationDecorator
 } from 'sprotty';
-import { injectable } from "inversify";
 
 @injectable()
 export class ClassDiagramLabelValidator implements IEditLabelValidator {
-    async validate(value: string, label: EditableLabel & SModelElement): Promise<EditLabelValidationResult> {
+    async validate(value: string, label: EditableLabel & SModelElementImpl): Promise<EditLabelValidationResult> {
         if (value.length < 1) {
             return {
                 severity: <Severity>'error',

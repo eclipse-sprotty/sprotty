@@ -18,7 +18,7 @@ import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry
 import { translatePoint } from "../../base/model/smodel-utils";
 import { ResolvedHandleMove } from "../move/move";
 import { DefaultAnchors, AbstractEdgeRouter, LinearRouteOptions, Side } from "./abstract-edge-router";
-import { SRoutableElement, RoutingHandleKind, SRoutingHandle } from "./model";
+import { SRoutableElementImpl, RoutingHandleKind, SRoutingHandleImpl } from "./model";
 import { RoutedPoint } from "./routing";
 
 export interface ManhattanRouterOptions extends LinearRouteOptions {
@@ -33,7 +33,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         return ManhattanEdgeRouter.KIND;
     }
 
-    protected getOptions(edge: SRoutableElement): ManhattanRouterOptions {
+    protected getOptions(edge: SRoutableElementImpl): ManhattanRouterOptions {
         return {
             standardDistance: 20,
             minimalPointDistance: 3,
@@ -41,7 +41,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         };
     }
 
-    route(edge: SRoutableElement): RoutedPoint[] {
+    route(edge: SRoutableElementImpl): RoutedPoint[] {
         if (!edge.source || !edge.target)
             return [];
         const routedCorners = this.createRoutedCorners(edge);
@@ -60,7 +60,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         return routedPoints;
     }
 
-    protected createRoutedCorners(edge: SRoutableElement): RoutedPoint[] {
+    protected createRoutedCorners(edge: SRoutableElementImpl): RoutedPoint[] {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, 'source');
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, 'target');
         if (edge.routingPoints.length > 0) {
@@ -78,7 +78,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         });
     }
 
-    createRoutingHandles(edge: SRoutableElement) {
+    createRoutingHandles(edge: SRoutableElementImpl) {
         const routedPoints = this.route(edge);
         this.commitRoute(edge, routedPoints);
         if (routedPoints.length > 0) {
@@ -89,7 +89,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         }
     }
 
-    protected getInnerHandlePosition(edge: SRoutableElement, route: RoutedPoint[], handle: SRoutingHandle) {
+    protected getInnerHandlePosition(edge: SRoutableElementImpl, route: RoutedPoint[], handle: SRoutingHandleImpl) {
         const fraction = this.getFraction(handle.kind);
         if (fraction !== undefined) {
             const { start, end } = this.findRouteSegment(edge, route, handle.pointIndex);
@@ -106,7 +106,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         }
     }
 
-    protected applyInnerHandleMoves(edge: SRoutableElement, moves: ResolvedHandleMove[]) {
+    protected applyInnerHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]) {
         const route = this.route(edge);
         const routingPoints = edge.routingPoints;
         const minimalPointDistance = this.getOptions(edge).minimalPointDistance;
@@ -180,7 +180,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
             };
     }
 
-    override cleanupRoutingPoints(edge: SRoutableElement, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
+    override cleanupRoutingPoints(edge: SRoutableElementImpl, routingPoints: Point[], updateHandles: boolean, addRoutingPoints: boolean) {
         const sourceAnchors = new DefaultAnchors(edge.source!, edge.parent, "source");
         const targetAnchors = new DefaultAnchors(edge.target!, edge.parent, "target");
         if (this.resetRoutingPointsOnReconnect(edge, routingPoints, updateHandles, sourceAnchors, targetAnchors))
@@ -225,10 +225,10 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         }
     }
 
-    protected removeHandle(edge: SRoutableElement, pointIndex: number) {
-        const toBeRemoved: SRoutingHandle[] = [];
+    protected removeHandle(edge: SRoutableElementImpl, pointIndex: number) {
+        const toBeRemoved: SRoutingHandleImpl[] = [];
         edge.children.forEach(child => {
-            if (child instanceof SRoutingHandle) {
+            if (child instanceof SRoutingHandleImpl) {
                 if (child.pointIndex > pointIndex)
                     --child.pointIndex;
                 else if (child.pointIndex === pointIndex)
@@ -238,7 +238,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         toBeRemoved.forEach(child => edge.remove(child));
     }
 
-    protected addAdditionalCorner(edge: SRoutableElement, routingPoints: Point[], currentAnchors: DefaultAnchors, otherAnchors: DefaultAnchors, updateHandles: boolean) {
+    protected addAdditionalCorner(edge: SRoutableElementImpl, routingPoints: Point[], currentAnchors: DefaultAnchors, otherAnchors: DefaultAnchors, updateHandles: boolean) {
         if (routingPoints.length === 0)
             return;
         const refPoint = currentAnchors.kind === 'source' ? routingPoints[0] : routingPoints[routingPoints.length - 1];
@@ -259,7 +259,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
                 routingPoints.splice(index, 0, newPoint);
                 if (updateHandles) {
                     edge.children.forEach(child => {
-                        if (child instanceof SRoutingHandle && child.pointIndex >= shiftIndex)
+                        if (child instanceof SRoutingHandleImpl && child.pointIndex >= shiftIndex)
                             ++child.pointIndex;
                     });
                     this.addHandle(edge, 'manhattan-50%', 'volatile-routing-point', shiftIndex);
@@ -271,7 +271,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
                 routingPoints.splice(index, 0, newPoint);
                 if (updateHandles) {
                     edge.children.forEach(child => {
-                        if (child instanceof SRoutingHandle && child.pointIndex >= shiftIndex)
+                        if (child instanceof SRoutingHandleImpl && child.pointIndex >= shiftIndex)
                             ++child.pointIndex;
                     });
                     this.addHandle(edge, 'manhattan-50%', 'volatile-routing-point', shiftIndex);
@@ -287,7 +287,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
      * linearly probably resulting in non-rectilinear angles. We don't add handles for
      * these additional RPs.
      */
-    protected manhattanify(edge: SRoutableElement, routingPoints: Point[]) {
+    protected manhattanify(edge: SRoutableElementImpl, routingPoints: Point[]) {
         for (let i = 1; i < routingPoints.length; ++i) {
             const isVertical = Math.abs(routingPoints[i - 1].x - routingPoints[i].x) < 1;
             const isHorizontal = Math.abs(routingPoints[i - 1].y - routingPoints[i].y) < 1;
@@ -301,7 +301,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         }
     }
 
-    protected override calculateDefaultCorners(edge: SRoutableElement, sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors, options: ManhattanRouterOptions): Point[] {
+    protected override calculateDefaultCorners(edge: SRoutableElementImpl, sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors, options: ManhattanRouterOptions): Point[] {
         const selfEdge = super.calculateDefaultCorners(edge, sourceAnchors, targetAnchors, options);
         if (selfEdge.length > 0)
             return selfEdge;
@@ -414,7 +414,7 @@ export class ManhattanEdgeRouter extends AbstractEdgeRouter {
         return corners;
     }
 
-    protected getBestConnectionAnchors(edge: SRoutableElement,
+    protected getBestConnectionAnchors(edge: SRoutableElementImpl,
                                         sourceAnchors: DefaultAnchors, targetAnchors: DefaultAnchors,
                                         options: ManhattanRouterOptions): { source: Side, target: Side } {
         // distance is enough

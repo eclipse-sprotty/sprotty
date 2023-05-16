@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import {
-    TYPES, IActionDispatcher, ElementMove, MoveAction, LocalModelSource, getBasicType
+    TYPES, IActionDispatcher, ElementMove, MoveAction, LocalModelSource
 } from 'sprotty';
-import { Bounds, Point, SEdge, SelectAction, SGraph, SNode } from 'sprotty-protocol';
-import createContainer from "./di.config";
+import { Bounds, Point, SEdge, SelectAction, SGraph, SNode, getBasicType } from 'sprotty-protocol';
+import createContainer from './di.config';
 
 const NODE_SIZE = 60;
 

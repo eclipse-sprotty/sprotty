@@ -20,7 +20,7 @@ import { EnableDefaultToolsAction, EnableToolsAction, Tool } from "./tool";
 import { IActionHandler } from "../actions/action-handler";
 import { ICommand } from "../commands/command";
 import { KeyListener } from "../views/key-tool";
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { matchesKeystroke } from "../../utils/keyboard";
 
 /**
@@ -137,7 +137,7 @@ export class ToolManagerActionHandler implements IActionHandler {
 
 @injectable()
 export class DefaultToolsEnablingKeyListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
             return [EnableDefaultToolsAction.create()];
         }

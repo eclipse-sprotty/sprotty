@@ -17,10 +17,10 @@
 import { injectable, inject } from "inversify";
 import { VNode } from "snabbdom";
 import { Bounds, Point, toDegrees } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElement, SChildElement } from "../../base/model/smodel";
+import { SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { setAttr } from "../../base/views/vnode-utils";
-import { SEdge } from "../../graph/sgraph";
+import { SEdgeImpl } from "../../graph/sgraph";
 import { Orientation } from "../../utils/geometry";
 import { isAlignable, BoundsAware } from "../bounds/model";
 import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement } from "./model";
@@ -31,8 +31,8 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
-        if (isEdgeLayoutable(element) && element.parent instanceof SEdge) {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
+        if (isEdgeLayoutable(element) && element.parent instanceof SEdgeImpl) {
             if (element.bounds !== Bounds.EMPTY) {
                 const placement = this.getEdgePlacement(element);
                 const edge = element.parent;
@@ -66,7 +66,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
         return vnode;
     }
 
-    protected getRotatedAlignment(element: EdgeLayoutable & SModelElement & BoundsAware, placement: EdgePlacement, flip: boolean) {
+    protected getRotatedAlignment(element: EdgeLayoutable & SModelElementImpl & BoundsAware, placement: EdgePlacement, flip: boolean) {
         let x = isAlignable(element) ? element.alignment.x : 0;
         let y = isAlignable(element) ? element.alignment.y : 0;
         const bounds = element.bounds;
@@ -108,14 +108,14 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
         return { x, y };
     }
 
-    protected getEdgePlacement(element: SModelElement): EdgePlacement {
+    protected getEdgePlacement(element: SModelElementImpl): EdgePlacement {
         let current = element;
         const allPlacements: EdgePlacement[] = [];
         while (current !== undefined) {
             const placement = (current as any).edgePlacement;
             if (placement !== undefined)
                 allPlacements.push(placement);
-            if (current instanceof SChildElement)
+            if (current instanceof SChildElementImpl)
                 current = current.parent;
             else
                 break;
@@ -124,7 +124,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
             (a, b) => { return {...a, ...b}; }, DEFAULT_EDGE_PLACEMENT);
     }
 
-    protected getAlignment(label: EdgeLayoutable & SModelElement & BoundsAware, placement: EdgePlacement, angle: number): Point {
+    protected getAlignment(label: EdgeLayoutable & SModelElementImpl & BoundsAware, placement: EdgePlacement, angle: number): Point {
         const bounds = label.bounds;
         const x = isAlignable(label) ? label.alignment.x - bounds.width : 0;
         const y = isAlignable(label) ? label.alignment.y - bounds.height : 0;

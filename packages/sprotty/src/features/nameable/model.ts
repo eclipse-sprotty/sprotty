@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const nameFeature = Symbol('nameableFeature');
@@ -23,11 +23,11 @@ export interface Nameable extends SModelExtension {
     name: string
 }
 
-export function isNameable(element: SModelElement): element is SModelElement & Nameable {
+export function isNameable(element: SModelElementImpl): element is SModelElementImpl & Nameable {
     return element.hasFeature(nameFeature);
 }
 
-export function name(element: SModelElement): string|undefined {
+export function name(element: SModelElementImpl): string|undefined {
     if (isNameable(element)) {
         return element.name;
     } else {

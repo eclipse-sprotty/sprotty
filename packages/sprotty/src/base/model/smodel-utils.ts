@@ -18,14 +18,14 @@ import { interfaces } from "inversify";
 import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
 import { TYPES } from "../types";
-import { SChildElement, SModelElement, SModelRoot, SParentElement } from "./smodel";
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from "./smodel";
 import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
 
 /**
  * Register a model element constructor for an element type.
  */
 export function registerModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, constr: new () => SModelElement, features?: CustomFeatures): void {
+        type: string, constr: new () => SModelElementImpl, features?: CustomFeatures): void {
     context.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
         type, constr, features
     });
@@ -37,7 +37,7 @@ export function registerModelElement(context: { bind: interfaces.Bind, isBound: 
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export function getBasicType(schema: SModelElementSchema | SModelElement): string {
+export function getBasicType(schema: SModelElementSchema | SModelElementImpl): string {
     if (!schema.type)
         return '';
     const colonIndex = schema.type.indexOf(':');
@@ -53,7 +53,7 @@ export function getBasicType(schema: SModelElementSchema | SModelElement): strin
  *
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export function getSubType(schema: SModelElementSchema | SModelElement): string {
+export function getSubType(schema: SModelElementSchema | SModelElementImpl): string {
     if (!schema.type)
         return '';
     const colonIndex = schema.type.indexOf(':');
@@ -85,12 +85,12 @@ export function findElement(parent: SModelElementSchema, elementId: string): SMo
 /**
  * Find a parent element that satisfies the given predicate.
  */
-export function findParent(element: SModelElement, predicate: (e: SModelElement) => boolean): SModelElement | undefined {
-    let current: SModelElement | undefined = element;
+export function findParent(element: SModelElementImpl, predicate: (e: SModelElementImpl) => boolean): SModelElementImpl | undefined {
+    let current: SModelElementImpl | undefined = element;
     while (current !== undefined) {
         if (predicate(current))
             return current;
-        else if (current instanceof SChildElement)
+        else if (current instanceof SChildElementImpl)
             current = current.parent;
         else
             current = undefined;
@@ -101,12 +101,12 @@ export function findParent(element: SModelElement, predicate: (e: SModelElement)
 /**
  * Find a parent element that implements the feature identified with the given predicate.
  */
-export function findParentByFeature<T>(element: SModelElement, predicate: (t: SModelElement) => t is SModelElement & T): SModelElement & T | undefined {
-    let current: SModelElement | undefined = element;
+export function findParentByFeature<T>(element: SModelElementImpl, predicate: (t: SModelElementImpl) => t is SModelElementImpl & T): SModelElementImpl & T | undefined {
+    let current: SModelElementImpl | undefined = element;
     while (current !== undefined) {
         if (predicate(current))
             return current;
-        else if (current instanceof SChildElement)
+        else if (current instanceof SChildElementImpl)
             current = current.parent;
         else
             current = undefined;
@@ -118,10 +118,10 @@ export function findParentByFeature<T>(element: SModelElement, predicate: (t: SM
  * Translate a point from the coordinate system of the source element to the coordinate system
  * of the target element.
  */
-export function translatePoint(point: Point, source: SModelElement, target: SModelElement): Point {
+export function translatePoint(point: Point, source: SModelElementImpl, target: SModelElementImpl): Point {
     if (source !== target) {
         // Translate from the source to the root element
-        while (source instanceof SChildElement) {
+        while (source instanceof SChildElementImpl) {
             point = source.localToParent(point);
             source = source.parent;
             if (source === target)
@@ -129,7 +129,7 @@ export function translatePoint(point: Point, source: SModelElement, target: SMod
         }
         // Translate from the root to the target element
         const targetTrace = [];
-        while (target instanceof SChildElement) {
+        while (target instanceof SChildElementImpl) {
             targetTrace.push(target);
             target = target.parent;
         }
@@ -146,7 +146,7 @@ export function translatePoint(point: Point, source: SModelElement, target: SMod
  * Translate some bounds from the coordinate system of the source element to the coordinate system
  * of the target element.
  */
-export function translateBounds(bounds: Bounds, source: SModelElement, target: SModelElement): Bounds {
+export function translateBounds(bounds: Bounds, source: SModelElementImpl, target: SModelElementImpl): Bounds {
     const upperLeft = translatePoint(bounds, source, target);
     const lowerRight = translatePoint({ x: bounds.x + bounds.width, y: bounds.y + bounds.height }, source, target);
     return {
@@ -160,17 +160,17 @@ export function translateBounds(bounds: Bounds, source: SModelElement, target: S
 /**
  * Tests if the given model contains an id of then given element or one of its descendants.
  */
-export function containsSome(root: SModelRoot, element: SChildElement): boolean {
-    const test = (el: SChildElement) => root.index.getById(el.id) !== undefined;
-    const find = (elements: readonly SChildElement[]): boolean => elements.some(el => test(el) || find(el.children));
+export function containsSome(root: SModelRootImpl, element: SChildElementImpl): boolean {
+    const test = (el: SChildElementImpl) => root.index.getById(el.id) !== undefined;
+    const find = (elements: readonly SChildElementImpl[]): boolean => elements.some(el => test(el) || find(el.children));
     return find([element]);
 }
 
 /**
  * Transforms the local bounds all the way up to the root.
  */
-export function  transformToRootBounds(parent: SParentElement, bounds: Bounds) {
-    while (parent instanceof SChildElement) {
+export function  transformToRootBounds(parent: SParentElementImpl, bounds: Bounds) {
+    while (parent instanceof SChildElementImpl) {
         bounds = parent.localToParent(bounds);
         parent = parent.parent;
     }

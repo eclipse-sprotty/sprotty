@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from "inversify";
+import { Container, ContainerModule } from 'inversify';
 import {
     SCompartmentView, SLabelView, TYPES, configureViewerOptions, ConsoleLogger, LogLevel,
     loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, SvgExporter,
     configureView
 } from 'sprotty';
-import { ChipModelFactory } from "./chipmodel-factory";
-import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from "./views";
+import { ChipModelFactory } from './chipmodel-factory';
+import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from './views';
 
 class FilteringSvgExporter extends SvgExporter {
     isExported(styleSheet: CSSStyleSheet): boolean {
@@ -34,8 +34,8 @@ class FilteringSvgExporter extends SvgExporter {
 }
 
 export default () => {
-    require("sprotty/css/sprotty.css");
-    require("../css/diagram.css");
+    require('sprotty/css/sprotty.css');
+    require('../css/diagram.css');
 
     const multicoreModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();

@@ -20,7 +20,7 @@ import { Action, generateRequestId, RequestAction } from "sprotty-protocol/lib/a
 import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
 import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { isSelectable } from '../select/model';
-import { SModelElement, SModelRoot } from '../../base/model/smodel';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { KeyListener } from '../../base/views/key-tool';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { isExportable } from './model';
@@ -31,7 +31,7 @@ import { TYPES } from '../../base/types';
 
 @injectable()
 export class ExportSvgKeyListener extends KeyListener {
-    override keyDown(element: SModelElement, event: KeyboardEvent): Action[] {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyE', 'ctrlCmd', 'shift'))
             return [ RequestExportSvgAction.create() ];
         else
@@ -91,12 +91,12 @@ export class ExportSvgCommand extends HiddenCommand {
 @injectable()
 export class ExportSvgPostprocessor implements IVNodePostprocessor {
 
-    root: SModelRoot;
+    root: SModelRootImpl;
 
     @inject(TYPES.SvgExporter) protected svgExporter: SvgExporter;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
-        if (element instanceof SModelRoot)
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
+        if (element instanceof SModelRootImpl)
             this.root = element;
         return vnode;
     }

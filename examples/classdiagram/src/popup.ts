@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
+import { injectable, inject } from 'inversify';
 import {
     TYPES, IModelFactory, IPopupModelProvider
 } from 'sprotty';
-import { PreRenderedElement, RequestPopupModelAction, SModelElement, SModelRoot } from "sprotty-protocol";
-import { ClassNode } from "./model";
+import { PreRenderedElement, RequestPopupModelAction, SModelElement, SModelRoot } from 'sprotty-protocol';
+import { ClassNode } from './model';
 
 @injectable()
 export class PopupModelProvider implements IPopupModelProvider {

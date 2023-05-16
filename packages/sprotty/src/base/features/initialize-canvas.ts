@@ -21,7 +21,7 @@ import { almostEquals, Bounds, Dimension } from "sprotty-protocol/lib/utils/geom
 import { TYPES } from "../types";
 import { IActionDispatcher } from '../actions/action-dispatcher';
 import { IVNodePostprocessor } from "../views/vnode-postprocessor";
-import { SModelElement, SModelRoot } from "../model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../model/smodel";
 import { SystemCommand, CommandExecutionContext, CommandReturn } from '../commands/command';
 import { getWindowScroll } from "../../utils/browser";
 
@@ -33,12 +33,12 @@ import { getWindowScroll } from "../../utils/browser";
 @injectable()
 export class CanvasBoundsInitializer implements IVNodePostprocessor {
 
-    protected rootAndVnode: [SModelRoot, VNode] | undefined;
+    protected rootAndVnode: [SModelRootImpl, VNode] | undefined;
 
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
-        if (element instanceof SModelRoot && !Dimension.isValid(element.canvasBounds)) {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
+        if (element instanceof SModelRootImpl && !Dimension.isValid(element.canvasBounds)) {
             this.rootAndVnode = [element, vnode];
         }
         return vnode;

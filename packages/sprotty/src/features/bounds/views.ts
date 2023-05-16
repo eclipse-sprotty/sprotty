@@ -19,7 +19,7 @@ import { VNode } from 'snabbdom';
 import { Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
 import { getAbsoluteBounds, BoundsAware } from './model';
-import { SChildElement } from '../../base/model/smodel';
+import { SChildElementImpl } from '../../base/model/smodel';
 
 @injectable()
 export abstract class ShapeView implements IView {
@@ -29,7 +29,7 @@ export abstract class ShapeView implements IView {
      * in your `render` implementation to skip rendering in case the element is not visible.
      * This can greatly enhance performance for large models.
      */
-    isVisible(model: Readonly<SChildElement & BoundsAware>, context: RenderingContext): boolean {
+    isVisible(model: Readonly<SChildElementImpl & BoundsAware>, context: RenderingContext): boolean {
         if (context.targetKind === 'hidden') {
             // Don't hide any element for hidden rendering
             return true;
@@ -46,6 +46,6 @@ export abstract class ShapeView implements IView {
             && ab.y + ab.height >= 0;
     }
 
-    abstract render(model: Readonly<SChildElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
+    abstract render(model: Readonly<SChildElementImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined;
 
 }

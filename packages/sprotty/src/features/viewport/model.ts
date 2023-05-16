@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Scrollable, Zoomable, Viewport as ProtocolViewport } from 'sprotty-protocol/lib/model';
-import { SModelElement, SModelRoot } from '../../base/model/smodel';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 
 export const viewportFeature = Symbol('viewportFeature');
 
@@ -25,8 +25,8 @@ export const viewportFeature = Symbol('viewportFeature');
 export interface Viewport extends Scrollable, Zoomable {
 }
 
-export function isViewport(element: SModelElement): element is SModelRoot & ProtocolViewport {
-    return element instanceof SModelRoot
+export function isViewport(element: SModelElementImpl): element is SModelRootImpl & ProtocolViewport {
+    return element instanceof SModelRootImpl
         && element.hasFeature(viewportFeature)
         && 'zoom' in element
         && 'scroll' in element;

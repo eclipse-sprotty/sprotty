@@ -17,13 +17,13 @@
 import { IVNodePostprocessor } from "./vnode-postprocessor";
 import { VNode } from "snabbdom";
 import { getSubType } from 'sprotty-protocol/lib/utils/model-utils';
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { setClass } from "./vnode-utils";
 import { injectable } from "inversify";
 
 @injectable()
 export class CssClassPostprocessor implements IVNodePostprocessor {
-    decorate(vnode: VNode, element: SModelElement): VNode {
+    decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (element.cssClasses) {
             for (const cssClass of element.cssClasses)
                 setClass(vnode, cssClass, true);

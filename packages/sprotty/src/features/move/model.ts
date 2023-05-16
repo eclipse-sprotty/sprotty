@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const moveFeature = Symbol('moveFeature');
@@ -28,10 +28,10 @@ export interface Locateable extends SModelExtension {
     position: Point
 }
 
-export function isLocateable(element: SModelElement): element is SModelElement & Locateable {
+export function isLocateable(element: SModelElementImpl): element is SModelElementImpl & Locateable {
     return (element as any)['position'] !== undefined;
 }
 
-export function isMoveable(element: SModelElement): element is SModelElement & Locateable {
+export function isMoveable(element: SModelElementImpl): element is SModelElementImpl & Locateable {
     return element.hasFeature(moveFeature) && isLocateable(element);
 }

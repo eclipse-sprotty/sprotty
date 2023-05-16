@@ -16,7 +16,7 @@
 import { inject, injectable } from "inversify";
 import { hasOwnProperty } from "sprotty-protocol";
 import { ILogger } from "../../utils/logging";
-import { SModelRoot } from "../model/smodel";
+import { SModelRootImpl } from "../model/smodel";
 import { TYPES } from "../types";
 import { ViewerOptions } from "../views/viewer-options";
 
@@ -25,7 +25,7 @@ import { ViewerOptions } from "../views/viewer-options";
  */
 export interface IUIExtension {
     id(): string;
-    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void;
+    show(root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): void;
     hide(): void;
     enableOnStartup?: boolean
 }
@@ -50,7 +50,7 @@ export abstract class AbstractUIExtension implements IUIExtension {
     abstract id(): string;
     abstract containerClass(): string;
 
-    show(root: Readonly<SModelRoot>, ...contextElementIds: string[]): void {
+    show(root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): void {
         this.activeElement = document.activeElement;
         if (!this.containerElement) {
             if (!this.initialize()) return;
@@ -115,7 +115,7 @@ export abstract class AbstractUIExtension implements IUIExtension {
      * `containerElement`, add or remove elements, etc. depending on the specified `root`
      * or `contextElementIds`.
      */
-    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRoot>, ...contextElementIds: string[]): void {
+    protected onBeforeShow(containerElement: HTMLElement, root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): void {
         // default: do nothing
     }
 

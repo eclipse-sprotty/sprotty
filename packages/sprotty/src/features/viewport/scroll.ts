@@ -16,13 +16,13 @@
 
 import { Action, CenterAction, SetViewportAction } from 'sprotty-protocol/lib/actions';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElement, SModelRoot } from '../../base/model/smodel';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isViewport } from './model';
 import { isMoveable } from '../move/model';
-import { SRoutingHandle } from '../routing/model';
+import { SRoutingHandleImpl } from '../routing/model';
 import { getModelBounds } from '../projection/model';
 import { hitsMouseEvent } from '../../utils/browser';
 import { Viewport } from 'sprotty-protocol/lib/model';
@@ -37,7 +37,7 @@ export interface Scrollable extends SModelExtension {
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
-export function isScrollable(element: SModelElement | Scrollable): element is Scrollable {
+export function isScrollable(element: SModelElementImpl | Scrollable): element is Scrollable {
     return 'scroll' in element;
 }
 
@@ -48,9 +48,9 @@ export class ScrollMouseListener extends MouseListener {
     protected scrollbarMouseDownTimeout: number | undefined;
     protected scrollbarMouseDownDelay = 200;
 
-    override mouseDown(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+    override mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         const moveable = findParentByFeature(target, isMoveable);
-        if (moveable === undefined && !(target instanceof SRoutingHandle)) {
+        if (moveable === undefined && !(target instanceof SRoutingHandleImpl)) {
             const viewport = findParentByFeature(target, isViewport);
             if (viewport) {
                 this.lastScrollPosition = { x: event.pageX, y: event.pageY };
@@ -70,7 +70,7 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    override mouseMove(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseMove(target: SModelElementImpl, event: MouseEvent): Action[] {
         if (event.buttons === 0) {
             return this.mouseUp(target, event);
         }
@@ -90,20 +90,20 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    override mouseEnter(target: SModelElement, event: MouseEvent): Action[] {
-        if (target instanceof SModelRoot && event.buttons === 0) {
+    override mouseEnter(target: SModelElementImpl, event: MouseEvent): Action[] {
+        if (target instanceof SModelRootImpl && event.buttons === 0) {
             this.mouseUp(target, event);
         }
         return [];
     }
 
-    override mouseUp(target: SModelElement, event: MouseEvent): Action[] {
+    override mouseUp(target: SModelElementImpl, event: MouseEvent): Action[] {
         this.lastScrollPosition = undefined;
         this.scrollbar = undefined;
         return [];
     }
 
-    override doubleClick(target: SModelElement, event: MouseEvent): Action[] {
+    override doubleClick(target: SModelElementImpl, event: MouseEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
         if (viewport) {
             const scrollbar = this.getScrollbar(event);
@@ -124,7 +124,7 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    protected dragCanvas(viewport: SModelRoot & Viewport, event: MouseEvent, lastScrollPosition: Point): Action[] {
+    protected dragCanvas(viewport: SModelRootImpl & Viewport, event: MouseEvent, lastScrollPosition: Point): Action[] {
         const dx = (event.pageX - lastScrollPosition.x) / viewport.zoom;
         const dy = (event.pageY - lastScrollPosition.y) / viewport.zoom;
         const newViewport: Viewport = {
@@ -138,7 +138,7 @@ export class ScrollMouseListener extends MouseListener {
         return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
     }
 
-    protected moveScrollBar(model: SModelRoot & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
+    protected moveScrollBar(model: SModelRootImpl & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
         const modelBounds = getModelBounds(model);
         if (!modelBounds || model.zoom <= 0) {
             return [];

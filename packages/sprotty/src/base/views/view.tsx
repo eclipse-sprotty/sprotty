@@ -22,7 +22,7 @@ import { VNode } from 'snabbdom';
 import { TYPES } from '../types';
 import { InstanceRegistry } from '../../utils/registry';
 import { isInjectable } from '../../utils/inversify';
-import { SModelElement, SModelRoot, SParentElement } from '../model/smodel';
+import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel';
 import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory';
 import { registerModelElement } from '../model/smodel-utils';
 import { Point } from 'sprotty-protocol';
@@ -54,7 +54,7 @@ export function findArgValue<T>(arg: IViewArgs | undefined, key: string): T | un
  * Base interface for the components that turn GModelElements into virtual DOM elements.
  */
 export interface IView<A extends IViewArgs = {}> {
-    render(model: Readonly<SModelElement>, context: RenderingContext, args?: A): VNode | undefined
+    render(model: Readonly<SModelElementImpl>, context: RenderingContext, args?: A): VNode | undefined
 }
 
 /**
@@ -72,11 +72,11 @@ export interface RenderingContext {
     readonly targetKind: RenderingTargetKind;
     readonly parentArgs?: IViewArgs;
 
-    decorate(vnode: VNode, element: Readonly<SModelElement>): VNode
+    decorate(vnode: VNode, element: Readonly<SModelElementImpl>): VNode
 
-    renderElement(element: Readonly<SModelElement>): VNode | undefined
+    renderElement(element: Readonly<SModelElementImpl>): VNode | undefined
 
-    renderChildren(element: Readonly<SParentElement>, args?: IViewArgs): VNode[]
+    renderChildren(element: Readonly<SParentElementImpl>, args?: IViewArgs): VNode[]
 }
 
 /**
@@ -115,7 +115,7 @@ export class ViewRegistry extends InstanceRegistry<IView> {
  * Combines `registerModelElement` and `configureView`.
  */
 export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, modelConstr: new () => SModelElement, viewConstr: interfaces.ServiceIdentifier<IView>,
+        type: string, modelConstr: new () => SModelElementImpl, viewConstr: interfaces.ServiceIdentifier<IView>,
         features?: CustomFeatures): void {
     registerModelElement(context, type, modelConstr, features);
     configureView(context, type, viewConstr);
@@ -145,7 +145,7 @@ export function configureView(context: { bind: interfaces.Bind, isBound: interfa
  */
 @injectable()
 export class EmptyView implements IView {
-    render(model: SModelRoot, context: RenderingContext): VNode {
+    render(model: SModelRootImpl, context: RenderingContext): VNode {
         return <svg class-sprotty-empty={true} />;
     }
 }
@@ -155,7 +155,7 @@ export class EmptyView implements IView {
  */
 @injectable()
 export class MissingView implements IView {
-    render(model: Readonly<SModelElement>, context: RenderingContext): VNode {
+    render(model: Readonly<SModelElementImpl>, context: RenderingContext): VNode {
         const position: Point = (model as any).position || Point.ORIGIN;
         return <text class-sprotty-missing={true} x={position.x} y={position.y}>?{model.id}?</text>;
     }

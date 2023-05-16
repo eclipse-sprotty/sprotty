@@ -15,16 +15,17 @@
  ********************************************************************************/
 
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SChildElement, SModelElement } from '../../base/model/smodel';
+import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { FluentIterable } from '../../utils/iterable';
-import { SShapeElement } from '../bounds/model';
+import { SShapeElementImpl } from '../bounds/model';
 import { deletableFeature } from '../edit/delete';
 import { Selectable, selectFeature } from '../select/model';
 import { Hoverable, hoverFeedbackFeature } from '../hover/model';
 import { moveFeature } from '../move/model';
 
-export abstract class SRoutableElement extends SChildElement {
+export abstract class SRoutableElementImpl extends SChildElementImpl {
+
     routerKind?: string;
     routingPoints: Point[] = [];
     sourceId: string;
@@ -32,12 +33,12 @@ export abstract class SRoutableElement extends SChildElement {
     sourceAnchorCorrection?: number;
     targetAnchorCorrection?: number;
 
-    get source(): SConnectableElement | undefined {
-        return this.index.getById(this.sourceId) as SConnectableElement;
+    get source(): SConnectableElementImpl | undefined {
+        return this.index.getById(this.sourceId) as SConnectableElementImpl;
     }
 
-    get target(): SConnectableElement | undefined {
-        return this.index.getById(this.targetId) as SConnectableElement;
+    get target(): SConnectableElementImpl | undefined {
+        return this.index.getById(this.targetId) as SConnectableElementImpl;
     }
 
     get bounds(): Bounds {
@@ -51,20 +52,23 @@ export abstract class SRoutableElement extends SChildElement {
     }
 }
 
+/** @deprecated Use `SRoutableElementImpl` instead. */
+export const SRoutableElement = SRoutableElementImpl;
+
 export const connectableFeature = Symbol('connectableFeature');
 
 export interface Connectable extends SModelExtension {
-    canConnect(routable: SRoutableElement, role: 'source' | 'target'): boolean;
+    canConnect(routable: SRoutableElementImpl, role: 'source' | 'target'): boolean;
 }
 
-export function isConnectable<T extends SModelElement>(element: T): element is Connectable & T {
+export function isConnectable<T extends SModelElementImpl>(element: T): element is Connectable & T {
     return element.hasFeature(connectableFeature) && (element as any).canConnect;
 }
 
-export function getAbsoluteRouteBounds(model: Readonly<SRoutableElement>, route: Point[] = model.routingPoints): Bounds {
+export function getAbsoluteRouteBounds(model: Readonly<SRoutableElementImpl>, route: Point[] = model.routingPoints): Bounds {
     let bounds = getRouteBounds(route);
-    let current: SModelElement = model;
-    while (current instanceof SChildElement) {
+    let current: SModelElementImpl = model;
+    while (current instanceof SChildElementImpl) {
         const parent = current.parent;
         bounds = parent.localToParent(bounds);
         current = parent;
@@ -101,7 +105,7 @@ export function getRouteBounds(route: Point[]): Bounds {
  * or target element of an edge. There are two kinds of connectable elements: nodes (`SNode`) and
  * ports (`SPort`). A node represents a main entity, while a port is a connection point inside a node.
  */
-export abstract class SConnectableElement extends SShapeElement implements Connectable {
+export abstract class SConnectableElementImpl extends SShapeElementImpl implements Connectable {
 
     get anchorKind(): string | undefined{
          return undefined;
@@ -113,8 +117,8 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
      * The incoming edges of this connectable element. They are resolved by the index, which must
      * be an `SGraphIndex` for efficient lookup.
      */
-    get incomingEdges(): FluentIterable<SRoutableElement> {
-        const allEdges = this.index.all().filter(e => e instanceof SRoutableElement) as FluentIterable<SRoutableElement>;
+    get incomingEdges(): FluentIterable<SRoutableElementImpl> {
+        const allEdges = this.index.all().filter(e => e instanceof SRoutableElementImpl) as FluentIterable<SRoutableElementImpl>;
         return allEdges.filter(e => e.targetId === this.id);
     }
 
@@ -122,20 +126,23 @@ export abstract class SConnectableElement extends SShapeElement implements Conne
      * The outgoing edges of this connectable element. They are resolved by the index, which must
      * be an `SGraphIndex` for efficient lookup.
      */
-    get outgoingEdges(): FluentIterable<SRoutableElement> {
-        const allEdges = this.index.all().filter(e => e instanceof SRoutableElement) as FluentIterable<SRoutableElement>;
+    get outgoingEdges(): FluentIterable<SRoutableElementImpl> {
+        const allEdges = this.index.all().filter(e => e instanceof SRoutableElementImpl) as FluentIterable<SRoutableElementImpl>;
         return allEdges.filter(e => e.sourceId === this.id);
     }
 
-    canConnect(routable: SRoutableElement, role: 'source' | 'target') {
+    canConnect(routable: SRoutableElementImpl, role: 'source' | 'target') {
         return true;
     }
 }
 
+/** @deprecated Use `SConnectableElementImpl` instead. */
+export const SConnectableElement = SConnectableElementImpl;
+
 export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%' |
     'bezier-control-after' | 'bezier-control-before' | 'bezier-junction' | 'bezier-add' | 'bezier-remove';
 
-export class SRoutingHandle extends SChildElement implements Selectable, Hoverable {
+export class SRoutingHandleImpl extends SChildElementImpl implements Selectable, Hoverable {
     static readonly DEFAULT_FEATURES = [selectFeature, moveFeature, hoverFeedbackFeature];
 
     /**
@@ -151,21 +158,24 @@ export class SRoutingHandle extends SChildElement implements Selectable, Hoverab
 
     hoverFeedback: boolean = false;
     selected: boolean = false;
-    danglingAnchor?: SDanglingAnchor;
+    danglingAnchor?: SDanglingAnchorImpl;
 
     /**
      * SRoutingHandles are created using the constructor, so we hard-wire the
      * default features
      */
     override hasFeature(feature: symbol): boolean {
-        return SRoutingHandle.DEFAULT_FEATURES.indexOf(feature) !== -1;
+        return SRoutingHandleImpl.DEFAULT_FEATURES.indexOf(feature) !== -1;
     }
 }
 
-export class SDanglingAnchor extends SConnectableElement {
+/** @deprecated Use `SRoutingHandleImpl` instead. */
+export const SRoutingHandle = SRoutingHandleImpl;
+
+export class SDanglingAnchorImpl extends SConnectableElementImpl {
     static readonly DEFAULT_FEATURES = [deletableFeature];
 
-    original?: SModelElement;
+    original?: SModelElementImpl;
     override type = 'dangling-anchor';
 
     constructor() {
@@ -173,6 +183,9 @@ export class SDanglingAnchor extends SConnectableElement {
         this.size = { width: 0, height: 0 };
     }
 }
+
+/** @deprecated Use `SDanglingAnchorImpl` instead. */
+export const SDanglingAnchor = SDanglingAnchorImpl;
 
 export const edgeInProgressID = 'edge-in-progress';
 export const edgeInProgressTargetHandleID = edgeInProgressID + '-target-anchor';

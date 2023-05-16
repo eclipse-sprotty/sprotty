@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement } from '../../base/model/smodel';
+import { SModelElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const selectFeature = Symbol('selectFeature');
@@ -23,10 +23,10 @@ export interface Selectable extends SModelExtension {
     selected: boolean
 }
 
-export function isSelectable(element: SModelElement): element is SModelElement & Selectable {
+export function isSelectable(element: SModelElementImpl): element is SModelElementImpl & Selectable {
     return element.hasFeature(selectFeature);
 }
 
-export function isSelected(element: SModelElement | undefined): element is SModelElement & Selectable {
+export function isSelected(element: SModelElementImpl | undefined): element is SModelElementImpl & Selectable {
     return element !== undefined && isSelectable(element) && element.selected;
 }

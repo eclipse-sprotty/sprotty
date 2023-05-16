@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,29 +14,29 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import '@vscode/codicons/dist/codicon.css';
-import { Container, ContainerModule } from "inversify";
+import { Container, ContainerModule } from 'inversify';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, JumpingPolylineEdgeView,
     ConsoleLogger, LogLevel, loadDefaultModules, HtmlRootView, PreRenderedView, ExpandButtonView,
-    SRoutingHandleView, PreRenderedElement, HtmlRoot, SGraph, configureModelElement, SLabel,
-    SCompartment, SEdge, SButton, SRoutingHandle, RevealNamedElementActionProvider,
+    SRoutingHandleView, PreRenderedElementImpl, HtmlRootImpl, SGraphImpl, configureModelElement, SLabelImpl,
+    SCompartmentImpl, SEdgeImpl, SButtonImpl, SRoutingHandleImpl, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
     RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
 } from 'sprotty';
-import edgeIntersectionModule from "sprotty/lib/features/edge-intersection/di.config";
+import edgeIntersectionModule from 'sprotty/lib/features/edge-intersection/di.config';
 import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
 import { ClassDiagramLabelValidationDecorator, ClassDiagramLabelValidator } from './label-validation';
 import { ClassContextMenuItemProvider, ClassContextMenuService } from './menu';
-import { ClassLabel, ClassNode, Icon, PropertyLabel } from "./model";
+import { ClassLabel, ClassNode, Icon, PropertyLabel } from './model';
 import { ClassDiagramModelSource } from './model-source';
-import { PopupModelProvider } from "./popup";
-import { IconView, NodeView } from "./views";
+import { PopupModelProvider } from './popup';
+import { IconView, NodeView } from './views';
 
 export default (containerId: string) => {
-    require("sprotty/css/sprotty.css");
-    require("sprotty/css/command-palette.css");
-    require("sprotty/css/edit-label.css");
-    require("../css/diagram.css");
+    require('sprotty/css/sprotty.css');
+    require('sprotty/css/command-palette.css');
+    require('sprotty/css/edit-label.css');
+    require('../css/diagram.css');
 
     const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         bind(TYPES.ModelSource).to(ClassDiagramModelSource).inSingletonScope();
@@ -54,7 +54,7 @@ export default (containerId: string) => {
         bind(TYPES.IContextMenuItemProvider).to(ClassContextMenuItemProvider);
 
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(context, 'graph', SGraph, SGraphView);
+        configureModelElement(context, 'graph', SGraphImpl, SGraphView);
         configureModelElement(context, 'node:package', RectangularNode, NodeView);
         configureModelElement(context, 'node:class', ClassNode, NodeView, {
             enable: [expandFeature, nameFeature, withEditLabelFeature]
@@ -65,21 +65,21 @@ export default (containerId: string) => {
         configureModelElement(context, 'label:text', PropertyLabel, SLabelView, {
             enable: [editLabelFeature]
         });
-        configureModelElement(context, 'comp:comp', SCompartment, SCompartmentView);
-        configureModelElement(context, 'comp:header', SCompartment, SCompartmentView);
-        configureModelElement(context, 'comp:pkgcontent', SCompartment, SCompartmentView);
+        configureModelElement(context, 'comp:comp', SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, 'comp:header', SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, 'comp:pkgcontent', SCompartmentImpl, SCompartmentView);
         configureModelElement(context, 'icon', Icon, IconView);
-        configureModelElement(context, 'label:icon', SLabel, SLabelView);
-        configureModelElement(context, 'edge:straight', SEdge, JumpingPolylineEdgeView);
-        configureModelElement(context, 'edge:bezier', SEdge, BezierCurveEdgeView);
-        configureModelElement(context, 'html', HtmlRoot, HtmlRootView);
-        configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView);
-        configureModelElement(context, 'button:expand', SButton, ExpandButtonView);
-        configureModelElement(context, 'routing-point', SRoutingHandle, SRoutingHandleView);
-        configureModelElement(context, 'volatile-routing-point', SRoutingHandle, SRoutingHandleView);
-        configureModelElement(context, 'bezier-create-routing-point', SRoutingHandle, SBezierCreateHandleView);
-        configureModelElement(context, 'bezier-remove-routing-point', SRoutingHandle, SBezierCreateHandleView);
-        configureModelElement(context, 'bezier-routing-point', SRoutingHandle, SBezierControlHandleView);
+        configureModelElement(context, 'label:icon', SLabelImpl, SLabelView);
+        configureModelElement(context, 'edge:straight', SEdgeImpl, JumpingPolylineEdgeView);
+        configureModelElement(context, 'edge:bezier', SEdgeImpl, BezierCurveEdgeView);
+        configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);
+        configureModelElement(context, 'pre-rendered', PreRenderedElementImpl, PreRenderedView);
+        configureModelElement(context, 'button:expand', SButtonImpl, ExpandButtonView);
+        configureModelElement(context, 'routing-point', SRoutingHandleImpl, SRoutingHandleView);
+        configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
+        configureModelElement(context, 'bezier-create-routing-point', SRoutingHandleImpl, SBezierCreateHandleView);
+        configureModelElement(context, 'bezier-remove-routing-point', SRoutingHandleImpl, SBezierCreateHandleView);
+        configureModelElement(context, 'bezier-routing-point', SRoutingHandleImpl, SBezierControlHandleView);
 
 
         configureViewerOptions(context, {

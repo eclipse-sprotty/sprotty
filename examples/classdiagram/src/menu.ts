@@ -14,9 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { Anchor, DeleteElementAction, EMPTY_ROOT, GetSelectionAction, IActionDispatcher, IContextMenuItemProvider, IContextMenuService, LabeledAction, MenuItem, RequestExportSvgAction, SelectionResult, SModelRoot, TYPES, ViewerOptions } from "sprotty";
-import { CenterAction, FitToScreenAction, Point, SetPopupModelAction } from "sprotty-protocol";
+import { inject, injectable } from 'inversify';
+import {
+    Anchor, DeleteElementAction, EMPTY_ROOT, GetSelectionAction, IActionDispatcher,
+    IContextMenuItemProvider, IContextMenuService, LabeledAction, MenuItem,
+    RequestExportSvgAction, SelectionResult, SModelRootImpl, TYPES, ViewerOptions
+} from 'sprotty';
+import { CenterAction, FitToScreenAction, Point, SetPopupModelAction } from 'sprotty-protocol';
 
 @injectable()
 export class ClassContextMenuService implements IContextMenuService {
@@ -72,7 +76,7 @@ export class ClassContextMenuItemProvider implements IContextMenuItemProvider {
 
     @inject(TYPES.IActionDispatcher) readonly actionDispatcher: IActionDispatcher;
 
-    async getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point | undefined): Promise<LabeledAction[]> {
+    async getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point | undefined): Promise<LabeledAction[]> {
         const selectionResult = await this.actionDispatcher.request<SelectionResult>(GetSelectionAction.create())
         return [
             new LabeledAction('Fit Diagram to Screen', [FitToScreenAction.create(root.children.map(child => child.id))]),

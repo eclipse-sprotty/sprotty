@@ -21,7 +21,7 @@ import { almostEquals, Dimension } from "sprotty-protocol/lib/utils/geometry";
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
-import { SModelRoot, SChildElement, SModelElement, SParentElement } from "../../base/model/smodel";
+import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from "../../base/model/smodel";
 import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from "../move/move";
 import { Fadeable, isFadeable } from "../fade/model";
 import { isLocateable } from "../move/model";
@@ -33,7 +33,7 @@ import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
 import { TYPES } from "../../base/types";
 import { isViewport } from "../viewport/model";
 import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from "../routing/routing";
-import { SRoutableElement } from "../routing/model";
+import { SRoutableElementImpl } from "../routing/model";
 import { containsSome } from "../../base/model/smodel-utils";
 
 /**
@@ -70,8 +70,8 @@ export interface UpdateAnimationData {
 export class UpdateModelCommand extends Command {
     static readonly KIND = ProtocolUpdateModelAction.KIND;
 
-    oldRoot: SModelRoot;
-    newRoot: SModelRoot;
+    oldRoot: SModelRootImpl;
+    newRoot: SModelRootImpl;
 
     @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
@@ -80,7 +80,7 @@ export class UpdateModelCommand extends Command {
     }
 
     execute(context: CommandExecutionContext): CommandReturn {
-        let newRoot: SModelRoot;
+        let newRoot: SModelRootImpl;
         if (this.action.newRoot !== undefined) {
             newRoot = context.modelFactory.createRoot(this.action.newRoot);
         } else {
@@ -93,7 +93,7 @@ export class UpdateModelCommand extends Command {
         return this.performUpdate(this.oldRoot, this.newRoot, context);
     }
 
-    protected performUpdate(oldRoot: SModelRoot, newRoot: SModelRoot, context: CommandExecutionContext): CommandReturn {
+    protected performUpdate(oldRoot: SModelRootImpl, newRoot: SModelRootImpl, context: CommandExecutionContext): CommandReturn {
         if ((this.action.animate === undefined || this.action.animate) && oldRoot.id === newRoot.id) {
             let matchResult: MatchResult;
             if (this.action.matches === undefined) {
@@ -118,22 +118,22 @@ export class UpdateModelCommand extends Command {
         }
     }
 
-    protected applyMatches(root: SModelRoot, matches: Match[], context: CommandExecutionContext): void {
+    protected applyMatches(root: SModelRootImpl, matches: Match[], context: CommandExecutionContext): void {
         const index = root.index;
         for (const match of matches) {
             if (match.left !== undefined) {
                 const element = index.getById(match.left.id);
-                if (element instanceof SChildElement)
+                if (element instanceof SChildElementImpl)
                     element.parent.remove(element);
             }
         }
         for (const match of matches) {
             if (match.right !== undefined) {
                 const element = context.modelFactory.createElement(match.right);
-                let parent: SModelElement | undefined;
+                let parent: SModelElementImpl | undefined;
                 if (match.rightParentId !== undefined)
                     parent = index.getById(match.rightParentId);
-                if (parent instanceof SParentElement)
+                if (parent instanceof SParentElementImpl)
                     parent.add(element);
                 else
                     root.add(element);
@@ -141,7 +141,7 @@ export class UpdateModelCommand extends Command {
         }
     }
 
-    protected convertToMatchResult(matches: Match[], leftRoot: SModelRoot, rightRoot: SModelRoot): MatchResult {
+    protected convertToMatchResult(matches: Match[], leftRoot: SModelRootImpl, rightRoot: SModelRootImpl): MatchResult {
         const result: MatchResult = {};
         for (const match of matches) {
             const converted: Match = {};
@@ -162,17 +162,17 @@ export class UpdateModelCommand extends Command {
         return result;
     }
 
-    protected computeAnimation(newRoot: SModelRoot, matchResult: MatchResult, context: CommandExecutionContext): SModelRoot | Animation {
+    protected computeAnimation(newRoot: SModelRootImpl, matchResult: MatchResult, context: CommandExecutionContext): SModelRootImpl | Animation {
         const animationData: UpdateAnimationData = {
             fades: [] as ResolvedElementFade[]
         };
         forEachMatch(matchResult, (id, match) => {
             if (match.left !== undefined && match.right !== undefined) {
                 // The element is still there, but may have been moved
-                this.updateElement(match.left as SModelElement, match.right as SModelElement, animationData);
+                this.updateElement(match.left as SModelElementImpl, match.right as SModelElementImpl, animationData);
             } else if (match.right !== undefined) {
                 // An element has been added
-                const right = match.right as SModelElement;
+                const right = match.right as SModelElementImpl;
                 if (isFadeable(right)) {
                     right.opacity = 0;
                     animationData.fades.push({
@@ -180,14 +180,14 @@ export class UpdateModelCommand extends Command {
                         type: 'in'
                     });
                 }
-            } else if (match.left instanceof SChildElement) {
+            } else if (match.left instanceof SChildElementImpl) {
                 // An element has been removed
                 const left = match.left;
                 if (isFadeable(left) && match.leftParentId !== undefined) {
                     if (!containsSome(newRoot, left)) {
                         const parent = newRoot.index.getById(match.leftParentId);
-                        if (parent instanceof SParentElement) {
-                            const leftCopy = context.modelFactory.createElement(left) as SChildElement & Fadeable;
+                        if (parent instanceof SParentElementImpl) {
+                            const leftCopy = context.modelFactory.createElement(left) as SChildElementImpl & Fadeable;
                             parent.add(leftCopy);
                             animationData.fades.push({
                                 element: leftCopy,
@@ -209,7 +209,7 @@ export class UpdateModelCommand extends Command {
         }
     }
 
-    protected updateElement(left: SModelElement, right: SModelElement, animationData: UpdateAnimationData): void {
+    protected updateElement(left: SModelElementImpl, right: SModelElementImpl, animationData: UpdateAnimationData): void {
         if (isLocateable(left) && isLocateable(right)) {
             const leftPos = left.position;
             const rightPos = right.position;
@@ -249,7 +249,7 @@ export class UpdateModelCommand extends Command {
                 });
             }
         }
-        if (left instanceof SRoutableElement && right instanceof SRoutableElement && this.edgeRouterRegistry) {
+        if (left instanceof SRoutableElementImpl && right instanceof SRoutableElementImpl && this.edgeRouterRegistry) {
             if (animationData.edgeMementi === undefined)
                 animationData.edgeMementi = [];
             animationData.edgeMementi.push({
@@ -261,7 +261,7 @@ export class UpdateModelCommand extends Command {
         if (isSelectable(left) && isSelectable(right)) {
             right.selected = left.selected;
         }
-        if (left instanceof SModelRoot && right instanceof SModelRoot) {
+        if (left instanceof SModelRootImpl && right instanceof SModelRootImpl) {
             right.canvasBounds = left.canvasBounds;
         }
         if (left instanceof ViewportRootElement && right instanceof ViewportRootElement) {
@@ -270,12 +270,12 @@ export class UpdateModelCommand extends Command {
         }
     }
 
-    protected takeSnapshot(edge: SRoutableElement): EdgeSnapshot {
+    protected takeSnapshot(edge: SRoutableElementImpl): EdgeSnapshot {
         const router = this.edgeRouterRegistry!.get(edge.routerKind);
         return router.takeSnapshot(edge);
     }
 
-    protected createAnimations(data: UpdateAnimationData, root: SModelRoot, context: CommandExecutionContext): Animation[] {
+    protected createAnimations(data: UpdateAnimationData, root: SModelRootImpl, context: CommandExecutionContext): Animation[] {
         const animations: Animation[] = [];
         if (data.fades.length > 0) {
             animations.push(new FadeAnimation(root, data.fades, context, true));

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import {
-    SShapeElement, Expandable, RectangularNode, Nameable, SLabel, WithEditableLabel, isEditableLabel,
+    SShapeElementImpl, Expandable, RectangularNode, Nameable, SLabelImpl, WithEditableLabel, isEditableLabel,
     boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature
 } from 'sprotty';
 
@@ -41,10 +41,10 @@ export class ClassNode extends RectangularNode implements Expandable, Nameable, 
     }
 }
 
-export class ClassLabel extends SLabel { }
-export class PropertyLabel extends SLabel { }
+export class ClassLabel extends SLabelImpl { }
+export class PropertyLabel extends SLabelImpl { }
 
-export class Icon extends SShapeElement {
+export class Icon extends SShapeElementImpl {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature];
 
     override size = {
