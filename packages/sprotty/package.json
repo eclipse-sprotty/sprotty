@@ -51,10 +51,12 @@
     "url": "https://github.com/eclipse/sprotty",
     "directory": "packages/sprotty"
   },
+  "peerDependencies": {
+    "inversify": "~6.0.1"
+  },
   "dependencies": {
     "autocompleter": "^7.0.1",
     "file-saver": "^2.0.5",
-    "inversify": "^5.1.1",
     "snabbdom": "^3.5.1",
     "sprotty-protocol": "^0.13.0",
     "tinyqueue": "^2.0.3"
@@ -78,7 +80,7 @@
     "semver": "^7.3.8",
     "snabbdom-to-html": "^7.1.0",
     "ts-mocha": "^10.0.0",
-    "typescript": "~4.8.4"
+    "typescript": "~5.0.4"
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
