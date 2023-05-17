@@ -1,6 +1,7 @@
 .idea/
 .nyc_output/
 node_modules/
+coverage/
 npm-debug.log
 yarn-error.log
 .DS_Store

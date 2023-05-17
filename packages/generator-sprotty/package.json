@@ -25,8 +25,7 @@
         "lint": "eslint src test --ext .ts",
         "run": "yo sprotty",
         "debug": "npx --node-arg=--inspect yo sprotty",
-        "test:cli": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\"",
-        "test": "jenkins-mocha --config ../../configs/.mocharc.json \"./src/**/*.spec.?(ts|tsx)\""
+        "test": "echo \"No tests defined.\""
     },
     "dependencies": {
         "chalk": "~4.1.2",
