@@ -613,3 +613,26 @@ export function intersection(l1: Line, l2: Line): ProtocolPoint {
         y: (l1.a * l2.c - l2.a * l1.c) / (l1.a * l2.b - l2.a * l1.b)
     };
 }
+
+/**
+ * A minimum and maximum value of a numeric type.
+ */
+export interface Limits {
+    min: number
+    max: number
+}
+
+/**
+ * Limits a value to the specified `limits`.
+ * @param {number} value - The value to limit
+ * @param {Limits} limits - The minimum and maximum limits
+ */
+export function limit(value: number, limits: Limits): number {
+    if (value < limits.min) {
+        return limits.min;
+    }
+    if (value > limits.max) {
+        return limits.max;
+    }
+    return value;
+}

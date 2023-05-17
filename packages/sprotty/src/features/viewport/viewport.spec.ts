@@ -16,18 +16,17 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { almostEquals } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
 import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
 import { CommandExecutionContext } from '../../base/commands/command';
 import { SGraphFactory } from '../../graph/sgraph-factory';
-import { SetViewportAction, SetViewportCommand } from './viewport';
-import { Viewport } from './model';
+import { SetViewportCommand } from './viewport';
 import { ViewportRootElement } from './viewport-root';
-import defaultModule from "../../base/di.config";
+import defaultModule from '../../base/di.config';
+import { almostEquals, SetViewportAction, Viewport } from 'sprotty-protocol';
 
 describe('BoundsAwareViewportCommand', () => {
     const container = new Container();
@@ -43,8 +42,9 @@ describe('BoundsAwareViewportCommand', () => {
 
     const newViewportData: Viewport = { scroll: { x: 100, y: 100 }, zoom: 10 };
 
-    const viewportAction = new SetViewportAction(viewport.id, newViewportData, false);
+    const viewportAction = SetViewportAction.create(viewport.id, newViewportData, { animate: false });
     const cmd = new SetViewportCommand(viewportAction);
+    (cmd as any).viewerOptions = container.get(TYPES.ViewerOptions);
 
     const context: CommandExecutionContext = {
         root: viewport,

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action, SetViewportAction } from "sprotty-protocol/lib/actions";
-import { Viewport } from "sprotty-protocol/lib/model";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { SModelExtension } from "../../base/model/smodel-extension";
-import { findParentByFeature } from "../../base/model/smodel-utils";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { getWindowScroll } from "../../utils/browser";
-import { isViewport } from "./model";
+import { inject } from 'inversify';
+import { Action, SetViewportAction } from 'sprotty-protocol/lib/actions';
+import { Viewport } from 'sprotty-protocol/lib/model';
+import { almostEquals, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { SModelExtension } from '../../base/model/smodel-extension';
+import { findParentByFeature } from '../../base/model/smodel-utils';
+import { TYPES } from '../../base/types';
+import { MouseListener } from '../../base/views/mouse-tool';
+import { ViewerOptions } from '../../base/views/viewer-options';
+import { getWindowScroll } from '../../utils/browser';
+import { isViewport } from './model';
 
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
@@ -49,13 +52,18 @@ export function getZoom(label: SModelElementImpl) {
 
 export class ZoomMouseListener extends MouseListener {
 
+    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
+
     override wheel(target: SModelElementImpl, event: WheelEvent): Action[] {
         const viewport = findParentByFeature(target, isViewport);
         if (!viewport) {
             return [];
         }
         const newViewport = this.isScrollMode(event) ? this.processScroll(viewport, event) : this.processZoom(viewport, target, event);
-        return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
+        if (newViewport) {
+            return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
+        }
+        return [];
     }
 
     protected isScrollMode(event: WheelEvent) {
@@ -72,16 +80,21 @@ export class ZoomMouseListener extends MouseListener {
         };
     }
 
-    protected processZoom(viewport: Viewport, target: SModelElementImpl, event: WheelEvent): Viewport {
-        const newZoom = this.getZoomFactor(event);
+    protected processZoom(viewport: Viewport, target: SModelElementImpl, event: WheelEvent): Viewport | undefined {
+        const zoomFactor = this.getZoomFactor(event);
+        if (zoomFactor > 1 && almostEquals(viewport.zoom, this.viewerOptions.zoomLimits.max)
+            || zoomFactor < 1 && almostEquals(viewport.zoom, this.viewerOptions.zoomLimits.min)) {
+            return;
+        }
+        const zoom = viewport.zoom * zoomFactor;
         const viewportOffset = this.getViewportOffset(target.root, event);
-        const offsetFactor = 1.0 / (newZoom * viewport.zoom) - 1.0 / viewport.zoom;
+        const offsetFactor = 1.0 / zoom - 1.0 / viewport.zoom;
         return {
             scroll: {
                 x: viewport.scroll.x - offsetFactor * viewportOffset.x,
                 y: viewport.scroll.y - offsetFactor * viewportOffset.y
             },
-            zoom: viewport.zoom * newZoom
+            zoom
         };
     }
 

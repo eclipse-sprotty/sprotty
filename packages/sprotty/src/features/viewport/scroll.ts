@@ -14,8 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { inject } from 'inversify';
+import { Viewport } from 'sprotty-protocol/lib/model';
 import { Action, CenterAction, SetViewportAction } from 'sprotty-protocol/lib/actions';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
+import { almostEquals, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { SModelExtension } from '../../base/model/smodel-extension';
@@ -25,7 +27,8 @@ import { isMoveable } from '../move/model';
 import { SRoutingHandleImpl } from '../routing/model';
 import { getModelBounds } from '../projection/model';
 import { hitsMouseEvent } from '../../utils/browser';
-import { Viewport } from 'sprotty-protocol/lib/model';
+import { TYPES } from '../../base/types';
+import { ViewerOptions } from '../../base/views/viewer-options';
 
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
@@ -42,6 +45,8 @@ export function isScrollable(element: SModelElementImpl | Scrollable): element i
 }
 
 export class ScrollMouseListener extends MouseListener {
+
+    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
 
     protected lastScrollPosition: Point |undefined;
     protected scrollbar: HTMLElement | undefined;
@@ -124,18 +129,29 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    protected dragCanvas(viewport: SModelRootImpl & Viewport, event: MouseEvent, lastScrollPosition: Point): Action[] {
-        const dx = (event.pageX - lastScrollPosition.x) / viewport.zoom;
-        const dy = (event.pageY - lastScrollPosition.y) / viewport.zoom;
+    protected dragCanvas(model: SModelRootImpl & Viewport, event: MouseEvent, lastScrollPosition: Point): Action[] {
+        let dx = (event.pageX - lastScrollPosition.x) / model.zoom;
+        if (dx > 0 && almostEquals(model.scroll.x, this.viewerOptions.horizontalScrollLimits.min)
+            || dx < 0 && almostEquals(model.scroll.x, this.viewerOptions.horizontalScrollLimits.max - model.canvasBounds.width / model.zoom)) {
+            dx = 0;
+        }
+        let dy = (event.pageY - lastScrollPosition.y) / model.zoom;
+        if (dy > 0 && almostEquals(model.scroll.y, this.viewerOptions.verticalScrollLimits.min)
+            || dy < 0 && almostEquals(model.scroll.y, this.viewerOptions.verticalScrollLimits.max - model.canvasBounds.height / model.zoom)) {
+            dy = 0;
+        }
+        if (dx === 0 && dy === 0) {
+            return [];
+        }
         const newViewport: Viewport = {
             scroll: {
-                x: viewport.scroll.x - dx,
-                y: viewport.scroll.y - dy,
+                x: model.scroll.x - dx,
+                y: model.scroll.y - dy,
             },
-            zoom: viewport.zoom
+            zoom: model.zoom
         };
         this.lastScrollPosition = { x: event.pageX, y: event.pageY };
-        return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
+        return [SetViewportAction.create(model.id, newViewport, { animate: false })];
     }
 
     protected moveScrollBar(model: SModelRootImpl & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
@@ -144,7 +160,7 @@ export class ScrollMouseListener extends MouseListener {
             return [];
         }
         const scrollbarRect = scrollbar.getBoundingClientRect();
-        let newScroll: Point;
+        let newScroll: { x: number, y: number };
         if (this.getScrollbarOrientation(scrollbar) === 'horizontal') {
             if (scrollbarRect.width <= 0) {
                 return [];
@@ -160,6 +176,14 @@ export class ScrollMouseListener extends MouseListener {
                 x: modelBounds.x + (position / scrollbarRect.width) * modelBounds.width,
                 y: model.scroll.y
             };
+            if (newScroll.x < this.viewerOptions.horizontalScrollLimits.min) {
+                newScroll.x = this.viewerOptions.horizontalScrollLimits.min;
+            } else if (newScroll.x > this.viewerOptions.horizontalScrollLimits.max - model.canvasBounds.width / model.zoom) {
+                newScroll.x = this.viewerOptions.horizontalScrollLimits.max - model.canvasBounds.width / model.zoom;
+            }
+            if (almostEquals(newScroll.x, model.scroll.x)) {
+                return [];
+            }
         } else {
             if (scrollbarRect.height <= 0) {
                 return [];
@@ -175,6 +199,14 @@ export class ScrollMouseListener extends MouseListener {
                 x: model.scroll.x,
                 y: modelBounds.y + (position / scrollbarRect.height) * modelBounds.height
             };
+            if (newScroll.y < this.viewerOptions.verticalScrollLimits.min) {
+                newScroll.y = this.viewerOptions.verticalScrollLimits.min;
+            } else if (newScroll.y > this.viewerOptions.verticalScrollLimits.max - model.canvasBounds.height / model.zoom) {
+                newScroll.y = this.viewerOptions.verticalScrollLimits.max - model.canvasBounds.height / model.zoom;
+            }
+            if (almostEquals(newScroll.y, model.scroll.y)) {
+                return [];
+            }
         }
         return [SetViewportAction.create(model.id, { scroll: newScroll, zoom: model.zoom }, { animate })];
     }

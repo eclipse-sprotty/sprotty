@@ -6,12 +6,10 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+            "program": "${workspaceRoot}/node_modules/.bin/ts-mocha",
             "args": [
                 "${file}",
-                "--no-timeouts",
-                "--config",
-                "${workspaceRoot}/configs/.mocharc.json"
+                "--no-timeouts"
             ],
             "env": {
                 "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"

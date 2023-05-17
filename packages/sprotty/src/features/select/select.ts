@@ -74,6 +74,7 @@ export class SelectAllAction implements Action, ProtocolSelectAllActon {
 
 /**
  * Request action for retrieving the current selection.
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface GetSelectionAction extends RequestAction<SelectionResult> {
     kind: typeof GetSelectionAction.KIND
@@ -89,6 +90,9 @@ export namespace GetSelectionAction {
     }
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface SelectionResult extends ResponseAction {
     kind: typeof SelectionResult.KIND
     selectedElementsIDs: string[]

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action, CenterAction as ProtocolCenterAction, FitToScreenAction as ProtocolFitToScreenAction} from "sprotty-protocol/lib/actions";
-import { Viewport } from "sprotty-protocol/lib/model";
-import { Bounds, Dimension } from "sprotty-protocol/lib/utils/geometry";
-import { matchesKeystroke } from "../../utils/keyboard";
+import { Action, CenterAction as ProtocolCenterAction, FitToScreenAction as ProtocolFitToScreenAction} from 'sprotty-protocol/lib/actions';
+import { Viewport } from 'sprotty-protocol/lib/model';
+import { almostEquals, Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
+import { matchesKeystroke } from '../../utils/keyboard';
 import { SChildElementImpl } from '../../base/model/smodel';
-import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { KeyListener } from "../../base/views/key-tool";
-import { isBoundsAware } from "../bounds/model";
-import { isSelectable } from "../select/model";
-import { ViewportAnimation } from "./viewport";
-import { isViewport } from "./model";
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../base/types";
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { KeyListener } from '../../base/views/key-tool';
+import { isBoundsAware } from '../bounds/model';
+import { isSelectable } from '../select/model';
+import { ViewportAnimation } from './viewport';
+import { isViewport, limitViewport } from './model';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../base/types';
+import { ViewerOptions } from '../../base/views/viewer-options';
 
 /**
  * Triggered when the user requests the viewer to center on the current model. The resulting
@@ -71,6 +72,7 @@ export class FitToScreenAction implements Action, ProtocolFitToScreenAction {
 @injectable()
 export abstract class BoundsAwareViewportCommand extends Command {
 
+    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     oldViewport: Viewport;
     newViewport?: Viewport;
 
@@ -78,40 +80,43 @@ export abstract class BoundsAwareViewportCommand extends Command {
         super();
     }
 
-    protected initialize(model: SModelRootImpl) {
-        if (isViewport(model)) {
-            this.oldViewport = {
-                scroll: model.scroll,
-                zoom: model.zoom
-            };
-            const allBounds: Bounds[] = [];
-            this.getElementIds().forEach(
-                id => {
-                    const element = model.index.getById(id);
-                    if (element && isBoundsAware(element))
-                        allBounds.push(this.boundsInViewport(element, element.bounds, model));
+    protected initialize(model: SModelRootImpl): void {
+        if (!isViewport(model)) {
+            return;
+        }
+        this.oldViewport = {
+            scroll: model.scroll,
+            zoom: model.zoom
+        };
+        const allBounds: Bounds[] = [];
+        this.getElementIds().forEach(id => {
+            const element = model.index.getById(id);
+            if (element && isBoundsAware(element)) {
+                allBounds.push(this.boundsInViewport(element, element.bounds, model));
+            }
+        });
+        if (allBounds.length === 0) {
+            model.index.all().forEach(element => {
+                if (isSelectable(element) && element.selected && isBoundsAware(element)) {
+                    allBounds.push(this.boundsInViewport(element, element.bounds, model));
                 }
-            );
-            if (allBounds.length === 0) {
-                model.index.all().forEach(
-                    element => {
-                        if (isSelectable(element) && element.selected && isBoundsAware(element))
-                            allBounds.push(this.boundsInViewport(element, element.bounds, model));
-                    }
-                );
-            }
-            if (allBounds.length === 0) {
-                model.index.all().forEach(
-                    element => {
-                        if (isBoundsAware(element))
-                            allBounds.push(this.boundsInViewport(element, element.bounds, model));
-                    }
-                );
-            }
-            if (allBounds.length !== 0) {
-                const bounds = allBounds.reduce((b0, b1) => Bounds.combine(b0, b1));
-                if (Dimension.isValid(bounds))
-                    this.newViewport = this.getNewViewport(bounds, model);
+            });
+        }
+        if (allBounds.length === 0) {
+            model.index.all().forEach(element => {
+                if (isBoundsAware(element)) {
+                    allBounds.push(this.boundsInViewport(element, element.bounds, model));
+                }
+            });
+        }
+        if (allBounds.length !== 0) {
+            const bounds = allBounds.reduce((b0, b1) => Bounds.combine(b0, b1));
+            if (Dimension.isValid(bounds)) {
+                const newViewport = this.getNewViewport(bounds, model);
+                if (newViewport) {
+                    const { zoomLimits, horizontalScrollLimits, verticalScrollLimits } = this.viewerOptions;
+                    this.newViewport = limitViewport(newViewport, model.canvasBounds, horizontalScrollLimits, verticalScrollLimits, zoomLimits);
+                }
             }
         }
     }
@@ -159,7 +164,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
     }
 
     protected equal(vp1: Viewport, vp2: Viewport): boolean {
-        return vp1.zoom === vp2.zoom && vp1.scroll.x === vp2.scroll.x && vp1.scroll.y === vp2.scroll.y;
+        return almostEquals(vp1.zoom, vp2.zoom) && almostEquals(vp1.scroll.x, vp2.scroll.x) && almostEquals(vp1.scroll.y, vp2.scroll.y);
     }
 }
 

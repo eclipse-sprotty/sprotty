@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Bounds, Dimension } from 'sprotty-protocol';
 import { Scrollable, Zoomable, Viewport as ProtocolViewport } from 'sprotty-protocol/lib/model';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { limit, Limits } from '../../utils/geometry';
 
 export const viewportFeature = Symbol('viewportFeature');
 
@@ -25,9 +27,58 @@ export const viewportFeature = Symbol('viewportFeature');
 export interface Viewport extends Scrollable, Zoomable {
 }
 
+/**
+ * Determine whether the given model element has a viewport.
+ */
 export function isViewport(element: SModelElementImpl): element is SModelRootImpl & ProtocolViewport {
     return element instanceof SModelRootImpl
         && element.hasFeature(viewportFeature)
         && 'zoom' in element
         && 'scroll' in element;
+}
+
+/**
+ * Apply limits to the given viewport.
+ */
+export function limitViewport(viewport: ProtocolViewport,
+        canvasBounds: Bounds | undefined,
+        horizontalScrollLimits: Limits | undefined,
+        verticalScrollLimits: Limits | undefined,
+        zoomLimits: Limits | undefined): ProtocolViewport {
+    if (canvasBounds && !Dimension.isValid(canvasBounds)) {
+        canvasBounds = undefined;
+    }
+    // Limit the zoom factor
+    let zoom = zoomLimits ? limit(viewport.zoom, zoomLimits) : viewport.zoom;
+    if (canvasBounds && horizontalScrollLimits) {
+        const minZoom = canvasBounds.width / (horizontalScrollLimits.max - horizontalScrollLimits.min);
+        if (zoom < minZoom) {
+            zoom = minZoom;
+        }
+    }
+    if (canvasBounds && verticalScrollLimits) {
+        const minZoom = canvasBounds.height / (verticalScrollLimits.max - verticalScrollLimits.min);
+        if (zoom < minZoom) {
+            zoom = minZoom;
+        }
+    }
+    // Limit the horizontal scroll position
+    let scrollX: number;
+    if (horizontalScrollLimits) {
+        const min = horizontalScrollLimits.min;
+        const max = canvasBounds ? horizontalScrollLimits.max - canvasBounds.width / zoom : horizontalScrollLimits.max;
+        scrollX = limit(viewport.scroll.x, { min, max });
+    } else {
+        scrollX = viewport.scroll.x;
+    }
+    // Limit the vertical scroll position
+    let scrollY: number;
+    if (verticalScrollLimits) {
+        const min = verticalScrollLimits.min;
+        const max = canvasBounds ? verticalScrollLimits.max - canvasBounds.height / zoom : verticalScrollLimits.max;
+        scrollY = limit(viewport.scroll.y, { min, max });
+    } else {
+        scrollY = viewport.scroll.y;
+    }
+    return { scroll: { x: scrollX, y: scrollY }, zoom };
 }
