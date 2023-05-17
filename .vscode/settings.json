@@ -10,5 +10,6 @@
         "editor.tabSize": 4
     },
     "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
     "files.trimTrailingWhitespace": true,
 }

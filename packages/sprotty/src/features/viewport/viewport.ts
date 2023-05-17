@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { Action, generateRequestId, RequestAction, ResponseAction, SetViewportAction as ProtocolSetViewPortAction} from "sprotty-protocol/lib/actions";
-import { Viewport } from "sprotty-protocol/lib/model";
-import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { Animation } from "../../base/animations/animation";
-import { isViewport } from "./model";
-import { TYPES } from "../../base/types";
-import { ModelRequestCommand } from "../../base/commands/request-command";
+import { injectable, inject } from 'inversify';
+import { Action, generateRequestId, RequestAction, ResponseAction, SetViewportAction as ProtocolSetViewPortAction} from 'sprotty-protocol/lib/actions';
+import { Viewport } from 'sprotty-protocol/lib/model';
+import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
+import { Animation } from '../../base/animations/animation';
+import { isViewport, limitViewport } from './model';
+import { TYPES } from '../../base/types';
+import { ModelRequestCommand } from '../../base/commands/request-command';
+import { ViewerOptions } from '../../base/views/viewer-options';
 
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
@@ -40,6 +41,7 @@ export class SetViewportAction implements Action, ProtocolSetViewPortAction {
 
 /**
  * Request action for retrieving the current viewport and canvas bounds.
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
 export interface GetViewportAction extends RequestAction<ViewportResult> {
     kind: typeof GetViewportAction.KIND;
@@ -55,6 +57,9 @@ export namespace GetViewportAction {
     }
 }
 
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
 export interface ViewportResult extends ResponseAction {
     kind: typeof ViewportResult.KIND;
     viewport: Viewport
@@ -77,6 +82,7 @@ export namespace ViewportResult {
 export class SetViewportCommand extends MergeableCommand {
     static readonly KIND = ProtocolSetViewPortAction.KIND;
 
+    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     protected element: SModelElementImpl & Viewport;
     protected oldViewport: Viewport;
     protected newViewport: Viewport;
@@ -95,22 +101,31 @@ export class SetViewportCommand extends MergeableCommand {
                 scroll: this.element.scroll,
                 zoom: this.element.zoom,
             };
-            if (this.action.animate)
-                return new ViewportAnimation(this.element, this.oldViewport, this.newViewport, context).start();
-            else {
-                this.element.scroll = this.newViewport.scroll;
-                this.element.zoom = this.newViewport.zoom;
+            const { zoomLimits, horizontalScrollLimits, verticalScrollLimits } = this.viewerOptions;
+            this.newViewport = limitViewport(this.newViewport, model.canvasBounds, horizontalScrollLimits, verticalScrollLimits, zoomLimits);
+            return this.setViewport(element, this.oldViewport, this.newViewport, context);
+        }
+        return context.root;
+    }
+
+    protected setViewport(element: SModelElementImpl, oldViewport: Viewport, newViewport: Viewport, context: CommandExecutionContext): CommandReturn {
+        if (element && isViewport(element)) {
+            if (this.action.animate) {
+                return new ViewportAnimation(element, oldViewport, newViewport, context).start();
+            } else {
+                element.scroll = newViewport.scroll;
+                element.zoom = newViewport.zoom;
             }
         }
-        return model;
+        return context.root;
     }
 
     undo(context: CommandExecutionContext): CommandReturn {
-        return new ViewportAnimation(this.element, this.newViewport, this.oldViewport, context).start();
+        return this.setViewport(this.element, this.newViewport, this.oldViewport, context);
     }
 
     redo(context: CommandExecutionContext): CommandReturn {
-        return new ViewportAnimation(this.element, this.oldViewport, this.newViewport, context).start();
+        return this.setViewport(this.element, this.oldViewport, this.newViewport, context);
     }
 
     override merge(command: ICommand, context: CommandExecutionContext): boolean {

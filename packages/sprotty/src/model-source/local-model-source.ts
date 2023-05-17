@@ -15,25 +15,23 @@
  ********************************************************************************/
 
 import { saveAs } from 'file-saver';
-import { inject, injectable, optional } from "inversify";
+import { inject, injectable, optional } from 'inversify';
 import {
     Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
     SetModelAction, SetPopupModelAction, UpdateModelAction
 } from 'sprotty-protocol/lib/actions';
 import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, Viewport} from 'sprotty-protocol/lib/model';
-import { IModelLayoutEngine as ProtocolIModelLayoutEngine } from 'sprotty-protocol';
+import { IModelLayoutEngine as ProtocolIModelLayoutEngine, GetViewportAction, ViewportResult, GetSelectionAction, SelectionResult } from 'sprotty-protocol';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelIndex, findElement } from 'sprotty-protocol/lib/utils/model-utils';
-import { ILogger } from "../utils/logging";
+import { ILogger } from '../utils/logging';
 import { FluentIterable } from '../utils/iterable';
-import { TYPES } from "../base/types";
-import { ActionHandlerRegistry } from "../base/actions/action-handler";
+import { TYPES } from '../base/types';
+import { ActionHandlerRegistry } from '../base/actions/action-handler';
 import { EMPTY_ROOT } from '../base/model/smodel-factory';
-import { GetViewportAction, ViewportResult } from '../features/viewport/viewport';
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { applyMatches, Match } from "../features/update/model-matching";
-import { GetSelectionAction, SelectionResult } from '../features/select/select';
-import { ModelSource, ComputedBoundsApplicator } from "./model-source";
+import { applyMatches, Match } from '../features/update/model-matching';
+import { ModelSource, ComputedBoundsApplicator } from './model-source';
 
 /**
  * A model source that allows to set and modify the model through function calls.
@@ -275,8 +273,8 @@ export class LocalModelSource extends ModelSource {
     }
 
     protected handleExportSvgAction(action: ExportSvgAction): void {
-        const blob = new Blob([action.svg], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, "diagram.svg");
+        const blob = new Blob([action.svg], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, 'diagram.svg');
     }
 }
 

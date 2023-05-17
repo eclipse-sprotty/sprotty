@@ -377,6 +377,42 @@ export namespace SelectAllAction {
 }
 
 /**
+ * Request action for retrieving the current selection.
+ */
+export interface GetSelectionAction extends RequestAction<SelectionResult> {
+    kind: typeof GetSelectionAction.KIND
+}
+export namespace GetSelectionAction {
+    export const KIND = 'getSelection';
+
+    export function create(): GetSelectionAction {
+        return {
+            kind: KIND,
+            requestId: generateRequestId()
+        };
+    }
+}
+
+/**
+ * Result for a `GetSelectionAction`.
+ */
+export interface SelectionResult extends ResponseAction {
+    kind: typeof SelectionResult.KIND
+    selectedElementsIDs: string[]
+}
+export namespace SelectionResult {
+    export const KIND = 'selectionResult';
+
+    export function create(selectedElementsIDs: string[], requestId: string): SelectionResult {
+        return {
+            kind: KIND,
+            selectedElementsIDs,
+            responseId: requestId
+        };
+    }
+}
+
+/**
  * Sent from the client to the model source to recalculate a diagram when elements
  * are collapsed/expanded by the client.
  */
@@ -526,6 +562,44 @@ export namespace SetViewportAction {
             elementId,
             newViewport,
             animate: options.animate ?? true
+        };
+    }
+}
+
+/**
+ * Request action for retrieving the current viewport and canvas bounds.
+ */
+export interface GetViewportAction extends RequestAction<ViewportResult> {
+    kind: typeof GetViewportAction.KIND;
+}
+export namespace GetViewportAction {
+    export const KIND = 'getViewport';
+
+    export function create(): GetViewportAction {
+        return {
+            kind: KIND,
+            requestId: generateRequestId()
+        };
+    }
+}
+
+/**
+ * Response to a `GetViewportAction`.
+ */
+export interface ViewportResult extends ResponseAction {
+    kind: typeof ViewportResult.KIND;
+    viewport: Viewport
+    canvasBounds: Bounds
+}
+export namespace ViewportResult {
+    export const KIND = 'viewportResult';
+
+    export function create(viewport: Viewport, canvasBounds: Bounds, requestId: string): ViewportResult {
+        return {
+            kind: KIND,
+            viewport,
+            canvasBounds,
+            responseId: requestId
         };
     }
 }

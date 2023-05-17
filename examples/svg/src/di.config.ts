@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2020 TypeFox and others.
+ * Copyright (c) 2017-2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,10 @@
 import { Container, ContainerModule } from 'inversify';
 import {
     TYPES, ConsoleLogger, LogLevel, loadDefaultModules, LocalModelSource, PreRenderedView,
-    ProjectedViewportView, ViewportRootElement, ShapedPreRenderedElement, configureModelElement,
-    ForeignObjectElement, ForeignObjectView, RectangularNode, RectangularNodeView, moveFeature,
+    ProjectedViewportView, ViewportRootElement, ShapedPreRenderedElementImpl, configureModelElement,
+    ForeignObjectElementImpl, ForeignObjectView, RectangularNode, RectangularNodeView, moveFeature,
     selectFeature, EditableLabel, editLabelFeature, WithEditableLabel, withEditLabelFeature,
-    isEditableLabel
+    isEditableLabel, configureViewerOptions
 } from 'sprotty';
 
 export default () => {
@@ -33,15 +33,22 @@ export default () => {
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         const context = { bind, unbind, isBound, rebind };
+
         configureModelElement(context, 'svg', ViewportRootElement, ProjectedViewportView);
-        configureModelElement(context, 'pre-rendered', ShapedPreRenderedElement, PreRenderedView);
-        configureModelElement(context, 'foreign-object', ForeignObjectElement, ForeignObjectView);
+        configureModelElement(context, 'pre-rendered', ShapedPreRenderedElementImpl, PreRenderedView);
+        configureModelElement(context, 'foreign-object', ForeignObjectElementImpl, ForeignObjectView);
         configureModelElement(context, 'node', RectangleWithEditableLabel, RectangularNodeView, {
             enable: [withEditLabelFeature]
         });
         configureModelElement(context, 'child-foreign-object', EditableForeignObjectElement, ForeignObjectView, {
             disable: [moveFeature, selectFeature], // disable move/select as we want the parent node to react to select/move
             enable: [editLabelFeature] // enable editing -- see also EditableForeignObjectElement below
+        });
+
+        configureViewerOptions(context, {
+            zoomLimits: { min: 0.4, max: 5 },
+            horizontalScrollLimits: { min: -500, max: 2000 },
+            verticalScrollLimits: { min: -500, max: 1500 }
         });
     });
 
@@ -60,7 +67,7 @@ export class RectangleWithEditableLabel extends RectangularNode implements WithE
     }
 }
 
-export class EditableForeignObjectElement extends ForeignObjectElement implements EditableLabel {
+export class EditableForeignObjectElement extends ForeignObjectElementImpl implements EditableLabel {
     readonly isMultiLine = true;
     get editControlDimension() { return { width: this.bounds.width, height: this.bounds.height }; }
 
