@@ -40,7 +40,7 @@ const config = {
 
     plugins: [
         new CircularDependencyPlugin({
-            exclude: /node_modules\/inversify/,
+            exclude: /inversify/,
             failOnError: true
         })
     ],
