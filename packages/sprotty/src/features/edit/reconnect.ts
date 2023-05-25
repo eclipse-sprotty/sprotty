@@ -21,28 +21,6 @@ import { TYPES } from '../../base/types';
 import { SRoutableElementImpl } from '../routing/model';
 import { EdgeMemento, EdgeRouterRegistry } from '../routing/routing';
 
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ReconnectAction extends Action {
-    kind: typeof ReconnectAction.KIND
-    routableId: string
-    newSourceId?: string
-    newTargetId?: string
-}
-export namespace ReconnectAction {
-    export const KIND = 'reconnect';
-
-    export function create(options: { routableId: string, newSourceId?: string, newTargetId?: string }): ReconnectAction {
-        return {
-            kind: KIND,
-            routableId: options.routableId,
-            newSourceId: options.newSourceId,
-            newTargetId: options.newTargetId
-        };
-    }
-}
-
 @injectable()
 export class ReconnectCommand extends Command {
     static readonly KIND = ProtocolReconnectAction.KIND;
@@ -90,5 +68,33 @@ export class ReconnectCommand extends Command {
             router.applySnapshot(this.memento.edge, this.memento.after);
         }
         return context.root;
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface ReconnectAction extends Action {
+    kind: typeof ReconnectAction.KIND
+    routableId: string
+    newSourceId?: string
+    newTargetId?: string
+}
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export namespace ReconnectAction {
+    export const KIND = 'reconnect';
+
+    export function create(options: { routableId: string, newSourceId?: string, newTargetId?: string }): ReconnectAction {
+        return {
+            kind: KIND,
+            routableId: options.routableId,
+            newSourceId: options.newSourceId,
+            newTargetId: options.newTargetId
+        };
     }
 }

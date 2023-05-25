@@ -158,17 +158,6 @@ function doFindChildrenAtPosition(parent: SParentElementImpl, point: Point, matc
 }
 
 /**
- * Serializable schema for SShapeElement.
- *
- * @deprecated Use `SShapeElement` from `sprotty-protocol` instead.
- */
-export interface SShapeElementSchema extends SModelElementSchema {
-    position?: Point
-    size?: Dimension
-    layoutOptions?: ModelLayoutOptions
-}
-
-/**
  * Abstract class for elements with a position and a size.
  */
 export abstract class SShapeElementImpl extends SChildElementImpl implements BoundsAware, Locateable, LayoutableChild {
@@ -227,5 +216,18 @@ export abstract class SShapeElementImpl extends SChildElementImpl implements Bou
 
 }
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /** @deprecated Use `SShapeElementImpl` instead. */
 export const SShapeElement = SShapeElementImpl;
+
+/**
+ * Serializable schema for SShapeElement.
+ *
+ * @deprecated Use `SShapeElement` from `sprotty-protocol` instead.
+ */
+export interface SShapeElementSchema extends SModelElementSchema {
+    position?: Point
+    size?: Dimension
+    layoutOptions?: ModelLayoutOptions
+}

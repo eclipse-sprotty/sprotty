@@ -34,23 +34,6 @@ import { ILogger } from "../utils/logging";
 import { ComputedBoundsApplicator, ModelSource } from "./model-source";
 
 /**
- * Wrapper for actions when transferring them between client and server via a DiagramServer.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ActionMessage {
-    clientId: string
-    action: Action
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isActionMessage(object: unknown): object is ActionMessage {
-    return hasOwnProperty(object, 'action');
-}
-
-/**
  * Sent by the external server when to signal a state change.
  */
 export class ServerStatusAction {
@@ -221,7 +204,26 @@ export abstract class DiagramServerProxy extends ModelSource {
     }
 }
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * @deprecated Use `DiagramServerProxy` instead.
  */
 export const DiagramServer = DiagramServerProxy;
+
+/**
+ * Wrapper for actions when transferring them between client and server via a DiagramServer.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface ActionMessage {
+    clientId: string
+    action: Action
+}
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export function isActionMessage(object: unknown): object is ActionMessage {
+    return hasOwnProperty(object, 'action');
+}

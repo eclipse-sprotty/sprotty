@@ -21,26 +21,6 @@ import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImp
 import { Command, CommandExecutionContext } from '../../base/commands/command';
 import { SRoutableElementImpl, SConnectableElementImpl } from '../routing/model';
 
-/**
- * Action to render the selected elements in front of others by manipulating the z-order.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface BringToFrontAction extends Action {
-    kind: typeof BringToFrontAction.KIND;
-    elementIDs: string[]
-}
-export namespace BringToFrontAction {
-    export const KIND = 'bringToFront';
-
-    export function create(elementIDs: string[]): BringToFrontAction {
-        return {
-            kind: KIND,
-            elementIDs
-        };
-    }
-}
-
 export type ZOrderElement = {
     element: SChildElementImpl
     index: number
@@ -113,5 +93,27 @@ export class BringToFrontCommand extends Command {
         const element = selection.element;
         const childrenLength = element.parent.children.length;
         element.parent.move(element, childrenLength - 1);
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Action to render the selected elements in front of others by manipulating the z-order.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface BringToFrontAction extends Action {
+    kind: typeof BringToFrontAction.KIND;
+    elementIDs: string[]
+}
+export namespace BringToFrontAction {
+    export const KIND = 'bringToFront';
+
+    export function create(elementIDs: string[]): BringToFrontAction {
+        return {
+            kind: KIND,
+            elementIDs
+        };
     }
 }

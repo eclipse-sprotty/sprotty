@@ -30,45 +30,6 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../base/types';
 import { ViewerOptions } from '../../base/views/viewer-options';
 
-/**
- * Triggered when the user requests the viewer to center on the current model. The resulting
- * CenterCommand changes the scroll setting of the viewport accordingly.
- * It also resets the zoom to its default if retainZoom is false.
- * This action can also be sent from the model source to the client in order to perform such a
- * viewport change programmatically.
- *
- * @deprecated Use the declaration in `sprotty-protocol` instead.
- */
-export class CenterAction implements Action, ProtocolCenterAction {
-    static readonly KIND = 'center';
-    readonly kind = CenterAction.KIND;
-
-    constructor(public readonly elementIds: string[],
-                public readonly animate: boolean = true,
-                public readonly retainZoom: boolean = false,
-                public readonly zoomScale?: number) {
-    }
-}
-
-/**
- * Triggered when the user requests the viewer to fit its content to the available drawing area.
- * The resulting FitToScreenCommand changes the zoom and scroll settings of the viewport so the model
- * can be shown completely. This action can also be sent from the model source to the client in order
- * to perform such a viewport change programmatically.
- *
- * @deprecated Use the declaration in `sprotty-protocol` instead.
- */
-export class FitToScreenAction implements Action, ProtocolFitToScreenAction {
-    static readonly KIND = 'fit';
-    readonly kind = FitToScreenAction.KIND;
-
-    constructor(public readonly elementIds: string[],
-                public readonly padding?: number,
-                public readonly maxZoom?: number,
-                public readonly animate: boolean = true) {
-    }
-}
-
 @injectable()
 export abstract class BoundsAwareViewportCommand extends Command {
 
@@ -244,5 +205,46 @@ export class CenterKeyboardListener extends KeyListener {
         if (matchesKeystroke(event, 'KeyF', 'ctrlCmd', 'shift'))
             return [ProtocolFitToScreenAction.create([])];
         return [];
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Triggered when the user requests the viewer to center on the current model. The resulting
+ * CenterCommand changes the scroll setting of the viewport accordingly.
+ * It also resets the zoom to its default if retainZoom is false.
+ * This action can also be sent from the model source to the client in order to perform such a
+ * viewport change programmatically.
+ *
+ * @deprecated Use the declaration in `sprotty-protocol` instead.
+ */
+export class CenterAction implements Action, ProtocolCenterAction {
+    static readonly KIND = 'center';
+    readonly kind = CenterAction.KIND;
+
+    constructor(public readonly elementIds: string[],
+                public readonly animate: boolean = true,
+                public readonly retainZoom: boolean = false,
+                public readonly zoomScale?: number) {
+    }
+}
+
+/**
+ * Triggered when the user requests the viewer to fit its content to the available drawing area.
+ * The resulting FitToScreenCommand changes the zoom and scroll settings of the viewport so the model
+ * can be shown completely. This action can also be sent from the model source to the client in order
+ * to perform such a viewport change programmatically.
+ *
+ * @deprecated Use the declaration in `sprotty-protocol` instead.
+ */
+export class FitToScreenAction implements Action, ProtocolFitToScreenAction {
+    static readonly KIND = 'fit';
+    readonly kind = FitToScreenAction.KIND;
+
+    constructor(public readonly elementIds: string[],
+                public readonly padding?: number,
+                public readonly maxZoom?: number,
+                public readonly animate: boolean = true) {
     }
 }

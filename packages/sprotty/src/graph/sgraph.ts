@@ -35,19 +35,6 @@ import { ViewportRootElement } from '../features/viewport/viewport-root';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
 
 /**
- * Serializable schema for graph-like models.
- *
- * @deprecated Use `SGraph` from `sprotty-protocol` instead.
- */
-export interface SGraphSchema extends SModelRootSchema {
-    children: SModelElementSchema[]
-    bounds?: Bounds
-    scroll?: Point
-    zoom?: number
-    layoutOptions?: ModelLayoutOptions
-}
-
-/**
  * Root element for graph-like models.
  */
 export class SGraphImpl extends ViewportRootElement {
@@ -56,22 +43,6 @@ export class SGraphImpl extends ViewportRootElement {
     constructor(index = new SGraphIndex()) {
         super(index);
     }
-}
-
-/** @deprecated Use `SGraphImpl` instead. */
-export const SGraph = SGraphImpl;
-
-/**
- * Serializable schema for SNode.
- *
- * @deprecated Use `SNode` from `sprotty-protocol` instead.
- */
-export interface SNodeSchema extends SShapeElementSchema {
-    layout?: string
-    selected?: boolean
-    hoverFeedback?: boolean
-    opacity?: number
-    anchorKind?: string
 }
 
 /**
@@ -113,21 +84,6 @@ export class SNodeImpl extends SConnectableElementImpl implements Selectable, Fa
 
 }
 
-/** @deprecated Use `SNodeImpl` instead. */
-export const SNode = SNodeImpl;
-
-/**
- * Serializable schema for SPort.
- *
- * @deprecated Use `SPort` from `sprotty-protocol` instead.
- */
-export interface SPortSchema extends SShapeElementSchema {
-    selected?: boolean
-    hoverFeedback?: boolean
-    opacity?: number
-    anchorKind?: string;
-}
-
 /**
  * A port is a connection point for edges. It should always be contained in an SNode.
  */
@@ -157,23 +113,7 @@ export class SPortImpl extends SConnectableElementImpl implements Selectable, Fa
 
 }
 
-/** @deprecated Use `SPortImpl` instead. */
-export const SPort = SPortImpl;
 
-/**
- * Serializable schema for SEdge.
- *
- * @deprecated Use `SEdge` from `sprotty-protocol` instead.
- */
-export interface SEdgeSchema extends SModelElementSchema {
-    sourceId: string
-    targetId: string
-    routerKind?: string;
-    routingPoints?: Point[]
-    selected?: boolean
-    hoverFeedback?: boolean
-    opacity?: number
-}
 
 /**
  * Model element class for edges, which are the connectors in a graph. An edge has a source and a target,
@@ -188,19 +128,6 @@ export class SEdgeImpl extends SRoutableElementImpl implements Fadeable, Selecta
     hoverFeedback: boolean = false;
     opacity: number = 1;
 
-}
-
-/** @deprecated Use `SEdgeImpl` instead. */
-export const SEdge = SEdgeImpl;
-
-/**
- * Serializable schema for SLabel.
- *
- * @deprecated Use `SLabel` from `sprotty-protocol` instead.
- */
-export interface SLabelSchema extends SShapeElementSchema {
-    text: string
-    selected?: boolean
 }
 
 /**
@@ -218,18 +145,6 @@ export class SLabelImpl extends SShapeElementImpl implements Selectable, Alignab
 
 }
 
-/** @deprecated Use `SLabelImpl` instead. */
-export const SLabel = SLabelImpl;
-
-/**
- * Serializable schema for SCompartment.
- *
- * @deprecated Use `SCompartment` from `sprotty-protocol` instead.
- */
-export interface SCompartmentSchema extends SShapeElementSchema {
-    layout?: string
-}
-
 /**
  * A compartment is used to group multiple child elements such as labels of a node. Usually a `vbox`
  * or `hbox` layout is used to arrange these children.
@@ -245,8 +160,7 @@ export class SCompartmentImpl extends SShapeElementImpl implements Fadeable {
 
 }
 
-/** @deprecated Use `SCompartmentImpl` instead. */
-export const SCompartment = SCompartmentImpl;
+
 
 /**
  * A specialized model index that tracks outgoing and incoming edges.
@@ -344,4 +258,96 @@ export class SGraphIndex extends ModelIndexImpl {
     getOutgoingEdges(element: SConnectableElementImpl): FluentIterable<SEdgeImpl> {
         return this.outgoing.get(element.id) || [];
     }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Serializable schema for graph-like models.
+ *
+ * @deprecated Use `SGraph` from `sprotty-protocol` instead.
+ */
+export interface SGraphSchema extends SModelRootSchema {
+    children: SModelElementSchema[]
+    bounds?: Bounds
+    scroll?: Point
+    zoom?: number
+    layoutOptions?: ModelLayoutOptions
+}
+
+/** @deprecated Use `SCompartmentImpl` instead. */
+export const SCompartment = SCompartmentImpl;
+
+/** @deprecated Use `SGraphImpl` instead. */
+export const SGraph = SGraphImpl;
+
+/**
+ * Serializable schema for SNode.
+ *
+ * @deprecated Use `SNode` from `sprotty-protocol` instead.
+ */
+export interface SNodeSchema extends SShapeElementSchema {
+    layout?: string
+    selected?: boolean
+    hoverFeedback?: boolean
+    opacity?: number
+    anchorKind?: string
+}
+
+/** @deprecated Use `SNodeImpl` instead. */
+export const SNode = SNodeImpl;
+
+/**
+ * Serializable schema for SPort.
+ *
+ * @deprecated Use `SPort` from `sprotty-protocol` instead.
+ */
+export interface SPortSchema extends SShapeElementSchema {
+    selected?: boolean
+    hoverFeedback?: boolean
+    opacity?: number
+    anchorKind?: string;
+}
+
+/** @deprecated Use `SPortImpl` instead. */
+export const SPort = SPortImpl;
+
+/**
+ * Serializable schema for SEdge.
+ *
+ * @deprecated Use `SEdge` from `sprotty-protocol` instead.
+ */
+export interface SEdgeSchema extends SModelElementSchema {
+    sourceId: string
+    targetId: string
+    routerKind?: string;
+    routingPoints?: Point[]
+    selected?: boolean
+    hoverFeedback?: boolean
+    opacity?: number
+}
+
+/** @deprecated Use `SEdgeImpl` instead. */
+export const SEdge = SEdgeImpl;
+
+/**
+ * Serializable schema for SLabel.
+ *
+ * @deprecated Use `SLabel` from `sprotty-protocol` instead.
+ */
+export interface SLabelSchema extends SShapeElementSchema {
+    text: string
+    selected?: boolean
+}
+
+/** @deprecated Use `SLabelImpl` instead. */
+export const SLabel = SLabelImpl;
+
+/**
+ * Serializable schema for SCompartment.
+ *
+ * @deprecated Use `SCompartment` from `sprotty-protocol` instead.
+ */
+export interface SCompartmentSchema extends SShapeElementSchema {
+    layout?: string
 }

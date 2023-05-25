@@ -29,5 +29,7 @@ export class SButtonImpl extends SShapeElementImpl {
     enabled = true;
 }
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /** @deprecated Use `SButtonImpl` instead. */
 export const SButton = SButtonImpl;

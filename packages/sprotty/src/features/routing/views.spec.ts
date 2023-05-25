@@ -17,22 +17,22 @@
 import 'mocha';
 import { expect } from "chai";
 import { IViewArgs, RenderingContext } from '../../base/views/view';
-import { SShapeElement } from '../bounds/model';
+import { SShapeElementImpl } from '../bounds/model';
 import { ViewportRootElement } from '../viewport/viewport-root';
-import { SRoutableElement } from './model';
+import { SRoutableElementImpl } from './model';
 import { RoutableView } from './views';
 import { VNode } from 'snabbdom';
 
 describe('RoutableView.isVisible', () => {
 
-    class TestNode extends SShapeElement {
+    class TestNode extends SShapeElementImpl {
     }
 
-    class TestEdge extends SRoutableElement {
+    class TestEdge extends SRoutableElementImpl {
     }
 
     class TestView extends RoutableView {
-        render(model: Readonly<SRoutableElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+        render(model: Readonly<SRoutableElementImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
             return undefined;
         }
     }
@@ -58,7 +58,7 @@ describe('RoutableView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 80, y: 80 };
         model.zoom = 1;
-        const routable = model.children[0].children[0] as SRoutableElement;
+        const routable = model.children[0].children[0] as SRoutableElementImpl;
         const context = { targetKind: 'main' } as RenderingContext;
         expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(true);
     });
@@ -67,7 +67,7 @@ describe('RoutableView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 150, y: 80 };
         model.zoom = 1;
-        const routable = model.children[0].children[0] as SRoutableElement;
+        const routable = model.children[0].children[0] as SRoutableElementImpl;
         const context = { targetKind: 'main' } as RenderingContext;
         expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(false);
     });
@@ -76,7 +76,7 @@ describe('RoutableView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 80, y: 80 };
         model.zoom = 10;
-        const routable = model.children[0].children[0] as SRoutableElement;
+        const routable = model.children[0].children[0] as SRoutableElementImpl;
         const context = { targetKind: 'main' } as RenderingContext;
         expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(false);
     });
@@ -85,7 +85,7 @@ describe('RoutableView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 150, y: 80 };
         model.zoom = 10;
-        const routable = model.children[0].children[0] as SRoutableElement;
+        const routable = model.children[0].children[0] as SRoutableElementImpl;
         const context = { targetKind: 'hidden' } as RenderingContext;
         expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(true);
     });

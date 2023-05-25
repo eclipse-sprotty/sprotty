@@ -27,19 +27,6 @@ import { ModelRequestCommand } from '../../base/commands/request-command';
 import { ViewerOptions } from '../../base/views/viewer-options';
 
 /**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SetViewportAction implements Action, ProtocolSetViewPortAction {
-    static readonly KIND = 'viewport';
-    readonly kind = SetViewportAction.KIND;
-
-    constructor(public readonly elementId: string,
-                public readonly newViewport: Viewport,
-                public readonly animate: boolean) {
-    }
-}
-
-/**
  * Request action for retrieving the current viewport and canvas bounds.
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
@@ -175,5 +162,20 @@ export class ViewportAnimation extends Animation {
         };
         this.element.zoom = this.oldViewport.zoom * Math.exp(t * this.zoomFactor);
         return context.root;
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class SetViewportAction implements Action, ProtocolSetViewPortAction {
+    static readonly KIND = 'viewport';
+    readonly kind = SetViewportAction.KIND;
+
+    constructor(public readonly elementId: string,
+                public readonly newViewport: Viewport,
+                public readonly animate: boolean) {
     }
 }

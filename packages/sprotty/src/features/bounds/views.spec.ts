@@ -18,17 +18,17 @@ import 'mocha';
 import { expect } from "chai";
 import { IViewArgs, RenderingContext } from '../../base/views/view';
 import { ViewportRootElement } from '../viewport/viewport-root';
-import { SShapeElement } from './model';
+import { SShapeElementImpl } from './model';
 import { ShapeView } from './views';
 import { VNode } from 'snabbdom';
 
 describe('ShapeView.isVisible', () => {
 
-    class TestNode extends SShapeElement {
+    class TestNode extends SShapeElementImpl {
     }
 
     class TestView extends ShapeView {
-        render(model: Readonly<SShapeElement>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+        render(model: Readonly<SShapeElementImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
             return undefined;
         }
     }
@@ -50,7 +50,7 @@ describe('ShapeView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 80, y: 80 };
         model.zoom = 1;
-        const node = model.children[0].children[0] as SShapeElement;
+        const node = model.children[0].children[0] as SShapeElementImpl;
         const context = { targetKind: 'main' } as RenderingContext;
         expect(view.isVisible(node, context)).to.equal(true);
     });
@@ -59,7 +59,7 @@ describe('ShapeView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 150, y: 80 };
         model.zoom = 1;
-        const node = model.children[0].children[0] as SShapeElement;
+        const node = model.children[0].children[0] as SShapeElementImpl;
         const context = { targetKind: 'main' } as RenderingContext;
         expect(view.isVisible(node, context)).to.equal(false);
     });
@@ -68,7 +68,7 @@ describe('ShapeView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 100, y: 100 };
         model.zoom = 10;
-        const node = model.children[0].children[0] as SShapeElement;
+        const node = model.children[0].children[0] as SShapeElementImpl;
         const context = { targetKind: 'main' } as RenderingContext;
         expect(view.isVisible(node, context)).to.equal(false);
     });
@@ -77,7 +77,7 @@ describe('ShapeView.isVisible', () => {
         const model = createModel();
         model.scroll = { x: 150, y: 80 };
         model.zoom = 10;
-        const node = model.children[0].children[0] as SShapeElement;
+        const node = model.children[0].children[0] as SShapeElementImpl;
         const context = { targetKind: 'hidden' } as RenderingContext;
         expect(view.isVisible(node, context)).to.equal(true);
     });

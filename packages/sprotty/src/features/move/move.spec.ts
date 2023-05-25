@@ -19,15 +19,15 @@ import 'mocha';
 import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { Point } from "../../utils/geometry";
 import { ConsoleLogger } from "../../utils/logging";
 import { CommandExecutionContext } from "../../base/commands/command";
-import { SModelRoot } from "../../base/model/smodel";
+import { SModelRootImpl } from "../../base/model/smodel";
 import { SGraphFactory } from "../../graph/sgraph-factory";
-import { SNode } from "../../graph/sgraph";
+import { SNodeImpl } from "../../graph/sgraph";
 import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
-import { ElementMove, MoveAction, MoveCommand } from "./move";
+import { ElementMove, MoveCommand } from "./move";
 import defaultModule from "../../base/di.config";
+import { MoveAction, Point } from 'sprotty-protocol';
 
 describe('move', () => {
     const container = new Container();
@@ -103,15 +103,15 @@ describe('move', () => {
 
     // global so we can carry-over the model, as it's updated,
     // from test case to test case (i,e, select, undo, redo, merge)
-    let newModel: SModelRoot;
+    let newModel: SModelRootImpl;
 
-    function getNode(nodeId: string, root: SModelRoot) {
-        return root.index.getById(nodeId) as SNode;
+    function getNode(nodeId: string, root: SModelRootImpl) {
+        return root.index.getById(nodeId) as SNodeImpl;
     }
 
     it('execute() works as expected', () => {
         // execute command
-        newModel = cmd.execute(context) as SModelRoot;
+        newModel = cmd.execute(context) as SModelRootImpl;
 
         // node0 => PointNE
         expect(pointNE.x).equals(getNode('node0', newModel).bounds.x);
@@ -132,7 +132,7 @@ describe('move', () => {
     // Should undo()/redo() check whether the move action wants
     // animation, and if not just return an updated model?
 
-    let undoneModel: SModelRoot;
+    let undoneModel: SModelRootImpl;
 
     it('undo() works as expected', async () => {
         // test "undo"

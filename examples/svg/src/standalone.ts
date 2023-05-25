@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import {
-    TYPES, ShapedPreRenderedElementSchema, ForeignObjectElementSchema, SShapeElementSchema, ViewportRootElementSchema,
-    Projectable, LocalModelSource
+    TYPES, ViewportRootElementSchema, Projectable, LocalModelSource
 } from 'sprotty';
 import createContainer from './di.config';
+import { ForeignObjectElement, SShapeElement, ShapedPreRenderedElement } from 'sprotty-protocol';
 
 function loadFile(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -50,21 +50,21 @@ export default async function runSVG() {
                 position: { x: 200, y: 200 },
                 code: svgLogo,
                 projectionCssClasses: ['logo-projection']
-            } as ShapedPreRenderedElementSchema & Projectable,
+            } as ShapedPreRenderedElement & Projectable,
             {
                 type: 'pre-rendered',
                 id: 'tiger',
                 position: { x: 400, y: 50 },
                 code: tiger,
                 projectionCssClasses: ['tiger-projection']
-            } as ShapedPreRenderedElementSchema & Projectable,
+            } as ShapedPreRenderedElement & Projectable,
             {
                 type: 'foreign-object',
                 id: 'direct-html',
                 position: { x: 50, y: 350 },
                 size: { height: 50, width: 190 },
                 code: '<p>This is a free-floating HTML paragraph!</p>'
-            } as ForeignObjectElementSchema,
+            } as ForeignObjectElement,
             {
                 id: 'foreign-object-in-shape',
                 type: 'node',
@@ -81,10 +81,10 @@ export default async function runSVG() {
                         type: 'child-foreign-object',
                         id: 'foreign-object-in-shape-contents',
                         code: '<div>This is <em>HTML</em> within <u>an SVG rectangle</u>!</div>'
-                    } as ForeignObjectElementSchema
+                    } as ForeignObjectElement
                 ],
                 projectionCssClasses: ['node-projection']
-            } as SShapeElementSchema & Projectable
+            } as SShapeElement & Projectable
         ]
     };
 

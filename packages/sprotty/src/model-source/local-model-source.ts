@@ -33,6 +33,10 @@ import { ExportSvgAction } from '../features/export/svg-exporter';
 import { applyMatches, Match } from '../features/update/model-matching';
 import { ModelSource, ComputedBoundsApplicator } from './model-source';
 
+export interface IPopupModelProvider {
+    getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined;
+}
+
 /**
  * A model source that allows to set and modify the model through function calls.
  * This class can be used as a facade over the action-based API of sprotty. It handles
@@ -278,15 +282,14 @@ export class LocalModelSource extends ModelSource {
     }
 }
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * @deprecated Use IPopupModelProvider instead.
  */
 export type PopupModelFactory = (request: RequestPopupModelAction, element?: SModelElementSchema)
     => SModelRootSchema | undefined;
 
-export interface IPopupModelProvider {
-    getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined;
-}
 
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.

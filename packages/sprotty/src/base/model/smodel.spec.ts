@@ -16,19 +16,19 @@
 
 import "mocha";
 import { expect } from "chai";
-import { SChildElement, ModelIndexImpl, SModelRoot } from './smodel';
+import { SChildElementImpl, ModelIndexImpl, SModelRootImpl } from './smodel';
 
-describe('SModelRoot', () => {
+describe('SModelRootImpl', () => {
     function setup() {
-        const element = new SModelRoot();
+        const element = new SModelRootImpl();
         element.id = 'root';
-        const child1 = new SChildElement();
+        const child1 = new SChildElementImpl();
         child1.id = 'child1';
         element.add(child1);
-        const child2 = new SChildElement();
+        const child2 = new SChildElementImpl();
         child2.id = 'child2';
         element.add(child2);
-        const child3 = new SChildElement();
+        const child3 = new SChildElementImpl();
         child3.id = 'child3';
         element.add(child3);
         return element;
@@ -63,10 +63,10 @@ describe('SModelRoot', () => {
 describe('ModelIndexImpl', () => {
     function setup() {
         const index = new ModelIndexImpl();
-        const child1 = new SChildElement();
+        const child1 = new SChildElementImpl();
         child1.id = 'child1';
         index.add(child1);
-        const child2 = new SChildElement();
+        const child2 = new SChildElementImpl();
         child2.id = 'child2';
         index.add(child2);
         return {index, child1, child2};

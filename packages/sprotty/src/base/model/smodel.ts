@@ -14,33 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElement as ProtocolSModelElement } from 'sprotty-protocol';
-import { mapIterable, FluentIterable } from '../../utils/iterable';
-
-/**
- * The schema of an SModelElement describes its serializable form. The actual model is created from
- * its schema with an IModelFactory.
- * Each model element must have a unique ID and a type that is used to look up its view.
- *
- * @deprecated Use `SModelElement` from `sprotty-protocol` instead.
- */
-export interface SModelElementSchema {
-    type: string
-    id: string
-    children?: SModelElementSchema[]
-    cssClasses?: string[]
-}
-
-/**
- * Serializable schema for the root element of the model tree.
- *
- * @deprecated Use `SModelRoot` from `sprotty-protocol` instead.
- */
-export interface SModelRootSchema extends SModelElementSchema {
-    canvasBounds?: Bounds
-    revision?: number
-}
+import { Bounds, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { FluentIterable, mapIterable } from '../../utils/iterable';
 
 /**
  * Base class for all elements of the internal diagram model.
@@ -78,8 +54,6 @@ export class SModelElementImpl {
     }
 }
 
-/** @deprecated Use `SModelElementImpl` instead. */
-export const SModelElement = SModelElementImpl;
 
 export interface FeatureSet {
     has(feature: symbol): boolean
@@ -175,9 +149,6 @@ export class SParentElementImpl extends SModelElementImpl {
     }
 }
 
-/** @deprecated Use `SParentElementImpl` instead. */
-export const SParentElement = SParentElementImpl;
-
 /**
  * A child element is contained in a parent element. All elements except the model root are child
  * elements. In order to keep the model class hierarchy simple, every child element is also a
@@ -188,8 +159,6 @@ export class SChildElementImpl extends SParentElementImpl {
     readonly parent: SParentElementImpl;
 }
 
-/** @deprecated Use `SChildElementImpl` instead. */
-export const SChildElement = SChildElementImpl;
 
 /**
  * Base class for the root element of the diagram model tree.
@@ -208,9 +177,6 @@ export class SModelRootImpl extends SParentElementImpl {
         });
     }
 }
-
-/** @deprecated Use `SModelRootImpl` instead. */
-export const SModelRoot = SModelRootImpl;
 
 const ID_CHARS = '0123456789abcdefghijklmnopqrstuvwxyz';
 export function createRandomId(length: number = 8): string {
@@ -280,3 +246,41 @@ export class ModelIndexImpl implements IModelIndex {
         return mapIterable(this.id2element, ([key, value]: [string, SModelElementImpl]) => value);
     }
 }
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * The schema of an SModelElement describes its serializable form. The actual model is created from
+ * its schema with an IModelFactory.
+ * Each model element must have a unique ID and a type that is used to look up its view.
+ *
+ * @deprecated Use `SModelElement` from `sprotty-protocol` instead.
+ */
+export interface SModelElementSchema {
+    type: string
+    id: string
+    children?: SModelElementSchema[]
+    cssClasses?: string[]
+}
+
+/**
+ * Serializable schema for the root element of the model tree.
+ *
+ * @deprecated Use `SModelRoot` from `sprotty-protocol` instead.
+ */
+export interface SModelRootSchema extends SModelElementSchema {
+    canvasBounds?: Bounds
+    revision?: number
+}
+
+/** @deprecated Use `SParentElementImpl` instead. */
+export const SParentElement = SParentElementImpl;
+
+/** @deprecated Use `SChildElementImpl` instead. */
+export const SChildElement = SChildElementImpl;
+
+/** @deprecated Use `SModelElementImpl` instead. */
+export const SModelElement = SModelElementImpl;
+
+/** @deprecated Use `SModelRootImpl` instead. */
+export const SModelRoot = SModelRootImpl;

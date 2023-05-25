@@ -16,14 +16,14 @@
 
 import 'mocha';
 import { expect } from 'chai';
-import { SModelRoot } from '../../base/model/smodel';
-import { SShapeElement } from '../bounds/model';
-import { SRoutableElement, getAbsoluteRouteBounds } from './model';
-import { SEdge, SGraph, SNode } from '../../graph/sgraph';
+import { SModelRootImpl } from '../../base/model/smodel';
+import { SShapeElementImpl } from '../bounds/model';
+import { SRoutableElementImpl, getAbsoluteRouteBounds } from './model';
+import { SEdgeImpl, SGraphImpl, SNodeImpl } from '../../graph/sgraph';
 
 describe('getAbsoluteRouteBounds', () => {
-    function createModel(): SModelRoot {
-        const root = new SModelRoot();
+    function createModel(): SModelRootImpl {
+        const root = new SModelRootImpl();
         const node1 = new TestNode();
         node1.bounds = { x: 100, y: 100, width: 100, height: 100 };
         root.add(node1);
@@ -39,40 +39,40 @@ describe('getAbsoluteRouteBounds', () => {
 
     it('should compute the absolute bounds of a routable element', () => {
         const model = createModel();
-        const routable = model.children[0].children[0] as SRoutableElement;
+        const routable = model.children[0].children[0] as SRoutableElementImpl;
         expect(getAbsoluteRouteBounds(routable)).to.deep.equal({
             x: 110, y: 110, width: 30, height: 20
         });
     });
 });
 
-class TestNode extends SShapeElement {
+class TestNode extends SShapeElementImpl {
 }
 
-class TestEdge extends SRoutableElement {
+class TestEdge extends SRoutableElementImpl {
 }
 
 describe('SConnectableElement', () => {
-    function createModel(type: 'root' | 'graph'): SModelRoot {
-        const root = type === 'graph' ? new SGraph() : new SModelRoot();
-        const node1 = new SNode();
+    function createModel(type: 'root' | 'graph'): SModelRootImpl {
+        const root = type === 'graph' ? new SGraphImpl() : new SModelRootImpl();
+        const node1 = new SNodeImpl();
         node1.id = 'node1';
         root.add(node1);
-        const node2 = new SNode();
+        const node2 = new SNodeImpl();
         node2.id = 'node2';
         root.add(node2);
-        const node3 = new SNode();
+        const node3 = new SNodeImpl();
         node3.id = 'node3';
         root.add(node3);
-        const node4 = new SNode();
+        const node4 = new SNodeImpl();
         node4.id = 'node4';
         root.add(node4);
-        const edge1 = new SEdge();
+        const edge1 = new SEdgeImpl();
         edge1.id = 'edge1';
         edge1.sourceId = node1.id;
         edge1.targetId = node2.id;
         root.add(edge1);
-        const edge2 = new SEdge();
+        const edge2 = new SEdgeImpl();
         edge2.id = 'edge2';
         edge2.sourceId = node3.id;
         edge2.targetId = node4.id;
@@ -80,30 +80,30 @@ describe('SConnectableElement', () => {
         return root;
     }
 
-    it('should compute outgoing edges with SGraph', () => {
+    it('should compute outgoing edges with SGraphImpl', () => {
         const model = createModel('graph');
-        const edges = Array.from((model.children[0] as SNode).outgoingEdges);
+        const edges = Array.from((model.children[0] as SNodeImpl).outgoingEdges);
         expect(edges).to.have.length(1);
         expect(edges[0].id).to.equal('edge1');
     });
 
-    it('should compute incoming edges with SGraph', () => {
+    it('should compute incoming edges with SGraphImpl', () => {
         const model = createModel('graph');
-        const edges = Array.from((model.children[1] as SNode).incomingEdges);
+        const edges = Array.from((model.children[1] as SNodeImpl).incomingEdges);
         expect(edges).to.have.length(1);
         expect(edges[0].id).to.equal('edge1');
     });
 
-    it('should compute outgoing edges with SModelRoot', () => {
+    it('should compute outgoing edges with SModelRootImpl', () => {
         const model = createModel('root');
-        const edges = Array.from((model.children[0] as SNode).outgoingEdges);
+        const edges = Array.from((model.children[0] as SNodeImpl).outgoingEdges);
         expect(edges).to.have.length(1);
         expect(edges[0].id).to.equal('edge1');
     });
 
-    it('should compute incoming edges with SModelRoot', () => {
+    it('should compute incoming edges with SModelRootImpl', () => {
         const model = createModel('root');
-        const edges = Array.from((model.children[1] as SNode).incomingEdges);
+        const edges = Array.from((model.children[1] as SNodeImpl).incomingEdges);
         expect(edges).to.have.length(1);
         expect(edges[0].id).to.equal('edge1');
     });

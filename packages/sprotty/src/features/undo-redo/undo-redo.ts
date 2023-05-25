@@ -20,6 +20,18 @@ import { KeyListener } from '../../base/views/key-tool';
 import { SModelElementImpl } from '../../base/model/smodel';
 import { isMac } from '../../utils/browser';
 
+export class UndoRedoKeyListener extends KeyListener {
+    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
+        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
+            return [ProtocolUndoAction.create()];
+        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))
+            return [ProtocolRedoAction.create()];
+        return [];
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * @deprecated Use the declaration from `sprotty-protocol` instead.
  */
@@ -49,15 +61,5 @@ export namespace RedoAction {
         return {
             kind: KIND
         };
-    }
-}
-
-export class UndoRedoKeyListener extends KeyListener {
-    override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
-        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
-            return [ProtocolUndoAction.create()];
-        if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))
-            return [ProtocolRedoAction.create()];
-        return [];
     }
 }

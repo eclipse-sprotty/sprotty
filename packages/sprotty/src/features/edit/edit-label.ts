@@ -45,31 +45,9 @@ export function isEditLabelAction(element?: any): element is EditLabelAction {
     return isAction(element) && element.kind === EditLabelAction.KIND && 'labelId' in element;
 }
 
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ApplyLabelEditAction extends Action {
-    kind: typeof ApplyLabelEditAction.KIND;
-    labelId: string,
-    text: string
-}
-
-export namespace ApplyLabelEditAction {
-    export const KIND = 'applyLabelEdit';
-
-    export function create(labelId: string, text: string): ApplyLabelEditAction {
-        return {
-            kind: KIND,
-            labelId,
-            text
-        };
-    }
-}
-
 export function isApplyLabelEditAction(element?: any): element is ProtocolApplyLabelEditAction {
     return isAction(element) && element.kind === ProtocolApplyLabelEditAction.KIND && 'labelId' in element && 'text' in element;
 }
-
 
 export class ResolvedLabelEdit {
     label: EditableLabel;
@@ -154,4 +132,30 @@ export function getEditableLabel(element: SModelElementImpl): EditableLabel & SM
         return element.editableLabel;
     }
     return undefined;
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface ApplyLabelEditAction extends Action {
+    kind: typeof ApplyLabelEditAction.KIND;
+    labelId: string,
+    text: string
+}
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export namespace ApplyLabelEditAction {
+    export const KIND = 'applyLabelEdit';
+
+    export function create(labelId: string, text: string): ApplyLabelEditAction {
+        return {
+            kind: KIND,
+            labelId,
+            text
+        };
+    }
 }

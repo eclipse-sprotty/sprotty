@@ -21,24 +21,24 @@ import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
 import { ConsoleLogger } from "../../utils/logging";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
-import { SModelElement, SModelElementSchema, SModelRoot, SModelRootSchema } from "../../base/model/smodel";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
 import { CommandExecutionContext } from "../../base/commands/command";
 import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
 import { CompoundAnimation, Animation } from "../../base/animations/animation";
-import { SNodeSchema, SGraphSchema, SEdgeSchema, SEdge } from "../../graph/sgraph";
+import {  SEdgeImpl } from "../../graph/sgraph";
 import { SGraphFactory } from "../../graph/sgraph-factory";
 import { FadeAnimation } from "../../features/fade/fade";
 import { MoveAnimation, MorphEdgesAnimation } from "../../features/move/move";
-import { UpdateModelCommand, UpdateModelAction } from "./update-model";
+import { UpdateModelCommand } from "./update-model";
 import { ModelMatcher } from "./model-matching";
 import { ManhattanEdgeRouter } from "../routing/manhattan-edge-router";
 import defaultModule from "../../base/di.config";
-import { Point } from '../../utils/geometry';
 import { EdgeRouterRegistry } from '../routing/routing';
 import { AnchorComputerRegistry } from '../routing/anchor';
-import { ManhattanRectangularAnchor } from '../routing/manhattan-anchors'
+import { ManhattanRectangularAnchor } from '../routing/manhattan-anchors';
+import { Point, SEdge, SGraph, SModelElement, SModelRoot,SNode, UpdateModelAction } from 'sprotty-protocol';
 
-function compare(expected: SModelElementSchema, actual: SModelElement) {
+function compare(expected: SModelElement, actual: SModelElementImpl) {
     for (const p in expected) {
         if (expected.hasOwnProperty(p)) {
             const expectedProp = (expected as any)[p];
@@ -80,7 +80,7 @@ describe('UpdateModelCommand', () => {
         children: []
     });
 
-    const model2: SModelRootSchema = {
+    const model2: SModelRoot = {
         id: 'model',
         type: 'graph2',
         children: []
@@ -95,7 +95,7 @@ describe('UpdateModelCommand', () => {
     it('replaces the model if animation is suppressed', () => {
         context.root = model1; /* the old model */
         const newModel = command1.execute(context);
-        compare(model2, newModel as SModelRoot);
+        compare(model2, newModel as SModelRootImpl);
         expect(model1).to.equal(command1.oldRoot);
         expect(newModel).to.equal(command1.newRoot);
     });
@@ -108,7 +108,7 @@ describe('UpdateModelCommand', () => {
     it('redo() returns the new model', () => {
         context.root = model1; /* the old model */
         const newModel = command1.redo(context);
-        compare(model2, newModel as SModelRoot);
+        compare(model2, newModel as SModelRootImpl);
     });
 
     class TestUpdateModelCommand extends UpdateModelCommand {
@@ -117,7 +117,7 @@ describe('UpdateModelCommand', () => {
             this.edgeRouterRegistry = edgeRouterRegistry;
         }
 
-        testAnimation(root: SModelRoot, execContext: CommandExecutionContext) {
+        testAnimation(root: SModelRootImpl, execContext: CommandExecutionContext) {
             this.oldRoot = root;
             this.newRoot = execContext.modelFactory.createRoot(this.action.newRoot!);
             const matcher = new ModelMatcher();
@@ -200,7 +200,7 @@ describe('UpdateModelCommand', () => {
                     type: 'node',
                     id: 'child1',
                     position: { x: 100, y: 100 }
-                } as SNodeSchema
+                } as SNode
             ]
         });
         const command2 = new TestUpdateModelCommand({
@@ -214,7 +214,7 @@ describe('UpdateModelCommand', () => {
                         type: 'node',
                         id: 'child1',
                         position: { x: 150, y: 200 }
-                    } as SNodeSchema
+                    } as SNode
                 ]
             }
         });
@@ -236,7 +236,7 @@ describe('UpdateModelCommand', () => {
                     type: 'node',
                     id: 'child1',
                     position: { x: 100, y: 100 }
-                } as SNodeSchema,
+                } as SNode,
                 {
                     type: 'node',
                     id: 'child2'
@@ -254,7 +254,7 @@ describe('UpdateModelCommand', () => {
                         type: 'node',
                         id: 'child1',
                         position: { x: 150, y: 200 }
-                    } as SNodeSchema,
+                    } as SNode,
                     {
                         type: 'node',
                         id: 'child3'
@@ -292,7 +292,7 @@ describe('UpdateModelCommand', () => {
                     type: 'node',
                     id: 'child1',
                     position: { x: 100, y: 100 }
-                } as SNodeSchema,
+                } as SNode,
                 {
                     type: 'node',
                     id: 'child2'
@@ -322,20 +322,20 @@ describe('UpdateModelCommand', () => {
                         type: 'node',
                         id: 'child1',
                         position: { x: 100, y: 100 }
-                    } as SNodeSchema,
+                    } as SNode,
                     leftParentId: 'model',
                     right: {
                         type: 'node',
                         id: 'child1',
                         position: { x: 150, y: 200 }
-                    } as SNodeSchema,
+                    } as SNode,
                     rightParentId: 'model',
                 }
             ]
         });
-        const newModel = command2.execute(context) as SModelRoot;
+        const newModel = command2.execute(context) as SModelRootImpl;
         expect(newModel.children).to.have.lengthOf(2);
-        const expected: SGraphSchema = {
+        const expected: SGraph = {
             type: 'graph',
             id: 'model',
             children: [
@@ -347,18 +347,18 @@ describe('UpdateModelCommand', () => {
                     type: 'node',
                     id: 'child1',
                     position: { x: 150, y: 200 }
-                } as SNodeSchema
+                } as SNode
             ]
         };
         compare(expected, newModel);
     });
 
     it('morphs edge', () => {
-        const edgeId = 'edge'
+        const edgeId = 'edge';
         const edgeRouterRegistry = createEdgeRouterRegistry();
         context.root = graphFactory.createRoot(
             newModelWithEdge(edgeId, [{ x: 64, y: 0 }, { x: 64, y: 128 }]));
-            // connects node1 left with node2 right at respective midpoints
+        // connects node1 left with node2 right at respective midpoints
         const command1 = new TestUpdateModelCommand({
             kind: UpdateModelCommand.KIND,
             animate: false,
@@ -368,7 +368,7 @@ describe('UpdateModelCommand', () => {
         expect(animation1).to.be.instanceof(MorphEdgesAnimation);
         if (animation1 instanceof Animation) {
             const newRoot = animation1.tween(0, context);
-            const edge = newRoot.index.getById(edgeId) as SEdge;
+            const edge = newRoot.index.getById(edgeId) as SEdgeImpl;
             expect(edge.routingPoints).to.be.eql([
                 { x: 64, y: 0 },
                 { x: 64, y: 128 }
@@ -380,19 +380,19 @@ describe('UpdateModelCommand', () => {
             ]);
             animation1.tween(1, context);
             expect(edge.routingPoints).to.be.eql([
-                {x: 136, y: 0}
+                { x: 136, y: 0 }
             ]);
         }
         const command2 = new TestUpdateModelCommand({
             kind: UpdateModelCommand.KIND,
             animate: false,
-            newRoot: newModelWithEdge(edgeId, [{ x: 32, y: 0 }, { x: 32, y: 32 }, { x: 64, y: 32 }, { x:64, y: 128 }])
+            newRoot: newModelWithEdge(edgeId, [{ x: 32, y: 0 }, { x: 32, y: 32 }, { x: 64, y: 32 }, { x: 64, y: 128 }])
         }, edgeRouterRegistry);
         const animation2 = command2.testAnimation(command1.newRoot, context);
         expect(animation2).to.be.instanceof(MorphEdgesAnimation);
         if (animation2 instanceof Animation) {
             const newRoot = animation2.tween(0, context);
-            const edge = newRoot.index.getById(edgeId) as SEdge;
+            const edge = newRoot.index.getById(edgeId) as SEdgeImpl;
             expect(edge.routingPoints).to.be.eql([
                 { x: 68, y: 0 },     // interpolated between 0:0 and 136:0
                 { x: 136, y: 0 },    // original
@@ -467,7 +467,7 @@ describe('UpdateModelCommand', () => {
             ]
         });
         const actual = await flattenCommand.execute(context);
-        const expected: SModelElementSchema = {
+        const expected: SModelElement = {
             type: 'graph',
             id: 'model',
             children: [
@@ -481,7 +481,7 @@ describe('UpdateModelCommand', () => {
                 }
             ]
         };
-        compare(expected, actual as SModelRoot);
+        compare(expected, actual as SModelRootImpl);
     }
 
     async function removesContainerElementAndAddsContainedElement(animate: boolean): Promise<void> {
@@ -522,7 +522,7 @@ describe('UpdateModelCommand', () => {
             ]
         });
         const actual = await flattenCommand.execute(context);
-        const expected: SModelElementSchema = {
+        const expected: SModelElement = {
             type: 'graph',
             id: 'model',
             children: [
@@ -532,10 +532,10 @@ describe('UpdateModelCommand', () => {
                 }
             ]
         };
-        compare(expected, actual as SModelRoot);
+        compare(expected, actual as SModelRootImpl);
     }
 
-    function newModelWithEdge(edgeId: string, routingPoints: Point[]): SModelRootSchema {
+    function newModelWithEdge(edgeId: string, routingPoints: Point[]): SModelRoot {
         return {
             type: 'graph',
             id: 'model',
@@ -546,14 +546,14 @@ describe('UpdateModelCommand', () => {
                     position: { x: -16, y: -8 },
                     size: { width: 16, height: 16 }
                     // mid-right is at 0:0
-                } as SNodeSchema,
+                } as SNode,
                 {
                     type: 'node',
                     id: 'node2',
                     position: { x: 128, y: 120 },
                     size: { width: 16, height: 16 }
                     // mid-left is at 128:128
-                } as SNodeSchema,
+                } as SNode,
                 {
                     type: 'edge',
                     id: edgeId,
@@ -561,9 +561,9 @@ describe('UpdateModelCommand', () => {
                     routingPoints,
                     sourceId: 'node1',
                     targetId: 'node2'
-                } as SEdgeSchema
+                } as SEdge
             ]
-        }
+        };
     }
 
     function createEdgeRouterRegistry(): EdgeRouterRegistry {

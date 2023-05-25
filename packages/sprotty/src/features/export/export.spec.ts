@@ -22,9 +22,10 @@ import { TYPES } from '../../base/types';
 import { ConsoleLogger } from "../../utils/logging";
 import { CommandExecutionContext } from "../../base/commands/command";
 import { SGraphFactory } from "../../graph/sgraph-factory";
-import { SNode, SNodeSchema, SGraph } from "../../graph/sgraph";
+import { SNodeImpl, SGraphImpl } from "../../graph/sgraph";
 import { ExportSvgCommand, RequestExportSvgAction } from './export';
 import defaultModule from "../../base/di.config";
+import { SNode } from 'sprotty-protocol';
 
 describe('ExportSvgCommand', () => {
     const container = new Container();
@@ -33,7 +34,7 @@ describe('ExportSvgCommand', () => {
 
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
 
-    const myNodeSchema: SNodeSchema = {
+    const myNodeSchema: SNode = {
         id: 'node', type: 'node:circle',
         position: {x: 100, y: 200},
         size: {width: 10, height: 20}
@@ -43,9 +44,9 @@ describe('ExportSvgCommand', () => {
         id: 'model',
         type: 'graph',
         children: [myNodeSchema]
-    }) as SGraph;
+    }) as SGraphImpl;
 
-    const myNode = model.children[0] as SNode;
+    const myNode = model.children[0] as SNodeImpl;
 
     const cmd = new ExportSvgCommand(RequestExportSvgAction.create());
 
@@ -61,24 +62,24 @@ describe('ExportSvgCommand', () => {
     it('execute() clears selection', () => {
         myNode.selected = true;
         const newModel = cmd.execute(context).model;
-        expect(newModel.children[0]).instanceof(SNode);
-        expect((newModel.children[0] as SNode).selected).to.equal(false);
+        expect(newModel.children[0]).instanceof(SNodeImpl);
+        expect((newModel.children[0] as SNodeImpl).selected).to.equal(false);
     });
 
     it('execute() removes hover feedback', () => {
         myNode.hoverFeedback = true;
         const newModel = cmd.execute(context).model;
-        expect(newModel.children[0]).instanceof(SNode);
-        expect((newModel.children[0] as SNode).hoverFeedback).to.equal(false);
+        expect(newModel.children[0]).instanceof(SNodeImpl);
+        expect((newModel.children[0] as SNodeImpl).hoverFeedback).to.equal(false);
     });
 
     it('execute() resets viewport', () => {
         model.zoom = 17;
         model.scroll = { x: 12, y: 12};
         const newModel = cmd.execute(context).model;
-        expect(newModel).instanceof(SGraph);
-        expect((newModel as SGraph).zoom).to.equal(1);
-        expect((newModel as SGraph).scroll.x).to.equal(0);
-        expect((newModel as SGraph).scroll.y).to.equal(0);
+        expect(newModel).instanceof(SGraphImpl);
+        expect((newModel as SGraphImpl).zoom).to.equal(1);
+        expect((newModel as SGraphImpl).scroll.x).to.equal(0);
+        expect((newModel as SGraphImpl).scroll.y).to.equal(0);
     });
 });

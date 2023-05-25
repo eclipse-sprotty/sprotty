@@ -21,27 +21,6 @@ import { Command, CommandExecutionContext, CommandReturn } from '../../base/comm
 import { SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
 
-/**
- * Create an element with the given schema and add it to the diagram.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
- export interface CreateElementAction extends Action {
-    kind: typeof CreateElementAction.KIND
-    containerId: string
-    elementSchema: SModelElementSchema
-}
-export namespace CreateElementAction {
-    export const KIND = 'createElement';
-
-    export function create(elementSchema: SModelElementSchema, options: { containerId: string }): CreateElementAction {
-        return {
-            kind: KIND,
-            elementSchema,
-            containerId: options.containerId
-        };
-    }
-}
 
 @injectable()
 export class CreateElementCommand extends Command {
@@ -72,5 +51,29 @@ export class CreateElementCommand extends Command {
     redo(context: CommandExecutionContext): CommandReturn {
         this.container.add(this.newElement);
         return context.root;
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Create an element with the given schema and add it to the diagram.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface CreateElementAction extends Action {
+    kind: typeof CreateElementAction.KIND
+    containerId: string
+    elementSchema: SModelElementSchema
+}
+export namespace CreateElementAction {
+    export const KIND = 'createElement';
+
+    export function create(elementSchema: SModelElementSchema, options: { containerId: string }): CreateElementAction {
+        return {
+            kind: KIND,
+            elementSchema,
+            containerId: options.containerId
+        };
     }
 }

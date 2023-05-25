@@ -14,6 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * Simple implementation of the deferred pattern.
  * An object that exposes a promise and functions to resolve and reject it.

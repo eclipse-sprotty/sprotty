@@ -19,17 +19,18 @@ import 'mocha';
 import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../types';
-import { SModelElementSchema, ModelIndexImpl, SChildElement } from './smodel';
+import { ModelIndexImpl, SChildElementImpl } from './smodel';
 import { SModelFactory } from "./smodel-factory";
 import { registerModelElement } from './smodel-utils';
 import { selectFeature, Selectable } from '../../features/select/model';
 import { boundsFeature } from '../../features/bounds/model';
 import defaultModule from "../di.config";
+import { SModelElement } from 'sprotty-protocol';
 
 describe('model factory', () => {
 
-    class FooElement extends SChildElement implements Selectable {
-        static readonly DEFAULT_FEATURES = [selectFeature]
+    class FooElement extends SChildElementImpl implements Selectable {
+        static readonly DEFAULT_FEATURES = [selectFeature];
         selected: boolean;
     }
 
@@ -67,7 +68,7 @@ describe('model factory', () => {
                             id: 'element3'
                         }
                     ]
-                } as SModelElementSchema
+                } as SModelElement
             ]
         });
         const element1 = root.children[0];

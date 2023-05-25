@@ -20,17 +20,18 @@ import { expect } from "chai";
 import { Container, injectable, inject } from "inversify";
 import { TYPES } from "../types";
 import { configureCommand, CommandActionHandlerInitializer } from "./command-registration";
-import { SetModelCommand, SetModelAction } from "../features/set-model";
+import { SetModelCommand } from "../features/set-model";
 import { ActionHandlerRegistry } from "../actions/action-handler";
 import { EMPTY_ROOT } from "../model/smodel-factory";
 import { Command, CommandResult } from "./command";
+import { SetModelAction } from "sprotty-protocol";
 
 const MySymbol = Symbol('MySymbol');
 
 class MyAction {
     kind = MyCommand.KIND;
 
-    constructor(readonly value: string) {}
+    constructor(readonly value: string) { }
 }
 
 @injectable()
@@ -49,13 +50,13 @@ class MyCommand extends Command {
 }
 
 describe('CommandRegistration', () => {
-    it ('creates new instances', () => {
+    it('creates new instances', () => {
         const container = new Container();
         container.bind(TYPES.IActionHandlerInitializer).to(CommandActionHandlerInitializer).inSingletonScope();
         container.bind(ActionHandlerRegistry).toSelf().inSingletonScope();
         configureCommand(container, SetModelCommand);
         const actionHandlerRegistry = container.get<ActionHandlerRegistry>(ActionHandlerRegistry);
-        const action = new SetModelAction(EMPTY_ROOT);
+        const action = SetModelAction.create(EMPTY_ROOT);
         const handlers = actionHandlerRegistry.get(action.kind);
         expect(handlers.length).to.be.equal(1);
         const handler = handlers.pop()!;
@@ -64,13 +65,13 @@ describe('CommandRegistration', () => {
         const command1 = handler.handle(action);
         expect(command1).to.be.an.instanceOf(SetModelCommand);
         expect(command0).to.not.be.equal(command1);
-        const command2 = handler.handle(new SetModelAction({ type: 'other',  id: '0' }));
+        const command2 = handler.handle(SetModelAction.create({ type: 'other', id: '0' }));
         expect(command2).to.be.an.instanceOf(SetModelCommand);
         expect(command2).to.not.be.equal(command1);
         expect(command2).to.not.be.equal(command0);
     });
 
-    it ('injects members', () => {
+    it('injects members', () => {
         const container = new Container();
         container.bind(TYPES.IActionHandlerInitializer).to(CommandActionHandlerInitializer).inSingletonScope();
         container.bind(ActionHandlerRegistry).toSelf().inSingletonScope();

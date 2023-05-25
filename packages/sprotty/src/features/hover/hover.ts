@@ -35,27 +35,7 @@ import { ViewerOptions } from "../../base/views/viewer-options";
 import { getAbsoluteBounds } from '../bounds/model';
 import { hasPopupFeature, isHoverable } from "./model";
 
-/**
- * Triggered when the user puts the mouse pointer over an element.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface HoverFeedbackAction extends Action {
-    kind: typeof HoverFeedbackAction.KIND
-    mouseoverElement: string
-    mouseIsOver: boolean
-}
-export namespace HoverFeedbackAction {
-    export const KIND = 'hoverFeedback';
 
-    export function create(options: { mouseoverElement: string, mouseIsOver: boolean }): HoverFeedbackAction {
-        return {
-            kind: KIND,
-            mouseoverElement: options.mouseoverElement,
-            mouseIsOver: options.mouseIsOver
-        };
-    }
-}
 
 @injectable()
 export class HoverFeedbackCommand extends SystemCommand {
@@ -85,41 +65,6 @@ export class HoverFeedbackCommand extends SystemCommand {
     redo(context: CommandExecutionContext): CommandReturn {
         return context.root;
     }
-}
-
-/**
- * Triggered when the user hovers the mouse pointer over an element to get a popup with details on
- * that element. This action is sent from the client to the model source, e.g. a DiagramServer.
- * The response is a SetPopupModelAction.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class RequestPopupModelAction implements RequestAction<SetPopupModelAction>, ProtocolRequestPopupModelAction {
-    static readonly KIND = 'requestPopupModel';
-    readonly kind = RequestPopupModelAction.KIND;
-
-    constructor(public readonly elementId: string,
-        public readonly bounds: Bounds,
-        public readonly requestId = '') { }
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(elementId: string, bounds: Bounds): RequestAction<SetPopupModelAction> {
-        return new RequestPopupModelAction(elementId, bounds, generateRequestId());
-    }
-}
-
-/**
- * Sent from the model source to the client to display a popup in response to a RequestPopupModelAction.
- * This action can also be used to remove any existing popup by choosing EMPTY_ROOT as root element.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SetPopupModelAction implements ResponseAction, ProtocolSetPopupModelAction {
-    static readonly KIND = 'setPopupModel';
-    readonly kind = SetPopupModelAction.KIND;
-
-    constructor(public readonly newRoot: SModelRootSchema,
-        public readonly responseId = '') { }
 }
 
 @injectable()
@@ -374,4 +319,67 @@ export class ClosePopupActionHandler implements IActionHandler {
             return  ProtocolSetPopupModelAction.create({ id: EMPTY_ROOT.id, type: EMPTY_ROOT.type });
         }
     }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Triggered when the user puts the mouse pointer over an element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface HoverFeedbackAction extends Action {
+    kind: typeof HoverFeedbackAction.KIND
+    mouseoverElement: string
+    mouseIsOver: boolean
+}
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export namespace HoverFeedbackAction {
+    export const KIND = 'hoverFeedback';
+
+    export function create(options: { mouseoverElement: string, mouseIsOver: boolean }): HoverFeedbackAction {
+        return {
+            kind: KIND,
+            mouseoverElement: options.mouseoverElement,
+            mouseIsOver: options.mouseIsOver
+        };
+    }
+}
+
+/**
+ * Triggered when the user hovers the mouse pointer over an element to get a popup with details on
+ * that element. This action is sent from the client to the model source, e.g. a DiagramServer.
+ * The response is a SetPopupModelAction.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class RequestPopupModelAction implements RequestAction<SetPopupModelAction>, ProtocolRequestPopupModelAction {
+    static readonly KIND = 'requestPopupModel';
+    readonly kind = RequestPopupModelAction.KIND;
+
+    constructor(public readonly elementId: string,
+        public readonly bounds: Bounds,
+        public readonly requestId = '') { }
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(elementId: string, bounds: Bounds): RequestAction<SetPopupModelAction> {
+        return new RequestPopupModelAction(elementId, bounds, generateRequestId());
+    }
+}
+
+/**
+ * Sent from the model source to the client to display a popup in response to a RequestPopupModelAction.
+ * This action can also be used to remove any existing popup by choosing EMPTY_ROOT as root element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class SetPopupModelAction implements ResponseAction, ProtocolSetPopupModelAction {
+    static readonly KIND = 'setPopupModel';
+    readonly kind = SetPopupModelAction.KIND;
+
+    constructor(public readonly newRoot: SModelRootSchema,
+        public readonly responseId = '') { }
 }

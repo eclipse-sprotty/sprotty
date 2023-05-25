@@ -52,6 +52,8 @@ export class WebSocketDiagramServerProxy extends DiagramServerProxy {
     }
 }
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * @deprecated Use `WebSocketDiagramServerProxy` instead;
  */

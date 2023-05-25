@@ -19,16 +19,17 @@ import 'mocha';
 import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../types';
-import { SModelElement, SModelElementSchema, SModelRootSchema } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { EMPTY_ROOT } from '../model/smodel-factory';
 import { SGraphFactory } from "../../graph/sgraph-factory";
 import { CommandExecutionContext } from "../commands/command";
 import { ConsoleLogger } from "../../utils/logging";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { SetModelAction, SetModelCommand } from "./set-model";
+import {  SetModelCommand } from "./set-model";
 import defaultModule from "../di.config";
+import { SModelElement, SModelRoot, SetModelAction } from 'sprotty-protocol';
 
-function compare(expected: SModelElementSchema, actual: SModelElement) {
+function compare(expected: SModelElement, actual: SModelElementImpl) {
     for (const p in expected) {
         if (expected.hasOwnProperty(p)) {
             const expectedProp = (expected as any)[p];
@@ -70,14 +71,14 @@ describe('SetModelCommand', () => {
         children: []
     });
 
-    const model2: SModelRootSchema = {
+    const model2: SModelRoot = {
         id: 'model2',
         type: 'graph',
         children: []
     };
 
     // create the action
-    const mySetModelAction = new SetModelAction(model2 /* the new model */);
+    const mySetModelAction =  SetModelAction.create(model2 /* the new model */);
 
     // create the command
     const cmd = new SetModelCommand(mySetModelAction);

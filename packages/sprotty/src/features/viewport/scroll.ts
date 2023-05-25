@@ -30,20 +30,6 @@ import { hitsMouseEvent } from '../../utils/browser';
 import { TYPES } from '../../base/types';
 import { ViewerOptions } from '../../base/views/viewer-options';
 
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface Scrollable extends SModelExtension {
-    scroll: Point
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isScrollable(element: SModelElementImpl | Scrollable): element is Scrollable {
-    return 'scroll' in element;
-}
-
 export class ScrollMouseListener extends MouseListener {
 
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
@@ -244,4 +230,20 @@ export function findViewportScrollbar(event: MouseEvent): HTMLElement | undefine
         element = element.parentElement;
     }
     return undefined;
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface Scrollable extends SModelExtension {
+    scroll: Point
+}
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export function isScrollable(element: SModelElementImpl | Scrollable): element is Scrollable {
+    return 'scroll' in element;
 }

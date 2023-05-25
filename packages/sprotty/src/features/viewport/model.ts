@@ -22,12 +22,6 @@ import { limit, Limits } from '../../utils/geometry';
 export const viewportFeature = Symbol('viewportFeature');
 
 /**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface Viewport extends Scrollable, Zoomable {
-}
-
-/**
  * Determine whether the given model element has a viewport.
  */
 export function isViewport(element: SModelElementImpl): element is SModelRootImpl & ProtocolViewport {
@@ -41,10 +35,10 @@ export function isViewport(element: SModelElementImpl): element is SModelRootImp
  * Apply limits to the given viewport.
  */
 export function limitViewport(viewport: ProtocolViewport,
-        canvasBounds: Bounds | undefined,
-        horizontalScrollLimits: Limits | undefined,
-        verticalScrollLimits: Limits | undefined,
-        zoomLimits: Limits | undefined): ProtocolViewport {
+    canvasBounds: Bounds | undefined,
+    horizontalScrollLimits: Limits | undefined,
+    verticalScrollLimits: Limits | undefined,
+    zoomLimits: Limits | undefined): ProtocolViewport {
     if (canvasBounds && !Dimension.isValid(canvasBounds)) {
         canvasBounds = undefined;
     }
@@ -81,4 +75,12 @@ export function limitViewport(viewport: ProtocolViewport,
         scrollY = viewport.scroll.y;
     }
     return { scroll: { x: scrollX, y: scrollY }, zoom };
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface Viewport extends Scrollable, Zoomable {
 }

@@ -25,8 +25,8 @@ import { CommandExecutionContext } from '../../base/commands/command';
 import { SGraphFactory } from '../../graph/sgraph-factory';
 import { SetViewportCommand } from './viewport';
 import { ViewportRootElement } from './viewport-root';
-import defaultModule from '../../base/di.config';
-import { almostEquals, SetViewportAction, Viewport } from 'sprotty-protocol';
+import defaultModule from "../../base/di.config";
+import { SetViewportAction, Viewport, almostEquals } from 'sprotty-protocol';
 
 describe('BoundsAwareViewportCommand', () => {
     const container = new Container();

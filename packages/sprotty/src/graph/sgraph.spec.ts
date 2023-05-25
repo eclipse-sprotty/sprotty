@@ -16,9 +16,9 @@
 
 import "mocha";
 import { expect } from "chai";
-import { SRoutingHandle } from '../features/routing/model';
+import { SRoutingHandleImpl } from '../features/routing/model';
 import { RectangularNode, RectangularPort } from '../lib/model';
-import { SNode, SEdge, SGraph, SPort } from './sgraph';
+import { SNodeImpl, SEdgeImpl, SGraphImpl, SPortImpl } from './sgraph';
 import { RoutedPoint } from "../features/routing/routing";
 import { PolylineEdgeRouter } from "../features/routing/polyline-edge-router";
 import { Container } from "inversify";
@@ -27,19 +27,19 @@ import { RectangleAnchor } from "../features/routing/polyline-anchors";
 import { TYPES } from "../base/types";
 import routingModule from "../features/routing/di.config";
 
-describe('SEdge', () => {
-    const graph = new SGraph();
-    const source = new SNode();
+describe('SEdgeImpl', () => {
+    const graph = new SGraphImpl();
+    const source = new SNodeImpl();
     source.id = 'node0';
     source.position = { x: 10, y: 10 };
     source.size = { width: 0, height: 0 };
     graph.add(source);
-    const target = new SNode();
+    const target = new SNodeImpl();
     target.id = 'node1';
     target.position = { x: 20, y: 20 };
     target.size = { width: 0, height: 0 };
     graph.add(target);
-    const edge = new SEdge();
+    const edge = new SEdgeImpl();
     edge.id = 'edge0';
     edge.sourceId = 'node0';
     edge.targetId = 'node1';
@@ -70,7 +70,7 @@ describe('SEdge', () => {
             { x: 18, y: 15, kind: 'linear', pointIndex: 2 },
             { x: 20, y: 20, kind: 'target' }
         ]);
-        const handle1 = edge.children.find(child => (child as SRoutingHandle).pointIndex === 1) as SRoutingHandle;
+        const handle1 = edge.children.find(child => (child as SRoutingHandleImpl).pointIndex === 1) as SRoutingHandleImpl;
         handle1.editMode = true;
         const route2 = router.route(edge);
         expect(route2).to.deep.equal(<RoutedPoint[]>[
@@ -84,14 +84,14 @@ describe('SEdge', () => {
 
 describe('SGraphIndex', () => {
     function setup() {
-        const root = new SGraph();
-        const node1 = new SNode();
+        const root = new SGraphImpl();
+        const node1 = new SNodeImpl();
         node1.id = 'node1';
         root.add(node1);
-        const node2 = new SNode();
+        const node2 = new SNodeImpl();
         node2.id = 'node2';
         root.add(node2);
-        const edge1 = new SEdge();
+        const edge1 = new SEdgeImpl();
         edge1.id = 'edge1';
         edge1.sourceId = node1.id;
         edge1.targetId = node2.id;
@@ -127,7 +127,7 @@ describe('anchor computation', () => {
     const router = container.get<PolylineEdgeRouter>(PolylineEdgeRouter);
 
     function createModel() {
-        const model = new SGraph();
+        const model = new SGraphImpl();
         model.type = 'graph';
         model.id = 'graph';
         const node1 = new RectangularNode();
@@ -156,7 +156,7 @@ describe('anchor computation', () => {
         port2.size = { width: 2, height: 2 };
         port2.strokeWidth = 0;
         node2.add(port2);
-        const edge1 = new SEdge();
+        const edge1 = new SEdgeImpl();
         edge1.type = 'edge';
         edge1.id = 'edge1';
         edge1.sourceId = 'port1';
@@ -167,8 +167,8 @@ describe('anchor computation', () => {
 
     it('correctly translates edge source position', () => {
         const model = createModel();
-        const edge = model.index.getById('edge1') as SEdge;
-        const sourcePort = model.index.getById('port1') as SPort;
+        const edge = model.index.getById('edge1') as SEdgeImpl;
+        const sourcePort = model.index.getById('port1') as SPortImpl;
         const refPoint = { x: 30, y: 15 };
         const translated = router.getTranslatedAnchor(sourcePort, refPoint, edge.parent, edge);
         expect(translated).to.deep.equal({ x: 22, y: 15, width: -1, height: -1 });
@@ -176,8 +176,8 @@ describe('anchor computation', () => {
 
     it('correctly translates edge target position', () => {
         const model = createModel();
-        const edge = model.index.getById('edge1') as SEdge;
-        const targetPort = model.index.getById('port2') as SPort;
+        const edge = model.index.getById('edge1') as SEdgeImpl;
+        const targetPort = model.index.getById('port2') as SPortImpl;
         const refPoint = { x: 20, y: 15 };
         const translated = router.getTranslatedAnchor(targetPort, refPoint, edge.parent, edge);
         expect(translated).to.deep.equal({ x: 28, y: 15, width: -1, height: -1 });
@@ -185,9 +185,9 @@ describe('anchor computation', () => {
 
     it('correctly translates edge source to target position', () => {
         const model = createModel();
-        const edge = model.index.getById('edge1') as SEdge;
-        const sourcePort = model.index.getById('port1') as SPort;
-        const targetPort = model.index.getById('port2') as SPort;
+        const edge = model.index.getById('edge1') as SEdgeImpl;
+        const sourcePort = model.index.getById('port1') as SPortImpl;
+        const targetPort = model.index.getById('port2') as SPortImpl;
         const refPoint = { x: 10, y: 5 };
         const translated = router.getTranslatedAnchor(targetPort, refPoint, sourcePort.parent, edge);
         expect(translated).to.deep.equal({ x: 28, y: 15, width: -1, height: -1 });
