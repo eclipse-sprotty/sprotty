@@ -1,6 +1,6 @@
 {
-	"version": "0.2.0",
-	"configurations": [
+    "version": "0.2.0",
+    "configurations": [
         {
             "name": "Mocha: Test Current File",
             "type": "node",
@@ -24,18 +24,14 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+            "program": "${workspaceRoot}/node_modules/.bin/ts-mocha",
             "args": [
-                "--recursive",
-                "--no-timeouts",
-                "--exclude",
-                "**/views/view.spec.ts",
-                "--config",
-                "${workspaceRoot}/configs/.mocharc.json"
+                "-p",
+                "tsconfig.json",
+                "**/src/**/*.spec.ts",
             ],
-            "console": "integratedTerminal",
             "env": {
-                "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"
+                "NODE_ENV": "test"
             },
             "sourceMaps": true,
             "smartStep": true,
@@ -62,5 +58,5 @@
                 "${workspaceFolder}/packages/sprotty-elk/lib/**/*.js"
             ]
         }
-	]
+    ]
 }
