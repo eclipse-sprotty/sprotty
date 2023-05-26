@@ -17,10 +17,10 @@
 import "reflect-metadata";
 import "mocha";
 import { expect } from "chai";
-import { Bounds, EMPTY_BOUNDS } from '../../utils/geometry';
-import { SModelRoot } from "../model/smodel";
 import { CommandExecutionContext } from '../commands/command';
 import { InitializeCanvasBoundsAction, InitializeCanvasBoundsCommand } from './initialize-canvas';
+import { SModelRootImpl } from "../model/smodel";
+import { Bounds } from "sprotty-protocol";
 
 describe('InitializeCanvasBoundsCommand', () => {
 
@@ -31,7 +31,7 @@ describe('InitializeCanvasBoundsCommand', () => {
         height: 10
     };
 
-    const root = new SModelRoot();
+    const root = new SModelRootImpl();
     const command = new InitializeCanvasBoundsCommand(InitializeCanvasBoundsAction.create(bounds));
 
     const context: CommandExecutionContext = {
@@ -45,7 +45,7 @@ describe('InitializeCanvasBoundsCommand', () => {
 
     it('execute() works as expected', () => {
         // sanity check for initial bounds values
-        expect(EMPTY_BOUNDS).deep.equals(root.canvasBounds);
+        expect(Bounds.EMPTY).deep.equals(root.canvasBounds);
         command.execute(context);
         expect(bounds).deep.equals(root.canvasBounds);
     });

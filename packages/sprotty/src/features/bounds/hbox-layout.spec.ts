@@ -16,55 +16,54 @@
 
 import 'mocha';
 import { expect } from "chai";
-import { SModelElement, SParentElement } from '../../base/model/smodel';
+import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
 import { createFeatureSet } from '../../base/model/smodel-factory';
-import { SNode, SLabel } from '../../graph/sgraph';
+import { SNodeImpl, SLabelImpl } from '../../graph/sgraph';
 import { StatefulLayouter, LayoutRegistry } from './layout';
 import { BoundsData } from './hidden-bounds-updater';
-import { EMPTY_DIMENSION } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
-import { Dimension } from '../../utils/geometry';
 import { layoutableChildFeature } from './model';
 import { TYPES } from '../../base/types';
 import { Container } from 'inversify';
 import boundsModule from './di.config';
 import defaultModule from '../../base/di.config';
+import { Dimension } from 'sprotty-protocol';
 
 describe('HBoxLayouter', () => {
 
     const log = new ConsoleLogger();
 
-    const map = new Map<SModelElement, BoundsData>();
+    const map = new Map<SModelElementImpl, BoundsData>();
 
-    function snode(size: Dimension): SNode {
-        const node = new SNode();
-        node.features = createFeatureSet(SNode.DEFAULT_FEATURES, { enable: [layoutableChildFeature] })
+    function snode(size: Dimension): SNodeImpl {
+        const node = new SNodeImpl();
+        node.features = createFeatureSet(SNodeImpl.DEFAULT_FEATURES, { enable: [layoutableChildFeature] });
         node.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
         return node;
     }
 
-    function slabel(size: Dimension): SLabel {
-        const label = new SLabel();
-        label.features = createFeatureSet(SLabel.DEFAULT_FEATURES);
+    function slabel(size: Dimension): SLabelImpl {
+        const label = new SLabelImpl();
+        label.features = createFeatureSet(SLabelImpl.DEFAULT_FEATURES);
         label.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
         return label;
     }
 
-    function addToMap(element: SModelElement) {
+    function addToMap(element: SModelElementImpl) {
         map.set(element, {
             bounds: (element as any).bounds,
             boundsChanged: false,
             alignmentChanged: false
         });
-        if (element instanceof SParentElement)
+        if (element instanceof SParentElementImpl)
             element.children.forEach(c => addToMap(c));
     }
 
-    function layout(model: SNode) {
+    function layout(model: SNodeImpl) {
         map.clear();
         addToMap(model);
         const container = new Container();
@@ -74,8 +73,8 @@ describe('HBoxLayouter', () => {
         layouter.layout();
     }
 
-    function createModel(): SNode {
-        const model = snode(EMPTY_DIMENSION);
+    function createModel(): SNodeImpl {
+        const model = snode(Dimension.EMPTY);
         model.children = [
             slabel({ width: 1, height: 2 }),
             slabel({ width: 2, height: 1 }),
@@ -158,16 +157,16 @@ describe('HBoxLayouter', () => {
     });
 
     it('issue-189', () => {
-        const model = snode(EMPTY_DIMENSION);
+        const model = snode(Dimension.EMPTY);
         model.layout = 'vbox';
-        const comp0 = snode(EMPTY_DIMENSION);
+        const comp0 = snode(Dimension.EMPTY);
         comp0.layout = 'hbox';
         model.children = [
             slabel({width: 50, height: 10}),
             slabel({width: 50, height: 10}),
             comp0
         ];
-        const compLeft = snode(EMPTY_DIMENSION);
+        const compLeft = snode(Dimension.EMPTY);
         compLeft.layout = 'vbox';
         compLeft.layoutOptions = {
             vGap: 15
@@ -177,7 +176,7 @@ describe('HBoxLayouter', () => {
             slabel({width: 50, height: 10}),
             slabel({width: 50, height: 10})
         ];
-        const compRight = snode(EMPTY_DIMENSION);
+        const compRight = snode(Dimension.EMPTY);
         compRight.layout = 'vbox';
         model.layoutOptions = {
             vGap: 15

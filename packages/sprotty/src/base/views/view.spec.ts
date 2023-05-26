@@ -20,7 +20,7 @@ import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../types';
 import { EMPTY_ROOT, SModelFactory } from '../model/smodel-factory';
-import { SNode } from "../../graph/sgraph";
+import { SNodeImpl } from "../../graph/sgraph";
 import { EmptyView, findArgValue, MissingView } from "./view";
 import { ModelRenderer } from "./viewer";
 import defaultModule from "../di.config";
@@ -47,7 +47,7 @@ describe('base views', () => {
     it('missing view', () => {
         const vnode = missingView.render(emptyRoot, context);
         expect(toHTML(vnode)).to.be.equal('<text class="sprotty-missing" x="0" y="0">?EMPTY?</text>');
-        const model = new SNode();
+        const model = new SNodeImpl();
         model.bounds = {
             x: 42,
             y: 41,

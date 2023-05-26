@@ -21,6 +21,25 @@ import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isExpandable } from './model';
 import { IButtonHandler } from '../button/button-handler';
 
+@injectable()
+export class ExpandButtonHandler implements IButtonHandler {
+    static TYPE = 'button:expand';
+
+    buttonPressed(button: SButtonImpl): Action[] {
+        const expandable = findParentByFeature(button, isExpandable);
+        if (expandable !== undefined) {
+            return [ ProtocolCollapseExpandAction.create({
+                expandIds:   expandable.expanded ? [] : [ expandable.id ],
+                collapseIds:  expandable.expanded ? [ expandable.id ] : []
+            })];
+        } else {
+            return [];
+        }
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * Sent from the client to the model source to recalculate a diagram when elements
  * are collapsed/expanded by the client.
@@ -49,22 +68,5 @@ export class CollapseExpandAllAction implements Action,ProtocolCollapseExpandAll
      * If `expand` is true, all elements are expanded, othewise they are collapsed.
      */
     constructor(public readonly expand: boolean = true) {
-    }
-}
-
-@injectable()
-export class ExpandButtonHandler implements IButtonHandler {
-    static TYPE = 'button:expand';
-
-    buttonPressed(button: SButtonImpl): Action[] {
-        const expandable = findParentByFeature(button, isExpandable);
-        if (expandable !== undefined) {
-            return [ ProtocolCollapseExpandAction.create({
-                expandIds:   expandable.expanded ? [] : [ expandable.id ],
-                collapseIds:  expandable.expanded ? [ expandable.id ] : []
-            })];
-        } else {
-            return [];
-        }
     }
 }

@@ -52,9 +52,6 @@ export abstract class SRoutableElementImpl extends SChildElementImpl {
     }
 }
 
-/** @deprecated Use `SRoutableElementImpl` instead. */
-export const SRoutableElement = SRoutableElementImpl;
-
 export const connectableFeature = Symbol('connectableFeature');
 
 export interface Connectable extends SModelExtension {
@@ -136,8 +133,6 @@ export abstract class SConnectableElementImpl extends SShapeElementImpl implemen
     }
 }
 
-/** @deprecated Use `SConnectableElementImpl` instead. */
-export const SConnectableElement = SConnectableElementImpl;
 
 export type RoutingHandleKind = 'junction' | 'line' | 'source' | 'target' | 'manhattan-50%' |
     'bezier-control-after' | 'bezier-control-before' | 'bezier-junction' | 'bezier-add' | 'bezier-remove';
@@ -169,9 +164,6 @@ export class SRoutingHandleImpl extends SChildElementImpl implements Selectable,
     }
 }
 
-/** @deprecated Use `SRoutingHandleImpl` instead. */
-export const SRoutingHandle = SRoutingHandleImpl;
-
 export class SDanglingAnchorImpl extends SConnectableElementImpl {
     static readonly DEFAULT_FEATURES = [deletableFeature];
 
@@ -184,8 +176,21 @@ export class SDanglingAnchorImpl extends SConnectableElementImpl {
     }
 }
 
-/** @deprecated Use `SDanglingAnchorImpl` instead. */
-export const SDanglingAnchor = SDanglingAnchorImpl;
-
 export const edgeInProgressID = 'edge-in-progress';
 export const edgeInProgressTargetHandleID = edgeInProgressID + '-target-anchor';
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/** @deprecated Use `SRoutableElementImpl` instead. */
+export const SRoutableElement = SRoutableElementImpl;
+
+
+/** @deprecated Use `SConnectableElementImpl` instead. */
+export const SConnectableElement = SConnectableElementImpl;
+
+
+/** @deprecated Use `SRoutingHandleImpl` instead. */
+export const SRoutingHandle = SRoutingHandleImpl;
+
+/** @deprecated Use `SDanglingAnchorImpl` instead. */
+export const SDanglingAnchor = SDanglingAnchorImpl;

@@ -18,18 +18,18 @@ import "mocha";
 import { expect } from "chai";
 
 import { ContextMenuProviderRegistry } from "./menu-providers";
-import { SModelRoot } from "../../base/model/smodel";
+import { SModelRootImpl } from "../../base/model/smodel";
 
 describe('ContextMenuProviderRegistry', () => {
 
     it('should return no items if there are no providers', async () => {
         const reg = new ContextMenuProviderRegistry();
-        expect(await reg.getItems(new SModelRoot())).to.be.empty;
+        expect(await reg.getItems(new SModelRootImpl())).to.be.empty;
     });
 
     it('should return no items with empty list of providers', async () => {
         const reg = new ContextMenuProviderRegistry([]);
-        expect(await reg.getItems(new SModelRoot())).to.be.empty;
+        expect(await reg.getItems(new SModelRootImpl())).to.be.empty;
     });
 
     it('should return the union of elements of all providers', async () => {
@@ -62,7 +62,7 @@ describe('ContextMenuProviderRegistry', () => {
                 }
             }
         ]);
-        const items = await reg.getItems(new SModelRoot());
+        const items = await reg.getItems(new SModelRootImpl());
         expect(items).to.lengthOf(3);
         expect(items[0].id).to.equals('one');
         expect(items[1].id).to.equals('two');
@@ -114,7 +114,7 @@ describe('ContextMenuProviderRegistry', () => {
                 }
             }
         ]);
-        const items = await reg.getItems(new SModelRoot());
+        const items = await reg.getItems(new SModelRootImpl());
         expect(items).to.lengthOf(1);
         expect(items[0].id).to.equal('one');
         expect(items[0].children).to.lengthOf(2);

@@ -32,57 +32,6 @@ export function registerModelElement(context: { bind: interfaces.Bind, isBound: 
 }
 
 /**
- * Model element types can include a colon to separate the basic type and a sub-type. This function
- * extracts the basic type of a model element.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function getBasicType(schema: SModelElementSchema | SModelElementImpl): string {
-    if (!schema.type)
-        return '';
-    const colonIndex = schema.type.indexOf(':');
-    if (colonIndex >= 0)
-        return schema.type.substring(0, colonIndex);
-    else
-        return schema.type;
-}
-
-/**
- * Model element types can include a colon to separate the basic type and a sub-type. This function
- * extracts the sub-type of a model element.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function getSubType(schema: SModelElementSchema | SModelElementImpl): string {
-    if (!schema.type)
-        return '';
-    const colonIndex = schema.type.indexOf(':');
-    if (colonIndex >= 0)
-        return schema.type.substring(colonIndex + 1);
-    else
-        return schema.type;
-}
-
-/**
- * Find the element with the given identifier. If you need to find multiple elements, using an
- * SModelIndex might be more effective.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function findElement(parent: SModelElementSchema, elementId: string): SModelElementSchema | undefined {
-    if (parent.id === elementId)
-        return parent;
-    if (parent.children !== undefined) {
-        for (const child of parent.children) {
-            const result = findElement(child, elementId);
-            if (result !== undefined)
-                return result;
-        }
-    }
-    return undefined;
-}
-
-/**
  * Find a parent element that satisfies the given predicate.
  */
 export function findParent(element: SModelElementImpl, predicate: (e: SModelElementImpl) => boolean): SModelElementImpl | undefined {
@@ -175,4 +124,57 @@ export function  transformToRootBounds(parent: SParentElementImpl, bounds: Bound
         parent = parent.parent;
     }
     return bounds;
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Model element types can include a colon to separate the basic type and a sub-type. This function
+ * extracts the basic type of a model element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export function getBasicType(schema: SModelElementSchema | SModelElementImpl): string {
+    if (!schema.type)
+        return '';
+    const colonIndex = schema.type.indexOf(':');
+    if (colonIndex >= 0)
+        return schema.type.substring(0, colonIndex);
+    else
+        return schema.type;
+}
+
+/**
+ * Model element types can include a colon to separate the basic type and a sub-type. This function
+ * extracts the sub-type of a model element.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export function getSubType(schema: SModelElementSchema | SModelElementImpl): string {
+    if (!schema.type)
+        return '';
+    const colonIndex = schema.type.indexOf(':');
+    if (colonIndex >= 0)
+        return schema.type.substring(colonIndex + 1);
+    else
+        return schema.type;
+}
+
+/**
+ * Find the element with the given identifier. If you need to find multiple elements, using an
+ * SModelIndex might be more effective.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export function findElement(parent: SModelElementSchema, elementId: string): SModelElementSchema | undefined {
+    if (parent.id === elementId)
+        return parent;
+    if (parent.children !== undefined) {
+        for (const child of parent.children) {
+            const result = findElement(child, elementId);
+            if (result !== undefined)
+                return result;
+        }
+    }
+    return undefined;
 }

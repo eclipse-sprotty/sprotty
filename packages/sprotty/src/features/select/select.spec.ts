@@ -20,20 +20,21 @@ import { expect } from "chai";
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
 import { ConsoleLogger } from "../../utils/logging";
-import { SModelRoot } from "../../base/model/smodel";
+import { SModelRootImpl } from "../../base/model/smodel";
 import { EMPTY_ROOT } from "../../base/model/smodel-factory";
 import { CommandExecutionContext } from "../../base/commands/command";
 import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
 import { SGraphFactory } from "../../graph/sgraph-factory";
-import { SNode } from "../../graph/sgraph";
-import { SelectAction, SelectCommand, SelectAllAction, SelectAllCommand } from "./select";
+import { SNodeImpl } from "../../graph/sgraph";
+import { SelectCommand, SelectAllCommand } from "./select";
 import defaultModule from "../../base/di.config";
+import { SelectAction, SelectAllAction } from 'sprotty-protocol';
 
-function getNode(nodeId: string, model: SModelRoot) {
-    return <SNode>model.index.getById(nodeId);
+function getNode(nodeId: string, model: SModelRootImpl) {
+    return <SNodeImpl>model.index.getById(nodeId);
 }
 
-function isNodeSelected(nodeId: string, model: SModelRoot) {
+function isNodeSelected(nodeId: string, model: SModelRootImpl) {
     return getNode(nodeId, model).selected;
 }
 
@@ -44,8 +45,8 @@ describe('SelectCommand', () => {
 
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
 
-    const myNode0 = {id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true};
-    const myNode1 = {id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false};
+    const myNode0 = { id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true };
+    const myNode1 = { id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false };
     const initialModel = graphFactory.createRoot({
         id: 'graph',
         type: 'graph',
@@ -53,17 +54,19 @@ describe('SelectCommand', () => {
     });
 
     // Create the select action
-    const mySelectAction = new SelectAction(
-        ['node1'], // selected list
-        ['node0']  // deselected list
-    );
+    const mySelectAction = SelectAction.create({
+        selectedElementsIDs:
+            ['node1'], // selected list
+        deselectedElementsIDs:
+            ['node0']  // deselected list
+    });
 
     // Create the select command
     const cmd = new SelectCommand(mySelectAction);
 
     // Global so we can carry-over the model, as it's updated,
     // from test case to test case (i,e, select, undo, redo)
-    let newModel: SModelRoot;
+    let newModel: SModelRootImpl;
 
     const context: CommandExecutionContext = {
         root: graphFactory.createRoot(EMPTY_ROOT),
@@ -112,8 +115,8 @@ describe('SelectAllCommand', () => {
 
     const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
 
-    const myNode0 = {id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true};
-    const myNode1 = {id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false};
+    const myNode0 = { id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true };
+    const myNode1 = { id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false };
     const initialModel = graphFactory.createRoot({
         id: 'graph',
         type: 'graph',
@@ -121,12 +124,12 @@ describe('SelectAllCommand', () => {
     });
 
     // Create the select commands
-    const selectCmd = new SelectAllCommand(new SelectAllAction(true));
-    const deselectCmd = new SelectAllCommand(new SelectAllAction(false));
+    const selectCmd = new SelectAllCommand(SelectAllAction.create({ select: true }));
+    const deselectCmd = new SelectAllCommand(SelectAllAction.create({ select: false }));
 
     // Global so we can carry-over the model, as it's updated,
     // from test case to test case (i,e, select, undo, redo)
-    let newModel: SModelRoot;
+    let newModel: SModelRootImpl;
 
     const context: CommandExecutionContext = {
         root: graphFactory.createRoot(EMPTY_ROOT),

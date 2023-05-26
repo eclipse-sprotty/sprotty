@@ -16,12 +16,12 @@
 
 import 'mocha';
 import { expect } from "chai";
-import { SModelRoot } from '../../base/model/smodel';
-import { SShapeElement, getAbsoluteBounds } from './model';
+import { SModelRootImpl } from '../../base/model/smodel';
+import { SShapeElementImpl, getAbsoluteBounds } from './model';
 
 describe('getAbsoluteBounds', () => {
-    function createModel(): SModelRoot {
-        const root = new SModelRoot();
+    function createModel(): SModelRootImpl {
+        const root = new SModelRootImpl();
         const node1 = new TestNode();
         node1.bounds = { x: 100, y: 100, width: 100, height: 100 };
         root.add(node1);
@@ -39,5 +39,5 @@ describe('getAbsoluteBounds', () => {
     });
 });
 
-class TestNode extends SShapeElement {
+class TestNode extends SShapeElementImpl {
 }

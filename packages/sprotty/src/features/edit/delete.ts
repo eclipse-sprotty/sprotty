@@ -30,26 +30,6 @@ export function isDeletable<T extends SModelElementImpl>(element: T): element is
     return element instanceof SChildElementImpl && element.hasFeature(deletableFeature);
 }
 
-/**
- * Delete a set of elements identified by their IDs.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
- export interface DeleteElementAction extends Action {
-    kind: typeof DeleteElementAction.KIND
-    elementIds: string[]
-}
-export namespace DeleteElementAction {
-    export const KIND = 'delete';
-
-    export function create(elementIds: string[]): DeleteElementAction {
-        return {
-            kind: KIND,
-            elementIds
-        };
-    }
-}
-
 export class ResolvedDelete {
     child: SChildElementImpl;
     parent: SParentElementImpl;
@@ -87,5 +67,27 @@ export class DeleteElementCommand extends Command {
         for (const resolvedDelete of this.resolvedDeletes)
             resolvedDelete.parent.remove(resolvedDelete.child);
         return context.root;
+    }
+}
+
+// // Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Delete a set of elements identified by their IDs.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface DeleteElementAction extends Action {
+    kind: typeof DeleteElementAction.KIND
+    elementIds: string[]
+}
+export namespace DeleteElementAction {
+    export const KIND = 'delete';
+
+    export function create(elementIds: string[]): DeleteElementAction {
+        return {
+            kind: KIND,
+            elementIds
+        };
     }
 }

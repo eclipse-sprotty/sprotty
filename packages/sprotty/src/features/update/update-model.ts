@@ -36,28 +36,6 @@ import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from "../routing/routin
 import { SRoutableElementImpl } from "../routing/model";
 import { containsSome } from "../../base/model/smodel-utils";
 
-/**
- * Sent from the model source to the client in order to update the model. If no model is present yet,
- * this behaves the same as a SetModelAction. The transition from the old model to the new one can be animated.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class UpdateModelAction implements Action, ProtocolUpdateModelAction {
-    static readonly KIND = 'updateModel';
-    readonly kind = UpdateModelAction.KIND;
-
-    public readonly newRoot?: SModelRootSchema;
-    public readonly matches?: Match[];
-
-    constructor(input: SModelRootSchema | Match[],
-        public readonly animate: boolean = true,
-        public readonly cause?: Action) {
-        if ((input as SModelRootSchema).id !== undefined)
-            this.newRoot = input as SModelRootSchema;
-        else
-            this.matches = input as Match[];
-    }
-}
 
 export interface UpdateAnimationData {
     fades: ResolvedElementFade[]
@@ -309,3 +287,27 @@ export class UpdateModelCommand extends Command {
     }
 }
 
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Sent from the model source to the client in order to update the model. If no model is present yet,
+ * this behaves the same as a SetModelAction. The transition from the old model to the new one can be animated.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class UpdateModelAction implements Action, ProtocolUpdateModelAction {
+    static readonly KIND = 'updateModel';
+    readonly kind = UpdateModelAction.KIND;
+
+    public readonly newRoot?: SModelRootSchema;
+    public readonly matches?: Match[];
+
+    constructor(input: SModelRootSchema | Match[],
+        public readonly animate: boolean = true,
+        public readonly cause?: Action) {
+        if ((input as SModelRootSchema).id !== undefined)
+            this.newRoot = input as SModelRootSchema;
+        else
+            this.matches = input as Match[];
+    }
+}

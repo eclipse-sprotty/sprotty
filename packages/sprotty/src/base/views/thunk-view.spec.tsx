@@ -20,7 +20,7 @@ import { svg } from '../../lib/jsx';
 import 'mocha';
 import { expect } from "chai";
 import { init } from "snabbdom";
-import { SModelElement } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel";
 import { ModelRenderer } from './viewer';
 import { ThunkView } from './thunk-view';
 import setup from '../../utils/test-helper';
@@ -35,7 +35,7 @@ describe('ThunkView', () => {
 
     let renderCount = 0;
 
-    class Foo extends SModelElement {
+    class Foo extends SModelElementImpl {
         foo: string;
     }
 

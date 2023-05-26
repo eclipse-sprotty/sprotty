@@ -18,10 +18,10 @@ import "reflect-metadata";
 import "mocha";
 import { expect } from "chai";
 import { Container } from "inversify";
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action, HoverFeedbackAction } from 'sprotty-protocol/lib/actions';
 import { TYPES } from "../../base/types";
-import { SChildElement, SModelElement, SModelRoot } from "../../base/model/smodel";
-import { HoverFeedbackAction, HoverMouseListener } from "./hover";
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
+import { HoverMouseListener } from "./hover";
 import { Hoverable, hoverFeedbackFeature, popupFeature } from "./model";
 import defaultModule from "../../base/di.config";
 import hoverModule from "./di.config";
@@ -41,11 +41,11 @@ describe('hover', () => {
             return this.state.popupOpen;
         }
 
-        set previousPopupElementMock(el: SModelElement) {
+        set previousPopupElementMock(el: SModelElementImpl) {
             this.state.previousPopupElement = el;
         }
 
-        protected override startMouseOverTimer(target: SModelElement, evt: MouseEvent): Promise<Action> {
+        protected override startMouseOverTimer(target: SModelElementImpl, evt: MouseEvent): Promise<Action> {
             this.state.popupOpen = true;
             this.state.previousPopupElement = target;
             return new Promise<Action>(() => {
@@ -64,13 +64,13 @@ describe('hover', () => {
         }
     }
 
-    class PopupTarget extends SChildElement {
+    class PopupTarget extends SChildElementImpl {
         override hasFeature(feature: symbol): boolean {
             return feature === popupFeature;
         }
     }
 
-    class HoverableTarget extends SModelElement implements Hoverable {
+    class HoverableTarget extends SModelElementImpl implements Hoverable {
         hoverFeedback: boolean = false;
 
         constructor(id: string = "1") {
@@ -92,7 +92,7 @@ describe('hover', () => {
 
     describe('mouseover result', () => {
         it('is empty on hovering over non-hoverable elements', () => {
-            const target = new SModelElement();
+            const target = new SModelElementImpl();
             const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(target, event);
             expect(mouseOverResult).to.be.empty;
         });
@@ -120,12 +120,12 @@ describe('hover', () => {
             expect(actionForTarget[0].mouseIsOver).to.be.false;
             expect(actionForAnotherTarget[0].mouseIsOver).to.be.true;
             // reset state by hovering over the root
-            hoverListener.mouseOver(new SModelRoot(), event);
+            hoverListener.mouseOver(new SModelRootImpl(), event);
         });
         it('contains SetPopupModelAction if popup is open and hovering over an non-hoverable element', () => {
             hoverListener.resetLastHoverFeedbackElement();
             hoverListener.popupIsOpen = true;
-            const target = new SModelElement();
+            const target = new SModelElementImpl();
             const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(target, event);
 
             expect(mouseOverResult).to.have.lengthOf(1);
@@ -149,7 +149,7 @@ describe('hover', () => {
             expect(actionForTarget[0].mouseIsOver).to.be.false;
             expect(actionForAnotherTarget[0].mouseIsOver).to.be.false;
             // reset state by hovering over the root
-            hoverListener.mouseOver(new SModelRoot(), event);
+            hoverListener.mouseOver(new SModelRootImpl(), event);
         });
         it('contains SetPopupModelAction and Promise if popup is open and previous target is not the same', () => {
             hoverListener.popupIsOpen = true;
@@ -166,11 +166,11 @@ describe('hover', () => {
         });
         it('contains nothing if popup is open and previous target is the same', () => {
             hoverListener.popupIsOpen = false;
-            const childTarget = new SChildElement();
+            const childTarget = new SChildElementImpl();
             childTarget.id = 'someLabel';
             const target = new PopupTarget();
             target.id = 'hoverTarget';
-            const root = new SModelRoot();
+            const root = new SModelRootImpl();
             root.add(target);
             target.add(childTarget);
 

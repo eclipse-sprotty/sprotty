@@ -21,28 +21,6 @@ import { TYPES } from '../base/types';
 import { ModelSource } from './model-source';
 
 /**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface LoggingAction extends Action {
-    kind: typeof LoggingAction.KIND;
-    severity: string
-    time: string
-    caller: string
-    message: string
-    params: string[]
-}
-export namespace LoggingAction {
-    export const KIND = 'logging';
-
-    export function create(options: { severity: string, time: string, caller: string, message: string, params: string[] }): LoggingAction {
-        return {
-            kind: KIND,
-            ...options
-        };
-    }
-}
-
-/**
  * A logger that forwards messages of type 'error', 'warn', and 'info' to the model source.
  */
 @injectable()
@@ -94,5 +72,29 @@ export class ForwardingLogger implements ILogger {
                 } catch (e) {}
             }
         });
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface LoggingAction extends Action {
+    kind: typeof LoggingAction.KIND;
+    severity: string
+    time: string
+    caller: string
+    message: string
+    params: string[]
+}
+export namespace LoggingAction {
+    export const KIND = 'logging';
+
+    export function create(options: { severity: string, time: string, caller: string, message: string, params: string[] }): LoggingAction {
+        return {
+            kind: KIND,
+            ...options
+        };
     }
 }

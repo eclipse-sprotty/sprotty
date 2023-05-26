@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import {
-    TYPES, IActionDispatcher, ElementMove, MoveAction, LocalModelSource
+    TYPES, IActionDispatcher, ElementMove, LocalModelSource
 } from 'sprotty';
-import { Bounds, Point, SEdge, SelectAction, SGraph, SNode, getBasicType } from 'sprotty-protocol';
+import { Bounds, Point, SEdge, SelectAction, SGraph, SNode, getBasicType, MoveAction } from 'sprotty-protocol';
 import createContainer from './di.config';
 
 const NODE_SIZE = 60;

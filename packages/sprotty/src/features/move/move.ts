@@ -40,28 +40,6 @@ import { isViewport } from '../viewport/model';
 import { isLocateable, isMoveable, Locateable } from './model';
 import { ISnapper } from './snap';
 
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface MoveAction extends Action {
-    kind: typeof MoveAction.KIND
-    moves: ElementMove[]
-    animate: boolean
-    finished: boolean
-}
-export namespace MoveAction {
-    export const KIND = 'move';
-
-    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean } = {}): MoveAction {
-        return {
-            kind: KIND,
-            moves,
-            animate: options.animate ?? true,
-            finished: options.finished ?? false
-        };
-    }
-}
-
 export interface ElementMove {
     elementId: string
     elementType?: string
@@ -652,5 +630,29 @@ export class LocationPostprocessor implements IVNodePostprocessor {
     }
 
     postUpdate(): void {
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface MoveAction extends Action {
+    kind: typeof MoveAction.KIND
+    moves: ElementMove[]
+    animate: boolean
+    finished: boolean
+}
+export namespace MoveAction {
+    export const KIND = 'move';
+
+    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean } = {}): MoveAction {
+        return {
+            kind: KIND,
+            moves,
+            animate: options.animate ?? true,
+            finished: options.finished ?? false
+        };
     }
 }

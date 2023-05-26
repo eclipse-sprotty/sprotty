@@ -16,54 +16,53 @@
 
 import 'mocha';
 import { expect } from "chai";
-import { SModelElement, SParentElement } from '../../base/model/smodel';
+import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
 import { createFeatureSet } from '../../base/model/smodel-factory';
-import { SNode, SLabel } from '../../graph/sgraph';
+import { SNodeImpl, SLabelImpl } from '../../graph/sgraph';
 import { StatefulLayouter, LayoutRegistry } from './layout';
 import { BoundsData } from './hidden-bounds-updater';
-import { EMPTY_DIMENSION } from '../../utils/geometry';
 import { ConsoleLogger } from '../../utils/logging';
-import { Dimension } from '../../utils/geometry';
 import boundsModule from './di.config';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
 import defaultModule from '../../base/di.config';
+import { Dimension } from 'sprotty-protocol';
 
 describe('StackLayouter', () => {
 
     const log = new ConsoleLogger();
 
-    const map = new Map<SModelElement, BoundsData>();
+    const map = new Map<SModelElementImpl, BoundsData>();
 
-    function snode(size: Dimension): SNode {
-        const node = new SNode();
-        node.features = createFeatureSet(SNode.DEFAULT_FEATURES);
+    function snode(size: Dimension): SNodeImpl {
+        const node = new SNodeImpl();
+        node.features = createFeatureSet(SNodeImpl.DEFAULT_FEATURES);
         node.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
         return node;
     }
 
-    function slabel(size: Dimension): SLabel {
-        const label = new SLabel();
-        label.features = createFeatureSet(SLabel.DEFAULT_FEATURES);
+    function slabel(size: Dimension): SLabelImpl {
+        const label = new SLabelImpl();
+        label.features = createFeatureSet(SLabelImpl.DEFAULT_FEATURES);
         label.bounds = {
             x: 0, y: 0, width: size.width, height: size.height
         };
         return label;
     }
 
-    function addToMap(element: SModelElement) {
+    function addToMap(element: SModelElementImpl) {
         map.set(element, {
             bounds: (element as any).bounds,
             boundsChanged: false,
             alignmentChanged: false
         });
-        if (element instanceof SParentElement)
+        if (element instanceof SParentElementImpl)
             element.children.forEach(c => addToMap(c));
     }
 
-    function layout(model: SNode) {
+    function layout(model: SNodeImpl) {
         map.clear();
         addToMap(model);
         const container = new Container();
@@ -73,8 +72,8 @@ describe('StackLayouter', () => {
         layouter.layout();
     }
 
-    function createModel(): SNode {
-        const model = snode(EMPTY_DIMENSION);
+    function createModel(): SNodeImpl {
+        const model = snode(Dimension.EMPTY);
         model.children = [
             slabel({ width: 1, height: 2 }),
             slabel({ width: 2, height: 1 }),

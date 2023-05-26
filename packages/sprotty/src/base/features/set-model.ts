@@ -26,6 +26,38 @@ import { SModelRootImpl } from "../model/smodel";
 import { TYPES } from "../types";
 import { InitializeCanvasBoundsCommand } from './initialize-canvas';
 
+@injectable()
+export class SetModelCommand extends ResetCommand {
+    static readonly KIND = ProtocolSetModelAction.KIND;
+
+    oldRoot: SModelRootImpl;
+    newRoot: SModelRootImpl;
+
+    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetModelAction) {
+        super();
+    }
+
+    execute(context: CommandExecutionContext): SModelRootImpl {
+        this.oldRoot = context.modelFactory.createRoot(context.root);
+        this.newRoot = context.modelFactory.createRoot(this.action.newRoot);
+        return this.newRoot;
+    }
+
+    undo(context: CommandExecutionContext): SModelRootImpl {
+        return this.oldRoot;
+    }
+
+    redo(context: CommandExecutionContext): SModelRootImpl {
+        return this.newRoot;
+    }
+
+    get blockUntil(): (action: Action) => boolean {
+        return action => action.kind === InitializeCanvasBoundsCommand.KIND;
+    }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
 /**
  * Sent from the client to the model source (e.g. a DiagramServer) in order to request a model. Usually this
  * is the first message that is sent to the source, so it is also used to initiate the communication.
@@ -57,34 +89,4 @@ export class SetModelAction implements ResponseAction, ProtocolSetModelAction {
 
     constructor(public readonly newRoot: SModelRootSchema,
         public readonly responseId = '') { }
-}
-
-@injectable()
-export class SetModelCommand extends ResetCommand {
-    static readonly KIND = ProtocolSetModelAction.KIND;
-
-    oldRoot: SModelRootImpl;
-    newRoot: SModelRootImpl;
-
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetModelAction) {
-        super();
-    }
-
-    execute(context: CommandExecutionContext): SModelRootImpl {
-        this.oldRoot = context.modelFactory.createRoot(context.root);
-        this.newRoot = context.modelFactory.createRoot(this.action.newRoot);
-        return this.newRoot;
-    }
-
-    undo(context: CommandExecutionContext): SModelRootImpl {
-        return this.oldRoot;
-    }
-
-    redo(context: CommandExecutionContext): SModelRootImpl {
-        return this.newRoot;
-    }
-
-    get blockUntil(): (action: Action) => boolean {
-        return action => action.kind === InitializeCanvasBoundsCommand.KIND;
-    }
 }

@@ -20,14 +20,14 @@ import { svg } from '../../lib/jsx';
 import "mocha";
 import { expect } from "chai";
 import { CssClassPostprocessor } from './css-class-postprocessor';
-import { SModelElement } from '../model/smodel';
+import { SModelElementImpl } from '../model/smodel';
 
 describe('CssClassPostprocessor', () => {
     it('classes are not overwritten', () => {
         const vnode = <g class-foo={true}/>;
         expect(vnode.data!.class!.foo).to.be.true;
         expect(vnode.data!.class!.bar).to.be.undefined;
-        const snode = new SModelElement()
+        const snode = new SModelElementImpl()
         snode.cssClasses = ['bar']
         new CssClassPostprocessor().decorate(vnode, snode)
         expect(vnode.data!.class!.foo).to.be.true;
@@ -35,14 +35,14 @@ describe('CssClassPostprocessor', () => {
     });
     it('subtype is appended as class', () => {
         const vnode = <g/>;
-        const snode = new SModelElement();
+        const snode = new SModelElementImpl();
         snode.type = "type:subtype";
         new CssClassPostprocessor().decorate(vnode, snode);
         expect(vnode.data!.class!.subtype).to.be.true;
     });
     it('type is not appended as class', () => {
         const vnode = <g/>;
-        const snode = new SModelElement();
+        const snode = new SModelElementImpl();
         snode.type = "type";
         new CssClassPostprocessor().decorate(vnode, snode);
         expect(vnode.data!.class).to.be.undefined;

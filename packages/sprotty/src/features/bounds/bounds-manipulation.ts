@@ -25,94 +25,6 @@ import { SModelElementImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { Alignable, BoundsAware, isBoundsAware } from './model';
 
-/**
- * Sent from the model source (e.g. a DiagramServer) to the client to update the bounds of some
- * (or all) model elements.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SetBoundsAction implements Action, protocol.SetBoundsAction {
-    static readonly KIND = 'setBounds';
-    readonly kind = SetBoundsAction.KIND;
-
-    constructor(public readonly bounds: ElementAndBounds[]) {
-    }
-}
-
-/**
- * Sent from the model source to the client to request bounds for the given model. The model is
- * rendered invisibly so the bounds can derived from the DOM. The response is a ComputedBoundsAction.
- * This hidden rendering round-trip is necessary if the client is responsible for parts of the layout
- * (see `needsClientLayout` viewer option).
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class RequestBoundsAction implements RequestAction<ComputedBoundsAction>, protocol.RequestBoundsAction {
-    static readonly KIND = 'requestBounds';
-    readonly kind = RequestBoundsAction.KIND;
-
-    constructor(public readonly newRoot: SModelRootSchema,
-        public readonly requestId: string = '') { }
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(newRoot: SModelRootSchema): RequestAction<ComputedBoundsAction> {
-        return new RequestBoundsAction(newRoot, generateRequestId());
-    }
-}
-
-/**
- * Sent from the client to the model source (e.g. a DiagramServer) to transmit the result of bounds
- * computation as a response to a RequestBoundsAction. If the server is responsible for parts of
- * the layout (see `needsServerLayout` viewer option), it can do so after applying the computed bounds
- * received with this action. Otherwise there is no need to send the computed bounds to the server,
- * so they can be processed locally by the client.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class ComputedBoundsAction implements ResponseAction, protocol.ComputedBoundsAction {
-    static readonly KIND = 'computedBounds';
-    readonly kind = ComputedBoundsAction.KIND;
-
-    constructor(public readonly bounds: ElementAndBounds[],
-        public readonly revision?: number,
-        public readonly alignments?: ElementAndAlignment[],
-        public readonly responseId = '') { }
-}
-
-/**
- * Associates new bounds with a model element, which is referenced via its id.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ElementAndBounds extends protocol.ElementAndBounds {
-    elementId: string
-    newPosition?: Point
-    newSize: Dimension
-}
-
-/**
- * Associates a new alignment with a model element, which is referenced via its id.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ElementAndAlignment extends protocol.ElementAndAlignment{
-    elementId: string
-    newAlignment: Point
-}
-
-/**
- * Request a layout of the diagram or the selected elements only.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class LayoutAction implements Action, protocol.LayoutAction {
-    static readonly KIND = 'layout';
-    readonly kind = LayoutAction.KIND;
-
-    layoutType: string;
-    elementIds: string[];
-}
-
 export interface ResolvedElementAndBounds {
     element: SModelElementImpl & BoundsAware
     oldBounds: Bounds
@@ -200,4 +112,94 @@ export class RequestBoundsCommand extends HiddenCommand {
     get blockUntil(): (action: Action) => boolean {
         return action => action.kind === ProtocolComputedBoundsAction.KIND;
     }
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
+ * Sent from the model source (e.g. a DiagramServer) to the client to update the bounds of some
+ * (or all) model elements.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class SetBoundsAction implements Action, protocol.SetBoundsAction {
+    static readonly KIND = 'setBounds';
+    readonly kind = SetBoundsAction.KIND;
+
+    constructor(public readonly bounds: ElementAndBounds[]) {
+    }
+}
+
+/**
+ * Sent from the model source to the client to request bounds for the given model. The model is
+ * rendered invisibly so the bounds can derived from the DOM. The response is a ComputedBoundsAction.
+ * This hidden rendering round-trip is necessary if the client is responsible for parts of the layout
+ * (see `needsClientLayout` viewer option).
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class RequestBoundsAction implements RequestAction<ComputedBoundsAction>, protocol.RequestBoundsAction {
+    static readonly KIND = 'requestBounds';
+    readonly kind = RequestBoundsAction.KIND;
+
+    constructor(public readonly newRoot: SModelRootSchema,
+        public readonly requestId: string = '') { }
+
+    /** Factory function to dispatch a request with the `IActionDispatcher` */
+    static create(newRoot: SModelRootSchema): RequestAction<ComputedBoundsAction> {
+        return new RequestBoundsAction(newRoot, generateRequestId());
+    }
+}
+
+/**
+ * Sent from the client to the model source (e.g. a DiagramServer) to transmit the result of bounds
+ * computation as a response to a RequestBoundsAction. If the server is responsible for parts of
+ * the layout (see `needsServerLayout` viewer option), it can do so after applying the computed bounds
+ * received with this action. Otherwise there is no need to send the computed bounds to the server,
+ * so they can be processed locally by the client.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class ComputedBoundsAction implements ResponseAction, protocol.ComputedBoundsAction {
+    static readonly KIND = 'computedBounds';
+    readonly kind = ComputedBoundsAction.KIND;
+
+    constructor(public readonly bounds: ElementAndBounds[],
+        public readonly revision?: number,
+        public readonly alignments?: ElementAndAlignment[],
+        public readonly responseId = '') { }
+}
+
+/**
+ * Associates new bounds with a model element, which is referenced via its id.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface ElementAndBounds extends protocol.ElementAndBounds {
+    elementId: string
+    newPosition?: Point
+    newSize: Dimension
+}
+
+/**
+ * Associates a new alignment with a model element, which is referenced via its id.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export interface ElementAndAlignment extends protocol.ElementAndAlignment{
+    elementId: string
+    newAlignment: Point
+}
+
+/**
+ * Request a layout of the diagram or the selected elements only.
+ *
+ * @deprecated Use the declaration from `sprotty-protocol` instead.
+ */
+export class LayoutAction implements Action, protocol.LayoutAction {
+    static readonly KIND = 'layout';
+    readonly kind = LayoutAction.KIND;
+
+    layoutType: string;
+    elementIds: string[];
 }

@@ -19,6 +19,23 @@ import { JsonAny } from 'sprotty-protocol/lib/utils/json';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 
 /**
+ * A list of actions with a label.
+ * Labeled actions are used to denote a group of actions in a user-interface context, e.g.,
+ * to define an entry in the command palette or in the context menu.
+ */
+export class LabeledAction {
+    constructor(readonly label: string, readonly actions: ProtocolAction[], readonly icon?: string) { }
+}
+
+export function isLabeledAction(element: unknown): element is LabeledAction {
+    return element !== undefined
+        && (<LabeledAction>element).label !== undefined
+        && (<LabeledAction>element).actions !== undefined;
+}
+
+// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
+
+/**
  * An action describes a change to the model declaratively.
  * It is a plain data structure, and as such transferable between server and client. An action must never contain actual
  * SModelElement instances, but either refer to them via their ids or contain serializable schema for model elements.
@@ -93,17 +110,3 @@ export class RejectAction implements ResponseAction {
                 public readonly detail?: JsonAny) {}
 }
 
-/**
- * A list of actions with a label.
- * Labeled actions are used to denote a group of actions in a user-interface context, e.g.,
- * to define an entry in the command palette or in the context menu.
- */
-export class LabeledAction {
-    constructor(readonly label: string, readonly actions: ProtocolAction[], readonly icon?: string) { }
-}
-
-export function isLabeledAction(element: unknown): element is LabeledAction {
-    return element !== undefined
-        && (<LabeledAction>element).label !== undefined
-        && (<LabeledAction>element).actions !== undefined;
-}
