@@ -18,7 +18,8 @@ import { ContainerModule, injectable } from 'inversify';
 import {
     ElkLayoutEngine as ElkLayoutEnginePlain, DefaultElementFilter as DefaultElementFilterPlain,
     DefaultLayoutConfigurator as DefaultLayoutConfiguratorPlain, ElkFactory as ElkFactoryPlain,
-    IElementFilter as IElementFilterPlain, ILayoutConfigurator as ILayoutConfiguratorPlain
+    IElementFilter as IElementFilterPlain, ILayoutConfigurator as ILayoutConfiguratorPlain,
+    ILayoutPreprocessor as ILayoutPreprocessorPlain, ILayoutPostprocessor as ILayoutPostprocessorPlain
 } from './elk-layout';
 
 export const ElkLayoutEngine: typeof ElkLayoutEnginePlain = injectable()(ElkLayoutEnginePlain);
@@ -33,6 +34,12 @@ export const DefaultElementFilter: typeof DefaultElementFilterPlain = injectable
 export type ILayoutConfigurator = ILayoutConfiguratorPlain;
 export const ILayoutConfigurator = Symbol('ILayoutConfigurator');
 export const DefaultLayoutConfigurator: typeof DefaultLayoutConfiguratorPlain = injectable()(DefaultLayoutConfiguratorPlain);
+
+export type ILayoutPreprocessor = ILayoutPreprocessorPlain;
+export const ILayoutPreprocessor = Symbol('ILayoutPreprocessor');
+
+export type ILayoutPostprocessor = ILayoutPostprocessorPlain;
+export const ILayoutPostprocessor = Symbol('ILayoutPostprocessor');
 
 /**
  * This dependency injection module adds the default bindings for the frontend integration of ELK.
@@ -55,7 +62,11 @@ export const elkLayoutModule = new ContainerModule(bind => {
         const elkFactory = context.container.get<ElkFactory>(ElkFactory);
         const elementFilter = context.container.get<IElementFilter>(IElementFilter);
         const layoutConfigurator = context.container.get<ILayoutConfigurator>(ILayoutConfigurator);
-        return new ElkLayoutEngine(elkFactory, elementFilter, layoutConfigurator);
+        const layoutPreprocessor = context.container.isBound(ILayoutPreprocessor)
+            ? context.container.get<ILayoutPreprocessor>(ILayoutPreprocessor) : undefined;
+        const layoutPostprocessor = context.container.isBound(ILayoutPostprocessor)
+            ? context.container.get<ILayoutPostprocessor>(ILayoutPostprocessor) : undefined;
+        return new ElkLayoutEngine(elkFactory, elementFilter, layoutConfigurator, layoutPreprocessor, layoutPostprocessor);
     }).inSingletonScope();
     bind(IElementFilter).to(DefaultElementFilter);
     bind(ILayoutConfigurator).to(DefaultLayoutConfigurator);
