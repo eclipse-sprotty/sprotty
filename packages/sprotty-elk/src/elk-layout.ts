@@ -18,12 +18,18 @@ import {
     ELK, ElkNode, ElkGraphElement, ElkLabel, ElkPort, ElkShape, ElkExtendedEdge, LayoutOptions, ElkPrimitiveEdge
 } from 'elkjs/lib/elk-api';
 import { IModelLayoutEngine } from 'sprotty-protocol/lib/diagram-services';
-import { SEdge, SGraph, SLabel, SModelElement, SNode, SPort, SShapeElement } from 'sprotty-protocol/lib/model';
+import { SCompartment, SEdge, SGraph, SLabel, SModelElement, SNode, SPort, SShapeElement } from 'sprotty-protocol/lib/model';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { getBasicType, SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
 
 /**
  * Layout engine that delegates to ELK by transforming the Sprotty graph into an ELK graph.
+ *
+ * This layout engine requires that the _basic type_ of every model element conforms to the
+ * convention: `graph` for the top-level element, `node` for nodes, `edge` for edges, `label`
+ * for labels, and `port` for ports. The basic type is either the value of the `type` property
+ * or the substring preceding the separator `:` if present. Example: `'node:state'` is
+ * interpreted as a node, while `'edge:transition'` is interpreted as an edge.
  */
 export class ElkLayoutEngine implements IModelLayoutEngine {
 
@@ -31,128 +37,216 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
 
     constructor(elkFactory: ElkFactory,
                 protected readonly filter: IElementFilter = new DefaultElementFilter(),
-                protected readonly configurator: ILayoutConfigurator = new DefaultLayoutConfigurator()) {
+                protected readonly configurator: ILayoutConfigurator = new DefaultLayoutConfigurator(),
+                protected readonly preprocessor?: ILayoutPreprocessor,
+                protected readonly postprocessor?: ILayoutPostprocessor) {
         this.elk = elkFactory();
     }
 
-    layout(graph: SGraph, index?: SModelIndex): SGraph | Promise<SGraph> {
-        if (this.getBasicType(graph) !== 'graph') {
-            return graph;
+    /**
+     * Transform the Sprotty graph into an ELK graph, invoke the ELK layout engine,
+     * apply the results to the original graph, and return it.
+     *
+     * _Note:_ The basic type of the root element must be `graph`.
+     */
+    layout(sgraph: SGraph, index?: SModelIndex): SGraph | Promise<SGraph> {
+        if (this.getBasicType(sgraph) !== 'graph') {
+            return sgraph;
         }
         if (!index) {
             index = new SModelIndex();
-            index.add(graph);
+            index.add(sgraph);
         }
-        const elkGraph = this.transformToElk(graph, index) as ElkNode;
+
+        // STEP 1: Transform the Sprotty graph into an ELK graph with optional pre-processing
+        const elkGraph = this.transformGraph(sgraph, index);
+        if (this.preprocessor) {
+            this.preprocessor.preprocess(elkGraph, sgraph, index);
+        }
+
+        // STEP 2: Invoke the ELK layout engine
         return this.elk.layout(elkGraph).then(result => {
+
+            // STEP 3: Apply the results with optional post-processing to the original graph
+            if (this.postprocessor) {
+                this.postprocessor.postprocess(result, sgraph, index!);
+            }
             this.applyLayout(result, index!);
-            return graph;
+            return sgraph;
         });
     }
 
-    protected getBasicType(smodel: SModelElement): string{
+    /**
+     * Determine the _basic type_ of the given model element. The layout engine supports
+     * the following values: `graph`, `node`, `edge`, `label`, `port` and `compartment`
+     */
+    protected getBasicType(smodel: SModelElement): string {
         return getBasicType(smodel);
     }
 
+    /**
+     * @deprecated Use the more specialized transform methods instead.
+     */
     protected transformToElk(smodel: SModelElement, index: SModelIndex): ElkGraphElement {
         switch (this.getBasicType(smodel)) {
-            case 'graph': {
-                const sgraph = smodel as SGraph;
-                const elkGraph: ElkNode = {
-                    id: sgraph.id,
-                    layoutOptions: this.configurator.apply(sgraph, index)
-                };
-                if (sgraph.children) {
-                    elkGraph.children = sgraph.children
-                        .filter(c => this.getBasicType(c) === 'node' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkNode[];
-                    elkGraph.edges = sgraph.children
-                        .filter(c => this.getBasicType(c) === 'edge' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkExtendedEdge[];
-                }
-                return elkGraph;
-            }
+            case 'graph':
+                return this.transformGraph(smodel as SGraph, index);
 
-            case 'node': {
-                const snode = smodel as SNode;
-                const elkNode: ElkNode = {
-                    id: snode.id,
-                    layoutOptions: this.configurator.apply(snode, index)
-                };
-                if (snode.children) {
-                    elkNode.children = snode.children
-                        .filter(c => this.getBasicType(c) === 'node' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkNode[];
-                    elkNode.edges = snode.children
-                        .filter(c => this.getBasicType(c) === 'edge' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkExtendedEdge[];
-                    elkNode.labels = snode.children
-                        .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[];
-                    elkNode.ports = snode.children
-                        .filter(c => this.getBasicType(c) === 'port' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkPort[];
-                }
-                this.transformShape(elkNode, snode);
-                return elkNode;
-            }
+            case 'node':
+                return this.transformNode(smodel as SNode, index);
 
-            case 'edge': {
-                const sedge = smodel as SEdge;
-                const elkEdge: ElkExtendedEdge = {
-                    id: sedge.id,
-                    sources: [sedge.sourceId],
-                    targets: [sedge.targetId],
-                    layoutOptions: this.configurator.apply(sedge, index)
-                };
-                if (sedge.children) {
-                    elkEdge.labels = sedge.children
-                        .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[];
-                }
-                const points = sedge.routingPoints;
-                if (points && points.length >= 2) {
-                    elkEdge.sections = [{
-                        id: sedge.id + ':section',
-                        startPoint: points[0],
-                        bendPoints: points.slice(1, points.length - 1),
-                        endPoint: points[points.length - 1]
-                    }];
-                }
-                return elkEdge;
-            }
+            case 'edge':
+                return this.transformEdge(smodel as SEdge, index);
 
-            case 'label': {
-                const slabel = smodel as SLabel;
-                const elkLabel: ElkLabel = {
-                    id: slabel.id,
-                    text: slabel.text,
-                    layoutOptions: this.configurator.apply(slabel, index)
-                };
-                this.transformShape(elkLabel, slabel);
-                return elkLabel;
-            }
+            case 'label':
+                return this.transformLabel(smodel as SLabel, index);
 
-            case 'port': {
-                const sport = smodel as SPort;
-                const elkPort: ElkPort = {
-                    id: sport.id,
-                    layoutOptions: this.configurator.apply(sport, index)
-                };
-                if (sport.children) {
-                    elkPort.labels = sport.children
-                        .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[];
-                }
-                this.transformShape(elkPort, sport);
-                return elkPort;
-            }
+            case 'port':
+                return this.transformPort(smodel as SPort, index);
 
             default:
                 throw new Error('Type not supported: ' + smodel.type);
         }
     }
 
+    /**
+     * Transform a Sprotty graph element to an ELK graph element.
+     */
+    protected transformGraph(sgraph: SGraph, index: SModelIndex): ElkNode {
+        const elkGraph: ElkNode = {
+            id: sgraph.id,
+            layoutOptions: this.configurator.apply(sgraph, index)
+        };
+        if (sgraph.children) {
+            elkGraph.children = sgraph.children
+                .filter(c => this.getBasicType(c) === 'node' && this.filter.apply(c, index))
+                .map(c => this.transformNode(c as SNode, index));
+            elkGraph.edges = sgraph.children
+                .filter(c => this.getBasicType(c) === 'edge' && this.filter.apply(c, index))
+                .map(c => this.transformEdge(c as SEdge, index));
+        }
+        return elkGraph;
+    }
+
+    /**
+     * Transform a Sprotty node element to an ELK node element.
+     */
+    protected transformNode(snode: SNode, index: SModelIndex): ElkNode {
+        const elkNode: ElkNode = {
+            id: snode.id,
+            layoutOptions: this.configurator.apply(snode, index)
+        };
+        if (snode.children) {
+            const padding: LayoutPadding = { top: 0, right: 0, bottom: 0, left: 0 };
+            elkNode.children = this.transformCompartment(snode, index, padding);
+            if (padding.top !== 0 || padding.right !== 0 || padding.bottom !== 0 || padding.left !== 0) {
+                elkNode.layoutOptions ??= {};
+                elkNode.layoutOptions['org.eclipse.elk.padding'] ??= `[top=${padding.top},left=${padding.left},bottom=${padding.bottom},right=${padding.right}]`;
+            }
+            elkNode.edges = snode.children
+                .filter(c => this.getBasicType(c) === 'edge' && this.filter.apply(c, index))
+                .map(c => this.transformEdge(c as SEdge, index));
+            elkNode.labels = snode.children
+                .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
+                .map(c => this.transformLabel(c as SLabel, index));
+            elkNode.ports = snode.children
+                .filter(c => this.getBasicType(c) === 'port' && this.filter.apply(c, index))
+                .map(c => this.transformPort(c as SPort, index));
+        }
+        this.transformShape(elkNode, snode);
+        return elkNode;
+    }
+
+    protected transformCompartment(scomp: SNode | SCompartment, index: SModelIndex, padding: LayoutPadding): ElkNode[] | undefined {
+        if (!scomp.children) {
+            return undefined;
+        }
+        const nodes = scomp.children.filter(c => this.getBasicType(c) === 'node' && this.filter.apply(c, index));
+        if (nodes.length > 0) {
+            return nodes.map(c => this.transformNode(c as SNode, index));
+        }
+        for (const c of scomp.children) {
+            if (this.getBasicType(c) === 'compartment' && this.filter.apply(c, index)) {
+                const ccomp = c as SCompartment;
+                if (scomp.layout) {
+                    if (ccomp.position) {
+                        padding.left += ccomp.position.x;
+                        padding.top += ccomp.position.y;
+                    }
+                    if (ccomp.size && scomp.size) {
+                        padding.right += scomp.size.width - ccomp.size.width - (ccomp.position ? ccomp.position.x : 0);
+                        padding.bottom += scomp.size.height - ccomp.size.height - (ccomp.position ? ccomp.position.y : 0);
+                    }
+                }
+                const childNodes = this.transformCompartment(ccomp, index, padding);
+                if (childNodes) {
+                    return childNodes;
+                }
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * Transform a Sprotty edge element to an ELK edge element.
+     */
+    protected transformEdge(sedge: SEdge, index: SModelIndex): ElkExtendedEdge {
+        const elkEdge: ElkExtendedEdge = {
+            id: sedge.id,
+            sources: [sedge.sourceId],
+            targets: [sedge.targetId],
+            layoutOptions: this.configurator.apply(sedge, index)
+        };
+        if (sedge.children) {
+            elkEdge.labels = sedge.children
+                .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
+                .map(c => this.transformLabel(c as SLabel, index));
+        }
+        const points = sedge.routingPoints;
+        if (points && points.length >= 2) {
+            elkEdge.sections = [{
+                id: sedge.id + ':section',
+                startPoint: points[0],
+                bendPoints: points.slice(1, points.length - 1),
+                endPoint: points[points.length - 1]
+            }];
+        }
+        return elkEdge;
+    }
+
+    /**
+     * Transform a Sprotty label element to an ELK label element.
+     */
+    protected transformLabel(slabel: SLabel, index: SModelIndex): ElkLabel {
+        const elkLabel: ElkLabel = {
+            id: slabel.id,
+            text: slabel.text,
+            layoutOptions: this.configurator.apply(slabel, index)
+        };
+        this.transformShape(elkLabel, slabel);
+        return elkLabel;
+    }
+
+    /**
+     * Transform a Sprotty port element to an ELK port element.
+     */
+    protected transformPort(sport: SPort, index: SModelIndex): ElkPort {
+        const elkPort: ElkPort = {
+            id: sport.id,
+            layoutOptions: this.configurator.apply(sport, index)
+        };
+        if (sport.children) {
+            elkPort.labels = sport.children
+                .filter(c => this.getBasicType(c) === 'label' && this.filter.apply(c, index))
+                .map(c => this.transformLabel(c as SLabel, index));
+        }
+        this.transformShape(elkPort, sport);
+        return elkPort;
+    }
+
+    /**
+     * Copy the position and size of a Sprotty shape to an ELK shape.
+     */
     protected transformShape(elkShape: ElkShape, sshape: SShapeElement): void {
         if (sshape.position) {
             elkShape.x = sshape.position.x;
@@ -164,6 +258,9 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
         }
     }
 
+    /**
+     * Apply the results of the ELK layout engine to the original Sprotty model.
+     */
     protected applyLayout(elkNode: ElkNode, index: SModelIndex): void {
         const snode = index.getById(elkNode.id);
         if (snode && this.getBasicType(snode) === 'node') {
@@ -192,11 +289,16 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
         }
     }
 
+    /**
+     * Apply shape layout results, i.e. position and size.
+     */
     protected applyShape(sshape: SShapeElement, elkShape: ElkShape, index: SModelIndex): void {
-        if (elkShape.x !== undefined && elkShape.y !== undefined)
+        if (elkShape.x !== undefined && elkShape.y !== undefined) {
             sshape.position = { x: elkShape.x, y: elkShape.y };
-        if (elkShape.width !== undefined && elkShape.height !== undefined)
+        }
+        if (elkShape.width !== undefined && elkShape.height !== undefined) {
             sshape.size = { width: elkShape.width, height: elkShape.height };
+        }
 
         if (elkShape.labels) {
             for (const elkLabel of elkShape.labels) {
@@ -208,23 +310,32 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
         }
     }
 
+    /**
+     * Apply edge layout results, i.e. start point, end point and bend points.
+     */
     protected applyEdge(sedge: SEdge, elkEdge: ElkExtendedEdge, index: SModelIndex): void {
         const points: Point[] = [];
         if (elkEdge.sections && elkEdge.sections.length > 0) {
             const section = elkEdge.sections[0];
-            if (section.startPoint)
+            if (section.startPoint) {
                 points.push(section.startPoint);
-            if (section.bendPoints)
+            }
+            if (section.bendPoints) {
                 points.push(...section.bendPoints);
-            if (section.endPoint)
+            }
+            if (section.endPoint) {
                 points.push(section.endPoint);
+            }
         } else if (isPrimitiveEdge(elkEdge)) {
-            if (elkEdge.sourcePoint)
+            if (elkEdge.sourcePoint) {
                 points.push(elkEdge.sourcePoint);
-            if (elkEdge.bendPoints)
+            }
+            if (elkEdge.bendPoints) {
                 points.push(...elkEdge.bendPoints);
-            if (elkEdge.targetPoint)
+            }
+            if (elkEdge.targetPoint) {
                 points.push(elkEdge.targetPoint);
+            }
         }
         sedge.routingPoints = points;
 
@@ -272,6 +383,8 @@ export class DefaultElementFilter implements IElementFilter {
                 return this.filterLabel(element as SLabel, index);
             case 'port':
                 return this.filterPort(element as SPort, index);
+            case 'compartment':
+                return this.filterCompartment(element as SCompartment, index);
             default:
                 return true;
         }
@@ -308,6 +421,10 @@ export class DefaultElementFilter implements IElementFilter {
     }
 
     protected filterPort(port: SPort, index: SModelIndex): boolean {
+        return true;
+    }
+
+    protected filterCompartment(compartment: SCompartment, index: SModelIndex): boolean {
         return true;
     }
 
@@ -364,3 +481,18 @@ export class DefaultLayoutConfigurator implements ILayoutConfigurator {
     }
 
 }
+
+export interface ILayoutPreprocessor {
+    preprocess(elkGraph: ElkNode, sgraph: SGraph, index: SModelIndex): void
+}
+
+export interface ILayoutPostprocessor {
+    postprocess(elkGraph: ElkNode, sgraph: SGraph, index: SModelIndex): void
+}
+
+export type LayoutPadding = {
+    top: number,
+    right: number,
+    bottom: number,
+    left: number
+};
