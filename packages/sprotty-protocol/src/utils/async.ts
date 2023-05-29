@@ -22,11 +22,29 @@ export class Deferred<T> {
     resolve: (value?: T | PromiseLike<T>) => void;
     reject: (reason?: any) => void;
     readonly promise: Promise<T>;
+    private _state: DeferredState = 'unresolved';
+
 
     constructor() {
         this.promise = new Promise<T>((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
         });
+        this.promise.then(
+            res => this._state = 'resolved',
+            rej => this._state = 'rejected'
+        );
+    }
+
+    private set state(state: DeferredState) {
+        if (this._state === 'unresolved') {
+            this._state = state;
+        }
+    }
+
+    get state(): DeferredState {
+        return this._state;
     }
 }
+
+export type DeferredState = 'resolved' | 'rejected' | 'unresolved';
