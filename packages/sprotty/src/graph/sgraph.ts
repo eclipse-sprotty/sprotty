@@ -52,7 +52,7 @@ export class SGraphImpl extends ViewportRootElement {
  */
 export class SNodeImpl extends SConnectableElementImpl implements Selectable, Fadeable, Hoverable {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
-        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
+        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, layoutableChildFeature];
 
     override children: SChildElementImpl[];
     layout?: string;
