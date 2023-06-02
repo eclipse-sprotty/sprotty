@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { TYPES, LocalModelSource } from 'sprotty';
-import { SEdge, SGraph, SLabel, SNode } from 'sprotty-protocol';
+import { SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol';
 import createContainer from './di.config';
 
 export default function runRandomGraph() {
@@ -39,10 +39,9 @@ function createRandomGraph(): SGraph {
         const node: SNode = {
             type: 'node',
             id: `node${i}`,
-            layout: 'vbox',
             children: [
                 <SLabel>{
-                    type: 'label',
+                    type: 'label:node',
                     id: `node${i}_label`,
                     text: i.toString()
                 }
@@ -52,13 +51,46 @@ function createRandomGraph(): SGraph {
     }
 
     for (let i = 0; i < EDGES; i++) {
+        const sourceNo = Math.floor(Math.random() * NODES);
+        const targetNo = Math.floor(Math.random() * NODES);
+        if (sourceNo === targetNo) {
+            continue;
+        }
         const edge: SEdge = {
             type: 'edge',
             id: `edge${i}`,
-            sourceId: `node${Math.floor(Math.random() * NODES)}`,
-            targetId: `node${Math.floor(Math.random() * NODES)}`
+            sourceId: `port${sourceNo}-${i}`,
+            targetId: `port${targetNo}-${i}`
         };
         graph.children.push(edge);
+
+        const sourcePort: SPort = {
+            type: 'port',
+            id: `port${sourceNo}-${i}`,
+            size: { width: 8, height: 8 },
+            children: [
+                <SLabel>{
+                    type: 'label:port',
+                    id: `port${sourceNo}-${i}-label`,
+                    text: `out${i}`
+                }
+            ]
+        };
+        graph.children.find(c => c.id === `node${sourceNo}`)!.children!.push(sourcePort);
+
+        const targetPort: SPort = {
+            type: 'port',
+            id: `port${targetNo}-${i}`,
+            size: { width: 8, height: 8 },
+            children: [
+                <SLabel>{
+                    type: 'label:port',
+                    id: `port${targetNo}-${i}-label`,
+                    text: `in${i}`
+                }
+            ]
+        };
+        graph.children.find(c => c.id === `node${targetNo}`)!.children!.push(targetPort);
     }
 
     return graph;
