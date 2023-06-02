@@ -28,8 +28,20 @@
     stroke-width: 3;
 }
 
+.sprotty-port {
+    fill: #484;
+}
+
 .sprotty-edge {
     fill: none;
     stroke: #152;
     stroke-width: 1;
+}
+
+.sprotty-label.node {
+    font-size: 1.2rem;
+}
+
+.sprotty-label.port {
+    font-size: 0.8rem;
 }

@@ -64,3 +64,10 @@ export function hitsMouseEvent(child: Element, event: MouseEvent): boolean {
     return event.clientX >= clientRect.left && event.clientX <= clientRect.right
         && event.clientY >= clientRect.top && event.clientY <= clientRect.bottom;
 }
+
+/**
+ * Checks whether the given DOM node is an SVG element.
+ */
+export function isSVGGraphicsElement(node: Node): node is SVGGraphicsElement {
+    return typeof (node as SVGGraphicsElement).getBBox === 'function';
+}

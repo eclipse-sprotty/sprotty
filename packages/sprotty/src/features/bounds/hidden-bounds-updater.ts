@@ -14,17 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { VNode } from "snabbdom";
-import { Action, ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from "sprotty-protocol/lib/actions";
-import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { ILogger } from "../../utils/logging";
-import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { Layouter } from "./layout";
-import { BoundsAware, isAlignable, isLayoutContainer, isSizeable } from "./model";
+import { inject, injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { Action, ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from 'sprotty-protocol/lib/actions';
+import { almostEquals, Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { isSVGGraphicsElement } from '../../utils/browser';
+import { ILogger } from '../../utils/logging';
+import { IActionDispatcher } from '../../base/actions/action-dispatcher';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { TYPES } from '../../base/types';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
+import { Layouter } from './layout';
+import { BoundsAware, isAlignable, isLayoutContainer, isSizeable } from './model';
 
 export class BoundsData {
     vnode?: VNode;
@@ -52,7 +53,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.Layouter) protected layouter: Layouter;
 
-    private readonly element2boundsData: Map<SModelElementImpl, BoundsData> = new Map;
+    private readonly element2boundsData: Map<SModelElementImpl & BoundsAware, BoundsData> = new Map;
 
     root: SModelRootImpl | undefined;
 
@@ -65,8 +66,9 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
                 alignmentChanged: false
             });
         }
-        if (element instanceof SModelRootImpl)
+        if (element instanceof SModelRootImpl) {
             this.root = element;
+        }
         return vnode;
     }
 
@@ -145,10 +147,25 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
         );
     }
 
-    protected getBounds(elm: any, element: BoundsAware): Bounds {
-        if (typeof elm.getBBox !== 'function') {
+    /**
+     * Compute the bounds of the given DOM element. Override this method to customize how
+     * the bounding box of a rendered view is determined.
+     *
+     * In case your Sprotty model element contains children that are rendered outside of
+     * their parent, you can add the `ATTR_BBOX_ELEMENT` attribute to the SVG element
+     * that shall be used to compute the bounding box.
+     */
+    protected getBounds(elm: Node, element: SModelElementImpl & BoundsAware): Bounds {
+        if (!isSVGGraphicsElement(elm)) {
             this.logger.error(this, 'Not an SVG element:', elm);
             return Bounds.EMPTY;
+        }
+        if (elm.tagName === 'g') {
+            for (const child of Array.from(elm.children)) {
+                if (child.getAttribute(ATTR_BBOX_ELEMENT) !== null) {
+                    return this.getBounds(child, element);
+                }
+            }
         }
         const bounds = elm.getBBox();
         return {
@@ -159,3 +176,10 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
         };
     }
 }
+
+/**
+ * Attribute name identifying the SVG element that determines the bounding box of a rendered view.
+ * This can be used when a view creates a group of which only a part should contribute to the
+ * bounding box computed by `HiddenBoundsUpdater`.
+ */
+export const ATTR_BBOX_ELEMENT = 'bboxElement';
