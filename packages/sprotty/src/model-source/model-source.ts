@@ -31,18 +31,18 @@ import { ExportSvgAction } from '../features/export/svg-exporter';
  * the entry point to the client for external sources, such as model
  * editors.
  *
- * As an IActionHandler it listens to actions in and reacts to them with
+ * As an `IActionHandler` it listens to actions in and reacts to them with
  * commands or actions if necessary. This way, you can implement action
  * protocols between the client and the outside world.
  *
  * There are two default implementations for a ModelSource:
- * <ul>
- * <li>the LocalModelSource handles the actions to calculate bounds and
- * set/update the model</li>
- * <li>the DiagramServer connects via websocket to a remote source. It
- * can be used to connect to a model editor that provides the model,
- * layouts diagrams, transfers selection and answers model queries from
- * the client.</li>
+ *
+ *  - The `LocalModelSource` handles the actions to calculate bounds and
+ *    set/update the model
+ *  - the `DiagramServerProxy` connects via websocket to a remote source.
+ *    It can be used to connect to a model editor that provides the model,
+ *    layouts diagrams, transfers selection and answers model queries from
+ *    the client.
  */
 @injectable()
 export abstract class ModelSource implements IActionHandler, IActionHandlerInitializer {
@@ -55,6 +55,8 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
         registry.register(RequestModelAction.KIND, this);
         registry.register(ExportSvgAction.KIND, this);
     }
+
+    abstract get model(): SModelRootSchema;
 
     abstract handle(action: Action): ICommand | Action | void;
 

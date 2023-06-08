@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { saveAs } from 'file-saver';
-import { inject, injectable } from "inversify";
+import { inject, injectable } from 'inversify';
 import { OpenAction, ActionMessage as ProtocolActionMessage, isActionMessage as isProtocolActionMessage } from 'sprotty-protocol';
 import {
     Action, CollapseExpandAction, CollapseExpandAllAction, ComputedBoundsAction, RequestModelAction,
@@ -23,15 +23,15 @@ import {
 } from 'sprotty-protocol/lib/actions';
 import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
-import { ActionHandlerRegistry } from "../base/actions/action-handler";
-import { ICommand } from "../base/commands/command";
-import { SetModelCommand } from "../base/features/set-model";
-import { TYPES } from "../base/types";
+import { ActionHandlerRegistry } from '../base/actions/action-handler';
+import { ICommand } from '../base/commands/command';
+import { SetModelCommand } from '../base/features/set-model';
+import { TYPES } from '../base/types';
 import { RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
 import { ExportSvgAction } from '../features/export/svg-exporter';
-import { UpdateModelCommand } from "../features/update/update-model";
-import { ILogger } from "../utils/logging";
-import { ComputedBoundsApplicator, ModelSource } from "./model-source";
+import { UpdateModelCommand } from '../features/update/update-model';
+import { ILogger } from '../utils/logging';
+import { ComputedBoundsApplicator, ModelSource } from './model-source';
 
 /**
  * Sent by the external server when to signal a state change.
@@ -67,10 +67,14 @@ export abstract class DiagramServerProxy extends ModelSource {
 
     protected lastSubmittedModelType: string;
 
+    override get model(): SModelRootSchema {
+        return this.currentRoot;
+    }
+
     override initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
-        // Register this model source
+        // Register actions to be sent to the remote server
         registry.register(ComputedBoundsAction.KIND, this);
         registry.register(RequestBoundsCommand.KIND, this);
         registry.register(RequestPopupModelAction.KIND, this);
@@ -79,14 +83,16 @@ export abstract class DiagramServerProxy extends ModelSource {
         registry.register(OpenAction.KIND, this);
         registry.register(ServerStatusAction.KIND, this);
 
-        if (!this.clientId)
+        if (!this.clientId) {
             this.clientId = this.viewerOptions.baseDiv;
+        }
     }
 
     handle(action: Action): void | ICommand | Action {
         const forwardToServer = this.handleLocally(action);
-        if (forwardToServer)
+        if (forwardToServer) {
             this.forwardToServer(action);
+        }
     }
 
     protected forwardToServer(action: Action): void {
@@ -98,8 +104,14 @@ export abstract class DiagramServerProxy extends ModelSource {
         this.sendMessage(message);
     }
 
+    /**
+     * Send a message to the remote diagram server.
+     */
     protected abstract sendMessage(message: ProtocolActionMessage): void;
 
+    /**
+     * Called when a message is received from the remote diagram server.
+     */
     protected messageReceived(data: any): void {
         const object = typeof(data) === 'string' ? JSON.parse(data) : data;
         if (isProtocolActionMessage(object) && object.action) {
@@ -188,8 +200,8 @@ export abstract class DiagramServerProxy extends ModelSource {
     }
 
     protected handleExportSvgAction(action: ExportSvgAction): boolean {
-        const blob = new Blob([action.svg], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, "diagram.svg");
+        const blob = new Blob([action.svg], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, 'diagram.svg');
         return false;
     }
 

@@ -58,7 +58,7 @@ export class LocalModelSource extends ModelSource {
      */
     protected lastSubmittedModelType: string;
 
-    get model(): SModelRootSchema {
+    override get model(): SModelRootSchema {
         return this.currentRoot;
     }
 
@@ -69,7 +69,7 @@ export class LocalModelSource extends ModelSource {
     override initialize(registry: ActionHandlerRegistry): void {
         super.initialize(registry);
 
-        // Register this model source
+        // Register actions to be handled by the `handle` method
         registry.register(ComputedBoundsAction.KIND, this);
         registry.register(RequestPopupModelAction.KIND, this);
     }
@@ -196,12 +196,12 @@ export class LocalModelSource extends ModelSource {
         const matches: Match[] = [];
         for (const e of elements) {
             const anye: any = e;
-            if (anye.element !== undefined && anye.parentId !== undefined) {
+            if (typeof anye.element === 'object' && typeof anye.parentId === 'string') {
                 matches.push({
                     right: anye.element,
                     rightParentId: anye.parentId
                 });
-            } else if (anye.id !== undefined) {
+            } else if (typeof anye.id === 'string') {
                 matches.push({
                     right: anye,
                     rightParentId: this.currentRoot.id
