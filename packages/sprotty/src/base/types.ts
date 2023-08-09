@@ -24,8 +24,6 @@ export const TYPES = {
     ActionHandlerRegistryProvider: Symbol('ActionHandlerRegistryProvider'),
     IAnchorComputer: Symbol('IAnchor'),
     AnimationFrameSyncer: Symbol('AnimationFrameSyncer'),
-    /** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */
-    IButtonHandler: Symbol('IButtonHandler'),
     IButtonHandlerRegistration: Symbol('IButtonHandlerRegistration'),
     ICommandPaletteActionProvider: Symbol('ICommandPaletteActionProvider'),
     ICommandPaletteActionProviderRegistry: Symbol('ICommandPaletteActionProviderRegistry'),
@@ -68,7 +66,6 @@ export const TYPES = {
     SModelRegistry: Symbol('SModelRegistry'),
     ISnapper: Symbol('ISnapper'),
     SvgExporter: Symbol('SvgExporter'),
-    IToolManager: Symbol('IToolManager'),
     IUIExtension: Symbol('IUIExtension'),
     UIExtensionRegistry: Symbol('UIExtensionRegistry'),
     IVNodePostprocessor: Symbol('IVNodePostprocessor'),
@@ -77,5 +74,9 @@ export const TYPES = {
     IViewer: Symbol('IViewer'),
     ViewerOptions: Symbol('ViewerOptions'),
     IViewerProvider: Symbol('IViewerProvider'),
+    /** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */
+    IButtonHandler: Symbol('IButtonHandler'),
+    /** @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported */
+    IToolManager: Symbol('IToolManager')
 };
 /* eslint-enable */

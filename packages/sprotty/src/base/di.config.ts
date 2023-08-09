@@ -19,7 +19,7 @@ import { TYPES } from "./types";
 import { CanvasBoundsInitializer, InitializeCanvasBoundsCommand } from './features/initialize-canvas';
 import { LogLevel, NullLogger } from "../utils/logging";
 import { ActionDispatcher, IActionDispatcher } from "./actions/action-dispatcher";
-import { ActionHandlerRegistry, configureActionHandler } from "./actions/action-handler";
+import { ActionHandlerRegistry } from "./actions/action-handler";
 import { CommandStack, ICommandStack } from "./commands/command-stack";
 import { CommandStackOptions } from "./commands/command-stack-options";
 import { SModelFactory, SModelRegistry } from './model/smodel-factory';
@@ -35,8 +35,6 @@ import { DOMHelper } from "./views/dom-helper";
 import { IdPostprocessor } from "./views/id-postprocessor";
 import { configureCommand, CommandActionHandlerInitializer } from "./commands/command-registration";
 import { CssClassPostprocessor } from "./views/css-class-postprocessor";
-import { ToolManager, DefaultToolsEnablingKeyListener, ToolManagerActionHandler } from "./tool-manager/tool-manager";
-import { EnableDefaultToolsAction, EnableToolsAction } from "./tool-manager/tool";
 import { SetModelCommand } from "./features/set-model";
 import { UIExtensionRegistry, SetUIExtensionVisibilityCommand } from "./ui-extensions/ui-extension-registry";
 import { DefaultDiagramLocker } from "./actions/diagram-locker";
@@ -157,14 +155,6 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
 
     // Model commands ---------------------------------------------
     configureCommand(context, SetModelCommand);
-
-    // Tool manager initialization ------------------------------------
-    bind(TYPES.IToolManager).to(ToolManager).inSingletonScope();
-    bind(DefaultToolsEnablingKeyListener).toSelf().inSingletonScope();
-    bind(TYPES.KeyListener).toService(DefaultToolsEnablingKeyListener);
-    bind(ToolManagerActionHandler).toSelf().inSingletonScope();
-    configureActionHandler(context, EnableDefaultToolsAction.KIND, ToolManagerActionHandler);
-    configureActionHandler(context, EnableToolsAction.KIND, ToolManagerActionHandler);
 
     // UIExtension registry initialization ------------------------------------
     bind(TYPES.UIExtensionRegistry).to(UIExtensionRegistry).inSingletonScope();
