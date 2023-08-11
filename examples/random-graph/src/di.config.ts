@@ -41,7 +41,8 @@ export default (containerId: string) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
         bind(ElkFactory).toConstantValue(elkFactory);
-        rebind(ILayoutConfigurator).to(RandomGraphLayoutConfigurator);
+        bind(RandomGraphLayoutConfigurator).toSelf().inSingletonScope();
+        rebind(ILayoutConfigurator).to(RandomGraphLayoutConfigurator).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
@@ -68,9 +69,16 @@ export default (containerId: string) => {
 
 export class RandomGraphLayoutConfigurator extends DefaultLayoutConfigurator {
 
+    direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' = 'LEFT';
+
+    public setDirection(direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'): void {
+        this.direction = direction;
+    }
+
     protected override graphOptions(sgraph: SGraph, index: SModelIndex): LayoutOptions | undefined {
         return {
-            'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered'
+            'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
+            'elk.direction': this.direction
         };
     }
 
