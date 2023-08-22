@@ -18,6 +18,7 @@ import { Action } from "sprotty-protocol/lib/actions";
 
 /**
  * Action to enable the tools of the specified `toolIds`.
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
  */
 export interface EnableToolsAction extends Action {
     kind: typeof EnableToolsAction.KIND
@@ -36,6 +37,7 @@ export namespace EnableToolsAction {
 
 /**
  * Action to disable the currently active tools and enable the default tools instead.
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
  */
 export interface EnableDefaultToolsAction extends Action {
     kind: typeof EnableDefaultToolsAction.KIND;
@@ -50,7 +52,9 @@ export namespace EnableDefaultToolsAction {
     }
 }
 
-/** A tool that can be managed by a `ToolManager`. */
+/** A tool that can be managed by a `ToolManager`.
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
+ */
 export interface Tool {
     readonly id: string;
     /* Notifies the tool to become active. */

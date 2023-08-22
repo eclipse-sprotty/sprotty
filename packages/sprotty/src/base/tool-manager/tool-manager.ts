@@ -29,6 +29,7 @@ import { matchesKeystroke } from "../../utils/keyboard";
  * One instance of a tool manager is intended per editor, coordinating the state of all tools within
  * this editor. A tool can be active or not. A tool manager ensures that activating a set of tools
  * will disable all other tools, allowing them to invoke behavior when they become enabled or disabled.
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
  */
 export interface IToolManager {
 
@@ -66,6 +67,9 @@ export interface IToolManager {
     registerTools(...tools: Tool[]): void;
 }
 
+/**
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
+ */
 @injectable()
 export class ToolManager implements IToolManager {
 
@@ -118,6 +122,9 @@ export class ToolManager implements IToolManager {
     }
 }
 
+/**
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
+ */
 @injectable()
 export class ToolManagerActionHandler implements IActionHandler {
     @inject(TYPES.IToolManager)
@@ -135,6 +142,9 @@ export class ToolManagerActionHandler implements IActionHandler {
     }
 }
 
+/**
+ * @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported
+ */
 @injectable()
 export class DefaultToolsEnablingKeyListener extends KeyListener {
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
