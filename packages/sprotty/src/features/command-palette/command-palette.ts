@@ -207,6 +207,7 @@ export class CommandPalette extends AbstractUIExtension {
 
     protected customizeSuggestionContainer(container: HTMLDivElement, inputRect: ClientRect | DOMRect, maxHeight: number) {
         // move container into our command palette container as this is already positioned correctly
+        container.style.position = "fixed";
         if (this.containerElement) {
             this.containerElement.appendChild(container);
         }
