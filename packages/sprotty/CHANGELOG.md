@@ -2,6 +2,17 @@
 
 This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-elk](https://github.com/eclipse/sprotty/blob/master//packages/sprotty-elk/CHANGELOG.md).
 
+### v0.14.0 (Aug. 2023)
+
+ * Renamed all internal model classes by adding an `Impl` suffix. This ensures a clean separation between the external (protocol) model and the internal (client) model. The original model definitions are marked as deprecated, so you need to update your imports to stay compatible with future versions ([#355](https://github.com/eclipse-sprotty/sprotty/pull/355))
+ * Updated dependency to `inversify` to ensure compatibility with `Typescript 5` ([#357](https://github.com/eclipse-sprotty/sprotty/pull/357)):  version constraint is now `~6.0.1` in all sprotty packages.
+ * The `ToolManager API` and related concepts have been deprecated. They are are no longer actively used and support will be dropped in future versions ([#371](https://github.com/eclipse-sprotty/sprotty/pull/371))
+
+
+Fixed issues: https://github.com/eclipse/sprotty/milestone/10?closed=1
+
+-----
+
 ### v0.13.0 (Dec. 2022)
 
  * Removed dependency to `@vscode/codicons` ([#312](https://github.com/eclipse/sprotty/pull/312)): You now have to add the dependency to your application and include it via import or other means. See classdiagram [di.config.ts](../../examples/classdiagram/src/di.config.ts) for an example.

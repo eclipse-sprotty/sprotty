@@ -2,6 +2,12 @@
 
 This change log covers only the client-server protocol of Sprotty. See also the change log of [sprotty](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
 
+## v.0.14.0 (Aug. 2023)
+
+Fixed issues: https://github.com/eclipse/sprotty/milestone/10?closed=1
+
+-----
+
 ### v0.13.0 (Dec. 2022)
 
  * Moved more actions from `sprotty` to `sprotty-protocol` to make them available in backend applications ([#326](https://github.com/eclipse/sprotty/pull/326)).

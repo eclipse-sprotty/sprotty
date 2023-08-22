@@ -2,6 +2,16 @@
 
 This change log covers only the `elkjs` layout of Sprotty. See also the change log of [sprotty](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
 
+## v.0.14.0 (Aug. 2023)
+
+ * Updated dependency to `inversify` to ensure compatibility with `Typescript 5` ([#357](https://github.com/eclipse-sprotty/sprotty/pull/357)):  version constraint is now `~6.0.1` in all sprotty packages.
+ * Added support for compartments to the `ElkLayoutEngine` and introduced optional pre/post processors ([#362](https://github.com/eclipse-sprotty/sprotty/pull/362))
+
+
+Fixed issues: https://github.com/eclipse/sprotty/milestone/10?closed=1
+
+ -----
+
 ### v0.13.1 (Jan. 2023)
 
  * Fixed edge layout with elk-server ([#334](https://github.com/eclipse/sprotty/pull/334)).
