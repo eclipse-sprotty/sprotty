@@ -1,6 +1,6 @@
 {
   "name": "sprotty-protocol",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "TypeScript declarations for Sprotty to be used both in browser and Node.js context",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
