@@ -14,19 +14,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from 'inversify';
-import ElkConstructor from 'elkjs/lib/elk.bundled';
 import { LayoutOptions } from 'elkjs/lib/elk-api';
+import ElkConstructor from 'elkjs/lib/elk.bundled';
+import { Container, ContainerModule } from 'inversify';
 import {
-    TYPES, configureViewerOptions, SGraphView, SLabelView, ConsoleLogger, LogLevel,
-    loadDefaultModules, LocalModelSource, SNodeImpl, SEdgeImpl, SLabelImpl, configureModelElement,
-    SGraphImpl, RectangularNodeView, edgeIntersectionModule, PolylineEdgeViewWithGapsOnIntersections,
-    SPortImpl
+    Animation, CommandExecutionContext, configureModelElement, configureViewerOptions, ConsoleLogger,
+    edgeIntersectionModule, isSelectable, isViewport, loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
+    RectangularNodeView, SEdgeImpl, SGraphImpl, SGraphView, SLabelImpl, SLabelView, SModelRootImpl, SNodeImpl, SPortImpl,
+    TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
 } from 'sprotty';
 import {
-    DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, ILayoutConfigurator, elkLayoutModule
+    DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, elkLayoutModule, ILayoutConfigurator
 } from 'sprotty-elk/lib/inversify';
-import { SGraph, SModelIndex, SNode, SPort } from 'sprotty-protocol';
+import { Point, SGraph, SModelIndex, SNode, SPort } from 'sprotty-protocol';
 import { PortViewWithExternalLabel } from './views';
 
 export default (containerId: string) => {
@@ -41,9 +41,11 @@ export default (containerId: string) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
         bind(ElkFactory).toConstantValue(elkFactory);
-        rebind(ILayoutConfigurator).to(RandomGraphLayoutConfigurator);
+        bind(RandomGraphLayoutConfigurator).toSelf().inSingletonScope();
+        rebind(ILayoutConfigurator).to(RandomGraphLayoutConfigurator).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+        rebind(UpdateModelCommand).to(TrackSelectedUpdateModelCommand);
 
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(container, 'graph', SGraphImpl, SGraphView);
@@ -68,9 +70,16 @@ export default (containerId: string) => {
 
 export class RandomGraphLayoutConfigurator extends DefaultLayoutConfigurator {
 
+    direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' = 'LEFT';
+
+    public setDirection(direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'): void {
+        this.direction = direction;
+    }
+
     protected override graphOptions(sgraph: SGraph, index: SModelIndex): LayoutOptions | undefined {
         return {
-            'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered'
+            'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
+            'elk.direction': this.direction
         };
     }
 
@@ -90,4 +99,27 @@ export class RandomGraphLayoutConfigurator extends DefaultLayoutConfigurator {
         };
     }
 
+}
+
+/**
+ * Moves the viewport so that the selected element stays at the same position on the screen.
+ */
+export class TrackSelectedUpdateModelCommand extends UpdateModelCommand {
+
+    override createAnimations(data: UpdateAnimationData, root: SModelRootImpl, context: CommandExecutionContext): Animation[] {
+        const animations = super.createAnimations(data, root, context);
+        const selectedToMove = data.moves?.find(toMove => isSelectable(toMove.element) && toMove.element.selected)
+        if (isViewport(root) && selectedToMove) {
+            const nodeMove: Point = {
+                x: selectedToMove.fromPosition.x - selectedToMove.toPosition.x,
+                y: selectedToMove.fromPosition.y - selectedToMove.toPosition.y
+            };
+            const { scroll, zoom } = root;
+            animations.push(new ViewportAnimation(root,
+                { scroll, zoom },
+                { scroll: { x: scroll.x - nodeMove.x, y: scroll.y - nodeMove.y }, zoom }, context)
+            );
+        }
+        return animations;
+    }
 }

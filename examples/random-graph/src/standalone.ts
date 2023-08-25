@@ -14,15 +14,22 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource } from 'sprotty';
+import { LocalModelSource, TYPES } from 'sprotty';
+import { ILayoutConfigurator } from 'sprotty-elk/lib/inversify';
 import { SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol';
-import createContainer from './di.config';
+import createContainer, { RandomGraphLayoutConfigurator } from './di.config';
 
 export default function runRandomGraph() {
     const container = createContainer('sprotty');
 
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
     modelSource.setModel(createRandomGraph());
+
+    const layoutConfigurator = container.get<RandomGraphLayoutConfigurator>(ILayoutConfigurator);
+    document.getElementById('direction')!.addEventListener('change', async (event) => {
+        layoutConfigurator.setDirection((event.target as any)?.value??'LEFT');
+        modelSource.updateModel();
+    });
 }
 
 const NODES = 50;
@@ -92,6 +99,5 @@ function createRandomGraph(): SGraph {
         };
         graph.children.find(c => c.id === `node${targetNo}`)!.children!.push(targetPort);
     }
-
     return graph;
 }
