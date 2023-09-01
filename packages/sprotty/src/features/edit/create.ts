@@ -15,21 +15,19 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action, CreateElementAction as ProtocolCreateElementAction } from 'sprotty-protocol/lib/actions';
-import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
+import { CreateElementAction } from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
 
-
 @injectable()
 export class CreateElementCommand extends Command {
-    static readonly KIND = ProtocolCreateElementAction.KIND;
+    static readonly KIND = CreateElementAction.KIND;
 
     container: SParentElementImpl;
     newElement: SChildElementImpl;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolCreateElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: CreateElementAction) {
         super();
     }
 
@@ -51,29 +49,5 @@ export class CreateElementCommand extends Command {
     redo(context: CommandExecutionContext): CommandReturn {
         this.container.add(this.newElement);
         return context.root;
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Create an element with the given schema and add it to the diagram.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface CreateElementAction extends Action {
-    kind: typeof CreateElementAction.KIND
-    containerId: string
-    elementSchema: SModelElementSchema
-}
-export namespace CreateElementAction {
-    export const KIND = 'createElement';
-
-    export function create(elementSchema: SModelElementSchema, options: { containerId: string }): CreateElementAction {
-        return {
-            kind: KIND,
-            elementSchema,
-            containerId: options.containerId
-        };
     }
 }

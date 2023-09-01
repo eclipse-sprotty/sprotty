@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ServerActionHandler, ServerActionHandlerRegistry } from './action-handler';
+import { ServerActionHandlerRegistry } from './action-handler';
 import {
     Action, isResponseAction, ResponseAction, RequestModelAction, ComputedBoundsAction, LayoutAction, RequestBoundsAction,
     RequestAction, generateRequestId, SetModelAction, UpdateModelAction, RejectAction, isRequestAction
@@ -52,25 +52,6 @@ export class DiagramServer {
         this.diagramGenerator = services.DiagramGenerator;
         this.layoutEngine = services.ModelLayoutEngine;
         this.actionHandlerRegistry = services.ServerActionHandlerRegistry;
-    }
-
-    /**
-     * @deprecated Use the `ServerActionHandlerRegistry` service instead
-     */
-    onAction<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
-        if (!this.actionHandlerRegistry) {
-            this.actionHandlerRegistry = new ServerActionHandlerRegistry();
-        }
-        this.actionHandlerRegistry.onAction(kind, handler);
-    }
-
-    /**
-     * @deprecated Use the `ServerActionHandlerRegistry` service instead
-     */
-    removeActionHandler<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
-        if (this.actionHandlerRegistry) {
-            this.actionHandlerRegistry.removeActionHandler(kind, handler);
-        }
     }
 
     /**

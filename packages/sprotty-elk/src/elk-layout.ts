@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import {
-    ELK, ElkNode, ElkGraphElement, ElkLabel, ElkPort, ElkShape, ElkExtendedEdge, LayoutOptions, ElkPrimitiveEdge
+    ELK, ElkNode, ElkLabel, ElkPort, ElkShape, ElkExtendedEdge, LayoutOptions, ElkPrimitiveEdge
 } from 'elkjs/lib/elk-api';
 import { IModelLayoutEngine } from 'sprotty-protocol/lib/diagram-services';
 import { SCompartment, SEdge, SGraph, SLabel, SModelElement, SNode, SPort, SShapeElement } from 'sprotty-protocol/lib/model';
@@ -82,31 +82,6 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
      */
     protected getBasicType(smodel: SModelElement): string {
         return getBasicType(smodel);
-    }
-
-    /**
-     * @deprecated Use the more specialized transform methods instead.
-     */
-    protected transformToElk(smodel: SModelElement, index: SModelIndex): ElkGraphElement {
-        switch (this.getBasicType(smodel)) {
-            case 'graph':
-                return this.transformGraph(smodel as SGraph, index);
-
-            case 'node':
-                return this.transformNode(smodel as SNode, index);
-
-            case 'edge':
-                return this.transformEdge(smodel as SEdge, index);
-
-            case 'label':
-                return this.transformLabel(smodel as SLabel, index);
-
-            case 'port':
-                return this.transformPort(smodel as SPort, index);
-
-            default:
-                throw new Error('Type not supported: ' + smodel.type);
-        }
     }
 
     /**

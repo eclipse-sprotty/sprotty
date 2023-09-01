@@ -20,8 +20,8 @@ import {
     Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
     SetModelAction, SetPopupModelAction, UpdateModelAction
 } from 'sprotty-protocol/lib/actions';
-import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, Viewport} from 'sprotty-protocol/lib/model';
-import { IModelLayoutEngine as ProtocolIModelLayoutEngine, GetViewportAction, ViewportResult, GetSelectionAction, SelectionResult } from 'sprotty-protocol';
+import { SModelElement, SModelRoot, Viewport} from 'sprotty-protocol/lib/model';
+import { IModelLayoutEngine, GetViewportAction, ViewportResult, GetSelectionAction, SelectionResult } from 'sprotty-protocol';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelIndex, findElement } from 'sprotty-protocol/lib/utils/model-utils';
 import { ILogger } from '../utils/logging';
@@ -34,7 +34,7 @@ import { applyMatches, Match } from '../features/update/model-matching';
 import { ModelSource, ComputedBoundsApplicator } from './model-source';
 
 export interface IPopupModelProvider {
-    getPopupModel(request: RequestPopupModelAction, element?: SModelElementSchema): SModelRootSchema | undefined;
+    getPopupModel(request: RequestPopupModelAction, element?: SModelElement): SModelRoot | undefined;
 }
 
 /**
@@ -48,9 +48,9 @@ export class LocalModelSource extends ModelSource {
     @inject(TYPES.ILogger) protected readonly logger: ILogger;
     @inject(ComputedBoundsApplicator) protected readonly computedBoundsApplicator: ComputedBoundsApplicator;
     @inject(TYPES.IPopupModelProvider)@optional() protected popupModelProvider?: IPopupModelProvider;
-    @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: ProtocolIModelLayoutEngine;
+    @inject(TYPES.IModelLayoutEngine)@optional() protected layoutEngine?: IModelLayoutEngine;
 
-    protected currentRoot: SModelRootSchema = EMPTY_ROOT;
+    protected currentRoot: SModelRoot = EMPTY_ROOT;
 
     /**
      * The `type` property of the model root is used to determine whether a model update
@@ -58,11 +58,11 @@ export class LocalModelSource extends ModelSource {
      */
     protected lastSubmittedModelType: string;
 
-    override get model(): SModelRootSchema {
+    override get model(): SModelRoot {
         return this.currentRoot;
     }
 
-    set model(root: SModelRootSchema) {
+    set model(root: SModelRoot) {
         this.setModel(root);
     }
 
@@ -77,12 +77,12 @@ export class LocalModelSource extends ModelSource {
     /**
      * Set the model without incremental update.
      */
-    setModel(newRoot: SModelRootSchema): Promise<void> {
+    setModel(newRoot: SModelRoot): Promise<void> {
         this.currentRoot = newRoot;
         return this.submitModel(newRoot, false);
     }
 
-    commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema {
+    commitModel(newRoot: SModelRoot): Promise<SModelRoot> | SModelRoot {
         const previousRoot = this.currentRoot;
         this.currentRoot = newRoot;
         return previousRoot;
@@ -93,7 +93,7 @@ export class LocalModelSource extends ModelSource {
      * the new state. If `newRoot` is undefined, the current root is submitted; in that case
      * it is assumed that it has been modified before.
      */
-    updateModel(newRoot?: SModelRootSchema): Promise<void> {
+    updateModel(newRoot?: SModelRoot): Promise<void> {
         if (newRoot === undefined) {
             return this.submitModel(this.currentRoot, true);
         } else {
@@ -105,14 +105,14 @@ export class LocalModelSource extends ModelSource {
     /**
      * Get the current selection from the model.
      */
-    async getSelection(): Promise<FluentIterable<SModelElementSchema>> {
+    async getSelection(): Promise<FluentIterable<SModelElement>> {
         const res = await this.actionDispatcher.request<SelectionResult>(GetSelectionAction.create());
-        const result: SModelElementSchema[] = [];
+        const result: SModelElement[] = [];
         this.gatherSelectedElements(this.currentRoot, new Set(res.selectedElementsIDs), result);
         return result;
     }
 
-    private gatherSelectedElements(element: SModelElementSchema, selected: Set<string>, result: SModelElementSchema[]): void {
+    private gatherSelectedElements(element: SModelElement, selected: Set<string>, result: SModelElement[]): void {
         if (selected.has(element.id)) {
             result.push(element);
         }
@@ -139,7 +139,7 @@ export class LocalModelSource extends ModelSource {
      * If client layout is active, run a `RequestBoundsAction` and wait for the resulting
      * `ComputedBoundsAction`, otherwise call `doSubmitModel(…)` directly.
      */
-    protected async submitModel(newRoot: SModelRootSchema, update: boolean | Match[], cause?: Action): Promise<void> {
+    protected async submitModel(newRoot: SModelRoot, update: boolean | Match[], cause?: Action): Promise<void> {
         if (this.viewerOptions.needsClientLayout) {
             const computedBounds = await this.actionDispatcher.request<ComputedBoundsAction>(RequestBoundsAction.create(newRoot));
             const index = this.computedBoundsApplicator.apply(this.currentRoot, computedBounds);
@@ -153,7 +153,7 @@ export class LocalModelSource extends ModelSource {
      * Submit the given model with an `UpdateModelAction` or a `SetModelAction` depending on the
      * `update` argument. If available, the model layout engine is invoked first.
      */
-    protected async doSubmitModel(newRoot: SModelRootSchema, update: boolean | Match[],
+    protected async doSubmitModel(newRoot: SModelRoot, update: boolean | Match[],
             cause?: Action, index?: SModelIndex): Promise<void> {
         if (this.layoutEngine !== undefined) {
             try {
@@ -192,7 +192,7 @@ export class LocalModelSource extends ModelSource {
     /**
      * Modify the current model by adding new elements.
      */
-    addElements(elements: (SModelElementSchema | { element: SModelElementSchema, parentId: string })[]): Promise<void> {
+    addElements(elements: (SModelElement | { element: SModelElement, parentId: string })[]): Promise<void> {
         const matches: Match[] = [];
         for (const e of elements) {
             const anye: any = e;
@@ -280,20 +280,4 @@ export class LocalModelSource extends ModelSource {
         const blob = new Blob([action.svg], { type: 'text/plain;charset=utf-8' });
         saveAs(blob, 'diagram.svg');
     }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use IPopupModelProvider instead.
- */
-export type PopupModelFactory = (request: RequestPopupModelAction, element?: SModelElementSchema)
-    => SModelRootSchema | undefined;
-
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface IModelLayoutEngine {
-    layout(model: SModelRootSchema, index?: SModelIndex): SModelRootSchema | Promise<SModelRootSchema>;
 }

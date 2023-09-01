@@ -14,27 +14,26 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject, optional } from "inversify";
-import { Action, UpdateModelAction as ProtocolUpdateModelAction } from "sprotty-protocol/lib/actions";
-import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { almostEquals, Dimension } from "sprotty-protocol/lib/utils/geometry";
+import { injectable, inject, optional } from 'inversify';
+import { UpdateModelAction } from 'sprotty-protocol/lib/actions';
+import { almostEquals, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
-import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from "../../base/model/smodel";
-import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from "../move/move";
-import { Fadeable, isFadeable } from "../fade/model";
-import { isLocateable } from "../move/model";
-import { isSizeable } from "../bounds/model";
-import { ViewportRootElement } from "../viewport/viewport-root";
-import { isSelectable } from "../select/model";
-import { MatchResult, ModelMatcher, Match, forEachMatch } from "./model-matching";
+import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
+import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from '../move/move';
+import { Fadeable, isFadeable } from '../fade/model';
+import { isLocateable } from '../move/model';
+import { isSizeable } from '../bounds/model';
+import { ViewportRootElement } from '../viewport/viewport-root';
+import { isSelectable } from '../select/model';
+import { MatchResult, ModelMatcher, Match, forEachMatch } from './model-matching';
 import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
-import { TYPES } from "../../base/types";
-import { isViewport } from "../viewport/model";
-import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from "../routing/routing";
-import { SRoutableElementImpl } from "../routing/model";
-import { containsSome } from "../../base/model/smodel-utils";
+import { TYPES } from '../../base/types';
+import { isViewport } from '../viewport/model';
+import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from '../routing/routing';
+import { SRoutableElementImpl } from '../routing/model';
+import { containsSome } from '../../base/model/smodel-utils';
 
 
 export interface UpdateAnimationData {
@@ -46,14 +45,14 @@ export interface UpdateAnimationData {
 
 @injectable()
 export class UpdateModelCommand extends Command {
-    static readonly KIND = ProtocolUpdateModelAction.KIND;
+    static readonly KIND = UpdateModelAction.KIND;
 
     oldRoot: SModelRootImpl;
     newRoot: SModelRootImpl;
 
     @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolUpdateModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: UpdateModelAction) {
         super();
     }
 
@@ -284,30 +283,5 @@ export class UpdateModelCommand extends Command {
 
     redo(context: CommandExecutionContext): CommandReturn {
         return this.performUpdate(this.oldRoot, this.newRoot, context);
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Sent from the model source to the client in order to update the model. If no model is present yet,
- * this behaves the same as a SetModelAction. The transition from the old model to the new one can be animated.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class UpdateModelAction implements Action, ProtocolUpdateModelAction {
-    static readonly KIND = 'updateModel';
-    readonly kind = UpdateModelAction.KIND;
-
-    public readonly newRoot?: SModelRootSchema;
-    public readonly matches?: Match[];
-
-    constructor(input: SModelRootSchema | Match[],
-        public readonly animate: boolean = true,
-        public readonly cause?: Action) {
-        if ((input as SModelRootSchema).id !== undefined)
-            this.newRoot = input as SModelRootSchema;
-        else
-            this.matches = input as Match[];
     }
 }

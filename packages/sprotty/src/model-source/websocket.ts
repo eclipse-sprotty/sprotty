@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
-import { ActionMessage } from "sprotty-protocol/lib/actions";
-import { DiagramServerProxy } from "./diagram-server";
+import { injectable } from 'inversify';
+import { ActionMessage } from 'sprotty-protocol/lib/actions';
+import { DiagramServerProxy } from './diagram-server';
 
 /**
  * An external ModelSource that connects to the model provider using a websocket.
@@ -51,10 +51,3 @@ export class WebSocketDiagramServerProxy extends DiagramServerProxy {
         }
     }
 }
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use `WebSocketDiagramServerProxy` instead;
- */
-export const WebSocketDiagramServer = WebSocketDiagramServerProxy;

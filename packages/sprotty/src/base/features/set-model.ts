@@ -15,12 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import {
-    Action, generateRequestId, RequestAction, ResponseAction,
-    RequestModelAction as ProtocolRequestModelAction, SetModelAction as ProtocolSetModelAction
-} from "sprotty-protocol/lib/actions";
-import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { JsonPrimitive } from "sprotty-protocol/lib/utils/json";
+import { Action, SetModelAction } from "sprotty-protocol/lib/actions";
 import { CommandExecutionContext, ResetCommand } from "../commands/command";
 import { SModelRootImpl } from "../model/smodel";
 import { TYPES } from "../types";
@@ -28,12 +23,12 @@ import { InitializeCanvasBoundsCommand } from './initialize-canvas';
 
 @injectable()
 export class SetModelCommand extends ResetCommand {
-    static readonly KIND = ProtocolSetModelAction.KIND;
+    static readonly KIND = SetModelAction.KIND;
 
     oldRoot: SModelRootImpl;
     newRoot: SModelRootImpl;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetModelAction) {
         super();
     }
 
@@ -54,39 +49,4 @@ export class SetModelCommand extends ResetCommand {
     get blockUntil(): (action: Action) => boolean {
         return action => action.kind === InitializeCanvasBoundsCommand.KIND;
     }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Sent from the client to the model source (e.g. a DiagramServer) in order to request a model. Usually this
- * is the first message that is sent to the source, so it is also used to initiate the communication.
- * The response is a SetModelAction or an UpdateModelAction.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class RequestModelAction implements ProtocolRequestModelAction {
-    static readonly KIND = 'requestModel';
-    readonly kind = RequestModelAction.KIND;
-
-    constructor(public readonly options?: { [key: string]: JsonPrimitive },
-        public readonly requestId = '') { }
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(options?: { [key: string]: JsonPrimitive }): RequestAction<SetModelAction> {
-        return new RequestModelAction(options, generateRequestId());
-    }
-}
-
-/**
- * Sent from the model source to the client in order to set the model. If a model is already present, it is replaced.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SetModelAction implements ResponseAction, ProtocolSetModelAction {
-    static readonly KIND = 'setModel';
-    readonly kind = SetModelAction.KIND;
-
-    constructor(public readonly newRoot: SModelRootSchema,
-        public readonly responseId = '') { }
 }

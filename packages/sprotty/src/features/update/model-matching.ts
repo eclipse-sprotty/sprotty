@@ -14,13 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
 import { SModelRootImpl, SModelElementImpl, isParent, IModelIndex } from '../../base/model/smodel';
 import { SModelIndex } from 'sprotty-protocol';
 
 export interface Match {
-    left?: SModelElementSchema
-    right?: SModelElementSchema
+    left?: SModelElement
+    right?: SModelElement
     leftParentId?: string
     rightParentId?: string
 }
@@ -34,14 +34,14 @@ export function forEachMatch(matchResult: MatchResult, callback: (id: string, ma
 }
 
 export class ModelMatcher {
-    match(left: SModelRootSchema | SModelRootImpl, right: SModelRootSchema | SModelRootImpl): MatchResult {
+    match(left: SModelRoot | SModelRootImpl, right: SModelRoot | SModelRootImpl): MatchResult {
         const result: MatchResult = {};
         this.matchLeft(left, result);
         this.matchRight(right, result);
         return result;
     }
 
-    protected matchLeft(element: SModelElementSchema | SModelElementImpl, result: MatchResult, parentId?: string): void {
+    protected matchLeft(element: SModelElement | SModelElementImpl, result: MatchResult, parentId?: string): void {
         let match = result[element.id];
         if (match !== undefined) {
             match.left = element;
@@ -60,7 +60,7 @@ export class ModelMatcher {
         }
     }
 
-    protected matchRight(element: SModelElementSchema | SModelElementImpl, result: MatchResult, parentId?: string) {
+    protected matchRight(element: SModelElement | SModelElementImpl, result: MatchResult, parentId?: string) {
         let match = result[element.id];
         if (match !== undefined) {
             match.right = element;
@@ -80,7 +80,7 @@ export class ModelMatcher {
     }
 }
 
-export function applyMatches(root: SModelRootSchema, matches: Match[], index?: IModelIndex): void {
+export function applyMatches(root: SModelRoot, matches: Match[], index?: IModelIndex): void {
     if (root instanceof SModelRootImpl) {
         index = root.index;
     } else if (index === undefined) {

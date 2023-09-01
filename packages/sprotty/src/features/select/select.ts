@@ -16,10 +16,7 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
-import {
-    Action, BringToFrontAction, generateRequestId, RequestAction, ResponseAction
-} from 'sprotty-protocol/lib/actions';
-import * as protocol from "sprotty-protocol/lib/actions";
+import { Action, BringToFrontAction, GetSelectionAction, ResponseAction, SelectAction, SelectAllAction, SelectionResult } from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext } from '../../base/commands/command';
 import { ModelRequestCommand } from '../../base/commands/request-command';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
@@ -41,12 +38,12 @@ import { isSelectable, Selectable } from './model';
 
 @injectable()
 export class SelectCommand extends Command {
-    static readonly KIND = protocol.SelectAction.KIND;
+    static readonly KIND = SelectAction.KIND;
 
     protected selected: (SChildElementImpl & Selectable)[] = [];
     protected deselected: (SChildElementImpl & Selectable)[] = [];
 
-    constructor(@inject(TYPES.Action) public action: protocol.SelectAction) {
+    constructor(@inject(TYPES.Action) public action: SelectAction) {
         super();
     }
 
@@ -90,11 +87,11 @@ export class SelectCommand extends Command {
 
 @injectable()
 export class SelectAllCommand extends Command {
-    static readonly KIND = protocol.SelectAllAction.KIND;
+    static readonly KIND = SelectAllAction.KIND;
 
     protected previousSelection: Record<string, boolean> = {};
 
-    constructor(@inject(TYPES.Action) protected readonly action: protocol.SelectAllAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SelectAllAction) {
         super();
     }
 
@@ -189,7 +186,7 @@ export class SelectMouseListener extends MouseListener {
 
     protected handleSelectTarget(selectableTarget: SModelElementImpl & Selectable, deselectedElements: SModelElementImpl[], event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        result.push(protocol.SelectAction.create({ selectedElementsIDs: [selectableTarget.id], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
+        result.push(SelectAction.create({ selectedElementsIDs: [selectableTarget.id], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
         result.push(BringToFrontAction.create([selectableTarget.id]));
         const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElementImpl).map(e => e.id);
         if (selectableTarget instanceof SRoutableElementImpl) {
@@ -202,7 +199,7 @@ export class SelectMouseListener extends MouseListener {
 
     protected handleDeselectTarget(selectableTarget: SModelElementImpl & Selectable, event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        result.push(protocol.SelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: [selectableTarget.id] }));
+        result.push(SelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: [selectableTarget.id] }));
         if (selectableTarget instanceof SRoutableElementImpl) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: [selectableTarget.id] }));
         }
@@ -211,7 +208,7 @@ export class SelectMouseListener extends MouseListener {
 
     protected handleDeselectAll(deselectedElements: SModelElementImpl[], event: MouseEvent): (Action | Promise<Action>)[] {
         const result: Action[] = [];
-        result.push(protocol.SelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
+        result.push(SelectAction.create({ selectedElementsIDs: [], deselectedElementsIDs: deselectedElements.map(e => e.id) }));
         const routableDeselect = deselectedElements.filter(e => e instanceof SRoutableElementImpl).map(e => e.id);
         if (routableDeselect.length > 0) {
             result.push(SwitchEditModeAction.create({ elementsToDeactivate: routableDeselect }));
@@ -230,7 +227,7 @@ export class SelectMouseListener extends MouseListener {
                 const selectableTarget = findParentByFeature(target, isSelectable);
                 if (selectableTarget !== undefined) {
                     if (this.wasSelected) {
-                        return [protocol.SelectAction.create({selectedElementsIDs:[selectableTarget.id],deselectedElementsIDs:[]})];
+                        return [SelectAction.create({selectedElementsIDs:[selectableTarget.id],deselectedElementsIDs:[]})];
                     }
                 } else if (target instanceof SModelRootImpl && !findViewportScrollbar(event)) {
                     // Mouse up on root but not over ViewPort's scroll bars > deselect all
@@ -253,11 +250,11 @@ export class SelectMouseListener extends MouseListener {
 
 @injectable()
 export class GetSelectionCommand extends ModelRequestCommand {
-    static readonly KIND = protocol.GetSelectionAction.KIND;
+    static readonly KIND = GetSelectionAction.KIND;
 
     protected previousSelection: Record<string, boolean> = {};
 
-    constructor(@inject(TYPES.Action) protected readonly action: protocol.GetSelectionAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: GetSelectionAction) {
         super();
     }
 
@@ -273,80 +270,8 @@ export class GetSelectionCommand extends ModelRequestCommand {
 export class SelectKeyboardListener extends KeyListener {
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyA', 'ctrlCmd')) {
-            return [ protocol.SelectAllAction.create()];
+            return [ SelectAllAction.create()];
         }
         return [];
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Triggered when the user changes the selection, e.g. by clicking on a selectable element. The resulting
- * SelectCommand changes the `selected` state accordingly, so the elements can be rendered differently.
- * This action is also forwarded to the diagram server, if present, so it may react on the selection change.
- * Furthermore, the server can send such an action to the client in order to change the selection programmatically.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SelectAction implements Action, protocol.SelectAction {
-    static readonly KIND = 'elementSelected';
-    readonly kind = SelectAction.KIND;
-
-    constructor(public readonly selectedElementsIDs: string[] = [],
-        public readonly deselectedElementsIDs: string[] = []) {
-    }
-}
-
-/**
- * Programmatic action for selecting or deselecting all elements.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SelectAllAction implements Action, protocol.SelectAllAction {
-    static readonly KIND = 'allSelected';
-    readonly kind = SelectAllAction.KIND;
-
-    /**
-     * If `select` is true, all elements are selected, otherwise they are deselected.
-     */
-    constructor(public readonly select: boolean = true) {
-    }
-}
-
-/**
- * Request action for retrieving the current selection.
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface GetSelectionAction extends RequestAction<SelectionResult> {
-    kind: typeof GetSelectionAction.KIND
-}
-export namespace GetSelectionAction {
-    export const KIND = 'getSelection';
-
-    export function create(): GetSelectionAction {
-        return {
-            kind: KIND,
-            requestId: generateRequestId()
-        };
-    }
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface SelectionResult extends ResponseAction {
-    kind: typeof SelectionResult.KIND
-    selectedElementsIDs: string[]
-}
-export namespace SelectionResult {
-    export const KIND = 'selectionResult';
-
-    export function create(selectedElementsIDs: string[], requestId: string): SelectionResult {
-        return {
-            kind: KIND,
-            selectedElementsIDs,
-            responseId: requestId
-        };
     }
 }

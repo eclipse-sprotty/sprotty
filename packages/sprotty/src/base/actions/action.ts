@@ -14,9 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { generateRequestId as generateRequestId2, Action as ProtocolAction} from 'sprotty-protocol/lib/actions';
-import { JsonAny } from 'sprotty-protocol/lib/utils/json';
-import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
+import { Action } from 'sprotty-protocol/lib/actions';
 
 /**
  * A list of actions with a label.
@@ -24,7 +22,7 @@ import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
  * to define an entry in the command palette or in the context menu.
  */
 export class LabeledAction {
-    constructor(readonly label: string, readonly actions: ProtocolAction[], readonly icon?: string) { }
+    constructor(readonly label: string, readonly actions: Action[], readonly icon?: string) { }
 }
 
 export function isLabeledAction(element: unknown): element is LabeledAction {
@@ -32,81 +30,3 @@ export function isLabeledAction(element: unknown): element is LabeledAction {
         && (<LabeledAction>element).label !== undefined
         && (<LabeledAction>element).actions !== undefined;
 }
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * An action describes a change to the model declaratively.
- * It is a plain data structure, and as such transferable between server and client. An action must never contain actual
- * SModelElement instances, but either refer to them via their ids or contain serializable schema for model elements.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface Action {
-    readonly kind: string
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isAction(object?: unknown): object is Action {
-    return hasOwnProperty<string, string>(object, 'kind', 'string');
-}
-
-/**
- * A request action is tied to the expectation of receiving a corresponding response action.
- * The `requestId` property is used to match the received response with the original request.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface RequestAction<Res extends ResponseAction> extends Action {
-    readonly requestId: string
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isRequestAction(object?: unknown): object is RequestAction<ResponseAction> {
-    return isAction(object) && hasOwnProperty<string, string>(object, 'requestId', 'string');
-}
-
-/**
- * Generate a unique `requestId` for a request action.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export const generateRequestId: () => string = generateRequestId2;
-
-/**
- * A response action is sent to respond to a request action. The `responseId` must match
- * the `requestId` of the preceding request. In case the `responseId` is empty or undefined,
- * the action is handled as standalone, i.e. it was fired without a preceding request.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ResponseAction extends Action {
-    readonly responseId: string
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isResponseAction(object?: unknown): object is ResponseAction {
-    return isAction(object) && hasOwnProperty<string, string>(object, 'responseId', 'string')
-            && object.responseId !== '';
-}
-
-/**
- * A reject action is fired to indicate that a request must be rejected.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class RejectAction implements ResponseAction {
-    static readonly KIND = 'rejectRequest';
-    readonly kind = RejectAction.KIND;
-
-    constructor(public readonly message: string,
-                public readonly responseId: string,
-                public readonly detail?: JsonAny) {}
-}
-

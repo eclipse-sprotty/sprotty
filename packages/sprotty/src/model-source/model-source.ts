@@ -14,16 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { Action, ComputedBoundsAction, RequestModelAction } from "sprotty-protocol/lib/actions";
-import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
+import { inject, injectable } from 'inversify';
+import { Action, ComputedBoundsAction, RequestModelAction } from 'sprotty-protocol/lib/actions';
+import { SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
 import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelIndex } from "sprotty-protocol/lib/utils/model-utils";
-import { IActionDispatcher } from "../base/actions/action-dispatcher";
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../base/actions/action-handler";
-import { ICommand } from "../base/commands/command";
-import { TYPES } from "../base/types";
-import { ViewerOptions } from "../base/views/viewer-options";
+import { SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
+import { IActionDispatcher } from '../base/actions/action-dispatcher';
+import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from '../base/actions/action-handler';
+import { ICommand } from '../base/commands/command';
+import { TYPES } from '../base/types';
+import { ViewerOptions } from '../base/views/viewer-options';
 import { ExportSvgAction } from '../features/export/svg-exporter';
 
 /**
@@ -56,7 +56,7 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
         registry.register(ExportSvgAction.KIND, this);
     }
 
-    abstract get model(): SModelRootSchema;
+    abstract get model(): SModelRoot;
 
     abstract handle(action: Action): ICommand | Action | void;
 
@@ -71,13 +71,13 @@ export abstract class ModelSource implements IActionHandler, IActionHandlerIniti
      * @param newRoot the new model.
      * @return the previous model.
      */
-    abstract commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema;
+    abstract commitModel(newRoot: SModelRoot): Promise<SModelRoot> | SModelRoot;
 }
 
 
 @injectable()
 export class ComputedBoundsApplicator {
-    apply(root: SModelRootSchema, action: ComputedBoundsAction): SModelIndex {
+    apply(root: SModelRoot, action: ComputedBoundsAction): SModelIndex {
         const index = new SModelIndex();
         index.add(root);
         for (const b of action.bounds) {
@@ -95,12 +95,12 @@ export class ComputedBoundsApplicator {
         return index;
     }
 
-    protected applyAlignment(element: SModelElementSchema, newAlignment: Point) {
+    protected applyAlignment(element: SModelElement, newAlignment: Point) {
         const e = element as any;
         e.alignment = { x: newAlignment.x, y: newAlignment.y };
     }
 
-    protected applyBounds(element: SModelElementSchema, newPosition: Point | undefined, newSize: Dimension) {
+    protected applyBounds(element: SModelElement, newPosition: Point | undefined, newSize: Dimension) {
         const e = element as any;
         if (newPosition)
             e.position = {...newPosition};

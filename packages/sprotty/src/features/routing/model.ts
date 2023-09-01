@@ -178,19 +178,3 @@ export class SDanglingAnchorImpl extends SConnectableElementImpl {
 
 export const edgeInProgressID = 'edge-in-progress';
 export const edgeInProgressTargetHandleID = edgeInProgressID + '-target-anchor';
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/** @deprecated Use `SRoutableElementImpl` instead. */
-export const SRoutableElement = SRoutableElementImpl;
-
-
-/** @deprecated Use `SConnectableElementImpl` instead. */
-export const SConnectableElement = SConnectableElementImpl;
-
-
-/** @deprecated Use `SRoutingHandleImpl` instead. */
-export const SRoutingHandle = SRoutingHandleImpl;
-
-/** @deprecated Use `SDanglingAnchorImpl` instead. */
-export const SDanglingAnchor = SDanglingAnchorImpl;

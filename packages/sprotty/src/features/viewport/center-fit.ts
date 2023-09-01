@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action, CenterAction as ProtocolCenterAction, FitToScreenAction as ProtocolFitToScreenAction} from 'sprotty-protocol/lib/actions';
+import { Action, CenterAction, FitToScreenAction } from 'sprotty-protocol/lib/actions';
 import { Viewport } from 'sprotty-protocol/lib/model';
 import { almostEquals, Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { matchesKeystroke } from '../../utils/keyboard';
@@ -130,9 +130,9 @@ export abstract class BoundsAwareViewportCommand extends Command {
 }
 
 export class CenterCommand extends BoundsAwareViewportCommand {
-    static readonly KIND = ProtocolCenterAction.KIND;
+    static readonly KIND = CenterAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected action: ProtocolCenterAction) {
+    constructor(@inject(TYPES.Action) protected action: CenterAction) {
         super(action.animate);
     }
 
@@ -162,9 +162,9 @@ export class CenterCommand extends BoundsAwareViewportCommand {
 }
 
 export class FitToScreenCommand extends BoundsAwareViewportCommand {
-    static readonly KIND = ProtocolFitToScreenAction.KIND;
+    static readonly KIND = FitToScreenAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolFitToScreenAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: FitToScreenAction) {
         super(action.animate);
     }
 
@@ -201,50 +201,9 @@ export class FitToScreenCommand extends BoundsAwareViewportCommand {
 export class CenterKeyboardListener extends KeyListener {
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyC', 'ctrlCmd', 'shift'))
-            return [ProtocolCenterAction.create([])];
+            return [CenterAction.create([])];
         if (matchesKeystroke(event, 'KeyF', 'ctrlCmd', 'shift'))
-            return [ProtocolFitToScreenAction.create([])];
+            return [FitToScreenAction.create([])];
         return [];
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Triggered when the user requests the viewer to center on the current model. The resulting
- * CenterCommand changes the scroll setting of the viewport accordingly.
- * It also resets the zoom to its default if retainZoom is false.
- * This action can also be sent from the model source to the client in order to perform such a
- * viewport change programmatically.
- *
- * @deprecated Use the declaration in `sprotty-protocol` instead.
- */
-export class CenterAction implements Action, ProtocolCenterAction {
-    static readonly KIND = 'center';
-    readonly kind = CenterAction.KIND;
-
-    constructor(public readonly elementIds: string[],
-                public readonly animate: boolean = true,
-                public readonly retainZoom: boolean = false,
-                public readonly zoomScale?: number) {
-    }
-}
-
-/**
- * Triggered when the user requests the viewer to fit its content to the available drawing area.
- * The resulting FitToScreenCommand changes the zoom and scroll settings of the viewport so the model
- * can be shown completely. This action can also be sent from the model source to the client in order
- * to perform such a viewport change programmatically.
- *
- * @deprecated Use the declaration in `sprotty-protocol` instead.
- */
-export class FitToScreenAction implements Action, ProtocolFitToScreenAction {
-    static readonly KIND = 'fit';
-    readonly kind = FitToScreenAction.KIND;
-
-    constructor(public readonly elementIds: string[],
-                public readonly padding?: number,
-                public readonly maxZoom?: number,
-                public readonly animate: boolean = true) {
     }
 }

@@ -19,8 +19,8 @@ import {
     createFeatureSet, Direction
 } from 'sprotty';
 import {
-    SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, HtmlRoot as HtmlRootSchema,
-    PreRenderedElement as PreRenderedElementSchema, getBasicType
+    SModelElement, SModelRoot, HtmlRoot as HtmlRootSchema,
+    PreRenderedElement, getBasicType
 } from 'sprotty-protocol';
 import {
     Channel, ChannelSchema, Core, CoreSchema, Crossbar, CrossbarSchema, Processor, ProcessorSchema
@@ -30,7 +30,7 @@ import { CORE_WIDTH, CORE_DISTANCE } from './views';
 
 export class ChipModelFactory extends SGraphFactory {
 
-    override createElement(schema: SModelElementSchema, parent?: SParentElementImpl): SChildElementImpl {
+    override createElement(schema: SModelElement, parent?: SParentElementImpl): SChildElementImpl {
         try {
             if (this.isCoreSchema(schema)) {
                 this.validate(schema, parent);
@@ -59,7 +59,7 @@ export class ChipModelFactory extends SGraphFactory {
         return super.createElement(schema, parent);
     }
 
-    override createRoot(schema: SModelRootSchema): SModelRootImpl {
+    override createRoot(schema: SModelRoot): SModelRootImpl {
         if (this.isProcessorSchema(schema)) {
             const processor = this.initializeRoot(new Processor(), schema);
             processor.features = createFeatureSet(Processor.DEFAULT_FEATURES);
@@ -94,28 +94,28 @@ export class ChipModelFactory extends SGraphFactory {
         }
     }
 
-    isProcessorSchema(schema: SModelElementSchema): schema is ProcessorSchema {
+    isProcessorSchema(schema: SModelElement): schema is ProcessorSchema {
         return getBasicType(schema) === 'processor';
     }
 
-    isCoreSchema(schema: SModelElementSchema): schema is CoreSchema {
+    isCoreSchema(schema: SModelElement): schema is CoreSchema {
         const basicType = getBasicType(schema);
         return basicType === 'core' || basicType === 'simplecore';
     }
 
-    isChannelSchema(schema: SModelElementSchema): schema is ChannelSchema {
+    isChannelSchema(schema: SModelElement): schema is ChannelSchema {
         return getBasicType(schema) === 'channel';
     }
 
-    isCrossbarSchema(schema: SModelElementSchema): schema is CrossbarSchema {
+    isCrossbarSchema(schema: SModelElement): schema is CrossbarSchema {
         return getBasicType(schema) === 'crossbar';
     }
 
-    isHtmlRootSchema(schema: SModelElementSchema): schema is HtmlRootSchema {
+    isHtmlRootSchema(schema: SModelElement): schema is HtmlRootSchema {
         return getBasicType(schema) === 'html';
     }
 
-    isPreRenderedSchema(schema: SModelElementSchema): schema is PreRenderedElementSchema {
+    isPreRenderedSchema(schema: SModelElement): schema is PreRenderedElement {
         return getBasicType(schema) === 'pre-rendered';
     }
 }

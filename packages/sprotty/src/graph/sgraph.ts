@@ -14,10 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import {
-    SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema, SShapeElement as SShapeElementSchema
-} from 'sprotty-protocol/lib/model';
-import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel';
 import {
     Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
@@ -258,96 +255,4 @@ export class SGraphIndex extends ModelIndexImpl {
     getOutgoingEdges(element: SConnectableElementImpl): FluentIterable<SEdgeImpl> {
         return this.outgoing.get(element.id) || [];
     }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Serializable schema for graph-like models.
- *
- * @deprecated Use `SGraph` from `sprotty-protocol` instead.
- */
-export interface SGraphSchema extends SModelRootSchema {
-    children: SModelElementSchema[]
-    bounds?: Bounds
-    scroll?: Point
-    zoom?: number
-    layoutOptions?: ModelLayoutOptions
-}
-
-/** @deprecated Use `SCompartmentImpl` instead. */
-export const SCompartment = SCompartmentImpl;
-
-/** @deprecated Use `SGraphImpl` instead. */
-export const SGraph = SGraphImpl;
-
-/**
- * Serializable schema for SNode.
- *
- * @deprecated Use `SNode` from `sprotty-protocol` instead.
- */
-export interface SNodeSchema extends SShapeElementSchema {
-    layout?: string
-    selected?: boolean
-    hoverFeedback?: boolean
-    opacity?: number
-    anchorKind?: string
-}
-
-/** @deprecated Use `SNodeImpl` instead. */
-export const SNode = SNodeImpl;
-
-/**
- * Serializable schema for SPort.
- *
- * @deprecated Use `SPort` from `sprotty-protocol` instead.
- */
-export interface SPortSchema extends SShapeElementSchema {
-    selected?: boolean
-    hoverFeedback?: boolean
-    opacity?: number
-    anchorKind?: string;
-}
-
-/** @deprecated Use `SPortImpl` instead. */
-export const SPort = SPortImpl;
-
-/**
- * Serializable schema for SEdge.
- *
- * @deprecated Use `SEdge` from `sprotty-protocol` instead.
- */
-export interface SEdgeSchema extends SModelElementSchema {
-    sourceId: string
-    targetId: string
-    routerKind?: string;
-    routingPoints?: Point[]
-    selected?: boolean
-    hoverFeedback?: boolean
-    opacity?: number
-}
-
-/** @deprecated Use `SEdgeImpl` instead. */
-export const SEdge = SEdgeImpl;
-
-/**
- * Serializable schema for SLabel.
- *
- * @deprecated Use `SLabel` from `sprotty-protocol` instead.
- */
-export interface SLabelSchema extends SShapeElementSchema {
-    text: string
-    selected?: boolean
-}
-
-/** @deprecated Use `SLabelImpl` instead. */
-export const SLabel = SLabelImpl;
-
-/**
- * Serializable schema for SCompartment.
- *
- * @deprecated Use `SCompartment` from `sprotty-protocol` instead.
- */
-export interface SCompartmentSchema extends SShapeElementSchema {
-    layout?: string
 }

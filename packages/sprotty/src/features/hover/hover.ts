@@ -14,34 +14,28 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import {
-    Action, generateRequestId, RequestAction,
-    ResponseAction, RequestPopupModelAction as ProtocolRequestPopupModelAction,
-    SetPopupModelAction as ProtocolSetPopupModelAction, HoverFeedbackAction as ProtocolHoverFeedbackAction
-} from "sprotty-protocol/lib/actions";
-import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
+import { inject, injectable } from 'inversify';
+import { Action, RequestPopupModelAction, SetPopupModelAction, HoverFeedbackAction } from 'sprotty-protocol/lib/actions';
+import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { matchesKeystroke } from '../../utils/keyboard';
-import { TYPES } from "../../base/types";
-import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn, ICommand } from "../../base/commands/command";
-import { IActionHandler } from "../../base/actions/action-handler";
-import { EMPTY_ROOT } from "../../base/model/smodel-factory";
-import { KeyListener } from "../../base/views/key-tool";
-import { findParentByFeature, findParent } from "../../base/model/smodel-utils";
-import { ViewerOptions } from "../../base/views/viewer-options";
+import { TYPES } from '../../base/types';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { MouseListener } from '../../base/views/mouse-tool';
+import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn, ICommand } from '../../base/commands/command';
+import { IActionHandler } from '../../base/actions/action-handler';
+import { EMPTY_ROOT } from '../../base/model/smodel-factory';
+import { KeyListener } from '../../base/views/key-tool';
+import { findParentByFeature, findParent } from '../../base/model/smodel-utils';
+import { ViewerOptions } from '../../base/views/viewer-options';
 import { getAbsoluteBounds } from '../bounds/model';
-import { hasPopupFeature, isHoverable } from "./model";
-
+import { hasPopupFeature, isHoverable } from './model';
 
 
 @injectable()
 export class HoverFeedbackCommand extends SystemCommand {
-    static readonly KIND = ProtocolHoverFeedbackAction.KIND;
+    static readonly KIND = HoverFeedbackAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolHoverFeedbackAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: HoverFeedbackAction) {
         super();
     }
 
@@ -69,12 +63,12 @@ export class HoverFeedbackCommand extends SystemCommand {
 
 @injectable()
 export class SetPopupModelCommand extends PopupCommand {
-    static readonly KIND = ProtocolSetPopupModelAction.KIND;
+    static readonly KIND = SetPopupModelAction.KIND;
 
     oldRoot: SModelRootImpl;
     newRoot: SModelRootImpl;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetPopupModelAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetPopupModelAction) {
         super();
     }
 
@@ -131,7 +125,7 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
             this.state.mouseOutTimer = window.setTimeout(() => {
                 this.state.popupOpen = false;
                 this.state.previousPopupElement = undefined;
-                resolve(ProtocolSetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id }));
+                resolve(SetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id }));
             }, this.options.popupCloseDelay);
         });
     }
@@ -189,7 +183,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
         return new Promise((resolve) => {
             this.state.mouseOverTimer = window.setTimeout(() => {
                 const popupBounds = this.computePopupBounds(target, { x: event.pageX, y: event.pageY });
-                resolve(ProtocolRequestPopupModelAction.create({ elementId: target.id, bounds: popupBounds }));
+                resolve(RequestPopupModelAction.create({ elementId: target.id, bounds: popupBounds }));
 
                 this.state.popupOpen = true;
                 this.state.previousPopupElement = target;
@@ -213,12 +207,12 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 result.push(this.startMouseOverTimer(popupTarget, event));
             }
             if (this.lastHoverFeedbackElementId) {
-                result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
+                result.push(HoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
                 this.lastHoverFeedbackElementId = undefined;
             }
             const hoverTarget = findParentByFeature(target, isHoverable);
             if (hoverTarget !== undefined) {
-                result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: true }));
+                result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: true }));
                 this.lastHoverFeedbackElementId = hoverTarget.id;
             }
         }
@@ -239,9 +233,9 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
                 this.stopMouseOverTimer();
                 const hoverTarget = findParentByFeature(target, isHoverable);
                 if (hoverTarget !== undefined) {
-                    result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: false }));
+                    result.push(HoverFeedbackAction.create({ mouseoverElement: hoverTarget.id, mouseIsOver: false }));
                     if (this.lastHoverFeedbackElementId && this.lastHoverFeedbackElementId !== hoverTarget.id) {
-                        result.push(ProtocolHoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
+                        result.push(HoverFeedbackAction.create({ mouseoverElement: this.lastHoverFeedbackElementId, mouseIsOver: false }));
                     }
                     this.lastHoverFeedbackElementId = undefined;
                 }
@@ -302,7 +296,7 @@ export class PopupHoverMouseListener extends AbstractHoverMouseListener {
 export class HoverKeyListener extends KeyListener {
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'Escape')) {
-            return [ProtocolSetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })];
+            return [SetPopupModelAction.create({ type: EMPTY_ROOT.type, id: EMPTY_ROOT.id })];
         }
         return [];
     }
@@ -314,72 +308,9 @@ export class ClosePopupActionHandler implements IActionHandler {
 
     handle(action: Action): void | ICommand | Action {
         if (action.kind === SetPopupModelCommand.KIND) {
-            this.popupOpen = (action as ProtocolSetPopupModelAction).newRoot.type !== EMPTY_ROOT.type;
+            this.popupOpen = (action as SetPopupModelAction).newRoot.type !== EMPTY_ROOT.type;
         } else if (this.popupOpen) {
-            return  ProtocolSetPopupModelAction.create({ id: EMPTY_ROOT.id, type: EMPTY_ROOT.type });
+            return  SetPopupModelAction.create({ id: EMPTY_ROOT.id, type: EMPTY_ROOT.type });
         }
     }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Triggered when the user puts the mouse pointer over an element.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface HoverFeedbackAction extends Action {
-    kind: typeof HoverFeedbackAction.KIND
-    mouseoverElement: string
-    mouseIsOver: boolean
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export namespace HoverFeedbackAction {
-    export const KIND = 'hoverFeedback';
-
-    export function create(options: { mouseoverElement: string, mouseIsOver: boolean }): HoverFeedbackAction {
-        return {
-            kind: KIND,
-            mouseoverElement: options.mouseoverElement,
-            mouseIsOver: options.mouseIsOver
-        };
-    }
-}
-
-/**
- * Triggered when the user hovers the mouse pointer over an element to get a popup with details on
- * that element. This action is sent from the client to the model source, e.g. a DiagramServer.
- * The response is a SetPopupModelAction.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class RequestPopupModelAction implements RequestAction<SetPopupModelAction>, ProtocolRequestPopupModelAction {
-    static readonly KIND = 'requestPopupModel';
-    readonly kind = RequestPopupModelAction.KIND;
-
-    constructor(public readonly elementId: string,
-        public readonly bounds: Bounds,
-        public readonly requestId = '') { }
-
-    /** Factory function to dispatch a request with the `IActionDispatcher` */
-    static create(elementId: string, bounds: Bounds): RequestAction<SetPopupModelAction> {
-        return new RequestPopupModelAction(elementId, bounds, generateRequestId());
-    }
-}
-
-/**
- * Sent from the model source to the client to display a popup in response to a RequestPopupModelAction.
- * This action can also be used to remove any existing popup by choosing EMPTY_ROOT as root element.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SetPopupModelAction implements ResponseAction, ProtocolSetPopupModelAction {
-    static readonly KIND = 'setPopupModel';
-    readonly kind = SetPopupModelAction.KIND;
-
-    constructor(public readonly newRoot: SModelRootSchema,
-        public readonly responseId = '') { }
 }
