@@ -18,10 +18,10 @@ import { Container, ContainerModule } from 'inversify';
 import {
     SCompartmentView, SLabelView, TYPES, configureViewerOptions, ConsoleLogger, LogLevel,
     loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, SvgExporter,
-    configureView
+    configureModelElement, PreRenderedElementImpl, HtmlRootImpl, SLabelImpl, SCompartmentImpl
 } from 'sprotty';
-import { ChipModelFactory } from './chipmodel-factory';
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from './views';
+import { Channel, Core, Crossbar, Processor } from './chipmodel';
 
 class FilteringSvgExporter extends SvgExporter {
     isExported(styleSheet: CSSStyleSheet): boolean {
@@ -41,7 +41,6 @@ export default () => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        rebind(TYPES.IModelFactory).to(ChipModelFactory).inSingletonScope();
         rebind(TYPES.SvgExporter).to(FilteringSvgExporter).inSingletonScope();
         const context = { bind, unbind, isBound, rebind };
         configureViewerOptions(context, {
@@ -53,16 +52,16 @@ export default () => {
         });
 
         // Register views
-        configureView({ bind, isBound }, 'processor', ProcessorView);
-        configureView({ bind, isBound }, 'core', CoreView);
-        configureView({ bind, isBound }, 'simplecore', SimpleCoreView);
-        configureView({ bind, isBound }, 'crossbar', CrossbarView);
-        configureView({ bind, isBound }, 'channel', ChannelView);
-        configureView({ bind, isBound }, 'label:heading', SLabelView);
-        configureView({ bind, isBound }, 'label:info', SLabelView);
-        configureView({ bind, isBound }, 'comp', SCompartmentView);
-        configureView({ bind, isBound }, 'html', HtmlRootView);
-        configureView({ bind, isBound }, 'pre-rendered', PreRenderedView);
+        configureModelElement(context, 'processor', Processor, ProcessorView);
+        configureModelElement(context, 'core', Core, CoreView);
+        configureModelElement(context, 'simplecore', Core, SimpleCoreView);
+        configureModelElement(context, 'crossbar', Crossbar, CrossbarView);
+        configureModelElement(context, 'channel', Channel, ChannelView);
+        configureModelElement(context, 'label:heading', SLabelImpl, SLabelView);
+        configureModelElement(context, 'label:info', SLabelImpl, SLabelView);
+        configureModelElement(context, 'comp', SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);
+        configureModelElement(context, 'pre-rendered', PreRenderedElementImpl, PreRenderedView);
     });
 
     const container = new Container();

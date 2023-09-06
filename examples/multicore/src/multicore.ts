@@ -14,10 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Direction, LocalModelSource, TYPES, IActionDispatcher } from 'sprotty';
+import { LocalModelSource, TYPES, IActionDispatcher } from 'sprotty';
 import { SLabel, UpdateModelAction } from 'sprotty-protocol';
 import {
-    ChannelSchema, CoreSchema, CrossbarSchema, ProcessorSchema
+    CORE_DISTANCE,
+    CORE_WIDTH,
+    ChannelSchema, CoreSchema, CrossbarSchema, Direction, ProcessorSchema
 } from './chipmodel';
 import createContainer from './di.config';
 
@@ -37,8 +39,18 @@ export default function runMulticore() {
                 column: i,
                 row: j,
                 kernelNr: Math.round(Math.random() * 11),
+                position: {
+                    x: i * (CORE_WIDTH + CORE_DISTANCE),
+                    y: j * (CORE_WIDTH + CORE_DISTANCE),
+                },
+                size: {
+                    width: CORE_WIDTH,
+                    height: CORE_WIDTH
+                },
                 layout: 'vbox',
-                resizeContainer: false,
+                layoutOptions: {
+                    resizeContainer: false,
+                },
                 children: [{
                     id: 'nr_' + pos,
                     type: 'label:heading',

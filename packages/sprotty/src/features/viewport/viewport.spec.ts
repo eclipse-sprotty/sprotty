@@ -22,18 +22,22 @@ import { TYPES } from '../../base/types';
 import { ConsoleLogger } from '../../utils/logging';
 import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
 import { CommandExecutionContext } from '../../base/commands/command';
-import { SGraphFactory } from '../../graph/sgraph-factory';
 import { SetViewportCommand } from './viewport';
 import { ViewportRootElement } from './viewport-root';
-import defaultModule from "../../base/di.config";
+import defaultModule from '../../base/di.config';
 import { SetViewportAction, Viewport, almostEquals } from 'sprotty-protocol';
+import { IModelFactory } from '../../base/model/smodel-factory';
+import { registerModelElement } from '../../base/model/smodel-utils';
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph';
 
 describe('BoundsAwareViewportCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node', SNodeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const viewportData: Viewport = { scroll: { x: 0, y: 0 }, zoom: 1 };
     const viewport: ViewportRootElement = graphFactory.createRoot({ id: 'viewport1', type: 'graph', children: [] }) as ViewportRootElement;

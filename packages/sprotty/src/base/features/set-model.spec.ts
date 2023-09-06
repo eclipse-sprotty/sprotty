@@ -16,17 +16,16 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../types';
-import { SModelElementImpl } from "../model/smodel";
-import { EMPTY_ROOT } from '../model/smodel-factory';
-import { SGraphFactory } from "../../graph/sgraph-factory";
-import { CommandExecutionContext } from "../commands/command";
-import { ConsoleLogger } from "../../utils/logging";
-import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import {  SetModelCommand } from "./set-model";
-import defaultModule from "../di.config";
+import { SModelElementImpl } from '../model/smodel';
+import { EMPTY_ROOT, IModelFactory } from '../model/smodel-factory';
+import { CommandExecutionContext } from '../commands/command';
+import { ConsoleLogger } from '../../utils/logging';
+import { AnimationFrameSyncer } from '../animations/animation-frame-syncer';
+import {  SetModelCommand } from './set-model';
+import defaultModule from '../di.config';
 import { SModelElement, SModelRoot, SetModelAction } from 'sprotty-protocol';
 
 function compare(expected: SModelElement, actual: SModelElementImpl) {
@@ -36,8 +35,9 @@ function compare(expected: SModelElement, actual: SModelElementImpl) {
             const actualProp = (actual as any)[p];
             if (p === 'children') {
                 for (const i in expectedProp) {
-                    if (expectedProp.hasOwnProperty(i))
+                    if (expectedProp.hasOwnProperty(i)) {
                         compare(expectedProp[i], actualProp[i]);
+                    }
                 }
             } else {
                 expect(actualProp).to.deep.equal(expectedProp);
@@ -49,9 +49,8 @@ function compare(expected: SModelElement, actual: SModelElementImpl) {
 describe('SetModelCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const emptyRoot = graphFactory.createRoot(EMPTY_ROOT);
 
@@ -94,12 +93,12 @@ describe('SetModelCommand', () => {
     });
 
     it('undo() returns the previous model', () => {
-        // test "undo": returns old model
+        // test 'undo': returns old model
         expect(model1.id).to.equal(cmd.undo(context).id);
     });
 
     it('redo() returns the new model', () => {
-        // test "redo": returns new model
+        // test 'redo': returns new model
         const newModel = cmd.redo(context);
         compare(model2, newModel);
     });

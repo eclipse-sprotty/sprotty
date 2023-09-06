@@ -56,16 +56,19 @@ export class FactoryRegistry<T, U> {
     protected elements: Map<string, (u: U) => T> = new Map;
 
     register(key: string, factory: (u: U) => T) {
-        if (key === undefined)
+        if (key === undefined) {
             throw new Error('Key is undefined');
-        if (this.hasKey(key))
+        }
+        if (this.hasKey(key)) {
             throw new Error('Key is already registered: ' + key);
+        }
         this.elements.set(key, factory);
     }
 
     deregister(key: string) {
-        if (key === undefined)
+        if (key === undefined) {
             throw new Error('Key is undefined');
+        }
         this.elements.delete(key);
     }
 
@@ -75,10 +78,11 @@ export class FactoryRegistry<T, U> {
 
     get(key: string, arg: U): T {
         const existingFactory = this.elements.get(key);
-        if (existingFactory)
+        if (existingFactory) {
             return existingFactory(arg);
-        else
+        } else {
             return this.missing(key, arg);
+        }
     }
 
     protected missing(key: string, arg: U): T | never {
@@ -91,16 +95,19 @@ export class InstanceRegistry<T> {
     protected elements: Map<string, T> = new Map;
 
     register(key: string, instance: T) {
-        if (key === undefined)
+        if (key === undefined) {
             throw new Error('Key is undefined');
-        if (this.hasKey(key))
+        }
+        if (this.hasKey(key)) {
             throw new Error('Key is already registered: ' + key);
+        }
         this.elements.set(key, instance);
     }
 
     deregister(key: string) {
-        if (key === undefined)
+        if (key === undefined) {
             throw new Error('Key is undefined');
+        }
         this.elements.delete(key);
     }
 
@@ -110,10 +117,11 @@ export class InstanceRegistry<T> {
 
     get(key: string): T {
         const existingInstance = this.elements.get(key);
-        if (existingInstance)
+        if (existingInstance) {
             return existingInstance;
-        else
+        } else {
             return this.missing(key);
+        }
     }
 
     protected missing(key: string): T | never {
@@ -126,26 +134,30 @@ export class MultiInstanceRegistry<T> {
     protected elements: Map<string, T[]> = new Map;
 
     register(key: string, instance: T) {
-        if (key === undefined)
+        if (key === undefined) {
             throw new Error('Key is undefined');
+        }
         const instances = this.elements.get(key);
-        if (instances !== undefined)
+        if (instances !== undefined) {
             instances.push(instance);
-        else
+        } else {
             this.elements.set(key, [instance]);
+        }
     }
 
     deregisterAll(key: string) {
-        if (key === undefined)
+        if (key === undefined) {
             throw new Error('Key is undefined');
+        }
         this.elements.delete(key);
     }
 
     get(key: string): T[] {
         const existingInstances = this.elements.get(key);
-        if (existingInstances !== undefined)
+        if (existingInstances !== undefined) {
             return existingInstances;
-        else
+        } else {
             return [];
+        }
     }
 }

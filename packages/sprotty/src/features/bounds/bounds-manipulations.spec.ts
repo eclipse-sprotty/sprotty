@@ -14,26 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import 'mocha';
 import 'reflect-metadata';
-import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
-import { CommandExecutionContext } from "../../base/commands/command";
-import defaultModule from "../../base/di.config";
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
+import { CommandExecutionContext } from '../../base/commands/command';
+import defaultModule from '../../base/di.config';
 import { TYPES } from '../../base/types';
-import { SGraphImpl, SNodeImpl } from "../../graph/sgraph";
-import { SGraphFactory } from "../../graph/sgraph-factory";
-import { ConsoleLogger } from "../../utils/logging";
-import { SetBoundsCommand } from "../bounds/bounds-manipulation";
-import { SNode, SetBoundsAction } from "sprotty-protocol";
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph';
+import { ConsoleLogger } from '../../utils/logging';
+import { SetBoundsCommand } from '../bounds/bounds-manipulation';
+import { SNode, SetBoundsAction } from 'sprotty-protocol';
+import { IModelFactory } from '../../base/model/smodel-factory';
 
 describe('SetBoundsCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const boundsInitial = { x: 0, y: 0, width: 0, height: 0 };
     const bounds1 = { x: 10, y: 10, width: 10, height: 10 };

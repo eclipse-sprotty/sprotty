@@ -16,27 +16,27 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { ConsoleLogger } from "../../utils/logging";
-import { EMPTY_ROOT } from "../../base/model/smodel-factory";
-import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
-import { CompoundAnimation, Animation } from "../../base/animations/animation";
-import {  SEdgeImpl } from "../../graph/sgraph";
-import { SGraphFactory } from "../../graph/sgraph-factory";
-import { FadeAnimation } from "../../features/fade/fade";
-import { MoveAnimation, MorphEdgesAnimation } from "../../features/move/move";
-import { UpdateModelCommand } from "./update-model";
-import { ModelMatcher } from "./model-matching";
-import { ManhattanEdgeRouter } from "../routing/manhattan-edge-router";
-import defaultModule from "../../base/di.config";
+import { ConsoleLogger } from '../../utils/logging';
+import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { CommandExecutionContext } from '../../base/commands/command';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
+import { CompoundAnimation, Animation } from '../../base/animations/animation';
+import {  SEdgeImpl, SGraphImpl, SNodeImpl } from '../../graph/sgraph';
+import { FadeAnimation } from '../../features/fade/fade';
+import { MoveAnimation, MorphEdgesAnimation } from '../../features/move/move';
+import { UpdateModelCommand } from './update-model';
+import { ModelMatcher } from './model-matching';
+import { ManhattanEdgeRouter } from '../routing/manhattan-edge-router';
+import defaultModule from '../../base/di.config';
 import { EdgeRouterRegistry } from '../routing/routing';
 import { AnchorComputerRegistry } from '../routing/anchor';
 import { ManhattanRectangularAnchor } from '../routing/manhattan-anchors';
 import { Point, SEdge, SGraph, SModelElement, SModelRoot,SNode, UpdateModelAction } from 'sprotty-protocol';
+import { registerModelElement } from '../../base/model/smodel-utils';
 
 function compare(expected: SModelElement, actual: SModelElementImpl) {
     for (const p in expected) {
@@ -59,9 +59,12 @@ function compare(expected: SModelElement, actual: SModelElementImpl) {
 describe('UpdateModelCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node', SNodeImpl);
+    registerModelElement(container, 'edge', SEdgeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const emptyRoot = graphFactory.createRoot(EMPTY_ROOT);
 
@@ -359,12 +362,12 @@ describe('UpdateModelCommand', () => {
         context.root = graphFactory.createRoot(
             newModelWithEdge(edgeId, [{ x: 64, y: 0 }, { x: 64, y: 128 }]));
         // connects node1 left with node2 right at respective midpoints
-        const command1 = new TestUpdateModelCommand({
+        const command3 = new TestUpdateModelCommand({
             kind: UpdateModelCommand.KIND,
             animate: false,
             newRoot: newModelWithEdge(edgeId, [{ x: 136, y: 0 }])
         }, edgeRouterRegistry);
-        const animation1 = command1.testAnimation(context.root, context);
+        const animation1 = command3.testAnimation(context.root, context);
         expect(animation1).to.be.instanceof(MorphEdgesAnimation);
         if (animation1 instanceof Animation) {
             const newRoot = animation1.tween(0, context);
@@ -388,7 +391,7 @@ describe('UpdateModelCommand', () => {
             animate: false,
             newRoot: newModelWithEdge(edgeId, [{ x: 32, y: 0 }, { x: 32, y: 32 }, { x: 64, y: 32 }, { x: 64, y: 128 }])
         }, edgeRouterRegistry);
-        const animation2 = command2.testAnimation(command1.newRoot, context);
+        const animation2 = command2.testAnimation(command3.newRoot, context);
         expect(animation2).to.be.instanceof(MorphEdgesAnimation);
         if (animation2 instanceof Animation) {
             const newRoot = animation2.tween(0, context);

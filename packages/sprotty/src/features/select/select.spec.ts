@@ -16,19 +16,19 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { ConsoleLogger } from "../../utils/logging";
-import { SModelRootImpl } from "../../base/model/smodel";
-import { EMPTY_ROOT } from "../../base/model/smodel-factory";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
-import { SGraphFactory } from "../../graph/sgraph-factory";
-import { SNodeImpl } from "../../graph/sgraph";
-import { SelectCommand, SelectAllCommand } from "./select";
-import defaultModule from "../../base/di.config";
+import { ConsoleLogger } from '../../utils/logging';
+import { SModelRootImpl } from '../../base/model/smodel';
+import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory';
+import { CommandExecutionContext } from '../../base/commands/command';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph';
+import { SelectCommand, SelectAllCommand } from './select';
+import defaultModule from '../../base/di.config';
 import { SelectAction, SelectAllAction } from 'sprotty-protocol';
+import { registerModelElement } from '../../base/model/smodel-utils';
 
 function getNode(nodeId: string, model: SModelRootImpl) {
     return <SNodeImpl>model.index.getById(nodeId);
@@ -41,9 +41,11 @@ function isNodeSelected(nodeId: string, model: SModelRootImpl) {
 describe('SelectCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node:circle', SNodeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const myNode0 = { id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true };
     const myNode1 = { id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false };
@@ -83,37 +85,39 @@ describe('SelectCommand', () => {
         newModel = cmd.execute(context);
 
         // Confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node1', newModel));
-        expect(false).to.equal(isNodeSelected('node0', newModel));
+        expect(isNodeSelected('node1', newModel)).to.equal(true);
+        expect(isNodeSelected('node0', newModel)).to.equal(false);
     });
 
     it('undo() works as expected', () => {
-        // Test "undo"
+        // Test 'undo'
         context.root = newModel;
         newModel = cmd.undo(context);
 
         // Confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node0', newModel));
-        expect(false).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(true);
+        expect(isNodeSelected('node1', newModel)).to.equal(false);
     });
 
     it('redo() works as expected', () => {
-        // Test "redo"
+        // Test 'redo'
         context.root = newModel;
         newModel = cmd.redo(context);
 
         // Confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node1', newModel));
-        expect(false).to.equal(isNodeSelected('node0', newModel));
+        expect(isNodeSelected('node1', newModel)).to.equal(true);
+        expect(isNodeSelected('node0', newModel)).to.equal(false);
     });
 });
 
 describe('SelectAllCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node:circle', SNodeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const myNode0 = { id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true };
     const myNode1 = { id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false };
@@ -146,28 +150,28 @@ describe('SelectAllCommand', () => {
         newModel = selectCmd.execute(context);
 
         // Confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node0', newModel));
-        expect(true).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(true);
+        expect(isNodeSelected('node1', newModel)).to.equal(true);
     });
 
     it('undo() works as expected', () => {
-        // Test "undo"
+        // Test 'undo'
         context.root = newModel;
         newModel = selectCmd.undo(context);
 
         // confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node0', newModel));
-        expect(false).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(true);
+        expect(isNodeSelected('node1', newModel)).to.equal(false);
     });
 
     it('redo() works as expected', () => {
-        // Test "redo"
+        // Test 'redo'
         context.root = newModel;
         newModel = selectCmd.redo(context);
 
         // Confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node0', newModel));
-        expect(true).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(true);
+        expect(isNodeSelected('node1', newModel)).to.equal(true);
     });
 
     it('execute() works as expected with deselect', () => {
@@ -176,27 +180,27 @@ describe('SelectAllCommand', () => {
         newModel = deselectCmd.execute(context);
 
         // Confirm selection is as expected
-        expect(false).to.equal(isNodeSelected('node0', newModel));
-        expect(false).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(false);
+        expect(isNodeSelected('node1', newModel)).to.equal(false);
     });
 
     it('undo() works as expected with deselect', () => {
-        // Test "undo" with deselect: true
+        // Test 'undo' with deselect: true
         context.root = newModel;
         newModel = deselectCmd.undo(context);
 
         // confirm selection is as expected
-        expect(true).to.equal(isNodeSelected('node0', newModel));
-        expect(true).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(true);
+        expect(isNodeSelected('node1', newModel)).to.equal(true);
     });
 
     it('redo() works as expected with deselect', () => {
-        // Test "redo" with deselect: true
+        // Test 'redo' with deselect: true
         context.root = newModel;
         newModel = deselectCmd.redo(context);
 
         // Confirm selection is as expected
-        expect(false).to.equal(isNodeSelected('node0', newModel));
-        expect(false).to.equal(isNodeSelected('node1', newModel));
+        expect(isNodeSelected('node0', newModel)).to.equal(false);
+        expect(isNodeSelected('node1', newModel)).to.equal(false);
     });
 });

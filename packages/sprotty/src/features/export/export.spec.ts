@@ -16,23 +16,26 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { ConsoleLogger } from "../../utils/logging";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { SGraphFactory } from "../../graph/sgraph-factory";
-import { SNodeImpl, SGraphImpl } from "../../graph/sgraph";
+import { ConsoleLogger } from '../../utils/logging';
+import { CommandExecutionContext } from '../../base/commands/command';
+import { SNodeImpl, SGraphImpl } from '../../graph/sgraph';
 import { ExportSvgCommand, RequestExportSvgAction } from './export';
-import defaultModule from "../../base/di.config";
+import defaultModule from '../../base/di.config';
 import { SNode } from 'sprotty-protocol';
+import { IModelFactory } from '../../base/model/smodel-factory';
+import { registerModelElement } from '../../base/model/smodel-utils';
 
 describe('ExportSvgCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node:circle', SNodeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const myNodeSchema: SNode = {
         id: 'node', type: 'node:circle',
