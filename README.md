@@ -37,7 +37,7 @@ The project is built on [ci.eclipse.org/sprotty](https://ci.eclipse.org/sprotty/
 
 For further information please consult the [Wiki](https://github.com/eclipse/sprotty/wiki).
 
-The version history is documented in the [CHANGELOG](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md) (see also links to other packages there).
+The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md). Changes are tracked seperately for each package.
 
 ## References
 

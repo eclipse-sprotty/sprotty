@@ -1,6 +1,6 @@
 ## Eclipse Sprotty Change Log (Client-Server Protocol)
 
-This change log covers only the client-server protocol of Sprotty. See also the change log of [sprotty](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
+This change log covers only the client-server protocol of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
 ## v.0.14.0 (Aug. 2023)
 

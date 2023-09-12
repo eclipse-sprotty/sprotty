@@ -1,6 +1,6 @@
 ## Eclipse Sprotty Change Log (generator-sprotty)
 
-This change log covers only the `yeoman` `generator-sprotty` package of Sprotty. See also the change log of [sprotty](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
+This change log covers only the Yeoman `generator-sprotty` package of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
 
 ### v0.14.0 (Aug. 2023)

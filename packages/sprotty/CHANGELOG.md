@@ -1,6 +1,6 @@
 ## Eclipse Sprotty Change Log
 
-This change log covers only the client part of Sprotty. See also the change logs of [sprotty-server](https://github.com/eclipse/sprotty-server/blob/master/CHANGELOG.md), [sprotty-theia](https://github.com/eclipse/sprotty-theia/blob/master/CHANGELOG.md) and [sprotty-elk](https://github.com/eclipse/sprotty/blob/master//packages/sprotty-elk/CHANGELOG.md).
+This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
 ### v0.14.0 (Aug. 2023)
 
