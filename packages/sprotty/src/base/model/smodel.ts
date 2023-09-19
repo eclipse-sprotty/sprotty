@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement as ProtocolSModelElement } from 'sprotty-protocol';
+import { SModelElement } from 'sprotty-protocol/lib/model';
 import { Bounds, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { FluentIterable, mapIterable } from '../../utils/iterable';
 
@@ -59,8 +59,8 @@ export interface FeatureSet {
     has(feature: symbol): boolean
 }
 
-export function isParent(element: ProtocolSModelElement | SModelElementImpl):
-        element is ProtocolSModelElement & { children: ProtocolSModelElement[] } {
+export function isParent(element: SModelElement | SModelElementImpl):
+        element is SModelElement & { children: SModelElement[] } {
     const children = (element as any).children;
     return children !== undefined && children.constructor === Array;
 }
@@ -192,10 +192,10 @@ export function createRandomId(length: number = 8): string {
  * Used to speed up model element lookup by id.
  */
  export interface IModelIndex {
-    add(element: ProtocolSModelElement): void
-    remove(element: ProtocolSModelElement): void
-    contains(element: ProtocolSModelElement): boolean
-    getById(id: string): ProtocolSModelElement | undefined
+    add(element: SModelElement): void
+    remove(element: SModelElement): void
+    contains(element: SModelElement): boolean
+    getById(id: string): SModelElement | undefined
 }
 
 /**
@@ -246,41 +246,3 @@ export class ModelIndexImpl implements IModelIndex {
         return mapIterable(this.id2element, ([key, value]: [string, SModelElementImpl]) => value);
     }
 }
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * The schema of an SModelElement describes its serializable form. The actual model is created from
- * its schema with an IModelFactory.
- * Each model element must have a unique ID and a type that is used to look up its view.
- *
- * @deprecated Use `SModelElement` from `sprotty-protocol` instead.
- */
-export interface SModelElementSchema {
-    type: string
-    id: string
-    children?: SModelElementSchema[]
-    cssClasses?: string[]
-}
-
-/**
- * Serializable schema for the root element of the model tree.
- *
- * @deprecated Use `SModelRoot` from `sprotty-protocol` instead.
- */
-export interface SModelRootSchema extends SModelElementSchema {
-    canvasBounds?: Bounds
-    revision?: number
-}
-
-/** @deprecated Use `SParentElementImpl` instead. */
-export const SParentElement = SParentElementImpl;
-
-/** @deprecated Use `SChildElementImpl` instead. */
-export const SChildElement = SChildElementImpl;
-
-/** @deprecated Use `SModelElementImpl` instead. */
-export const SModelElement = SModelElementImpl;
-
-/** @deprecated Use `SModelRootImpl` instead. */
-export const SModelRoot = SModelRootImpl;

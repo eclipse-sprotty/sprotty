@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, inject } from 'inversify';
-import { Action, BringToFrontAction as ProtocolBringToFrontAction} from 'sprotty-protocol/lib/actions';
+import { BringToFrontAction } from 'sprotty-protocol/lib/actions';
 import { TYPES } from '../../base/types';
 import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
 import { Command, CommandExecutionContext } from '../../base/commands/command';
@@ -28,11 +28,11 @@ export type ZOrderElement = {
 
 @injectable()
 export class BringToFrontCommand extends Command {
-    static readonly KIND = ProtocolBringToFrontAction.KIND;
+    static readonly KIND = BringToFrontAction.KIND;
 
     protected selected: ZOrderElement[] = [];
 
-    constructor(@inject(TYPES.Action) public action: ProtocolBringToFrontAction) {
+    constructor(@inject(TYPES.Action) public action: BringToFrontAction) {
         super();
     }
 
@@ -93,27 +93,5 @@ export class BringToFrontCommand extends Command {
         const element = selection.element;
         const childrenLength = element.parent.children.length;
         element.parent.move(element, childrenLength - 1);
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Action to render the selected elements in front of others by manipulating the z-order.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface BringToFrontAction extends Action {
-    kind: typeof BringToFrontAction.KIND;
-    elementIDs: string[]
-}
-export namespace BringToFrontAction {
-    export const KIND = 'bringToFront';
-
-    export function create(elementIDs: string[]): BringToFrontAction {
-        return {
-            kind: KIND,
-            elementIDs
-        };
     }
 }

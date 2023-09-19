@@ -15,12 +15,16 @@
  ********************************************************************************/
 
 import {
-    SShapeElementImpl, SChildElementImpl, Direction, BoundsAware, boundsFeature, Fadeable, fadeFeature,
+    SShapeElementImpl, SChildElementImpl, BoundsAware, boundsFeature, Fadeable, fadeFeature,
     layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
     ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature
 } from 'sprotty';
-import { Bounds, SModelElement, SModelRoot, JsonMap } from 'sprotty-protocol';
-import { CORE_DISTANCE, CORE_WIDTH } from "./views";
+import { Bounds, SModelElement, SModelRoot, JsonMap, SShapeElement } from 'sprotty-protocol';
+
+export enum Direction { up, down, left, right }
+
+export const CORE_WIDTH = 50;
+export const CORE_DISTANCE = 10;
 
 export interface ProcessorSchema extends SModelRoot {
     rows: number
@@ -49,13 +53,12 @@ export class Processor extends ViewportRootElement implements BoundsAware {
 
 }
 
-export interface CoreSchema extends SModelElement {
+export interface CoreSchema extends SShapeElement {
     row: number
     column: number
     kernelNr?: number
     selected?: boolean
     layout: string
-    resizeContainer: boolean
     children: SModelElement[]
 }
 
@@ -64,13 +67,12 @@ export class Core extends SShapeElementImpl implements Selectable, Fadeable, Hov
         hoverFeedbackFeature, popupFeature];
 
     hoverFeedback: boolean = false;
+    kernelNr: number = -1;
     column: number = 0;
     row: number = 0;
-    kernelNr: number = -1;
     selected: boolean = false;
     opacity: number = 1;
     layout: string = 'vbox';
-    resizeContainer: boolean = false;
 
 }
 

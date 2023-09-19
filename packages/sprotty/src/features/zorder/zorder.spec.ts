@@ -16,17 +16,16 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { ConsoleLogger } from "../../utils/logging";
-import { SModelRootImpl } from "../../base/model/smodel";
-import { EMPTY_ROOT } from "../../base/model/smodel-factory";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
-import { SGraphFactory } from "../../graph/sgraph-factory";
+import { ConsoleLogger } from '../../utils/logging';
+import { SModelRootImpl } from '../../base/model/smodel';
+import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory';
+import { CommandExecutionContext } from '../../base/commands/command';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
 import {  BringToFrontCommand } from './zorder';
-import defaultModule from "../../base/di.config";
+import defaultModule from '../../base/di.config';
 import { SNodeImpl } from '../../graph/sgraph';
 import { BringToFrontAction } from 'sprotty-protocol';
 
@@ -41,9 +40,8 @@ function getNodeIndex(nodeId: string, model: SModelRootImpl) {
 describe('BringToFrontCommand', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const myNode0 = {id: 'node0', type: 'node:circle', x: 100, y: 100, selected: true};
     const myNode1 = {id: 'node1', type: 'node:circle', x: 200, y: 200, selected: false};
@@ -84,7 +82,7 @@ describe('BringToFrontCommand', () => {
     });
 
     it('undo() works as expected', () => {
-        // Test "undo"
+        // Test 'undo'
         context.root = newModel;
         newModel = cmd.undo(context);
 
@@ -94,7 +92,7 @@ describe('BringToFrontCommand', () => {
     });
 
     it('redo() works as expected', () => {
-        // Test "redo"
+        // Test 'redo'
         context.root = newModel;
         newModel = cmd.redo(context);
 

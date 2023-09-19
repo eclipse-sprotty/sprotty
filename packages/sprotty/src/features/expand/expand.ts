@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Action, CollapseExpandAction as ProtocolCollapseExpandAction, CollapseExpandAllAction as ProtocolCollapseExpandAllAction} from 'sprotty-protocol/lib/actions';
+import { Action, CollapseExpandAction } from 'sprotty-protocol/lib/actions';
 import { SButtonImpl } from '../button/model';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isExpandable } from './model';
@@ -28,45 +28,12 @@ export class ExpandButtonHandler implements IButtonHandler {
     buttonPressed(button: SButtonImpl): Action[] {
         const expandable = findParentByFeature(button, isExpandable);
         if (expandable !== undefined) {
-            return [ ProtocolCollapseExpandAction.create({
+            return [ CollapseExpandAction.create({
                 expandIds:   expandable.expanded ? [] : [ expandable.id ],
                 collapseIds:  expandable.expanded ? [ expandable.id ] : []
             })];
         } else {
             return [];
         }
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Sent from the client to the model source to recalculate a diagram when elements
- * are collapsed/expanded by the client.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class CollapseExpandAction implements Action,ProtocolCollapseExpandAction {
-    static readonly KIND = 'collapseExpand';
-    readonly kind = CollapseExpandAction.KIND;
-
-    constructor(public readonly expandIds: string[],
-                public readonly collapseIds: string[]) {
-    }
-}
-
-/**
- * Programmatic action for expanding or collapsing all elements.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class CollapseExpandAllAction implements Action,ProtocolCollapseExpandAllAction {
-    static readonly KIND = 'collapseExpandAll';
-    readonly kind = CollapseExpandAllAction.KIND;
-
-    /**
-     * If `expand` is true, all elements are expanded, othewise they are collapsed.
-     */
-    constructor(public readonly expand: boolean = true) {
     }
 }

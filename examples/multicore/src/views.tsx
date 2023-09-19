@@ -18,8 +18,8 @@
 import { svg } from 'sprotty/lib/lib/jsx';
 
 import { VNode } from "snabbdom";
-import { IView, RenderingContext, setAttr, ThunkView, Direction, RGBColor, toSVG, rgb, ShapeView, IViewArgs } from 'sprotty';
-import { Channel, Core, Crossbar, Processor } from './chipmodel';
+import { IView, RenderingContext, setAttr, ThunkView, RGBColor, toSVG, rgb, ShapeView, IViewArgs } from 'sprotty';
+import { CORE_DISTANCE, CORE_WIDTH, Channel, Core, Crossbar, Direction, Processor } from './chipmodel';
 import { injectable } from 'inversify';
 
 @injectable()
@@ -38,9 +38,6 @@ export class ProcessorView implements IView {
             </svg>;
     }
 }
-
-export const CORE_WIDTH = 50;
-export const CORE_DISTANCE = 10;
 
 @injectable()
 export class SimpleCoreView extends ShapeView {

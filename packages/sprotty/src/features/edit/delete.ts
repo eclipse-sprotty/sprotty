@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action, DeleteElementAction as ProtocolDeleteElementAction} from 'sprotty-protocol/lib/actions';
+import { DeleteElementAction } from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { SModelElementImpl, SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
@@ -37,11 +37,11 @@ export class ResolvedDelete {
 
 @injectable()
 export class DeleteElementCommand extends Command {
-    static readonly KIND = ProtocolDeleteElementAction.KIND;
+    static readonly KIND = DeleteElementAction.KIND;
 
     resolvedDeletes: ResolvedDelete[] = [];
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolDeleteElementAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: DeleteElementAction) {
         super();
     }
 
@@ -67,27 +67,5 @@ export class DeleteElementCommand extends Command {
         for (const resolvedDelete of this.resolvedDeletes)
             resolvedDelete.parent.remove(resolvedDelete.child);
         return context.root;
-    }
-}
-
-// // Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * Delete a set of elements identified by their IDs.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface DeleteElementAction extends Action {
-    kind: typeof DeleteElementAction.KIND
-    elementIds: string[]
-}
-export namespace DeleteElementAction {
-    export const KIND = 'delete';
-
-    export function create(elementIds: string[]): DeleteElementAction {
-        return {
-            kind: KIND,
-            elementIds
-        };
     }
 }

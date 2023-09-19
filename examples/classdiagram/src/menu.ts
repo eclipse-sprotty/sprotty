@@ -16,11 +16,12 @@
 
 import { inject, injectable } from 'inversify';
 import {
-    Anchor, EMPTY_ROOT, GetSelectionAction, IActionDispatcher,
-    IContextMenuItemProvider, IContextMenuService, LabeledAction, MenuItem,
-    RequestExportSvgAction, SelectionResult, SModelRootImpl, TYPES, ViewerOptions
+    Anchor, EMPTY_ROOT, IActionDispatcher, IContextMenuItemProvider, IContextMenuService, LabeledAction, MenuItem,
+    RequestExportSvgAction, SModelRootImpl, TYPES, ViewerOptions
 } from 'sprotty';
-import { CenterAction, DeleteElementAction, FitToScreenAction, Point, SetPopupModelAction } from 'sprotty-protocol';
+import {
+    CenterAction, DeleteElementAction, FitToScreenAction, GetSelectionAction, Point, SelectionResult, SetPopupModelAction
+} from 'sprotty-protocol';
 
 @injectable()
 export class ClassContextMenuService implements IContextMenuService {

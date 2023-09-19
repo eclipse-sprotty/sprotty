@@ -14,13 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { CommandExecutionContext, CommandReturn, SystemCommand } from "../base/commands/command";
-import { SModelRootImpl } from "../base/model/smodel";
-import { TYPES } from "../base/types";
-import { ModelSource } from "./model-source";
+import { inject, injectable } from 'inversify';
+import { Action } from 'sprotty-protocol/lib/actions';
+import { SModelRoot } from 'sprotty-protocol/lib/model';
+import { CommandExecutionContext, CommandReturn, SystemCommand } from '../base/commands/command';
+import { SModelRootImpl } from '../base/model/smodel';
+import { TYPES } from '../base/types';
+import { ModelSource } from './model-source';
 
 /**
  * Commit the current SModel back to the model source.
@@ -49,8 +49,8 @@ export class CommitModelCommand extends SystemCommand {
 
     @inject(TYPES.ModelSource) modelSource: ModelSource;
 
-    originalModel: SModelRootSchema;
-    newModel: SModelRootSchema;
+    originalModel: SModelRoot;
+    newModel: SModelRoot;
 
     constructor(@inject(TYPES.Action) protected readonly action: CommitModelAction) {
         super();
@@ -61,7 +61,7 @@ export class CommitModelCommand extends SystemCommand {
         return this.doCommit(this.newModel, context.root, true);
     }
 
-    protected doCommit(model: SModelRootSchema, result: SModelRootImpl, doSetOriginal: boolean): CommandReturn {
+    protected doCommit(model: SModelRoot, result: SModelRootImpl, doSetOriginal: boolean): CommandReturn {
         const commitResult = this.modelSource.commitModel(model);
         if (commitResult instanceof Promise) {
             return commitResult.then(originalModel => {

@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { injectable, inject } from 'inversify';
-import { Action, generateRequestId, RequestAction, ResponseAction, SetViewportAction as ProtocolSetViewPortAction} from 'sprotty-protocol/lib/actions';
+import { GetViewportAction, ResponseAction, SetViewportAction, ViewportResult } from 'sprotty-protocol/lib/actions';
 import { Viewport } from 'sprotty-protocol/lib/model';
-import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { Animation } from '../../base/animations/animation';
@@ -26,55 +26,16 @@ import { TYPES } from '../../base/types';
 import { ModelRequestCommand } from '../../base/commands/request-command';
 import { ViewerOptions } from '../../base/views/viewer-options';
 
-/**
- * Request action for retrieving the current viewport and canvas bounds.
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface GetViewportAction extends RequestAction<ViewportResult> {
-    kind: typeof GetViewportAction.KIND;
-}
-export namespace GetViewportAction {
-    export const KIND = 'getViewport';
-
-    export function create(): GetViewportAction {
-        return {
-            kind: KIND,
-            requestId: generateRequestId()
-        };
-    }
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ViewportResult extends ResponseAction {
-    kind: typeof ViewportResult.KIND;
-    viewport: Viewport
-    canvasBounds: Bounds
-}
-export namespace ViewportResult {
-    export const KIND = 'viewportResult';
-
-    export function create(viewport: Viewport, canvasBounds: Bounds, requestId: string): ViewportResult {
-        return {
-            kind: KIND,
-            viewport,
-            canvasBounds,
-            responseId: requestId
-        };
-    }
-}
-
 @injectable()
 export class SetViewportCommand extends MergeableCommand {
-    static readonly KIND = ProtocolSetViewPortAction.KIND;
+    static readonly KIND = SetViewportAction.KIND;
 
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
     protected element: SModelElementImpl & Viewport;
     protected oldViewport: Viewport;
     protected newViewport: Viewport;
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolSetViewPortAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: SetViewportAction) {
         super();
         this.newViewport = action.newViewport;
     }
@@ -162,20 +123,5 @@ export class ViewportAnimation extends Animation {
         };
         this.element.zoom = this.oldViewport.zoom * Math.exp(t * this.zoomFactor);
         return context.root;
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export class SetViewportAction implements Action, ProtocolSetViewPortAction {
-    static readonly KIND = 'viewport';
-    readonly kind = SetViewportAction.KIND;
-
-    constructor(public readonly elementId: string,
-                public readonly newViewport: Viewport,
-                public readonly animate: boolean) {
     }
 }

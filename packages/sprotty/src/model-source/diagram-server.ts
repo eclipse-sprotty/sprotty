@@ -16,13 +16,11 @@
 
 import { saveAs } from 'file-saver';
 import { inject, injectable } from 'inversify';
-import { OpenAction, ActionMessage as ProtocolActionMessage, isActionMessage as isProtocolActionMessage } from 'sprotty-protocol';
 import {
-    Action, CollapseExpandAction, CollapseExpandAllAction, ComputedBoundsAction, RequestModelAction,
-    RequestPopupModelAction, SetModelAction, UpdateModelAction
+    Action, OpenAction, ActionMessage, isActionMessage, CollapseExpandAction, CollapseExpandAllAction,
+    ComputedBoundsAction, RequestModelAction, RequestPopupModelAction, SetModelAction, UpdateModelAction
 } from 'sprotty-protocol/lib/actions';
-import { SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
+import { SModelRoot } from 'sprotty-protocol/lib/model';
 import { ActionHandlerRegistry } from '../base/actions/action-handler';
 import { ICommand } from '../base/commands/command';
 import { SetModelCommand } from '../base/features/set-model';
@@ -60,14 +58,14 @@ export abstract class DiagramServerProxy extends ModelSource {
 
     clientId: string;
 
-    protected currentRoot: SModelRootSchema = {
+    protected currentRoot: SModelRoot = {
         type: 'NONE',
         id: 'ROOT'
     };
 
     protected lastSubmittedModelType: string;
 
-    override get model(): SModelRootSchema {
+    override get model(): SModelRoot {
         return this.currentRoot;
     }
 
@@ -96,7 +94,7 @@ export abstract class DiagramServerProxy extends ModelSource {
     }
 
     protected forwardToServer(action: Action): void {
-        const message: ProtocolActionMessage = {
+        const message: ActionMessage = {
             clientId: this.clientId,
             action: action
         };
@@ -107,14 +105,14 @@ export abstract class DiagramServerProxy extends ModelSource {
     /**
      * Send a message to the remote diagram server.
      */
-    protected abstract sendMessage(message: ProtocolActionMessage): void;
+    protected abstract sendMessage(message: ActionMessage): void;
 
     /**
      * Called when a message is received from the remote diagram server.
      */
     protected messageReceived(data: any): void {
         const object = typeof(data) === 'string' ? JSON.parse(data) : data;
-        if (isProtocolActionMessage(object) && object.action) {
+        if (isActionMessage(object) && object.action) {
             if (!object.clientId || object.clientId === this.clientId) {
                 (object.action as any)[receivedFromServerProperty] = true;
                 this.logger.log(this, 'receiving', object);
@@ -157,7 +155,7 @@ export abstract class DiagramServerProxy extends ModelSource {
             || action.kind === RequestBoundsCommand.KIND) {
             const newRoot = (action as any).newRoot;
             if (newRoot) {
-                this.currentRoot = newRoot as SModelRootSchema;
+                this.currentRoot = newRoot as SModelRoot;
                 if (action.kind === SetModelCommand.KIND || action.kind === UpdateModelCommand.KIND) {
                     this.lastSubmittedModelType = newRoot.type;
                 }
@@ -209,33 +207,9 @@ export abstract class DiagramServerProxy extends ModelSource {
         return false;
     }
 
-    commitModel(newRoot: SModelRootSchema): Promise<SModelRootSchema> | SModelRootSchema {
+    commitModel(newRoot: SModelRoot): Promise<SModelRoot> | SModelRoot {
         const previousRoot = this.currentRoot;
         this.currentRoot = newRoot;
         return previousRoot;
     }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use `DiagramServerProxy` instead.
- */
-export const DiagramServer = DiagramServerProxy;
-
-/**
- * Wrapper for actions when transferring them between client and server via a DiagramServer.
- *
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface ActionMessage {
-    clientId: string
-    action: Action
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isActionMessage(object: unknown): object is ActionMessage {
-    return hasOwnProperty(object, 'action');
 }

@@ -74,9 +74,5 @@ export const TYPES = {
     IViewer: Symbol('IViewer'),
     ViewerOptions: Symbol('ViewerOptions'),
     IViewerProvider: Symbol('IViewerProvider'),
-    /** @deprecated deprecated since 0.12.0 - please use `configureButtonHandler` */
-    IButtonHandler: Symbol('IButtonHandler'),
-    /** @deprecated `deprecated since 0.14.0 - the Tool/Toolmanager API is no longer supported */
-    IToolManager: Symbol('IToolManager')
 };
 /* eslint-enable */

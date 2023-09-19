@@ -17,7 +17,7 @@
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction as ProtocolMoveAction } from 'sprotty-protocol/lib/actions';
+import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction } from 'sprotty-protocol/lib/actions';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from '../../base/commands/command';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
@@ -61,14 +61,14 @@ export interface ResolvedHandleMove {
 
 @injectable()
 export class MoveCommand extends MergeableCommand {
-    static readonly KIND = ProtocolMoveAction.KIND;
+    static readonly KIND = MoveAction.KIND;
 
     @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
     protected resolvedMoves: Map<string, ResolvedElementMove> = new Map;
     protected edgeMementi: EdgeMemento[] = [];
 
-    constructor(@inject(TYPES.Action) protected readonly action: ProtocolMoveAction) {
+    constructor(@inject(TYPES.Action) protected readonly action: MoveAction) {
         super();
     }
 
@@ -453,7 +453,7 @@ export class MoveMouseListener extends MouseListener {
         return false;
     }
 
-    protected getElementMoves(target: SModelElementImpl, event: MouseEvent, isFinished: boolean): ProtocolMoveAction | undefined {
+    protected getElementMoves(target: SModelElementImpl, event: MouseEvent, isFinished: boolean): MoveAction | undefined {
         if (!this.startDragPosition)
             return undefined;
         const elementMoves: ElementMove[] = [];
@@ -473,7 +473,7 @@ export class MoveMouseListener extends MouseListener {
             }
         });
         if (elementMoves.length > 0)
-            return ProtocolMoveAction.create(elementMoves, { animate: false, finished: isFinished });
+            return MoveAction.create(elementMoves, { animate: false, finished: isFinished });
         else
             return undefined;
     }
@@ -630,29 +630,5 @@ export class LocationPostprocessor implements IVNodePostprocessor {
     }
 
     postUpdate(): void {
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface MoveAction extends Action {
-    kind: typeof MoveAction.KIND
-    moves: ElementMove[]
-    animate: boolean
-    finished: boolean
-}
-export namespace MoveAction {
-    export const KIND = 'move';
-
-    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean } = {}): MoveAction {
-        return {
-            kind: KIND,
-            moves,
-            animate: options.animate ?? true,
-            finished: options.finished ?? false
-        };
     }
 }

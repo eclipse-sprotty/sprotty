@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElement as SModelElementSchema } from 'sprotty-protocol/lib/model';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
 import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
@@ -214,20 +213,4 @@ export abstract class SShapeElementImpl extends SChildElementImpl implements Bou
         return result;
     }
 
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/** @deprecated Use `SShapeElementImpl` instead. */
-export const SShapeElement = SShapeElementImpl;
-
-/**
- * Serializable schema for SShapeElement.
- *
- * @deprecated Use `SShapeElement` from `sprotty-protocol` instead.
- */
-export interface SShapeElementSchema extends SModelElementSchema {
-    position?: Point
-    size?: Dimension
-    layoutOptions?: ModelLayoutOptions
 }

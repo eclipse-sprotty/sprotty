@@ -19,58 +19,51 @@ import { svg } from '../lib/jsx';
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
-import { Container } from "inversify";
-import { VNode } from "snabbdom";
-import { TYPES } from "../base/types";
+import { expect } from 'chai';
+import { Container } from 'inversify';
+import { VNode } from 'snabbdom';
+import { TYPES } from '../base/types';
 import { IVNodePostprocessor } from '../base/views/vnode-postprocessor';
-import { CircularNodeView, RectangularNodeView } from "../lib/svg-views";
+import { CircularNodeView, RectangularNodeView } from '../lib/svg-views';
 import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
-import { RenderingContext, configureView, ViewRegistry } from "../base/views/view";
-import { ModelRendererFactory } from "../base/views/viewer";
+import { RenderingContext, configureView, ViewRegistry, configureModelElement } from '../base/views/view';
+import { ModelRendererFactory } from '../base/views/viewer';
 import { PolylineEdgeView, SGraphView } from './views';
-import { SModelElement, SParentElement } from "../base/model/smodel";
-import { SModelElementRegistration } from '../base/model/smodel-factory';
-import { SGraphFactory } from "./sgraph-factory";
-import defaultModule from "../base/di.config";
-import selectModule from "../features/select/di.config";
-import moveModule from "../features/move/di.config";
-import { SEdge, SGraph, SNode, SPortSchema, SEdgeSchema, SNodeSchema } from "./sgraph";
-import graphModule from './di.config';
+import { SModelElementImpl, SParentElementImpl } from '../base/model/smodel';
+import { IModelFactory, SModelElementRegistration } from '../base/model/smodel-factory';
+import defaultModule from '../base/di.config';
+import selectModule from '../features/select/di.config';
+import moveModule from '../features/move/di.config';
+import { SEdgeImpl, SGraphImpl, SNodeImpl, SPortImpl } from './sgraph';
 import routingModule from '../features/routing/di.config';
 
 import toHTML from 'snabbdom-to-html';
+import { SEdge, SNode, SPort } from 'sprotty-protocol';
 
 describe('graph views', () => {
     class CircleNodeView extends CircularNodeView {
-        override render(node: SNode, renderContext: RenderingContext): VNode {
+        override render(node: SNodeImpl, renderContext: RenderingContext): VNode {
             const radius = this.getRadius(node);
             return <g>
                     <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius} />
                 </g>;
         }
-        protected override getRadius(node: SNode) {
+        protected override getRadius(node: SNodeImpl) {
             return 40;
         }
     }
 
     const container = new Container();
-    container.load(defaultModule, selectModule, moveModule, graphModule, routingModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
+    container.load(defaultModule, selectModule, moveModule, routingModule);
 
-    container.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
-        type: 'node:circle',
-        constr: CircularNode
-    });
-
-    configureView(container, 'graph', SGraphView);
-    configureView(container, 'node:circle', CircleNodeView);
-    configureView(container, 'edge:straight', PolylineEdgeView);
-    configureView(container, 'port', RectangularNodeView);
+    configureModelElement(container, 'graph', SGraphImpl, SGraphView);
+    configureModelElement(container, 'node:circle', CircularNode, CircleNodeView);
+    configureModelElement(container, 'edge:straight', SEdgeImpl, PolylineEdgeView);
+    configureModelElement(container, 'port', SPortImpl, RectangularNodeView);
 
     const postprocessors = container.getAll<IVNodePostprocessor>(TYPES.IVNodePostprocessor);
     const context = container.get<ModelRendererFactory>(TYPES.ModelRendererFactory)('hidden', postprocessors);
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
     const viewRegistry = container.get<ViewRegistry>(TYPES.ViewRegistry);
 
     it('render an empty graph', () => {
@@ -79,7 +72,7 @@ describe('graph views', () => {
             id: 'mygraph',
             children: []
         };
-        const graph = graphFactory.createRoot(schema) as SGraph;
+        const graph = graphFactory.createRoot(schema) as SGraphImpl;
         const view = viewRegistry.get(graph.type);
         const vnode = view.render(graph, context);
         expect(toHTML(vnode)).to.be.equal('<svg class="sprotty-graph"><g transform="scale(1) translate(0,0)"></g></svg>');
@@ -89,7 +82,7 @@ describe('graph views', () => {
         const node0 = { id: 'node0', type: 'node:circle', position: { x: 100, y: 100 }, size: { width: 80, height: 80 } };
         const node1 = { id: 'node1', type: 'node:circle', position: { x: 200, y: 150 }, size: { width: 80, height: 80 }, selected: true };
         const edge0 = { id: 'edge0', type: 'edge:straight', sourceId: 'node0', targetId: 'node1' };
-        const graph = graphFactory.createRoot({ id: 'graph', type: 'graph', children: [node0, node1, edge0] }) as SGraph;
+        const graph = graphFactory.createRoot({ id: 'graph', type: 'graph', children: [node0, node1, edge0] }) as SGraphImpl;
         return graph;
     }
 
@@ -97,7 +90,7 @@ describe('graph views', () => {
         const graph = createModel();
 
         const view = viewRegistry.get('edge:straight');
-        const vnode = view.render(graph.index.getById('edge0') as SEdge, context);
+        const vnode = view.render(graph.index.getById('edge0') as SEdgeImpl, context);
         expect(toHTML(vnode)).to.be.equal(
             '<g class="sprotty-edge"><path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" /></g>');
     });
@@ -105,7 +98,7 @@ describe('graph views', () => {
     it('render a circle node', () => {
         const graph = createModel();
         const view = viewRegistry.get('node:circle');
-        const vnode = view.render(graph.index.getById('node0') as SNode, context);
+        const vnode = view.render(graph.index.getById('node0') as SNodeImpl, context);
         expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
     });
 
@@ -132,18 +125,14 @@ describe('graph views', () => {
 describe('PolylineEdgeView', () => {
     const container = new Container();
     container.load(defaultModule, routingModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
-    container.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
-        type: 'node',
-        constr: RectangularNode
-    });
-    container.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
-        type: 'port',
-        constr: RectangularPort
-    });
-    configureView(container, 'edge:straight', PolylineEdgeView);
 
-    const factory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    configureModelElement(container, 'graph', SGraphImpl, SGraphView);
+    configureModelElement(container, 'node', RectangularNode, RectangularNodeView);
+    configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeView);
+    configureModelElement(container, 'edge:straight', SEdgeImpl, PolylineEdgeView);
+    configureModelElement(container, 'port', RectangularPort, RectangularNodeView);
+
+    const factory = container.get<IModelFactory>(TYPES.IModelFactory);
     const model = factory.createRoot({
         type: 'graph',
         id: 'graph',
@@ -158,15 +147,15 @@ describe('PolylineEdgeView', () => {
                         type: 'port',
                         id: 'port1',
                         position: { x: 10, y: 4 }
-                    } as SPortSchema,
+                    } as SPort,
                     {
                         type: 'edge',
                         id: 'edge1',
                         sourceId: 'port1',
                         targetId: 'port2'
-                    } as SEdgeSchema
+                    } as SEdge
                 ]
-            } as SNodeSchema,
+            } as SNode,
             {
                 type: 'node',
                 id: 'node2',
@@ -177,15 +166,15 @@ describe('PolylineEdgeView', () => {
                         type: 'port',
                         id: 'port2',
                         position: { x: -2, y: 4 }
-                    } as SPortSchema,
+                    } as SPort,
                     {
                         type: 'edge',
                         id: 'edge2',
                         sourceId: 'port1',
                         targetId: 'port2'
-                    } as SEdgeSchema
+                    } as SEdge
                 ]
-            } as SNodeSchema,
+            } as SNode,
         ]
     });
 
@@ -194,19 +183,19 @@ describe('PolylineEdgeView', () => {
     const context = {
         targetKind: 'hidden',
         viewRegistry,
-        decorate: function(vnode: VNode, element: SModelElement): VNode { return vnode; },
-        renderElement: function(element: SModelElement): VNode { return <g></g>; },
-        renderChildren: function(element: SParentElement): VNode[] { return []; }
+        decorate: function(vnode: VNode, element: SModelElementImpl): VNode { return vnode; },
+        renderElement: function(element: SModelElementImpl): VNode { return <g></g>; },
+        renderChildren: function(element: SParentElementImpl): VNode[] { return []; }
     } as RenderingContext;
 
     it('correctly translates edge source and target position', () => {
-        const edge = model.index.getById('edge1') as SEdge;
+        const edge = model.index.getById('edge1') as SEdgeImpl;
         const vnode = edgeView.render(edge, context);
         expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M 10,4 L 18,14" /></g>');
     });
 
     it('correctly translates edge target and source position', () => {
-        const edge = model.index.getById('edge2') as SEdge;
+        const edge = model.index.getById('edge2') as SEdgeImpl;
         const vnode = edgeView.render(edge, context);
         expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M -10,-6 L -2,4" /></g>');
     });

@@ -19,7 +19,6 @@ import { Action, SetViewportAction } from 'sprotty-protocol/lib/actions';
 import { Viewport } from 'sprotty-protocol/lib/model';
 import { almostEquals, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
 import { MouseListener } from '../../base/views/mouse-tool';
@@ -102,20 +101,4 @@ export class ZoomMouseListener extends MouseListener {
             return Math.exp(-event.deltaY * 0.005);
     }
 
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface Zoomable extends SModelExtension {
-    zoom: number
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isZoomable(element: SModelElementImpl | Zoomable): element is Zoomable {
-    return 'zoom' in element;
 }

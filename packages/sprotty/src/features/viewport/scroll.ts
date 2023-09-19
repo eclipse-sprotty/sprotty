@@ -20,7 +20,6 @@ import { Action, CenterAction, SetViewportAction } from 'sprotty-protocol/lib/ac
 import { almostEquals, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { MouseListener } from '../../base/views/mouse-tool';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { isViewport } from './model';
 import { isMoveable } from '../move/model';
@@ -230,20 +229,4 @@ export function findViewportScrollbar(event: MouseEvent): HTMLElement | undefine
         element = element.parentElement;
     }
     return undefined;
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface Scrollable extends SModelExtension {
-    scroll: Point
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export function isScrollable(element: SModelElementImpl | Scrollable): element is Scrollable {
-    return 'scroll' in element;
 }

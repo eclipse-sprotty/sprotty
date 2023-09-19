@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action, UndoAction as ProtocolUndoAction, RedoAction as ProtocolRedoAction } from 'sprotty-protocol/lib/actions';
+import { Action, UndoAction, RedoAction } from 'sprotty-protocol/lib/actions';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { KeyListener } from '../../base/views/key-tool';
 import { SModelElementImpl } from '../../base/model/smodel';
@@ -23,43 +23,9 @@ import { isMac } from '../../utils/browser';
 export class UndoRedoKeyListener extends KeyListener {
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd'))
-            return [ProtocolUndoAction.create()];
+            return [UndoAction.create()];
         if (matchesKeystroke(event, 'KeyZ', 'ctrlCmd', 'shift') || (!isMac() && matchesKeystroke(event, 'KeyY', 'ctrlCmd')))
-            return [ProtocolRedoAction.create()];
+            return [RedoAction.create()];
         return [];
-    }
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface UndoAction extends Action {
-    kind: typeof UndoAction.KIND;
-}
-export namespace UndoAction {
-    export const KIND = 'undo';
-
-    export function create(): UndoAction {
-        return {
-            kind: KIND
-        };
-    }
-}
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface RedoAction extends Action {
-    kind: typeof RedoAction.KIND;
-}
-export namespace RedoAction {
-    export const KIND = 'redo';
-
-    export function create(): RedoAction {
-        return {
-            kind: KIND
-        };
     }
 }

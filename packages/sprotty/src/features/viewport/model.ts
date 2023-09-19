@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { Bounds, Dimension } from 'sprotty-protocol';
-import { Scrollable, Zoomable, Viewport as ProtocolViewport } from 'sprotty-protocol/lib/model';
+import { Viewport } from 'sprotty-protocol/lib/model';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { limit, Limits } from '../../utils/geometry';
 
@@ -24,7 +24,7 @@ export const viewportFeature = Symbol('viewportFeature');
 /**
  * Determine whether the given model element has a viewport.
  */
-export function isViewport(element: SModelElementImpl): element is SModelRootImpl & ProtocolViewport {
+export function isViewport(element: SModelElementImpl): element is SModelRootImpl & Viewport {
     return element instanceof SModelRootImpl
         && element.hasFeature(viewportFeature)
         && 'zoom' in element
@@ -34,11 +34,11 @@ export function isViewport(element: SModelElementImpl): element is SModelRootImp
 /**
  * Apply limits to the given viewport.
  */
-export function limitViewport(viewport: ProtocolViewport,
+export function limitViewport(viewport: Viewport,
     canvasBounds: Bounds | undefined,
     horizontalScrollLimits: Limits | undefined,
     verticalScrollLimits: Limits | undefined,
-    zoomLimits: Limits | undefined): ProtocolViewport {
+    zoomLimits: Limits | undefined): Viewport {
     if (canvasBounds && !Dimension.isValid(canvasBounds)) {
         canvasBounds = undefined;
     }
@@ -75,12 +75,4 @@ export function limitViewport(viewport: ProtocolViewport,
         scrollY = viewport.scroll.y;
     }
     return { scroll: { x: scrollX, y: scrollY }, zoom };
-}
-
-// Compatibility deprecation layer (will be removed with the graduation 1.0.0 release)
-
-/**
- * @deprecated Use the declaration from `sprotty-protocol` instead.
- */
-export interface Viewport extends Scrollable, Zoomable {
 }

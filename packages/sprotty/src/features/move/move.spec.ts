@@ -16,25 +16,28 @@
 
 import 'reflect-metadata';
 import 'mocha';
-import { expect } from "chai";
+import { expect } from 'chai';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
-import { ConsoleLogger } from "../../utils/logging";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { SModelRootImpl } from "../../base/model/smodel";
-import { SGraphFactory } from "../../graph/sgraph-factory";
-import { SNodeImpl } from "../../graph/sgraph";
-import { AnimationFrameSyncer } from "../../base/animations/animation-frame-syncer";
-import { ElementMove, MoveCommand } from "./move";
-import defaultModule from "../../base/di.config";
+import { ConsoleLogger } from '../../utils/logging';
+import { CommandExecutionContext } from '../../base/commands/command';
+import { SModelRootImpl } from '../../base/model/smodel';
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
+import { ElementMove, MoveCommand } from './move';
+import defaultModule from '../../base/di.config';
 import { MoveAction, Point } from 'sprotty-protocol';
+import { IModelFactory } from '../../base/model/smodel-factory';
+import { registerModelElement } from '../../base/model/smodel-utils';
 
 describe('move', () => {
     const container = new Container();
     container.load(defaultModule);
-    container.rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
 
-    const graphFactory = container.get<SGraphFactory>(TYPES.IModelFactory);
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node:circle', SNodeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const pointNW: Point = { x: 0, y: 0 };
     const pointNE: Point = { x: 300, y: 1 };
@@ -135,7 +138,7 @@ describe('move', () => {
     let undoneModel: SModelRootImpl;
 
     it('undo() works as expected', async () => {
-        // test "undo"
+        // test 'undo'
         context.root = newModel;
         undoneModel = await cmd.undo(context);
 
@@ -151,7 +154,7 @@ describe('move', () => {
     });
 
     it('redo() works as expected', async () => {
-        // test "redo":
+        // test 'redo':
         context.root = undoneModel;
         const redoneModel = await cmd.redo(context);
 
