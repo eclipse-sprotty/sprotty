@@ -60,6 +60,16 @@ export interface Viewport extends Scrollable, Zoomable {
 }
 
 /**
+ * Usually the root of a model is also a viewport.
+ */
+export interface ViewportRootElement extends SModelRoot {
+    scroll?: Point
+    zoom?: number
+    position?: Point
+    size?: Dimension
+}
+
+/**
  * A scrollable element has a scroll position, which indicates the top left corner of the
  * visible area.
  */

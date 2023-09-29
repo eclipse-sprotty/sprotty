@@ -181,7 +181,7 @@ export interface CommandExecutionContext {
     /** The current Sprotty model (i.e. the main model that is visible to the user) */
     root: SModelRootImpl
 
-    /** Used to turn sprotty schema elements (e.g. from the action) into model elements */
+    /** Used to turn sprotty external model elements (e.g. from the action) into internal model elements */
     modelFactory: IModelFactory
 
     /** Allows to give some feedback to the console */

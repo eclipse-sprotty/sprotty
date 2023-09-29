@@ -28,13 +28,13 @@ import { Hoverable, hoverFeedbackFeature, popupFeature } from '../features/hover
 import { moveFeature } from '../features/move/model';
 import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model';
 import { Selectable, selectFeature } from '../features/select/model';
-import { ViewportRootElement } from '../features/viewport/viewport-root';
+import { ViewportRootElementImpl } from '../features/viewport/viewport-root';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
 
 /**
  * Root element for graph-like models.
  */
-export class SGraphImpl extends ViewportRootElement {
+export class SGraphImpl extends ViewportRootElementImpl {
     layoutOptions?: ModelLayoutOptions;
 
     constructor(index = new SGraphIndex()) {
