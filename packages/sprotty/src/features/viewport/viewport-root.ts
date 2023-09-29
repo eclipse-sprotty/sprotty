@@ -14,25 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelRoot, Viewport } from 'sprotty-protocol/lib/model';
+import { Viewport } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelRootImpl, ModelIndexImpl } from '../../base/model/smodel';
 import { viewportFeature } from "./model";
 import { exportFeature } from "../export/model";
 import { BoundsAware } from "../bounds/model";
 
-export interface ViewportRootElementSchema extends SModelRoot {
-    scroll?: Point
-    zoom?: number
-    position?: Point
-    size?: Dimension
-}
-
 /**
  * Model root element that defines a viewport, so it transforms the coordinate system with
  * a `scroll` translation and a `zoom` scaling.
  */
-export class ViewportRootElement extends SModelRootImpl implements Viewport, BoundsAware {
+export class ViewportRootElementImpl extends SModelRootImpl implements Viewport, BoundsAware {
     static readonly DEFAULT_FEATURES = [viewportFeature, exportFeature];
 
     scroll: Point = { x: 0, y: 0 };

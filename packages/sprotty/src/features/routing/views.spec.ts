@@ -18,7 +18,7 @@ import 'mocha';
 import { expect } from "chai";
 import { IViewArgs, RenderingContext } from '../../base/views/view';
 import { SShapeElementImpl } from '../bounds/model';
-import { ViewportRootElement } from '../viewport/viewport-root';
+import { ViewportRootElementImpl } from '../viewport/viewport-root';
 import { SRoutableElementImpl } from './model';
 import { RoutableView } from './views';
 import { VNode } from 'snabbdom';
@@ -37,8 +37,8 @@ describe('RoutableView.isVisible', () => {
         }
     }
 
-    function createModel(): ViewportRootElement {
-        const root = new ViewportRootElement();
+    function createModel(): ViewportRootElementImpl {
+        const root = new ViewportRootElementImpl();
         root.canvasBounds = { x: 0, y: 0, width: 100, height: 100 };
         const node1 = new TestNode();
         node1.bounds = { x: 100, y: 100, width: 100, height: 100 };

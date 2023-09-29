@@ -17,7 +17,7 @@
 import {
     SShapeElementImpl, SChildElementImpl, BoundsAware, boundsFeature, Fadeable, fadeFeature,
     layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
-    ViewportRootElement, hoverFeedbackFeature, Hoverable, popupFeature
+    ViewportRootElementImpl, hoverFeedbackFeature, Hoverable, popupFeature
 } from 'sprotty';
 import { Bounds, SModelElement, SModelRoot, JsonMap, SShapeElement } from 'sprotty-protocol';
 
@@ -31,8 +31,8 @@ export interface ProcessorSchema extends SModelRoot {
     columns: number
 }
 
-export class Processor extends ViewportRootElement implements BoundsAware {
-    static override readonly DEFAULT_FEATURES = [...ViewportRootElement.DEFAULT_FEATURES, boundsFeature];
+export class Processor extends ViewportRootElementImpl implements BoundsAware {
+    static override readonly DEFAULT_FEATURES = [...ViewportRootElementImpl.DEFAULT_FEATURES, boundsFeature];
 
     rows: number = 0;
     columns: number = 0;

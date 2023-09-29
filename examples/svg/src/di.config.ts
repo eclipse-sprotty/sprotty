@@ -17,7 +17,7 @@
 import { Container, ContainerModule } from 'inversify';
 import {
     TYPES, ConsoleLogger, LogLevel, loadDefaultModules, LocalModelSource, PreRenderedView,
-    ProjectedViewportView, ViewportRootElement, ShapedPreRenderedElementImpl, configureModelElement,
+    ProjectedViewportView, ViewportRootElementImpl, ShapedPreRenderedElementImpl, configureModelElement,
     ForeignObjectElementImpl, ForeignObjectView, RectangularNode, RectangularNodeView, moveFeature,
     selectFeature, EditableLabel, editLabelFeature, WithEditableLabel, withEditLabelFeature,
     isEditableLabel, configureViewerOptions
@@ -34,7 +34,7 @@ export default () => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         const context = { bind, unbind, isBound, rebind };
 
-        configureModelElement(context, 'svg', ViewportRootElement, ProjectedViewportView);
+        configureModelElement(context, 'svg', ViewportRootElementImpl, ProjectedViewportView);
         configureModelElement(context, 'pre-rendered', ShapedPreRenderedElementImpl, PreRenderedView);
         configureModelElement(context, 'foreign-object', ForeignObjectElementImpl, ForeignObjectView);
         configureModelElement(context, 'node', RectangleWithEditableLabel, RectangularNodeView, {

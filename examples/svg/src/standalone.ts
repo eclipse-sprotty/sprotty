@@ -14,11 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import {
-    TYPES, ViewportRootElementSchema, Projectable, LocalModelSource
-} from 'sprotty';
+import { TYPES, Projectable, LocalModelSource } from 'sprotty';
 import createContainer from './di.config';
-import { ForeignObjectElement, SShapeElement, ShapedPreRenderedElement } from 'sprotty-protocol';
+import { ForeignObjectElement, SShapeElement, ShapedPreRenderedElement, ViewportRootElement } from 'sprotty-protocol';
 
 function loadFile(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -40,7 +38,7 @@ export default async function runSVG() {
     const container = createContainer();
 
     // Initialize model
-    const model: ViewportRootElementSchema = {
+    const model: ViewportRootElement = {
         type: 'svg',
         id: 'root',
         children: [

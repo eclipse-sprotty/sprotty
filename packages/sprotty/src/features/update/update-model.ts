@@ -25,7 +25,7 @@ import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from '../move
 import { Fadeable, isFadeable } from '../fade/model';
 import { isLocateable } from '../move/model';
 import { isSizeable } from '../bounds/model';
-import { ViewportRootElement } from '../viewport/viewport-root';
+import { ViewportRootElementImpl } from '../viewport/viewport-root';
 import { isSelectable } from '../select/model';
 import { MatchResult, ModelMatcher, Match, forEachMatch } from './model-matching';
 import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
@@ -241,7 +241,7 @@ export class UpdateModelCommand extends Command {
         if (left instanceof SModelRootImpl && right instanceof SModelRootImpl) {
             right.canvasBounds = left.canvasBounds;
         }
-        if (left instanceof ViewportRootElement && right instanceof ViewportRootElement) {
+        if (left instanceof ViewportRootElementImpl && right instanceof ViewportRootElementImpl) {
             right.scroll = left.scroll;
             right.zoom = left.zoom;
         }

@@ -22,7 +22,7 @@ import { VNode, VNodeStyle, h } from 'snabbdom';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { IView, IViewArgs, RenderingContext } from '../../base/views/view';
 import { setAttr, setClass } from '../../base/views/vnode-utils';
-import { ViewportRootElement } from '../viewport/viewport-root';
+import { ViewportRootElementImpl } from '../viewport/viewport-root';
 import { getModelBounds, getProjections, ViewProjection } from './model';
 
 /**
@@ -31,7 +31,7 @@ import { getModelBounds, getProjections, ViewProjection } from './model';
 @injectable()
 export class ProjectedViewportView implements IView {
 
-    render(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
+    render(model: Readonly<ViewportRootElementImpl>, context: RenderingContext, args?: IViewArgs): VNode {
         const rootNode: VNode = <div class-sprotty-root={true}>
             {this.renderSvg(model, context, args)}
             {this.renderProjections(model, context, args)}
@@ -40,13 +40,13 @@ export class ProjectedViewportView implements IView {
         return rootNode;
     }
 
-    protected renderSvg(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
+    protected renderSvg(model: Readonly<ViewportRootElementImpl>, context: RenderingContext, args?: IViewArgs): VNode {
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         const ns = 'http://www.w3.org/2000/svg';
         return h('svg', { ns }, h('g', { ns, attrs: { transform } }, context.renderChildren(model)));
     }
 
-    protected renderProjections(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode[] {
+    protected renderProjections(model: Readonly<ViewportRootElementImpl>, context: RenderingContext, args?: IViewArgs): VNode[] {
         if (model.zoom <= 0) {
             return [];
         }
@@ -61,7 +61,7 @@ export class ProjectedViewportView implements IView {
         ];
     }
 
-    protected renderProjectionBar(projections: ViewProjection[], model: Readonly<ViewportRootElement>, modelBounds: Bounds, orientation: 'horizontal' | 'vertical'): VNode {
+    protected renderProjectionBar(projections: ViewProjection[], model: Readonly<ViewportRootElementImpl>, modelBounds: Bounds, orientation: 'horizontal' | 'vertical'): VNode {
         const params: ProjectionParams = { modelBounds, orientation } as ProjectionParams;
         // NOTE: Here we assume that the projection bars have the same size as the diagram canvas, i.e. they are drawn as overlay above the canvas.
         params.factor = orientation === 'horizontal' ? model.canvasBounds.width / modelBounds.width : model.canvasBounds.height / modelBounds.height;
@@ -75,7 +75,7 @@ export class ProjectedViewportView implements IView {
         </div>;
     }
 
-    protected renderViewport(model: Readonly<ViewportRootElement>, params: ProjectionParams): VNode {
+    protected renderViewport(model: Readonly<ViewportRootElementImpl>, params: ProjectionParams): VNode {
         let canvasSize, viewportPos: number;
         if (params.orientation === 'horizontal') {
             canvasSize = model.canvasBounds.width;
@@ -106,7 +106,7 @@ export class ProjectedViewportView implements IView {
         return <div class-sprotty-viewport={true} style={style} />;
     }
 
-    protected renderProjection(projection: ViewProjection, model: Readonly<ViewportRootElement>, params: ProjectionParams): VNode {
+    protected renderProjection(projection: ViewProjection, model: Readonly<ViewportRootElementImpl>, params: ProjectionParams): VNode {
         let canvasSize, projPos, projSize: number;
         if (params.orientation === 'horizontal') {
             canvasSize = model.canvasBounds.width;

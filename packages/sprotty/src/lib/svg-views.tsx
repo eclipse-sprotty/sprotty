@@ -21,7 +21,7 @@ import { VNode } from "snabbdom";
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { IView, IViewArgs, RenderingContext } from "../base/views/view";
 import { SNodeImpl, SPortImpl } from "../graph/sgraph";
-import { ViewportRootElement } from "../features/viewport/viewport-root";
+import { ViewportRootElementImpl } from "../features/viewport/viewport-root";
 import { SShapeElementImpl } from '../features/bounds/model';
 import { ShapeView } from '../features/bounds/views';
 import { Hoverable } from '../features/hover/model';
@@ -32,7 +32,7 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class SvgViewportView implements IView {
-    render(model: Readonly<ViewportRootElement>, context: RenderingContext, args?: IViewArgs): VNode {
+    render(model: Readonly<ViewportRootElementImpl>, context: RenderingContext, args?: IViewArgs): VNode {
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
         return <svg>
             <g transform={transform}>
