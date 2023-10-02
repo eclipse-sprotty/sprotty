@@ -10,10 +10,6 @@
         "types": [
             "reflect-metadata"
         ],
-        "typeRoots": [
-            "node_modules/@types",
-            "typings"
-        ],
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,

@@ -10,7 +10,17 @@
     "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
   },
   "devDependencies": {
-    "lerna": "^6.1.0"
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-no-null": "^1.0.2",
+    "lerna": "^7.3.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.5",
+    "semver": "^7.5.4",
+    "typescript": "~5.2.2"
   },
   "workspaces": [
     "packages/*",
