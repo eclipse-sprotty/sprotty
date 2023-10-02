@@ -1,6 +1,5 @@
 {
   "version": "0.14.0",
-  "useWorkspaces": true,
   "npmClient": "yarn",
   "command": {
     "run": {
