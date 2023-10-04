@@ -56,12 +56,21 @@ export function isRequestAction(object?: Action): object is RequestAction<Respon
     return hasOwnProperty<string, string>(object, 'requestId', 'string');
 }
 
+let requestContext = '';
 let nextRequestId = 1;
 /**
  * Generate a unique `requestId` for a request action.
  */
 export function generateRequestId(): string {
-    return (nextRequestId++).toString();
+    return `${requestContext}_${nextRequestId++}`;
+}
+
+/**
+ * Configure the context in which request actions are created. This is typically either
+ * 'client' or 'server' to avoid collisions of request IDs.
+ */
+export function setRequestContext(context: string): void {
+    requestContext = context;
 }
 
 /**
