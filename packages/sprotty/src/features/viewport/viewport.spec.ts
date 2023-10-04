@@ -23,7 +23,7 @@ import { ConsoleLogger } from '../../utils/logging';
 import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
 import { CommandExecutionContext } from '../../base/commands/command';
 import { SetViewportCommand } from './viewport';
-import { ViewportRootElement } from './viewport-root';
+import { ViewportRootElementImpl } from './viewport-root';
 import defaultModule from '../../base/di.config';
 import { SetViewportAction, Viewport, almostEquals } from 'sprotty-protocol';
 import { IModelFactory } from '../../base/model/smodel-factory';
@@ -40,7 +40,7 @@ describe('BoundsAwareViewportCommand', () => {
     const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
 
     const viewportData: Viewport = { scroll: { x: 0, y: 0 }, zoom: 1 };
-    const viewport: ViewportRootElement = graphFactory.createRoot({ id: 'viewport1', type: 'graph', children: [] }) as ViewportRootElement;
+    const viewport: ViewportRootElementImpl = graphFactory.createRoot({ id: 'viewport1', type: 'graph', children: [] }) as ViewportRootElementImpl;
     viewport.zoom = viewportData.zoom;
     viewport.scroll = viewportData.scroll;
 
