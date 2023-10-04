@@ -17,7 +17,7 @@
 import { inject, injectable } from 'inversify';
 import {
     Action, isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
-    ResponseAction, SetModelAction, UndoAction
+    ResponseAction, SetModelAction, setRequestContext, UndoAction
 } from 'sprotty-protocol/lib/actions';
 import { Deferred } from 'sprotty-protocol/lib/utils/async';
 import { TYPES } from '../types';
@@ -33,6 +33,10 @@ export interface IActionDispatcher {
     dispatchAll(actions: Action[]): Promise<void>
     request<Res extends ResponseAction>(action: RequestAction<Res>): Promise<Res>
 }
+
+// This code should be used only in the client part of a Sprotty application.
+// We set the request context to 'client' to avoid collisions with requests created by the server.
+setRequestContext('client');
 
 /**
  * Collects actions, converts them to commands and dispatches them.
