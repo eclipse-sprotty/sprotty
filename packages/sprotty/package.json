@@ -52,7 +52,7 @@
     "directory": "packages/sprotty"
   },
   "peerDependencies": {
-    "inversify": "~6.0.1"
+    "inversify": "^6.0.1"
   },
   "dependencies": {
     "autocompleter": "^9.1.0",
