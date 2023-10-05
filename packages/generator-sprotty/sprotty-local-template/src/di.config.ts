@@ -1,8 +1,8 @@
 import { Container, ContainerModule } from 'inversify';
 import {
-    configureModelElement, configureViewerOptions, ConsoleLogger, edgeIntersectionModule,
-    loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeView, RectangularNode,
-    SEdgeImpl, SGraphImpl, SGraphView, TYPES
+    configureModelElement, configureViewerOptions, ConsoleLogger, loadDefaultModules,
+    LocalModelSource, LogLevel, PolylineEdgeView, RectangularNode, SEdgeImpl,
+    SGraphImpl, SGraphView, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
 import { TaskNodeView } from './views';
 
@@ -11,11 +11,13 @@ export default (containerId: string) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        const context = { bind, unbind, isBound, rebind };
 
+        const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraphImpl, SGraphView);
         configureModelElement(context, 'task', RectangularNode, TaskNodeView);
         configureModelElement(context, 'edge', SEdgeImpl, PolylineEdgeView);
+        configureModelElement(context, 'routing-point', SRoutingHandleImpl, SRoutingHandleView);
+        configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
 
         configureViewerOptions(context, {
             needsClientLayout: false,
@@ -26,6 +28,5 @@ export default (containerId: string) => {
     const container = new Container();
     loadDefaultModules(container);
     container.load(myModule);
-    container.load(edgeIntersectionModule)
     return container;
 }

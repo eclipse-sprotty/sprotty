@@ -43,28 +43,28 @@ class SprottyGenerator extends Generator {
     writing(): void {
         this.sourceRoot(path.join(__dirname, TEMPLATE_DIR));
 
-        for (const path of ['package.json', 'tsconfig.json', 'src']) {
+        for (const file of ['package.json', 'tsconfig.json', 'src']) {
             this.fs.copy(
-                this.templatePath(path),
-                this._projectPath(path),
+                this.templatePath(file),
+                this._projectPath(file),
                 {
                     process: content =>
                         this._replaceTemplateWords(content),
-                    processDestinationPath: path =>
-                        this._replaceTemplateNames(path),
+                    processDestinationPath: destPath =>
+                        this._replaceTemplateNames(destPath),
                 }
             );
         }
-        console.log('generate static: ' + this.answers.generateStatic)
-        if(this.answers.generateStatic) {
+        console.log('generate static: ' + this.answers.generateStatic);
+        if (this.answers.generateStatic) {
             this.fs.copy(
                 this.templatePath('static'),
                 this._projectPath('static'),
                 {
                     process: content =>
                         this._replaceTemplateWords(content),
-                    processDestinationPath: path =>
-                        this._replaceTemplateNames(path),
+                    processDestinationPath: destPath =>
+                        this._replaceTemplateNames(destPath),
                 }
             );
         }
@@ -85,7 +85,7 @@ class SprottyGenerator extends Generator {
                 name: 'projectName',
                 prefix: description(
                     'Welcome to Sprotty!\n' +
-                    'This tool generates a new Sprotty Project.\n' +
+                    'This tool generates a new Sprotty project.\n' +
                     'The project name identifies the npm package and can be used by other packages to depend on this project.'
                 ),
                 message: 'Your project name:',
@@ -94,21 +94,21 @@ class SprottyGenerator extends Generator {
             {
                 type: 'input',
                 name: 'mainElementId',
-                prefix: description("Your Sprotty diagram will be rendered inside this element"),
-                message: 'Main HTML element ID',
+                prefix: description('Your Sprotty diagram will be rendered inside this element.'),
+                message: 'Main HTML element ID:',
                 default: 'sprotty-diagram',
             },
             {
                 type: 'confirm',
                 name: 'generateStatic',
-                prefix: description("Generate a static folder with index.html and styles.css for simple dev setup"),
-                message: 'generate static folder',
+                prefix: description('Generate a static folder with index.html and styles.css for simple dev setup.'),
+                message: 'Generate static folder',
             },
-        ])
+        ]);
     }
 
-    _projectPath(...path: string[]): string {
-        return this.destinationPath(USER_DIR, this.answers.projectName, ...path);
+    _projectPath(...projectPath: string[]): string {
+        return this.destinationPath(USER_DIR, this.answers.projectName, ...projectPath);
     }
 
     _replaceTemplateWords(content: Buffer): string {
@@ -118,10 +118,10 @@ class SprottyGenerator extends Generator {
             .replace(OUT_PATH, this.answers.generateStatic ? 'static' : 'out');
     }
 
-    _replaceTemplateNames(path: string): string {
-        return path.replace(PROJECT_PATH, this.answers.projectName);
+    _replaceTemplateNames(templatePath: string): string {
+        return templatePath.replace(PROJECT_PATH, this.answers.projectName);
     }
 
 }
 
-export = SprottyGenerator
+export = SprottyGenerator;

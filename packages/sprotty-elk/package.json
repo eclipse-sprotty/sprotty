@@ -10,31 +10,14 @@
     "layout",
     "sprotty"
   ],
-  "homepage": "https://github.com/eclipse/sprotty-layout",
-  "bugs": "https://github.com/eclipse/sprotty-layout/issues",
+  "homepage": "https://github.com/eclipse-sprotty/sprotty-layout",
+  "bugs": "https://github.com/eclipse-sprotty/sprotty-layout/issues",
   "author": {
     "name": "Eclipse Sprotty"
   },
-  "contributors": [
-    {
-      "name": "Jan Köhnlein",
-      "email": "jan.koehnlein@typefox.io",
-      "url": "https://www.typefox.io"
-    },
-    {
-      "name": "Philip Langer",
-      "email": "planger@eclipsesource.com",
-      "url": "https://www.eclipsesource.com"
-    },
-    {
-      "name": "Miro Spönemann",
-      "email": "miro.spoenemann@typefox.io",
-      "url": "https://www.typefox.io"
-    }
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/eclipse/sprotty",
+    "url": "https://github.com/eclipse-sprotty/sprotty",
     "directory": "packages/sprotty-elk"
   },
   "dependencies": {

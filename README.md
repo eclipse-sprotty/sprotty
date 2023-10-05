@@ -1,6 +1,6 @@
 ![Sprotty](./sprotty-logo-500px.png)
 
-[![Gitpod - Code Now](https://img.shields.io/badge/Gitpod-code%20now-blue.svg?longCache=true)](https://gitpod.io#https://github.com/eclipse/sprotty)
+[![Gitpod - Code Now](https://img.shields.io/badge/Gitpod-code%20now-blue.svg?longCache=true)](https://gitpod.io#https://github.com/eclipse-sprotty/sprotty)
 [![Join the chat at https://gitter.im/eclipse/sprotty](https://badges.gitter.im/eclipse/sprotty.svg)](https://gitter.im/eclipse/sprotty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is the client part of _Sprotty_, a next-generation, open-source diagramming framework built with web technologies.
@@ -26,16 +26,16 @@ Some selected features:
 
 The Sprotty project spans across four GitHub repositories.
 
-* [sprotty](https://github.com/eclipse/sprotty) (this repository) contains the client code (`sprotty`), shared code for Node.js servers (`sprotty-protocol`), ELK layout integration (`sprotty-elk`) and examples.
-* [sprotty-server](https://github.com/eclipse/sprotty-server) contains server code for Java and includes server-side diagram layout, the extension of the Language Server Protocol, and the integration with the Xtext framework.
-* [sprotty-theia](https://github.com/eclipse/sprotty-theia) contains the glue code to integrate Sprotty views in the Theia IDE.
-* [sprotty-vscode](https://github.com/eclipse/sprotty-vscode) contains the glue code to integrate Sprotty views in VS Code.
+* [sprotty](https://github.com/eclipse-sprotty/sprotty) (this repository) contains the client code (`sprotty`), shared code for Node.js servers (`sprotty-protocol`), ELK layout integration (`sprotty-elk`) and examples.
+* [sprotty-server](https://github.com/eclipse-sprotty/sprotty-server) contains server code for Java and includes server-side diagram layout, the extension of the Language Server Protocol, and the integration with the Xtext framework.
+* [sprotty-theia](https://github.com/eclipse-sprotty/sprotty-theia) contains the glue code to integrate Sprotty views in the Theia IDE.
+* [sprotty-vscode](https://github.com/eclipse-sprotty/sprotty-vscode) contains the glue code to integrate Sprotty views in VS Code.
 
 The project is built on [ci.eclipse.org/sprotty](https://ci.eclipse.org/sprotty/).
 
 ## Docs
 
-For further information please consult the [Wiki](https://github.com/eclipse/sprotty/wiki).
+For further information please consult the [documentation on the website](https://sprotty.org/docs/).
 
 The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md). Changes are tracked seperately for each package.
 

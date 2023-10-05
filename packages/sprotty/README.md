@@ -21,9 +21,9 @@ Some selected features:
 
 ## Docs
 
-For further information please consult the [Wiki](https://github.com/eclipse/sprotty/wiki).
+For further information please consult the [documentation on the website](https://sprotty.org/docs/).
 
-The version history is documented in the [CHANGELOG](https://github.com/eclipse/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
+The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
 
 ## References
 

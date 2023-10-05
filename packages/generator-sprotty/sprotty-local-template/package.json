@@ -1,15 +1,16 @@
 {
     "name": "<%= project-name %>",
     "description": "Please enter a brief description here",
-    "scripts": {
-      "build": "esbuild ./src/index.ts --bundle --sourcemap --outfile=./<%= out-path %>/index.js"
+    "dependencies": {
+      "inversify": "^6.0.1",
+      "reflect-metadata": "^0.1.13",
+      "sprotty": "^0.14.0"
     },
     "devDependencies": {
-      "typescript": "4.9.5",
-      "esbuild": "^0.17.8"
+      "typescript": "~5.2.2",
+      "esbuild": "^0.19.4"
     },
-    "dependencies": {
-      "sprotty": "^0.13.0",
-      "reflect-metadata": "^0.1.13"
+    "scripts": {
+      "build": "esbuild ./src/index.ts --bundle --sourcemap --outfile=./<%= out-path %>/index.js"
     }
   }

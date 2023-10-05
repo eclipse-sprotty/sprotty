@@ -1,11 +1,11 @@
-import { SEdge, SGraph, SNode } from 'sprotty-protocol';
+import { SEdge, SGraph } from 'sprotty-protocol';
 import { TaskNode } from './model';
 
 export const graph: SGraph = {
     type: 'graph',
     id: 'graph',
     children: [
-        <SNode & TaskNode>{
+        <TaskNode>{
             type: 'task',
             id: 'task01',
             name: 'First Task',
@@ -14,7 +14,7 @@ export const graph: SGraph = {
             position: { x: 0, y: 0 },
             size: { width: 100, height: 100 }
         },
-        <SNode & TaskNode>{
+        <TaskNode>{
             type: 'task',
             id: 'task02',
             name: 'Second Task',
@@ -23,7 +23,7 @@ export const graph: SGraph = {
             position: { x: 0, y: 200 },
             size: { width: 100, height: 100 }
         },
-        <SNode & TaskNode>{
+        <TaskNode>{
             type: 'task',
             id: 'task03',
             name: 'Third Task',

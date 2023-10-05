@@ -1,3 +1,8 @@
+body > .sprotty {
+    height: calc(100vh - 22px);
+    border: 3px solid #eee;
+}
+
 .sprotty-graph {
     height: 100%;
     width: 100%;
@@ -9,25 +14,42 @@
     stroke-width: 1;
 }
 
+.sprotty-node.task.mouseover {
+    stroke: #bebebe;
+}
+
+.sprotty-node.task.selected {
+    stroke-width: 2;
+}
+
 .sprotty-node.task.running {
-    fill: #aa2d2d;
+    fill: #b54949;
 }
 
 .sprotty-node.task.finished {
     fill: #81BB41;
 }
 
+.sprotty-edge {
+    fill: none;
+    stroke: #252525;
+    stroke-width: 2px;
+}
+
+.sprotty-edge.mouseover {
+    stroke: #949494;
+}
+
+.sprotty-routing-handle {
+    fill: #bebebe;
+    stroke: #949494;
+    stroke-width: 2px;
+}
+
 text {
     stroke-width: 0;
-    stroke: #000;
     fill: #000;
     font-family: sans-serif;
     font-size: 10pt;
     text-anchor: middle;
-}
-
-.sprotty-edge {
-    fill: none;
-    stroke: #000;
-    stroke-width: 1px;
 }
