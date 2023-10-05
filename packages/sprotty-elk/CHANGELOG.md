@@ -8,29 +8,29 @@ This change log covers only the `elkjs` layout of Sprotty. See [here](https://gi
  * Added support for compartments to the `ElkLayoutEngine` and introduced optional pre/post processors ([#362](https://github.com/eclipse-sprotty/sprotty/pull/362))
 
 
-Fixed issues: https://github.com/eclipse/sprotty/milestone/10?closed=1
+Fixed issues: https://github.com/eclipse-sprotty/sprotty/milestone/10?closed=1
 
  -----
 
 ### v0.13.1 (Jan. 2023)
 
- * Fixed edge layout with elk-server ([#334](https://github.com/eclipse/sprotty/pull/334)).
+ * Fixed edge layout with elk-server ([#334](https://github.com/eclipse-sprotty/sprotty/pull/334)).
 
 ### v0.13.0 (Dec. 2022)
 
- * Updated to elkjs 0.8.2 ([#329](https://github.com/eclipse/sprotty/pull/329)). This update has breaking API changes.
+ * Updated to elkjs 0.8.2 ([#329](https://github.com/eclipse-sprotty/sprotty/pull/329)). This update has breaking API changes.
 
-Fixed issues: https://github.com/eclipse/sprotty/milestone/9?closed=1
+Fixed issues: https://github.com/eclipse-sprotty/sprotty/milestone/9?closed=1
 
 -----
 
 ### v0.12.0 (Jun. 2022)
 
- * Implemented client for running ELK layout in a separate process ([#282](https://github.com/eclipse/sprotty/pull/282)).
+ * Implemented client for running ELK layout in a separate process ([#282](https://github.com/eclipse-sprotty/sprotty/pull/282)).
 Adds `SocketElkServer` and `StdioElkServer` that enable to run the ELK layout engine in a separate Java process.
  * Aligned dependency to `inversify`: version constraint is now `^5.1.1` in all sprotty packages.
 
-Fixed issues: https://github.com/eclipse/sprotty/milestone/8?closed=1
+Fixed issues: https://github.com/eclipse-sprotty/sprotty/milestone/8?closed=1
 
 -----
 
@@ -61,20 +61,20 @@ No changes since v0.9.0; this release is to keep the versions of the Sprotty com
 
 ### v0.9.0 (Aug. 2020)
 
-Fixed issues: https://github.com/eclipse/sprotty-layout/milestone/4?closed=1
+Fixed issues: https://github.com/eclipse-sprotty/sprotty-layout/milestone/4?closed=1
 
 Breaking API changes:
- * Removed SModelIndexWithParent in favor of new functionality from Sprotty main package ([eclipse/sprotty#187](https://github.com/eclipse/sprotty/pull/187))
+ * Removed SModelIndexWithParent in favor of new functionality from Sprotty main package ([eclipse/sprotty#187](https://github.com/eclipse-sprotty/sprotty/pull/187))
 
 -----
 
 ### v0.8.0 (Apr. 2020)
 
 New features:
- * Port labels ([#9](https://github.com/eclipse/sprotty-layout/pull/9))
- * Edge source and target for ports ([#10](https://github.com/eclipse/sprotty-layout/pull/10))
+ * Port labels ([#9](https://github.com/eclipse-sprotty/sprotty-layout/pull/9))
+ * Edge source and target for ports ([#10](https://github.com/eclipse-sprotty/sprotty-layout/pull/10))
 
-Fixed issues: https://github.com/eclipse/sprotty-layout/milestone/3?closed=1
+Fixed issues: https://github.com/eclipse-sprotty/sprotty-layout/milestone/3?closed=1
 
 -----
 

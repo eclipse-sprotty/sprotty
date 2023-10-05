@@ -11,44 +11,14 @@
     "visualization",
     "svg"
   ],
-  "homepage": "https://github.com/eclipse/sprotty",
-  "bugs": "https://github.com/eclipse/sprotty/issues",
+  "homepage": "https://github.com/eclipse-sprotty/sprotty",
+  "bugs": "https://github.com/eclipse-sprotty/sprotty/issues",
   "author": {
     "name": "Eclipse Sprotty"
   },
-  "contributors": [
-    {
-      "name": "Marc Dumais",
-      "email": "marc.dumais@ericsson.com",
-      "url": "https://www.ericsson.com/"
-    },
-    {
-      "name": "Takashi Katou"
-    },
-    {
-      "name": "Jan Köhnlein",
-      "email": "jan.koehnlein@typefox.io",
-      "url": "https://www.typefox.io"
-    },
-    {
-      "name": "Philip Langer",
-      "email": "planger@eclipsesource.com",
-      "url": "https://www.eclipsesource.com"
-    },
-    {
-      "name": "Tobias Ortmayr",
-      "email": "tortmayr@eclipsesource.com",
-      "url": "https://www.eclipsesource.com"
-    },
-    {
-      "name": "Miro Spönemann",
-      "email": "miro.spoenemann@typefox.io",
-      "url": "https://www.typefox.io"
-    }
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/eclipse/sprotty",
+    "url": "https://github.com/eclipse-sprotty/sprotty",
     "directory": "packages/sprotty"
   },
   "peerDependencies": {

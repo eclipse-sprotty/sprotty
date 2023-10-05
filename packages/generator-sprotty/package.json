@@ -2,33 +2,30 @@
     "name": "generator-sprotty",
     "version": "0.14.0",
     "description": "Yeoman generator for Sprotty",
+    "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
     "engines": {
         "node": ">=14.0.0"
     },
     "keywords": [
         "yeoman-generator",
-        "diagram"
+        "graphics",
+        "diagram",
+        "modeling",
+        "visualization",
+        "svg"
     ],
-    "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
-    "files": [
-        "app",
-        "sprotty-local-template",
-        "src"
-    ],
-    "main": "app/index.js",
-    "types": "app/index.d.ts",
-    "scripts": {
-        "prepare": "yarn run clean && yarn run build",
-        "clean": "rimraf app",
-        "build": "tsc --skipLibCheck",
-        "watch": "tsc --watch --skipLibCheck",
-        "lint": "eslint src test --ext .ts",
-        "run": "yo sprotty",
-        "debug": "npx --node-arg=--inspect yo sprotty",
-        "test": "echo \"No tests defined.\""
+    "homepage": "https://github.com/eclipse-sprotty/sprotty",
+    "bugs": "https://github.com/eclipse-sprotty/sprotty/issues",
+    "author": {
+      "name": "Eclipse Sprotty"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/eclipse-sprotty/sprotty",
+      "directory": "packages/generator-sprotty"
     },
     "dependencies": {
-        "chalk": "^5.3.0",
+        "chalk": "^4.1.2",
         "lodash": "^4.17.21",
         "which": "^2.0.2",
         "yeoman-generator": "^5.9.0"
@@ -40,17 +37,21 @@
         "@types/yeoman-test": "^4.0.4",
         "yeoman-test": "^7.4.0"
     },
-    "volta": {
-        "node": "16.19.0",
-        "npm": "8.19.3"
+    "scripts": {
+        "prepare": "yarn run clean && yarn run build",
+        "clean": "rimraf app",
+        "build": "tsc --skipLibCheck",
+        "watch": "tsc --watch --skipLibCheck",
+        "lint": "eslint src test --ext .ts",
+        "run": "yo sprotty",
+        "debug": "npx --node-arg=--inspect yo sprotty",
+        "test": "echo \"No tests defined.\""
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/eclipse-sprotty/sprotty",
-        "directory": "packages/generator-sprotty"
-    },
-    "author": {
-        "name": "TypeFox",
-        "url": "https://www.typefox.io"
-    }
+    "files": [
+        "app",
+        "sprotty-local-template",
+        "src"
+    ],
+    "main": "app/index",
+    "types": "app/index"
 }
