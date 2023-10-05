@@ -50,6 +50,11 @@ export function isAction(object?: unknown): object is Action {
  */
 export interface RequestAction<Res extends ResponseAction> extends Action {
     requestId: string
+
+    /**
+     * Used to ensure correct typing. Clients must not use this property
+     */
+    readonly _?: Res;
 }
 
 export function isRequestAction(object?: Action): object is RequestAction<ResponseAction> {
@@ -607,7 +612,7 @@ export namespace ViewportResult {
 /**
  * Action to render the selected elements in front of others by manipulating the z-order.
  */
- export interface BringToFrontAction extends Action {
+export interface BringToFrontAction extends Action {
     kind: typeof BringToFrontAction.KIND;
     elementIDs: string[]
 }
