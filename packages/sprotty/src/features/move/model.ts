@@ -23,7 +23,7 @@ export const moveFeature = Symbol('moveFeature');
  * An element that can be placed at a specific location using its position
  * property.
  *
- * Feature extension interface for {@link editLabelFeature}.
+ * Feature extension interface for {@link moveFeature}.
  */
 export interface Locateable {
     position: Point
