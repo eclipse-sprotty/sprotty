@@ -15,11 +15,13 @@
  ********************************************************************************/
 
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const hoverFeedbackFeature = Symbol('hoverFeedbackFeature');
 
-export interface Hoverable extends SModelExtension {
+/**
+ * Feature extension interface for {@link hoverFeedbackFeature}.
+ */
+export interface Hoverable {
     hoverFeedback: boolean
 }
 

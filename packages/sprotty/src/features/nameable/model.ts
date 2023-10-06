@@ -15,11 +15,13 @@
  ********************************************************************************/
 
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const nameFeature = Symbol('nameableFeature');
 
-export interface Nameable extends SModelExtension {
+/**
+ * Feature extension interface for {@link nameableFeature}.
+ */
+export interface Nameable {
     name: string
 }
 
@@ -27,7 +29,7 @@ export function isNameable(element: SModelElementImpl): element is SModelElement
     return element.hasFeature(nameFeature);
 }
 
-export function name(element: SModelElementImpl): string|undefined {
+export function name(element: SModelElementImpl): string | undefined {
     if (isNameable(element)) {
         return element.name;
     } else {

@@ -14,14 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { SModelElementImpl } from '../../base/model/smodel';
 import { SShapeElementImpl, boundsFeature } from '../bounds/model';
 import { hoverFeedbackFeature, popupFeature } from '../hover/model';
 
 export const decorationFeature = Symbol('decorationFeature');
 
-export interface Decoration extends SModelExtension {
+/**
+ * Feature extension interface for {@link decorationFeature}.
+ */
+export interface Decoration {
 }
 
 export function isDecoration<T extends SModelElementImpl>(e: T): e is T & Decoration {

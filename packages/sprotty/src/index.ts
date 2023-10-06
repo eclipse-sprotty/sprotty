@@ -33,7 +33,6 @@ export * from './base/commands/command-stack';
 export * from './base/features/initialize-canvas';
 export * from './base/features/set-model';
 
-export * from './base/model/smodel-extension';
 export * from './base/model/smodel-factory';
 export * from './base/model/smodel-utils';
 export * from './base/model/smodel';

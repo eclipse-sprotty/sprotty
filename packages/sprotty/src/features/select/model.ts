@@ -15,11 +15,13 @@
  ********************************************************************************/
 
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const selectFeature = Symbol('selectFeature');
 
-export interface Selectable extends SModelExtension {
+/**
+ * Feature extension interface for {@link selectFeature}.
+ */
+export interface Selectable {
     selected: boolean
 }
 
