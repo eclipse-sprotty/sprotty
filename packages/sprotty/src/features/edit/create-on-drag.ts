@@ -16,11 +16,13 @@
 
 import { Action } from "sprotty-protocol/lib/actions";
 import { SModelElementImpl } from "../../base/model/smodel";
-import { SModelExtension } from "../../base/model/smodel-extension";
 
 export const creatingOnDragFeature = Symbol('creatingOnDragFeature');
 
-export interface CreatingOnDrag extends SModelExtension {
+/**
+ *  Feature extension interface for {@link creatingOnDragFeature}.
+ */
+export interface CreatingOnDrag {
     createAction(id: string): Action;
 }
 

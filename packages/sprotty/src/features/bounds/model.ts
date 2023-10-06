@@ -16,7 +16,6 @@
 
 import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { DOMHelper } from '../../base/views/dom-helper';
 import { ViewerOptions } from '../../base/views/viewer-options';
@@ -32,8 +31,10 @@ export const alignFeature = Symbol('alignFeature');
  * Model elements that implement this interface have a position and a size.
  * Note that this definition differs from the one in `sprotty-protocol` because this is
  * used in the _internal model_, while the other is used in the _external model_.
+ *
+ * Feature extension interface for {@link boundsFeature}.
  */
-export interface BoundsAware extends SModelExtension {
+export interface BoundsAware {
     bounds: Bounds
 }
 
@@ -46,15 +47,20 @@ export interface LayoutContainer extends LayoutableChild {
 
 export type ModelLayoutOptions = { [key: string]: string | number | boolean };
 
-export interface LayoutableChild extends SModelExtension, BoundsAware {
+/**
+ * Feature extension interface for {@link layoutableChildFeature}.
+ */
+export interface LayoutableChild extends BoundsAware {
     layoutOptions?: ModelLayoutOptions
 }
 
 /**
  * Used to adjust elements whose bounding box is not at the origin, e.g.
  * labels, or pre-rendered SVG figures.
+ *
+ * Feature extension interface for {@link alignFeature}.
  */
-export interface Alignable extends SModelExtension {
+export interface Alignable {
     alignment: Point
 }
 

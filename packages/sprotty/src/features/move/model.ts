@@ -16,15 +16,16 @@
 
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const moveFeature = Symbol('moveFeature');
 
 /**
  * An element that can be placed at a specific location using its position
  * property.
+ *
+ * Feature extension interface for {@link moveFeature}.
  */
-export interface Locateable extends SModelExtension {
+export interface Locateable {
     position: Point
 }
 

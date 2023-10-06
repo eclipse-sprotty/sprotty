@@ -18,7 +18,6 @@ import { Viewport } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { transformToRootBounds } from '../../base/model/smodel-utils';
 import { isBoundsAware } from '../bounds/model';
 
@@ -27,7 +26,7 @@ import { isBoundsAware } from '../bounds/model';
  * _Note:_ If set, the projectedBounds property will be prefered over the model element bounds.
  * Otherwise model elements also have to be `BoundsAware` so their projections can be shown.
  */
-export interface Projectable extends SModelExtension {
+export interface Projectable {
     projectionCssClasses: string[],
     projectedBounds?: Bounds,
 }

@@ -14,14 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { BoundsAware, isBoundsAware } from '../bounds/model';
 import { SRoutableElementImpl } from '../routing/model';
 
 export const edgeLayoutFeature = Symbol('edgeLayout');
 
-export interface EdgeLayoutable extends SModelExtension {
+/**
+ * Feature extension interface for {@link edgeLayoutFeature}.
+ */
+export interface EdgeLayoutable {
     edgePlacement: EdgePlacement
 }
 
@@ -33,7 +35,7 @@ export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): eleme
         && element.hasFeature(edgeLayoutFeature);
 }
 
-function checkEdgeLayoutable(element: SChildElementImpl): element is SChildElementImpl & EdgeLayoutable{
+function checkEdgeLayoutable(element: SChildElementImpl): element is SChildElementImpl & EdgeLayoutable {
     return 'edgePlacement' in element;
 }
 

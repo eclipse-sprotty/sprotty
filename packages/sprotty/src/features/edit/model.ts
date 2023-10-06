@@ -16,7 +16,6 @@
 
 import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { SRoutableElementImpl } from '../routing/model';
 
 export const editFeature = Symbol('editFeature');
@@ -25,9 +24,13 @@ export function canEditRouting(element: SModelElementImpl): element is SRoutable
     return element instanceof SRoutableElementImpl && element.hasFeature(editFeature);
 }
 
+
 export const editLabelFeature = Symbol('editLabelFeature');
 
-export interface EditableLabel extends SModelExtension {
+/**
+ * Feature extension interface for {@link editLabelFeature}.
+ */
+export interface EditableLabel  {
     text: string;
     readonly isMultiLine?: boolean;
     readonly editControlDimension?: Dimension;
@@ -40,7 +43,10 @@ export function isEditableLabel<T extends SModelElementImpl>(element: T): elemen
 
 export const withEditLabelFeature = Symbol('withEditLabelFeature');
 
-export interface WithEditableLabel extends SModelExtension {
+/**
+ * Feature extension interface for {@link withEditLabelFeature}.
+ */
+export interface WithEditableLabel  {
     readonly editableLabel?: EditableLabel & SModelElementImpl;
 }
 

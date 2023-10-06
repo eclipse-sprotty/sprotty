@@ -15,11 +15,13 @@
  ********************************************************************************/
 
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const fadeFeature = Symbol('fadeFeature');
 
-export interface Fadeable extends SModelExtension {
+/**
+* Feature extension interface for {@link fadeFeature}.
+ */
+export interface Fadeable {
     opacity: number
 }
 

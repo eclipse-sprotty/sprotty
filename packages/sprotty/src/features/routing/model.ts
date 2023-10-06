@@ -16,7 +16,6 @@
 
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { FluentIterable } from '../../utils/iterable';
 import { SShapeElementImpl } from '../bounds/model';
 import { deletableFeature } from '../edit/delete';
@@ -54,7 +53,10 @@ export abstract class SRoutableElementImpl extends SChildElementImpl {
 
 export const connectableFeature = Symbol('connectableFeature');
 
-export interface Connectable extends SModelExtension {
+/**
+ * Feature extension interface for {@link connectableFeature}.
+ */
+export interface Connectable {
     canConnect(routable: SRoutableElementImpl, role: 'source' | 'target'): boolean;
 }
 
@@ -74,7 +76,7 @@ export function getAbsoluteRouteBounds(model: Readonly<SRoutableElementImpl>, ro
 }
 
 export function getRouteBounds(route: Point[]): Bounds {
-    const bounds = { x: NaN, y: NaN, width: 0, height: 0};
+    const bounds = { x: NaN, y: NaN, width: 0, height: 0 };
     for (const point of route) {
         if (isNaN(bounds.x)) {
             bounds.x = point.x;
@@ -104,9 +106,9 @@ export function getRouteBounds(route: Point[]): Bounds {
  */
 export abstract class SConnectableElementImpl extends SShapeElementImpl implements Connectable {
 
-    get anchorKind(): string | undefined{
-         return undefined;
-     }
+    get anchorKind(): string | undefined {
+        return undefined;
+    }
 
     strokeWidth: number = 0;
 

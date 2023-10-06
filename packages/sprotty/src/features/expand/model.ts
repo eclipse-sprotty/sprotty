@@ -15,14 +15,15 @@
  ********************************************************************************/
 
 import { SModelElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 
 export const expandFeature = Symbol('expandFeature');
 
 /**
  * Model elements that implement this interface can be expanded/collapsed
+ *
+ * Feature extension interface for {@link expandFeature}.
  */
-export interface Expandable extends SModelExtension {
+export interface Expandable {
     expanded: boolean
 }
 

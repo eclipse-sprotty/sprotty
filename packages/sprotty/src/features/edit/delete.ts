@@ -18,12 +18,14 @@ import { inject, injectable } from 'inversify';
 import { DeleteElementAction } from 'sprotty-protocol/lib/actions';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
 import { SModelElementImpl, SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { SModelExtension } from '../../base/model/smodel-extension';
 import { TYPES } from '../../base/types';
 
 export const deletableFeature = Symbol('deletableFeature');
 
-export interface Deletable extends SModelExtension {
+/**
+ *  Feature extension interface for {@link deletableFeature}.
+ */
+export interface Deletable {
 }
 
 export function isDeletable<T extends SModelElementImpl>(element: T): element is T & Deletable & SChildElementImpl {
