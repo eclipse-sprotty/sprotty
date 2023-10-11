@@ -2,6 +2,20 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.0.0 (Oct. 2023)
+
+This version marks the transition of Sprotty's incubation phase into maturity. As part of this, all deprecated API have been removed.
+
+ * Removed all API that was marked as deprecated in any previous release ([#374](https://github.com/eclipse-sprotty/sprotty/pull/374))
+ * `ToolManager` API was deprecated and then removed ([#371](https://github.com/eclipse-sprotty/sprotty/pull/371))
+ * Renamed ViewportRootElement model element ([#381](https://github.com/eclipse-sprotty/sprotty/pull/381))
+ * Updated to `autocompleter` 9.1.0 ([#382](https://github.com/eclipse-sprotty/sprotty/pull/382))
+ * Removed SModelExtension interface ([#389](https://github.com/eclipse-sprotty/sprotty/pull/389))
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/6?closed=1
+
+-----
+
 ### v0.14.0 (Aug. 2023)
 
  * Renamed all internal model classes by adding an `Impl` suffix. This ensures a clean separation between the external (protocol) model and the internal (client) model. The original model definitions are marked as deprecated, so you need to update your imports to stay compatible with future versions ([#355](https://github.com/eclipse-sprotty/sprotty/pull/355))

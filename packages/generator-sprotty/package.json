@@ -1,6 +1,6 @@
 {
     "name": "generator-sprotty",
-    "version": "0.14.0",
+    "version": "1.0.0",
     "description": "Yeoman generator for Sprotty",
     "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
     "engines": {
@@ -17,12 +17,12 @@
     "homepage": "https://github.com/eclipse-sprotty/sprotty",
     "bugs": "https://github.com/eclipse-sprotty/sprotty/issues",
     "author": {
-      "name": "Eclipse Sprotty"
+        "name": "Eclipse Sprotty"
     },
     "repository": {
-      "type": "git",
-      "url": "https://github.com/eclipse-sprotty/sprotty",
-      "directory": "packages/generator-sprotty"
+        "type": "git",
+        "url": "https://github.com/eclipse-sprotty/sprotty",
+        "directory": "packages/generator-sprotty"
     },
     "dependencies": {
         "chalk": "^4.1.2",

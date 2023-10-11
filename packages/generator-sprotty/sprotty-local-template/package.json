@@ -4,7 +4,7 @@
     "dependencies": {
       "inversify": "^6.0.1",
       "reflect-metadata": "^0.1.13",
-      "sprotty": "^0.14.0"
+      "sprotty": "^1.0.0"
     },
     "devDependencies": {
       "typescript": "~5.2.2",

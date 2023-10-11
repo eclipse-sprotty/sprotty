@@ -1,6 +1,6 @@
 {
   "name": "sprotty",
-  "version": "0.14.0",
+  "version": "1.0.0",
   "description": "A next-gen framework for graphical views",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
@@ -28,7 +28,7 @@
     "autocompleter": "^9.1.0",
     "file-saver": "^2.0.5",
     "snabbdom": "^3.5.1",
-    "sprotty-protocol": "^0.14.0",
+    "sprotty-protocol": "^1.0.0",
     "tinyqueue": "^2.0.3"
   },
   "devDependencies": {

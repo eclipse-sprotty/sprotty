@@ -2,6 +2,16 @@
 
 This change log covers only the `elkjs` layout of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.0.0 (Oct. 2023)
+
+This version marks the transition of Sprotty's incubation phase into maturity. As part of this, all deprecated API have been removed.
+
+ * Removed all API that was marked as deprecated in any previous release ([#374](https://github.com/eclipse-sprotty/sprotty/pull/374))
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/6?closed=1
+
+-----
+
 ## v.0.14.0 (Aug. 2023)
 
  * Updated dependency to `inversify` to ensure compatibility with `Typescript 5` ([#357](https://github.com/eclipse-sprotty/sprotty/pull/357)):  version constraint is now `~6.0.1` in all sprotty packages.
@@ -10,7 +20,7 @@ This change log covers only the `elkjs` layout of Sprotty. See [here](https://gi
 
 Fixed issues: https://github.com/eclipse-sprotty/sprotty/milestone/10?closed=1
 
- -----
+-----
 
 ### v0.13.1 (Jan. 2023)
 
