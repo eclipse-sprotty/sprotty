@@ -8,6 +8,7 @@
     "lint:fix": "eslint {**/src/**/*.ts,**/src/**/*.tsx} --fix",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
+    "watch": "concurrently -n sprotty,elk,protocol,generator -c blue,green,yellow,white \"yarn --cwd packages/sprotty watch \" \"yarn --cwd packages/sprotty-elk watch \" \"yarn --cwd packages/sprotty-protocol watch \" \"yarn --cwd packages/generator-sprotty watch \"",
     "publish:prepare": "lerna version --ignore-scripts --yes --no-push",
     "publish:latest": "lerna publish from-git --yes --no-push",
     "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
@@ -16,6 +17,7 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.53.0",
+    "concurrently": "~8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-no-null": "^1.0.2",
