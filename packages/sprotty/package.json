@@ -42,6 +42,7 @@
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib artifacts",
     "build": "tsc -p ./tsconfig.json && yarn run lint",
+    "test": "vitest run --config ../../vite.config.ts",
     "watch": "tsc -w -p ./tsconfig.json",
     "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*|test-helper.ts)\""
   },
