@@ -8,5 +8,7 @@
   ],
   "exclude": [
     "**/*.spec.ts", "**/*.spec.tsx", "src/utils/test-helper.ts"
-  ]
+  ],
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true
 }

@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import "reflect-metadata";
-import "mocha";
-import { expect } from "chai";
+import { expect, describe, it } from 'vitest';
 import { Container, injectable } from "inversify";
 import { TYPES } from "../types";
 import defaultModule from "../di.config";

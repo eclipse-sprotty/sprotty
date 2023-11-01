@@ -17,8 +17,7 @@
  /** @jsx svg */
 import { svg } from '../../lib/jsx';
 
-import "mocha";
-import { expect } from "chai";
+import { expect, describe, it } from 'vitest';
 import { CssClassPostprocessor } from './css-class-postprocessor';
 import { SModelElementImpl } from '../model/smodel';
 

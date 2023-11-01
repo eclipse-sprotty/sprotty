@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import "reflect-metadata";
-import "mocha";
-import { expect } from "chai";
+import { expect, describe, it } from 'vitest';
 import { Container, injectable } from "inversify";
 import { Action, ComputedBoundsAction, isResponseAction, RequestAction, RequestBoundsAction, ResponseAction, SetModelAction, UpdateModelAction } from 'sprotty-protocol/lib/actions';
 import { Deferred } from 'sprotty-protocol/lib/utils/async';

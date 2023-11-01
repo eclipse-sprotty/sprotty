@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import 'reflect-metadata';
-import 'mocha';
-import { expect } from "chai";
+import { expect, describe, it } from 'vitest';;
 import { Container, injectable, interfaces } from "inversify";
 import { Action, RedoAction, RejectAction, RequestModelAction, SetModelAction, UndoAction } from 'sprotty-protocol/lib/actions';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';

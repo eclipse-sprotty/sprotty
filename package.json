@@ -4,7 +4,7 @@
     "prepare": "lerna run prepare",
     "clean": "lerna run clean",
     "build": "lerna run build",
-    "test": "lerna run test",
+    "test": "vitest",
     "publish:prepare": "lerna version --ignore-scripts --yes --no-push",
     "publish:latest": "lerna publish from-git --yes --no-push",
     "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
@@ -20,7 +20,9 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.5",
     "semver": "^7.5.4",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "@vitest/coverage-v8": "~0.34.6",
+    "vitest": "~0.34.6"
   },
   "workspaces": [
     "packages/*",

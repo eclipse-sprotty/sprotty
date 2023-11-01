@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import 'reflect-metadata';
-import 'mocha';
-import { expect } from 'chai';
+import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
 import ElkConstructor from 'elkjs/lib/elk.bundled';
 import { SCompartment, SEdge, SGraph, SNode, SPort } from 'sprotty-protocol/lib/model';

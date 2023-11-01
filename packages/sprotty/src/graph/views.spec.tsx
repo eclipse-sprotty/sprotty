@@ -18,8 +18,7 @@
 import { svg } from '../lib/jsx';
 
 import 'reflect-metadata';
-import 'mocha';
-import { expect } from 'chai';
+import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
 import { VNode } from 'snabbdom';
 import { TYPES } from '../base/types';

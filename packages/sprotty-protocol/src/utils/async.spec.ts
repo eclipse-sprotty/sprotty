@@ -14,8 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { Deferred } from "./async";
-import "mocha";
-import { expect } from "chai";
+import { expect, describe, it } from 'vitest';
 
 describe('Deferred', () => {
     it('is in "unresolved" state after construction', () => {
