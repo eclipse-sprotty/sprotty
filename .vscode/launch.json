@@ -2,41 +2,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Mocha: Test Current File",
+            "name": "Vitest: Run All",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "program": "${workspaceRoot}/node_modules/.bin/ts-mocha",
-            "args": [
-                "${file}",
-                "--no-timeouts"
-            ],
-            "env": {
-                "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"
-            },
-            "sourceMaps": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "args": ["run", "--no-color", "--no-coverage", "--no-watch"],
             "smartStep": true,
-            "internalConsoleOptions": "openOnSessionStart",
-            "outputCapture": "std"
+            "console": "integratedTerminal",
         },
         {
-            "name": "Mocha: Test All",
+            "name": "Vitest: Run Selected File",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "program": "${workspaceRoot}/node_modules/.bin/ts-mocha",
-            "args": [
-                "-p",
-                "tsconfig.json",
-                "**/src/**/*.spec.ts",
-            ],
-            "env": {
-                "NODE_ENV": "test"
-            },
-            "sourceMaps": true,
+            "autoAttachChildProcesses": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "args": ["run", "${relativeFile}"],
             "smartStep": true,
-            "internalConsoleOptions": "openOnSessionStart",
-            "outputCapture": "std"
+            "console": "integratedTerminal",
         },
         {
             "name": "Examples Server",
