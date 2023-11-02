@@ -18,10 +18,10 @@ import { Container, ContainerModule } from 'inversify';
 import {
     TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, JumpingPolylineEdgeView,
     ConsoleLogger, LogLevel, loadDefaultModules, HtmlRootView, PreRenderedView, ExpandButtonView,
-    PreRenderedElementImpl, HtmlRootImpl, SGraphImpl, configureModelElement, SLabelImpl,
-    SCompartmentImpl, SEdgeImpl, SButtonImpl, RevealNamedElementActionProvider,
+    SRoutingHandleView, PreRenderedElementImpl, HtmlRootImpl, SGraphImpl, configureModelElement, SLabelImpl,
+    SCompartmentImpl, SEdgeImpl, SButtonImpl, SRoutingHandleImpl, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
-    RectangularNode, BezierCurveEdgeView
+    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
 } from 'sprotty';
 import edgeIntersectionModule from 'sprotty/lib/features/edge-intersection/di.config';
 import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
@@ -75,11 +75,11 @@ export default (containerId: string) => {
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);
         configureModelElement(context, 'pre-rendered', PreRenderedElementImpl, PreRenderedView);
         configureModelElement(context, 'button:expand', SButtonImpl, ExpandButtonView);
-        // configureModelElement(context, 'routing-point', SRoutingHandleImpl, SRoutingHandleView);
-        // configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
-        // configureModelElement(context, 'bezier-create-routing-point', SRoutingHandleImpl, SBezierCreateHandleView);
-        // configureModelElement(context, 'bezier-remove-routing-point', SRoutingHandleImpl, SBezierCreateHandleView);
-        // configureModelElement(context, 'bezier-routing-point', SRoutingHandleImpl, SBezierControlHandleView);
+        configureModelElement(context, 'routing-point', SRoutingHandleImpl, SRoutingHandleView);
+        configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
+        configureModelElement(context, 'bezier-create-routing-point', SRoutingHandleImpl, SBezierCreateHandleView);
+        configureModelElement(context, 'bezier-remove-routing-point', SRoutingHandleImpl, SBezierCreateHandleView);
+        configureModelElement(context, 'bezier-routing-point', SRoutingHandleImpl, SBezierControlHandleView);
 
 
         configureViewerOptions(context, {
