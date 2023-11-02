@@ -46,7 +46,7 @@ describe('base views', () => {
 
     it('missing view', () => {
         const vnode = missingView.render(emptyRoot, context);
-        expect(toHTML(vnode)).to.be.equal('<text class="sprotty-missing" x="0" y="0">?EMPTY?</text>');
+        expect(toHTML(vnode)).to.be.equal('<text class="sprotty-missing" x="0" y="0">missing &quot;NONE&quot; view</text>');
         const model = new SNodeImpl();
         model.bounds = {
             x: 42,
@@ -57,7 +57,7 @@ describe('base views', () => {
         model.id = 'foo';
         model.type = 'type';
         const vnode1 = missingView.render(model, context);
-        expect(toHTML(vnode1)).to.be.equal('<text class="sprotty-missing" x="42" y="41">?foo?</text>');
+        expect(toHTML(vnode1)).to.be.equal('<text class="sprotty-missing" x="42" y="41">missing &quot;type&quot; view</text>');
     });
 });
 
