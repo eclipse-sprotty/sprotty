@@ -107,6 +107,7 @@ export class ViewRegistry extends InstanceRegistry<IView> {
     }
 
     override missing(key: string): IView {
+        console.warn(`no registered view for type '${key}', please configure a view in the ContainerModule`);
         return new MissingView();
     }
 }
@@ -155,8 +156,20 @@ export class EmptyView implements IView {
  */
 @injectable()
 export class MissingView implements IView {
+    private static positionMap = new Map<string, Point>();
+
     render(model: Readonly<SModelElementImpl>, context: RenderingContext): VNode {
-        const position: Point = (model as any).position || Point.ORIGIN;
-        return <text class-sprotty-missing={true} x={position.x} y={position.y}>?{model.id}?</text>;
+        const position: Point = (model as any).position || this.getPostion(model.type);
+        return <text class-sprotty-missing={true} x={position.x} y={position.y}>missing "{model.type}" view</text>;
+    }
+
+    getPostion(type: string) {
+        let position = MissingView.positionMap.get(type);
+        if (!position) {
+            position = Point.ORIGIN;
+            MissingView.positionMap.forEach(value => position = value.y >= position!.y ? {x: 0, y: value.y + 20} : position);
+            MissingView.positionMap.set(type, position);
+        }
+        return position;
     }
 }
