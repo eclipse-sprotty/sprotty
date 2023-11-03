@@ -32,11 +32,11 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
         const childrenSize = this.getChildrenSize(container, options, layouter);
         const maxWidth = options.paddingFactor * (
             options.resizeContainer
-            ? childrenSize.width
+            ? Math.max(childrenSize.width, options.minWidth)
             : Math.max(0, this.getFixedContainerBounds(container, options, layouter).width) - options.paddingLeft - options.paddingRight);
         const maxHeight =  options.paddingFactor * (
             options.resizeContainer
-            ? childrenSize.height
+            ? Math.max(childrenSize.height, options.minHeight)
             : Math.max(0, this.getFixedContainerBounds(container, options, layouter).height) - options.paddingTop - options.paddingBottom);
         if (maxWidth > 0 && maxHeight > 0) {
             const offset = this.layoutChildren(container, layouter, options, maxWidth, maxHeight);
