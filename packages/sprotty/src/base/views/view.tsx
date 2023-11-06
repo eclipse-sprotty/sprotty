@@ -17,7 +17,7 @@
 /** @jsx svg */
 import { svg } from '../../lib/jsx';
 
-import { injectable, multiInject, optional, interfaces } from 'inversify';
+import { injectable, multiInject, optional, interfaces, inject } from 'inversify';
 import { VNode } from 'snabbdom';
 import { TYPES } from '../types';
 import { InstanceRegistry } from '../../utils/registry';
@@ -26,6 +26,7 @@ import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/
 import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory';
 import { registerModelElement } from '../model/smodel-utils';
 import { Point } from 'sprotty-protocol';
+import { ILogger } from '../../utils/logging';
 
 /**
  * Arguments for `IView` rendering.
@@ -94,6 +95,9 @@ export type ViewRegistrationFactory = () => ViewRegistration;
  */
 @injectable()
 export class ViewRegistry extends InstanceRegistry<IView> {
+
+    @inject(TYPES.ILogger) protected logger: ILogger;
+
     constructor(@multiInject(TYPES.ViewRegistration) @optional() registrations: ViewRegistration[]) {
         super();
         this.registerDefaults();
@@ -107,7 +111,7 @@ export class ViewRegistry extends InstanceRegistry<IView> {
     }
 
     override missing(key: string): IView {
-        console.warn(`no registered view for type '${key}', please configure a view in the ContainerModule`);
+        this.logger.warn(this, `no registered view for type '${key}', please configure a view in the ContainerModule`);
         return new MissingView();
     }
 }

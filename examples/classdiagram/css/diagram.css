@@ -123,14 +123,6 @@
     stroke-width: 1;
 }
 
-.sprotty-missing {
-    stroke-width: 1;
-    stroke: #f00;
-    fill: #f00;
-    font-size: 14pt;
-    text-anchor: middle;
-}
-
 .sprotty-popup-title {
     font-weight: bold;
     margin-bottom: 10px;

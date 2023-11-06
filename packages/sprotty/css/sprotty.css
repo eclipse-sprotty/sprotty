@@ -93,3 +93,11 @@
 .animation-spin {
 	animation: spin 1.5s linear infinite;
 }
+
+.sprotty-missing {
+    stroke-width: 1;
+    stroke: #f00;
+    fill: #f00;
+    font-size: 14pt;
+    text-anchor: start;
+}
