@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2023 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { expect, describe, it } from 'vitest';
-import { easeInOut } from "./easing";
+import { defineConfig } from 'vitest/config';
 
-describe('easing', () => {
-    it('test in/out', () => {
-        let lastValue = 0;
-        for (let i = 0; i < 10; ++i) {
-            const newValue = easeInOut(0.1 * i);
-            expect(newValue).to.be.at.least(0);
-            expect(newValue).to.be.at.most(1);
-            expect(newValue).to.be.at.least(lastValue);
-            lastValue = newValue;
-        }
-    });
+export default defineConfig({
+    test: {
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            include: ['packages/*'],
+        },
+        deps: {
+            interopDefault: true
+        },
+        include: ['**/*.spec.ts'],
+        globals: true,
+    }
 });

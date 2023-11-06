@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import "reflect-metadata";
-import "mocha";
-import { expect } from "chai";
+import { expect, describe, it } from 'vitest';
 import { SModelRootSchema } from "../../base/model/smodel";
 import { ModelMatcher } from "./model-matching";
 

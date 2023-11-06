@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'mocha';
-import { expect } from "chai";
+import 'reflect-metadata';
+import { expect, describe, it } from 'vitest';
 import { InstanceRegistry, ProviderRegistry } from "./registry";
 
 describe('ProviderRegistry', () => {

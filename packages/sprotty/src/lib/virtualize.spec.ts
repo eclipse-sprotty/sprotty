@@ -16,14 +16,13 @@
 
 "use strict";
 
-import 'mocha';
-import { expect } from 'chai';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { h } from 'snabbdom';
 import virtualize from './virtualize';
 import setup from '../utils/test-helper';
 
 describe("virtualize (happy path)", () => {
-    before(() => {
+    beforeAll(() => {
         setup();
     });
 
@@ -118,7 +117,7 @@ describe("virtualize (happy path)", () => {
 });
 
 describe("virtualize (bad path)", () => {
-    before(() => {
+    beforeAll(() => {
         setup();
     });
 

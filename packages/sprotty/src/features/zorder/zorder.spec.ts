@@ -15,8 +15,7 @@
  ********************************************************************************/
 
 import 'reflect-metadata';
-import 'mocha';
-import { expect } from 'chai';
+import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
 import { TYPES } from '../../base/types';
 import { ConsoleLogger } from '../../utils/logging';

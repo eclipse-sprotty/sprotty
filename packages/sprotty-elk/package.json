@@ -27,21 +27,13 @@
   "optionalDependencies": {
     "inversify": "^6.0.1"
   },
-  "devDependencies": {
-    "@types/chai": "^4.3.6",
-    "@types/mocha": "^10.0.2",
-    "@types/node": "^18.15.0",
-    "chai": "^4.3.10",
-    "mocha": "^10.2.0",
-    "ts-mocha": "^10.0.0"
-  },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib artifacts",
     "build": "tsc -p ./tsconfig.json && yarn run lint",
+    "test": "vitest run --config ../../vite.config.ts",
     "watch": "tsc -w -p ./tsconfig.json",
-    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*)\"",
-    "test": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\""
+    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*)\""
   },
   "files": [
     "lib",

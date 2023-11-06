@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { expect } from 'chai';
 import { Container } from 'inversify';
-import 'mocha';
 import 'reflect-metadata';
+
+import { expect, describe, it } from 'vitest';
 import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
 import { CommandExecutionContext } from '../../base/commands/command';
 import defaultModule from '../../base/di.config';

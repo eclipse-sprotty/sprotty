@@ -14,8 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'mocha';
-import { expect } from 'chai';
+import { expect, describe, it } from 'vitest';
 import { Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, SetModelAction } from './actions';
 import { DiagramServer } from './diagram-server';
 import { BoundsAware, SModelRoot } from './model';

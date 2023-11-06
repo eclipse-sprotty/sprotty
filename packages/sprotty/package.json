@@ -35,20 +35,16 @@
     "@types/chai": "^4.3.6",
     "@types/file-saver": "^2.0.5",
     "@types/jsdom": "^21.1.3",
-    "@types/mocha": "^10.0.2",
-    "chai": "^4.3.10",
     "jsdom": "^22.1.0",
-    "mocha": "^10.2.0",
-    "snabbdom-to-html": "^7.1.0",
-    "ts-mocha": "^10.0.0"
+    "snabbdom-to-html": "^7.1.0"
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib artifacts",
     "build": "tsc -p ./tsconfig.json && yarn run lint",
+    "test": "vitest run --config ../../vite.config.ts",
     "watch": "tsc -w -p ./tsconfig.json",
-    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*|test-helper.ts)\"",
-    "test": "ts-mocha \"./src/**/*.spec.?(ts|tsx)\""
+    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*|test-helper.ts)\""
   },
   "files": [
     "lib",

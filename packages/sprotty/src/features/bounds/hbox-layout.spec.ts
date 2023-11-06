@@ -14,8 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'mocha';
-import { expect } from "chai";
+import 'reflect-metadata';
+
+import { expect, describe, it } from 'vitest';
 import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
 import { createFeatureSet } from '../../base/model/smodel-factory';
 import { SNodeImpl, SLabelImpl } from '../../graph/sgraph';

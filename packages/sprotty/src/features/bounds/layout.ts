@@ -52,7 +52,7 @@ export class Layouter {
     @inject(TYPES.LayoutRegistry) protected layoutRegistry: LayoutRegistry;
     @inject(TYPES.ILogger) protected logger: ILogger;
 
-    layout(element2boundsData: Map<SModelElementImpl​​ , BoundsData>) {
+    layout(element2boundsData: Map<SModelElementImpl, BoundsData>) {
         new StatefulLayouter(element2boundsData, this.layoutRegistry, this.logger).layout();
     }
 }
@@ -61,7 +61,7 @@ export class StatefulLayouter {
 
     private toBeLayouted: (SParentElementImpl & LayoutContainer)[];
 
-    constructor(private readonly element2boundsData: Map<SModelElementImpl​​ , BoundsData>,
+    constructor(private readonly element2boundsData: Map<SModelElementImpl, BoundsData>,
                 private readonly layoutRegistry: LayoutRegistry,
                 public readonly log: ILogger) {
         this.toBeLayouted = [];
