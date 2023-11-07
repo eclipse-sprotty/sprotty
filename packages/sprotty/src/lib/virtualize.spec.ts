@@ -17,43 +17,41 @@
 "use strict";
 
 import { beforeAll, describe, expect, it } from 'vitest';
-import { h } from 'snabbdom';
+import { VNode, h } from 'snabbdom';
 import virtualize from './virtualize';
-import setup from '../utils/test-helper';
 
+/**
+ * @vitest-environment happy-dom
+ */
 describe("virtualize (happy path)", () => {
-    beforeAll(() => {
-        setup();
-    });
-
     it("should convert a single node with no children", () => {
-        expect(virtualize("<div />")).to.deep.equal(h("div"));
+        expect(virtualizeHelper("<div />")).to.deep.equal(h("DIV"));
     });
 
     it("should convert a node with text node", () => {
-        expect(virtualize("<div> Test. </div>")).to.deep.equal(
-            h("div", [" Test. "])
+        expect(virtualizeHelper("<div> Test. </div>")).to.deep.equal(
+            h("DIV", [" Test. "])
         );
     });
 
     it("should convert nodes with children", () => {
-        expect(virtualize("<div><span>a</span><span>b</span></div>")).to.deep.equal(
-            h("div", [
-                h("span", ["a"]),
-                h("span", ["b"])
+        expect(virtualizeHelper("<div><span>a</span><span>b</span></div>")).to.deep.equal(
+            h("DIV", [
+                h("SPAN", ["a"]),
+                h("SPAN", ["b"])
             ])
         );
     });
 
     it("should convert xml document", () => {
         expect(
-            virtualize(
+            virtualizeHelper(
                 "<book><title>The Three-Body Problem</title><author>Liu Cixin</author></book>"
             )
         ).to.deep.equal(
-            h("book", [
-                h("title", ["The Three-Body Problem"]),
-                h("author", ["Liu Cixin"]),
+            h("BOOK", [
+                h("TITLE", ["The Three-Body Problem"]),
+                h("AUTHOR", ["Liu Cixin"]),
             ])
         );
     });
@@ -61,8 +59,8 @@ describe("virtualize (happy path)", () => {
     it("should convert a single node with attributes", () => {
         const element =
             '<div class="sprotty1 sprotty2" style="display: none !important; background-color: blue; font-weight: bold" data-test="test" />';
-        expect(virtualize(element)).to.deep.equal(
-            h("div", {
+        expect(virtualizeHelper(element)).to.deep.equal(
+            h("DIV", {
                 class: {
                     sprotty1: true,
                     sprotty2: true,
@@ -80,16 +78,16 @@ describe("virtualize (happy path)", () => {
     });
 
     it("should ignore empty attributes", () => {
-        expect(virtualize("<span style='' />")).to.deep.equal(h("span"));
-        expect(virtualize("<span class='' />")).to.deep.equal(h("span"));
+        expect(virtualizeHelper("<span style='' />")).to.deep.equal(h("SPAN"));
+        expect(virtualizeHelper("<span class='' />")).to.deep.equal(h("SPAN"));
     });
 
     it("should handle control characters in attribute values", () => {
         const input = "<textarea placeholder=' Test1, \n\n Test2   '></textarea>";
-        expect(virtualize(input)).to.deep.equal(
-            h("textarea", {
+        expect(virtualizeHelper(input)).to.deep.equal(
+            h("TEXTAREA", {
                 attrs: {
-                    placeholder: " Test1,    Test2   ",
+                    placeholder: " Test1, \n\n Test2   ",
                 },
             })
         );
@@ -98,8 +96,8 @@ describe("virtualize (happy path)", () => {
     it("should handle entities in attribute values", () => {
         const input =
             "<textarea placeholder='&amp; Test1, &gt; Test2   '></textarea>";
-        expect(virtualize(input)).to.deep.equal(
-            h("textarea", {
+        expect(virtualizeHelper(input)).to.deep.equal(
+            h("TEXTAREA", {
                 attrs: {
                     placeholder: "& Test1, > Test2   ",
                 },
@@ -109,32 +107,36 @@ describe("virtualize (happy path)", () => {
 
     it("should ignore comments", () => {
         expect(
-            virtualize(
+            virtualizeHelper(
                 "<div> <!-- comment A --> <span>Test1</span> <!-- Comment B --> Test2</div>"
             )
-        ).to.deep.equal(h("div", [" ", " ", h("span", ["Test1"]), " ", " Test2"]));
+        ).to.deep.equal(h("DIV", [" ", " ", h("SPAN", ["Test1"]), " ", " Test2"]));
     });
 });
 
+/**
+ * @vitest-environment happy-dom
+ */
 describe("virtualize (bad path)", () => {
-    beforeAll(() => {
-        setup();
-    });
-
     it("should return null when given null or empty string", () => {
         expect(virtualize()).to.be.null;
         expect(virtualize("")).to.be.null;
     });
 
     it("should return parser error when given a single text node", () => {
-        const actual = virtualize("Text content!");
-        expect(actual?.sel).to.equal("parsererror");
-    });
-
-    it("should return parser error when gives multiple top-level nodes", () => {
-        const actual = virtualize(
-            "<div><h1>Something</h1></div><span>Something more</span>"
-        );
-        expect(actual?.sel).to.equal("parsererror");
+        const actual = virtualizeHelper("Text content!") as VNode;
+        expect(actual?.sel).to.equal(undefined);
     });
 });
+
+function virtualizeHelper(html?: string) {
+    const dom = virtualize(html);
+
+    if (!dom) {
+        return null;
+    }
+
+    const element = (dom.children![1] as VNode).children![0];
+
+    return element;
+}

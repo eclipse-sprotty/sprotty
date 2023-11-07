@@ -22,16 +22,12 @@ import { init } from "snabbdom";
 import { SModelElementImpl } from "../model/smodel";
 import { ModelRenderer } from './viewer';
 import { ThunkView } from './thunk-view';
-import setup from '../../utils/test-helper';
 import toHTML from 'snabbdom-to-html';
 
-
+/**
+ * @vitest-environment happy-dom
+ */
 describe('ThunkView', () => {
-
-    before(function () {
-        setup();
-    });
-
     let renderCount = 0;
 
     class Foo extends SModelElementImpl {
@@ -61,7 +57,8 @@ describe('ThunkView', () => {
         element.foo = 'first';
         const view = new FooView();
         const vnode = view.render(element, context);
-        const domElement = document.createElement('div');
+        const domElement =
+        document.createElement('div');
         domElement.setAttribute('id', 'sprotty');
         patcher(domElement, vnode);
         expect(toHTML(vnode)).to.be.equal('<g id="0"></g>');

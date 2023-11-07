@@ -17,8 +17,7 @@
 /** @jsx svg */
 import { svg } from './jsx';
 
-import 'mocha';
-import { expect } from 'chai';
+import { expect, describe, it } from 'vitest';
 import { h } from 'snabbdom';
 
 const svgNS = 'http://www.w3.org/2000/svg';
