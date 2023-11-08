@@ -29,12 +29,12 @@ import { SModelElement, SModelRoot, SetModelAction } from 'sprotty-protocol';
 
 function compare(expected: SModelElement, actual: SModelElementImpl) {
     for (const p in expected) {
-        if (expected.hasOwnProperty(p)) {
+        if (Object.prototype.hasOwnProperty.call(expected, p)) {
             const expectedProp = (expected as any)[p];
             const actualProp = (actual as any)[p];
             if (p === 'children') {
                 for (const i in expectedProp) {
-                    if (expectedProp.hasOwnProperty(i)) {
+                    if (Object.prototype.hasOwnProperty.call(expectedProp, i)) {
                         compare(expectedProp[i], actualProp[i]);
                     }
                 }

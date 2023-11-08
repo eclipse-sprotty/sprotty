@@ -34,6 +34,6 @@ export default function runRandomGraphDistributed() {
             .catch(err => {
                 console.error(err);
                 document.getElementById('sprotty')!.innerText = String(err);
-            })
+            });
     }, { once: true });
 }

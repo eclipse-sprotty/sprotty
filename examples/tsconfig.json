@@ -1,8 +1,9 @@
 {
-  "extends": "../configs/base.tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": [
-      "reflect-metadata", "webpack-env"
+      "reflect-metadata",
+      "webpack-env"
     ],
     "declaration": false,
     "declarationMap": false
@@ -11,6 +12,7 @@
     "./server/**/*.ts"
   ],
   "exclude": [
-    "**/*.spec.ts", "**/*.spec.tsx"
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ]
 }

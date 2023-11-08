@@ -83,10 +83,10 @@ export default async function runCircleGraph() {
     async function createNode(point?: Point) {
         const viewport = await modelSource.getViewport();
         const newElements = addNode(getVisibleBounds(viewport));
-        if(point) {
-            const adjust = (offset:number) => {
+        if (point) {
+            const adjust = (offset: number) => {
                 return (offset / viewport.zoom) - (NODE_SIZE / 2);
-            }
+            };
             newElements[0].position = {
                 x: viewport.scroll.x + adjust(point.x),
                 y: viewport.scroll.y + adjust(point.y)
@@ -99,7 +99,7 @@ export default async function runCircleGraph() {
 
     // Button features
     document.getElementById('addNode')!.addEventListener('click', async () => {
-        createNode()
+        createNode();
     });
 
     document.getElementById('scrambleAll')!.addEventListener('click', async () => {

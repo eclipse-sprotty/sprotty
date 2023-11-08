@@ -33,7 +33,7 @@ async function condition(cb: () => boolean): Promise<void> {
             } else {
                 setImmediate(next);
             }
-        }
+        };
         next();
     });
 }
@@ -48,7 +48,7 @@ describe('DiagramServer', () => {
         const actionHandlerRegistry = new ServerActionHandlerRegistry();
         const server = new DiagramServer(
             async a => {
-                dispatched.push(a)
+                dispatched.push(a);
             }, {
             DiagramGenerator: {
                 generate: () => {
@@ -176,9 +176,9 @@ describe('DiagramServer', () => {
 
     it('calls a registered action handler', async () => {
         const { server, actionHandlerRegistry, dispatched } = createServer();
-        actionHandlerRegistry.onAction('foo', (_, state, server) => {
+        actionHandlerRegistry.onAction('foo', (_, state, serverHandler) => {
             state.revision = -7;
-            server.dispatch({ kind: 'bar' });
+            serverHandler.dispatch({ kind: 'bar' });
             return Promise.resolve();
         });
         await server.accept({ kind: 'foo' });
@@ -189,9 +189,9 @@ describe('DiagramServer', () => {
 
     it('does not call an unregistered action handler', async () => {
         const { server, actionHandlerRegistry, dispatched } = createServer();
-        const handler: ServerActionHandler = (_, state, server) => {
+        const handler: ServerActionHandler = (_, state, serverHandler) => {
             state.revision = -7;
-            server.dispatch({ kind: 'bar' });
+            serverHandler.dispatch({ kind: 'bar' });
             return Promise.resolve();
         };
         actionHandlerRegistry.onAction('foo', handler);
