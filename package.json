@@ -4,6 +4,8 @@
     "prepare": "lerna run prepare",
     "clean": "lerna run clean",
     "build": "lerna run build",
+    "lint": "eslint {**/src/**/*.ts,**/src/**/*.tsx}",
+    "lint:fix": "eslint {**/src/**/*.ts,**/src/**/*.tsx} --fix",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "publish:prepare": "lerna version --ignore-scripts --yes --no-push",
@@ -11,9 +13,9 @@
     "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
-    "eslint": "^8.50.0",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-no-null": "^1.0.2",

@@ -57,7 +57,7 @@ describe('hover', () => {
             });
         }
 
-        protected override getElementFromEventPosition(event: MouseEvent) {
+        protected override getElementFromEventPosition(_event: MouseEvent) {
             // the original implementation uses document which isn't available in unit testing
             return null;
         }

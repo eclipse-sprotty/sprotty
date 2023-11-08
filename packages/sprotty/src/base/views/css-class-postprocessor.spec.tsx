@@ -26,9 +26,9 @@ describe('CssClassPostprocessor', () => {
         const vnode = <g class-foo={true}/>;
         expect(vnode.data!.class!.foo).to.be.true;
         expect(vnode.data!.class!.bar).to.be.undefined;
-        const snode = new SModelElementImpl()
-        snode.cssClasses = ['bar']
-        new CssClassPostprocessor().decorate(vnode, snode)
+        const snode = new SModelElementImpl();
+        snode.cssClasses = ['bar'];
+        new CssClassPostprocessor().decorate(vnode, snode);
         expect(vnode.data!.class!.foo).to.be.true;
         expect(vnode.data!.class!.bar).to.be.true;
     });

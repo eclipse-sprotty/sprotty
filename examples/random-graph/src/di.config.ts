@@ -108,7 +108,7 @@ export class TrackSelectedUpdateModelCommand extends UpdateModelCommand {
 
     override createAnimations(data: UpdateAnimationData, root: SModelRootImpl, context: CommandExecutionContext): Animation[] {
         const animations = super.createAnimations(data, root, context);
-        const selectedToMove = data.moves?.find(toMove => isSelectable(toMove.element) && toMove.element.selected)
+        const selectedToMove = data.moves?.find(toMove => isSelectable(toMove.element) && toMove.element.selected);
         if (isViewport(root) && selectedToMove) {
             const nodeMove: Point = {
                 x: selectedToMove.fromPosition.x - selectedToMove.toPosition.x,

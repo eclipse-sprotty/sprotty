@@ -17,6 +17,7 @@
 import "reflect-metadata";
 import { expect, describe, it } from 'vitest';
 import { Container, injectable } from "inversify";
+// eslint-disable-next-line max-len
 import { Action, ComputedBoundsAction, isResponseAction, RequestAction, RequestBoundsAction, ResponseAction, SetModelAction, UpdateModelAction } from 'sprotty-protocol/lib/actions';
 import { Deferred } from 'sprotty-protocol/lib/utils/async';
 import { TYPES } from "../base/types";

@@ -57,9 +57,12 @@ export class ClassDiagramModelSource extends LocalModelSource {
     }
 
     protected handleCollapseExpandAllAction(action: CollapseExpandAllAction): void {
-        // tslint:disable-next-line:forin
-        for (const id in this.expansionState)
-            this.expansionState[id] === action.expand;
+        for (const id in this.expansionState) {
+            if (Object.prototype.hasOwnProperty.call(this.expansionState, id)) {
+                this.expansionState[id] === action.expand;
+            }
+        }
+
         this.applyExpansionState();
         this.updateModel();
     }
@@ -67,15 +70,16 @@ export class ClassDiagramModelSource extends LocalModelSource {
     protected applyExpansionState() {
         const index = new SModelIndex();
         index.add(this.currentRoot);
-        // tslint:disable-next-line:forin
         for (const id in this.expansionState) {
-            const element = index.getById(id);
-            if (element && element.children) {
-                const expanded = this.expansionState[id];
-                (element as any).expanded = expanded;
-                element.children = element.children.filter(child => child.type !== 'comp:comp');
-                if (expanded)
-                    this.addExpandedChildren(element);
+            if (Object.prototype.hasOwnProperty.call(this.expansionState, id)) {
+                const element = index.getById(id);
+                if (element && element.children) {
+                    const expanded = this.expansionState[id];
+                    (element as any).expanded = expanded;
+                    element.children = element.children.filter(child => child.type !== 'comp:comp');
+                    if (expanded)
+                        this.addExpandedChildren(element);
+                }
             }
         }
     }
@@ -320,7 +324,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 }
             ]
         };
-        const package0: SNode= {
+        const package0: SNode = {
             id: 'package0',
             type: 'node:package',
             position: {
@@ -349,7 +353,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     ]
                 }
             ]
-        }
+        };
         const edge0 = {
             id: 'edge0',
             type: 'edge:straight',

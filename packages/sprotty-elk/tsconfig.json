@@ -1,15 +1,16 @@
 {
-    "extends": "../../configs/base.tsconfig.json",
-    "compilerOptions": {
-      "outDir": "lib",
-      "types": [
-        "node"
-      ]
-    },
-    "include": [
-      "src"
-    ],
-    "exclude": [
-      "**/*.spec.ts", "**/*.spec.tsx"
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "types": [
+      "node"
     ]
-  }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
+}

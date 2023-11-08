@@ -22,5 +22,7 @@ jobs:
         node-version: '16'
     - name: Build
       run: yarn
+    - name: Lint
+      run: yarn lint
     - name: Test
       run: yarn test

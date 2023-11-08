@@ -1,6 +1,35 @@
 {
-    "extends": "./configs/base.tsconfig.json",
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        "target": "ES2017",
+        "module": "commonjs",
+        "lib": [
+            "ES2017",
+            "DOM"
+        ],
+        "types": [
+            "reflect-metadata"
+        ],
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noUnusedLocals": true,
+        "strictNullChecks": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "jsx": "react"
+    },
     "include": [
-        "packages/*/src/**/*.ts",
+        "**/src/**/*.ts",
+        "**/src/**/*.tsx"
     ],
+    "exclude": [
+        "lib/**/*",
+        "node_modules/**/*"
+    ]
 }

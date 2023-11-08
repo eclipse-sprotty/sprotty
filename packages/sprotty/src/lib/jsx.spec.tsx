@@ -21,7 +21,7 @@ import 'mocha';
 import { expect } from 'chai';
 import { h } from 'snabbdom';
 
-const svgNS = 'http://www.w3.org/2000/svg'
+const svgNS = 'http://www.w3.org/2000/svg';
 
 describe("JSX", () => {
     it("should set namespace even for empty svg elements with no attributes", () => {
@@ -53,5 +53,5 @@ describe("JSX", () => {
             },
             [])
         );
-    })
-})
+    });
+});

@@ -42,7 +42,6 @@
         "clean": "rimraf app",
         "build": "tsc --skipLibCheck",
         "watch": "tsc --watch --skipLibCheck",
-        "lint": "eslint src test --ext .ts",
         "run": "yo sprotty",
         "debug": "npx --node-arg=--inspect yo sprotty",
         "test": "echo \"No tests defined.\""

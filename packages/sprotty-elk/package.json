@@ -30,18 +30,14 @@
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib artifacts",
-    "build": "tsc -p ./tsconfig.json && yarn run lint",
+    "build": "tsc -p ./tsconfig.json",
     "test": "vitest run --config ../../vite.config.ts",
-    "watch": "tsc -w -p ./tsconfig.json",
-    "lint": "eslint -c ../../configs/.eslintrc.js \"src/**/!(*.spec.ts*)\""
+    "watch": "tsc -w -p ./tsconfig.json"
   },
   "files": [
     "lib",
     "src"
   ],
   "main": "lib/index",
-  "types": "lib/index",
-  "eslintIgnore": [
-    "src/**/*.spec.?(ts|tsx)"
-  ]
+  "types": "lib/index"
 }

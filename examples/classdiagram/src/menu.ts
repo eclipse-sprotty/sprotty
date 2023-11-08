@@ -30,18 +30,19 @@ export class ClassContextMenuService implements IContextMenuService {
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
 
     show(items: MenuItem[], anchor: Anchor, onHide?: (() => void) | undefined): void {
-        this.actionDispatcher.dispatch(SetPopupModelAction.create(EMPTY_ROOT))
+        this.actionDispatcher.dispatch(SetPopupModelAction.create(EMPTY_ROOT));
         const container = document.getElementById(this.viewerOptions.baseDiv);
+        // eslint-disable-next-line prefer-const
         let menuNode: HTMLDivElement;
         const hideMenu = () => {
             container?.removeChild(menuNode);
             if (onHide) {
-                onHide()
+                onHide();
             }
-        }
+        };
         menuNode = this.createMenu(items, hideMenu);
-        menuNode.style.top = (anchor.y - 5) + 'px'
-        menuNode.style.left = (anchor.x - 5) + 'px'
+        menuNode.style.top = (anchor.y - 5) + 'px';
+        menuNode.style.left = (anchor.x - 5) + 'px';
 
 
         container?.appendChild(menuNode);
@@ -65,7 +66,7 @@ export class ClassContextMenuService implements IContextMenuService {
                 if (itemEnabled && item.actions.length > 0) {
                     this.actionDispatcher.dispatchAll(item.actions);
                 }
-            }
+            };
             menuNode.appendChild(menuItem);
         });
         return menuNode;
@@ -78,7 +79,7 @@ export class ClassContextMenuItemProvider implements IContextMenuItemProvider {
     @inject(TYPES.IActionDispatcher) readonly actionDispatcher: IActionDispatcher;
 
     async getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point | undefined): Promise<LabeledAction[]> {
-        const selectionResult = await this.actionDispatcher.request<SelectionResult>(GetSelectionAction.create())
+        const selectionResult = await this.actionDispatcher.request<SelectionResult>(GetSelectionAction.create());
         return [
             new LabeledAction('Fit Diagram to Screen', [FitToScreenAction.create(root.children.map(child => child.id))]),
             new LabeledAction('Center Selection', [CenterAction.create(selectionResult.selectedElementsIDs)]),
@@ -88,7 +89,7 @@ export class ClassContextMenuItemProvider implements IContextMenuItemProvider {
             {
                 ...new LabeledAction('Delete Selected', [DeleteElementAction.create(selectionResult.selectedElementsIDs)]),
                 isEnabled: () => {
-                    return selectionResult.selectedElementsIDs.length > 0
+                    return selectionResult.selectedElementsIDs.length > 0;
                 }
             } as MenuItem
         ];

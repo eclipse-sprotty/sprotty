@@ -1,5 +1,5 @@
 {
-  "extends": "../../configs/base.tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "lib"
   },
@@ -7,6 +7,8 @@
     "src"
   ],
   "exclude": [
-    "**/*.spec.ts", "**/*.spec.tsx", "src/utils/test-helper.ts"
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "src/utils/test-helper.ts"
   ]
 }

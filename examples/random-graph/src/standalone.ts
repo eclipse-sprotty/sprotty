@@ -27,7 +27,7 @@ export default function runRandomGraph() {
 
     const layoutConfigurator = container.get<RandomGraphLayoutConfigurator>(ILayoutConfigurator);
     document.getElementById('direction')!.addEventListener('change', async (event) => {
-        layoutConfigurator.setDirection((event.target as any)?.value??'LEFT');
+        layoutConfigurator.setDirection((event.target as any)?.value ?? 'LEFT');
         modelSource.updateModel();
     });
 }

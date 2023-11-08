@@ -25,7 +25,7 @@ import { CircleNodeView } from './views';
 
 const NodeCreator = Symbol('NodeCreator');
 
-export default (nodeCreator: (point?: Point)=>void) => {
+export default (nodeCreator: (point?: Point) => void) => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
@@ -58,7 +58,7 @@ export default (nodeCreator: (point?: Point)=>void) => {
 @injectable()
 class DroppableMouseListener extends MouseListener {
 
-    @inject(NodeCreator) nodeCreator: (point?: Point)=>void;
+    @inject(NodeCreator) nodeCreator: (point?: Point) => void;
 
     override dragOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         event.preventDefault();
@@ -66,7 +66,7 @@ class DroppableMouseListener extends MouseListener {
     }
 
     override drop(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
-        this.nodeCreator({ x: event.offsetX, y:event.offsetY })
+        this.nodeCreator({ x: event.offsetX, y:event.offsetY });
         return [];
     }
 }
