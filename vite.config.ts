@@ -26,7 +26,7 @@ export default defineConfig({
         deps: {
             interopDefault: true
         },
-        include: ['**/*.spec.ts'],
+        include: ['**/*.spec.ts', '**/*.spec.tsx'],
         globals: true,
     }
 });

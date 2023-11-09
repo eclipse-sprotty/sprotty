@@ -16,8 +16,9 @@
 
  /** @jsx svg */
 import { svg } from '../../lib/jsx';
+import 'reflect-metadata';
 
-import { expect, describe, it } from 'vitest';
+import { expect, describe, beforeAll, it } from 'vitest';
 import { init } from "snabbdom";
 import { SModelElementImpl } from "../model/smodel";
 import { ModelRenderer } from './viewer';
@@ -28,7 +29,7 @@ import toHTML from 'snabbdom-to-html';
 
 describe('ThunkView', () => {
 
-    before(function () {
+    beforeAll(function () {
         setup();
     });
 

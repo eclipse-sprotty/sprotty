@@ -16,6 +16,7 @@
 
  /** @jsx svg */
 import { svg } from '../../lib/jsx';
+import 'reflect-metadata';
 
 import { expect, describe, it } from 'vitest';
 import { CssClassPostprocessor } from './css-class-postprocessor';
