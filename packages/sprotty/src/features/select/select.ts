@@ -132,11 +132,13 @@ export class SelectMouseListener extends MouseListener {
 
     wasSelected = false;
     hasDragged = false;
+    isMouseDown = false;
 
     override mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         if (event.button !== 0) {
             return [];
         }
+        this.isMouseDown = true;
         const buttonHandled = this.handleButton(target, event);
         if (buttonHandled) {
             return buttonHandled;
@@ -151,18 +153,14 @@ export class SelectMouseListener extends MouseListener {
             if (!isCtrlOrCmd(event)) {
                 deselectedElements = this.collectElementsToDeselect(target, selectableTarget);
             }
-            if (selectableTarget !== undefined) {
-                if (!selectableTarget.selected) {
-                    this.wasSelected = false;
-                    return this.handleSelectTarget(selectableTarget, deselectedElements, event);
-                } else if (isCtrlOrCmd(event)) {
-                    this.wasSelected = false;
-                    return this.handleDeselectTarget(selectableTarget, event);
-                } else {
-                    this.wasSelected = true;
-                }
+            if (!selectableTarget.selected) {
+                this.wasSelected = false;
+                return this.handleSelectTarget(selectableTarget, deselectedElements, event);
+            } else if (isCtrlOrCmd(event)) {
+                this.wasSelected = false;
+                return this.handleDeselectTarget(selectableTarget, event);
             } else {
-                return this.handleDeselectAll(deselectedElements, event);
+                this.wasSelected = true;
             }
         }
         return [];
@@ -217,7 +215,7 @@ export class SelectMouseListener extends MouseListener {
     }
 
     override mouseMove(target: SModelElementImpl, event: MouseEvent): Action[] {
-        this.hasDragged = true;
+        this.hasDragged = this.isMouseDown;
         return [];
     }
 
@@ -227,14 +225,15 @@ export class SelectMouseListener extends MouseListener {
                 const selectableTarget = findParentByFeature(target, isSelectable);
                 if (selectableTarget !== undefined) {
                     if (this.wasSelected) {
-                        return [SelectAction.create({selectedElementsIDs:[selectableTarget.id],deselectedElementsIDs:[]})];
+                        return [SelectAction.create({ selectedElementsIDs: [selectableTarget.id], deselectedElementsIDs: [] })];
                     }
-                } else if (target instanceof SModelRootImpl && !findViewportScrollbar(event)) {
-                    // Mouse up on root but not over ViewPort's scroll bars > deselect all
+                } else if ((target instanceof SModelRootImpl && !findViewportScrollbar(event)) || !(target instanceof SModelRootImpl)) {
+                    // Mouse up on everything that's not root or root but not over ViewPort's scroll bars > deselect all
                     return this.handleDeselectAll(this.collectElementsToDeselect(target, undefined), event);
                 }
             }
         }
+        this.isMouseDown = false;
         this.hasDragged = false;
         return [];
     }
