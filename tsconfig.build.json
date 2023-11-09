@@ -1,9 +1,9 @@
 {
     "files": [],
     "references": [
-        { "path": "./packages/generator-sprotty/tsconfig.json" },
+        { "path": "./packages/sprotty-protocol/tsconfig.json" },
         { "path": "./packages/sprotty/tsconfig.json" },
         { "path": "./packages/sprotty-elk/tsconfig.json" },
-        { "path": "./packages/sprotty-protocol/tsconfig.json" },
+        { "path": "./packages/generator-sprotty/tsconfig.json" },
     ]
 }

@@ -3,7 +3,7 @@
   "scripts": {
     "prepare": "lerna run prepare",
     "clean": "lerna run clean",
-	"build": "tsc -b tsconfig.build.json",
+    "build": "tsc --build tsconfig.build.json && yarn --cwd examples build",
     "watch": "concurrently -n sprotty,examples -c blue,green, \"yarn --cwd examples watch\" \"tsc -b tsconfig.build.json -w\"",
     "lint": "eslint {**/src/**/*.ts,**/src/**/*.tsx}",
     "lint:fix": "eslint {**/src/**/*.ts,**/src/**/*.tsx} --fix",
