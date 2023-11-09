@@ -107,7 +107,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         };
     }
 
-    protected calculateSegment(edge: SRoutableElementImpl, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number} | undefined {
+    protected calculateSegment(edge: SRoutableElementImpl, t: number): { segmentStart: Point, segmentEnd: Point, lambda: number } | undefined {
         if (t < 0 || t > 1)
             return undefined;
         const routedPoints = this.route(edge);
@@ -164,7 +164,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
             case 'target':
                 if (edge.target instanceof SDanglingAnchorImpl)
                     return edge.target.position;
-                 else {
+                else {
                     return route[route.length - 1];
                 }
             default:
@@ -208,7 +208,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
     }
 
     protected getAnchorComputer(connectable: SConnectableElementImpl): IAnchorComputer {
-       return this.anchorRegistry.get(this.kind, connectable.anchorKind);
+        return this.anchorRegistry.get(this.kind, connectable.anchorKind);
     }
 
     applyHandleMoves(edge: SRoutableElementImpl, moves: ResolvedHandleMove[]): void {
@@ -297,6 +297,25 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
         if (hasChanged) {
             // reset attached elements in index
             edge.index.remove(edge);
+            if (edge.id === edgeInProgressID) {
+                // create a proper edge id after connecting the edge in progress
+                const idGen = (counter: number) => `${edge.sourceId}_to_${edge.targetId}_${counter}`;
+                let idx = 0;
+                let newId = idGen(idx);
+                while (edge.index.getById(newId) !== undefined) {
+                    newId = idGen(++idx);
+                }
+                edge.id = newId;
+                const progressTargetHandle = edge.children.find(child => child.id === edgeInProgressTargetHandleID);
+                if (progressTargetHandle instanceof SRoutingHandleImpl) {
+                    // remove in progress target handle
+                    edge.remove(progressTargetHandle);
+                    if (progressTargetHandle.danglingAnchor) {
+                        // remove dangling anchor
+                        progressTargetHandle.danglingAnchor.parent.remove(progressTargetHandle.danglingAnchor);
+                    }
+                }
+            }
             edge.index.add(edge);
             if (this.getSelfEdgeIndex(edge) > -1) {
                 edge.routingPoints = [];
@@ -348,7 +367,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
                     return [
                         { x: sourceAnchors.get(Side.BOTTOM).x - delta, y: sourceAnchors.get(Side.BOTTOM).y + standardDist },
                         { x: sourceAnchors.get(Side.LEFT).x - standardDist, y: sourceAnchors.get(Side.BOTTOM).y + standardDist },
-                        { x: sourceAnchors.get(Side.LEFT).x - standardDist, y: sourceAnchors.get(Side.LEFT).y + delta},
+                        { x: sourceAnchors.get(Side.LEFT).x - standardDist, y: sourceAnchors.get(Side.LEFT).y + delta },
                     ];
                 case 2:
                     return [
