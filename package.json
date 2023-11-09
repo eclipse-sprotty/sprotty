@@ -19,7 +19,6 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-no-null": "^1.0.2",
-    "happy-dom": "^12.10.3",
     "lerna": "^7.3.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.5",
