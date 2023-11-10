@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "lib"
+    "rootDir": "src",
+    "outDir": "lib",
+    "composite": true
   },
   "include": [
     "src"
@@ -9,5 +11,8 @@
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.tsx",
+  ],
+  "references": [
+    { "path": "../sprotty-protocol/tsconfig.json" }
   ]
 }

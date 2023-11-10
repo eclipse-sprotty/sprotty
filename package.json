@@ -1,9 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "lerna run prepare",
+    "prepare": "yarn run clean && yarn run build",
     "clean": "lerna run clean",
-    "build": "lerna run build",
+    "build": "tsc --build tsconfig.build.json && yarn --cwd examples build",
+    "watch": "concurrently -n sprotty,examples -c blue,green, \"yarn --cwd examples watch\" \"tsc -b tsconfig.build.json -w\"",
     "lint": "eslint {**/src/**/*.ts,**/src/**/*.tsx}",
     "lint:fix": "eslint {**/src/**/*.ts,**/src/**/*.tsx} --fix",
     "test": "vitest run",
@@ -16,6 +17,7 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.53.0",
+    "concurrently": "~8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-no-null": "^1.0.2",
