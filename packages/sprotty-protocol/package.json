@@ -23,7 +23,6 @@
   },
 
   "scripts": {
-    "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib artifacts tsconfig.tsbuildinfo",
     "build": "tsc -p ./tsconfig.json",
     "test": "vitest run --config ../../vite.config.ts",

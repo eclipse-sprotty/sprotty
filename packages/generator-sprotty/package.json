@@ -38,7 +38,6 @@
         "yeoman-test": "^7.4.0"
     },
     "scripts": {
-        "prepare": "yarn run clean && yarn run build",
         "clean": "rimraf app",
         "build": "tsc --skipLibCheck",
         "watch": "tsc --watch --skipLibCheck",

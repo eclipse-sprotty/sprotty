@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "lerna run prepare",
+    "prepare": "yarn run clean && yarn run build",
     "clean": "lerna run clean",
     "build": "tsc --build tsconfig.build.json && yarn --cwd examples build",
     "watch": "concurrently -n sprotty,examples -c blue,green, \"yarn --cwd examples watch\" \"tsc -b tsconfig.build.json -w\"",
