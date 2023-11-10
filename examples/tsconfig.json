@@ -5,6 +5,7 @@
       "reflect-metadata",
       "webpack-env"
     ],
+    "composite": false,
     "declaration": false,
     "declarationMap": false
   },

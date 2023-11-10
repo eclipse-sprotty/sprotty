@@ -38,12 +38,9 @@
         "yeoman-test": "^7.4.0"
     },
     "scripts": {
-        "clean": "shx rm -fr app",
-        "build": "tsc --skipLibCheck",
-        "watch": "tsc --watch --skipLibCheck",
+        "clean": "shx rm -fr app *.tsbuildinfo",
         "run": "yo sprotty",
-        "debug": "npx --node-arg=--inspect yo sprotty",
-        "test": "echo \"No tests defined.\""
+        "debug": "npx --node-arg=--inspect yo sprotty"
     },
     "files": [
         "app",

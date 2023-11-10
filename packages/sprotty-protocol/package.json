@@ -23,10 +23,7 @@
   },
 
   "scripts": {
-    "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
-    "build": "tsc -p ./tsconfig.json",
-    "test": "vitest run --config ../../vite.config.ts",
-    "watch": "tsc -w -p ./tsconfig.json"
+    "clean": "shx rm -fr lib artifacts *.tsbuildinfo"
   },
   "files": [
     "lib",
