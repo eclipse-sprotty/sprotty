@@ -38,7 +38,7 @@
         "yeoman-test": "^7.4.0"
     },
     "scripts": {
-        "clean": "rimraf app",
+        "clean": "shx rm -fr app",
         "build": "tsc --skipLibCheck",
         "watch": "tsc --watch --skipLibCheck",
         "run": "yo sprotty",
