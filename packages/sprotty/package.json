@@ -37,7 +37,10 @@
     "snabbdom-to-html": "^7.1.0"
   },
   "scripts": {
-    "clean": "shx rm -fr lib artifacts *.tsbuildinfo"
+    "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "vitest run --config ../../vite.config.ts"
   },
   "files": [
     "lib",

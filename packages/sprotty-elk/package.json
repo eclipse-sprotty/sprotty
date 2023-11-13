@@ -28,7 +28,10 @@
     "inversify": "^6.0.1"
   },
   "scripts": {
-    "clean": "shx rm -fr lib artifacts *.tsbuildinfo"
+    "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "vitest run --config ../../vite.config.ts"
   },
   "files": [
     "lib",

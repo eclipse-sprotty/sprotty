@@ -39,8 +39,11 @@
     },
     "scripts": {
         "clean": "shx rm -fr app *.tsbuildinfo",
+        "build": "tsc",
+        "watch": "tsc --watch",
         "run": "yo sprotty",
-        "debug": "npx --node-arg=--inspect yo sprotty"
+        "debug": "npx --node-arg=--inspect yo sprotty",
+        "test": "echo \"No tests defined.\""
     },
     "files": [
         "app",
