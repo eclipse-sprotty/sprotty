@@ -23,8 +23,8 @@
     "eslint-plugin-no-null": "^1.0.2",
     "lerna": "^7.3.0",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^5.0.5",
     "semver": "^7.5.4",
+    "shx": "^0.3.4",
     "typescript": "~5.2.2",
     "@vitest/coverage-v8": "~0.34.6",
     "vitest": "~0.34.6"

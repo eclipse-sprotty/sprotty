@@ -26,7 +26,8 @@
   },
   "scripts": {
     "prepare": "yarn run build",
-    "build": "webpack && tsc",
+    "compile": "tsc -b tsconfig.json",
+    "build": "webpack && npm run compile",
     "watch": "yarn run watch:browser",
     "watch:browser": "webpack --watch",
     "watch:server": "tsc -w",
