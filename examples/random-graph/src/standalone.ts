@@ -51,6 +51,18 @@ function createRandomGraph(): SGraph {
                     type: 'label:node',
                     id: `node${i}_label`,
                     text: i.toString()
+                },
+                <SPort> {
+                    type: 'port',
+                    id: `port-open-node${i}`,
+                    size: { width: 8, height: 8 },
+                    children: [
+                        <SLabel>{
+                            type: 'label:port',
+                            id: `port-open-node${i}-label`,
+                            text: ''
+                        }
+                    ]
                 }
             ]
         };

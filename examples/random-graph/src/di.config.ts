@@ -18,16 +18,29 @@ import { LayoutOptions } from 'elkjs/lib/elk-api';
 import ElkConstructor from 'elkjs/lib/elk.bundled';
 import { Container, ContainerModule } from 'inversify';
 import {
-    Animation, CommandExecutionContext, configureModelElement, configureViewerOptions, ConsoleLogger,
-    edgeIntersectionModule, isSelectable, isViewport, loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
+    Animation, CommandExecutionContext,
+    ConsoleLogger,
+    CreateElementCommand,
+    CreatingOnDrag,
+    LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
     RectangularNodeView, SEdgeImpl, SGraphImpl, SGraphView, SLabelImpl, SLabelView, SModelRootImpl, SNodeImpl, SPortImpl,
-    TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
+    SRoutableElementImpl,
+    SRoutingHandleImpl,
+    SRoutingHandleView,
+    TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation,
+    configureCommand,
+    configureModelElement, configureViewerOptions,
+    creatingOnDragFeature,
+    edgeIntersectionModule, isSelectable, isViewport, loadDefaultModules, selectFeature
 } from 'sprotty';
 import {
-    DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, elkLayoutModule, ILayoutConfigurator
+    DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine,
+    ILayoutConfigurator,
+    elkLayoutModule
 } from 'sprotty-elk/lib/inversify';
-import { Point, SGraph, SModelIndex, SNode, SPort } from 'sprotty-protocol';
+import { Action, CreateElementAction, Point, SEdge, SGraph, SModelIndex, SNode, SPort } from 'sprotty-protocol';
 import { PortViewWithExternalLabel } from './views';
+import { toArray } from 'sprotty/lib/utils/iterable';
 
 export default (containerId: string) => {
     require('sprotty/css/sprotty.css');
@@ -50,8 +63,17 @@ export default (containerId: string) => {
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(container, 'graph', SGraphImpl, SGraphView);
         configureModelElement(container, 'node', SNodeImpl, RectangularNodeView);
-        configureModelElement(container, 'port', SPortImpl, PortViewWithExternalLabel);
+        configureModelElement(container, 'port', StructPort, PortViewWithExternalLabel,
+            {
+                enable: [
+                    creatingOnDragFeature,
+                    selectFeature
+                ]
+            });
         configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections);
+        configureModelElement(container, 'edge-new', SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections);
+        configureModelElement(container, 'routing-point', SRoutingHandleImpl, SRoutingHandleView);
+        configureModelElement(container, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
         configureModelElement(container, 'label:node', SLabelImpl, SLabelView);
         configureModelElement(container, 'label:port', SLabelImpl, SLabelView);
 
@@ -59,6 +81,7 @@ export default (containerId: string) => {
             needsClientLayout: true,
             baseDiv: containerId
         });
+        configureCommand(context, CreateElementCommand);
     });
 
     const container = new Container();
@@ -121,5 +144,28 @@ export class TrackSelectedUpdateModelCommand extends UpdateModelCommand {
             );
         }
         return animations;
+    }
+}
+export class StructPort extends SPortImpl implements CreatingOnDrag {
+
+    createAction(id: string): Action {
+        const edge: SEdge = {
+            id,
+            type: 'edge-new',
+            sourceId: this.id,
+            targetId: this.parent.id,
+        };
+        return CreateElementAction.create(edge, { containerId: this.root.id });
+    }
+
+    override canConnect(routable: SRoutableElementImpl, role: 'source' | 'target'): boolean {
+        return routable.type === 'edge-new'
+            && this.connections(this) === 0
+            && (routable.source instanceof SPortImpl)
+            && this.connections(routable.source) <= 1;
+    }
+
+    private connections(port: SPortImpl) {
+        return toArray(port.outgoingEdges).length + toArray(port.incomingEdges).length;
     }
 }
