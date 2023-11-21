@@ -14,4 +14,5 @@ Pre-built npm packages available from [npmjs](https://www.npmjs.com/package/spro
 
 ## References
 
-- [npm-dependency-graph](https://github.com/TypeFox/npm-dependency-graph/) &ndash; an example using sprotty-elk to display npm package dependencies.
+- [Example: view filtering](https://github.com/TypeFox/sprotty-view-filtering) &ndash; using filtering to efficiently navigate a large dataset of publications and citations
+- [Example: nested graphs](https://github.com/TypeFox/sprotty-nested-demo) &ndash; expanding nested subgraphs in-place to efficiently navigate a large project with TypeScript modules

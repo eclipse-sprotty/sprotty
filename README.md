@@ -41,7 +41,6 @@ The version history is documented in the [CHANGELOG](https://github.com/eclipse-
 
 ## References
 
-- [Example: DSL in the Cloud](http://github.com/TypeFox/theia-xtext-sprotty-example) &ndash; an example using Xtext, Theia and Sprotty to create a DSL workbench in the cloud
-- [Example: npm dependencies](https://github.com/TypeFox/npm-dependency-graph) &ndash; discover dependencies of npm packages
-- [Yangster](https://github.com/theia-ide/yang-vscode) a VS Code extension for the YANG language
-
+- [Example: view filtering](https://github.com/TypeFox/sprotty-view-filtering) &ndash; using filtering to efficiently navigate a large dataset of publications and citations
+- [Example: nested graphs](https://github.com/TypeFox/sprotty-nested-demo) &ndash; expanding nested subgraphs in-place to efficiently navigate a large project with TypeScript modules
+- [Yangster](https://github.com/TypeFox/yang-vscode) &ndash; a VS Code extension for the YANG language
