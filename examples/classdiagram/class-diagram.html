@@ -10,6 +10,20 @@
     <link rel="stylesheet" href="css/page.css">
     <!-- support Microsoft browsers -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dom4/3.0.0/dom4.js">
+    <script>
+        document.addEventListener("DOMContentLoaded", function toggleShortcuts(){
+            var isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0;
+            var mac = document.getElementById('mac');
+            var other = document.getElementById('other');
+            if (isMac) {
+                mac.style.display = 'block';
+                other.style.display = 'none';
+            } else {
+                mac.style.display = 'none';
+                other.style.display = 'block';
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -25,8 +39,16 @@
             <div class="col-md-12">
                 <div id="sprotty" class="sprotty"/>
             </div>
-            <div class="copyright">
-                &copy; 2023 <a href="https://www.typefox.io/">TypeFox GmbH</a>.
+            <div class="footer">
+                <div id="mac" class="shortcuts">
+                    <b>Fit to screen:</b> Cmd+Shift+F, <b>Center selected:</b> Cmd+Shift+C, <b>Export SVG:</b> Cmd+Shift+E
+                </div>
+                <div id="other" class="shortcuts" style="display: none;">
+                    <b>Fit to screen:</b> Ctrl+Shift+F, <b>Center selected:</b> Ctrl+Shift+C, <b>Export SVG:</b> Ctrl+Shift+E
+                </div>
+                <div class="copyright">
+                    &copy; 2023 <a href="https://www.typefox.io/">TypeFox GmbH</a>.
+                </div>
             </div>
         </div>
     </div>

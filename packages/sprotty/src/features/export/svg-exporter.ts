@@ -72,7 +72,8 @@ export class SvgExporter {
         docCopy.close();
         const svgElementNew = docCopy.getElementById(svgElementOrig.id)!;
         svgElementNew.removeAttribute('opacity');
-        this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity']);
+        // inline-size copied from sprotty-hidden svg shrinks the svg so it is not visible.
+        this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size']);
         svgElementNew.setAttribute('version', '1.1');
         const bounds = this.getBounds(root);
         svgElementNew.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
