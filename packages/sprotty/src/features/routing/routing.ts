@@ -72,6 +72,15 @@ export interface IEdgeRouter {
     route(edge: SRoutableElementImpl): RoutedPoint[]
 
     /**
+     * Finds the orthogonal intersection point between an edge and a given point in 2D space.
+     *
+     * @param edge - The edge to find the intersection point on.
+     * @param point - The point to find the intersection with.
+     * @returns The intersection point and its derivative on the respective edge segment.
+     */
+    findOrthogonalIntersection(edge: SRoutableElementImpl, point: Point): {point: Point, derivative: Point} | undefined
+
+    /**
      * Calculates a point on the edge
      *
      * @param t a value between 0 (sourceAnchor) and 1 (targetAnchor)

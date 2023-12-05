@@ -21,6 +21,7 @@ import { SRoutableElementImpl } from '../routing/model';
 export const edgeLayoutFeature = Symbol('edgeLayout');
 
 /**
+ * @deprecated Use EdgeLayoutable from sprotty-protocol instead
  * Feature extension interface for {@link edgeLayoutFeature}.
  */
 export interface EdgeLayoutable {
@@ -30,17 +31,22 @@ export interface EdgeLayoutable {
 export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): element is T & SChildElementImpl & BoundsAware & EdgeLayoutable {
     return element instanceof SChildElementImpl
         && element.parent instanceof SRoutableElementImpl
-        && checkEdgeLayoutable(element)
         && isBoundsAware(element)
         && element.hasFeature(edgeLayoutFeature);
 }
 
-function checkEdgeLayoutable(element: SChildElementImpl): element is SChildElementImpl & EdgeLayoutable {
+export function checkEdgePlacement(element: SChildElementImpl): element is SChildElementImpl & EdgeLayoutable {
     return 'edgePlacement' in element;
 }
 
+/**
+ * @deprecated Use EdgeSide from sprotty-protocol instead
+ */
 export type EdgeSide = 'left' | 'right' | 'top' | 'bottom' | 'on';
 
+/**
+ * @deprecated Use EdgePlacement from sprotty-protocol instead
+ */
 export class EdgePlacement extends Object {
     /**
      * true, if the label should be rotated to touch the edge tangentially
@@ -61,11 +67,20 @@ export class EdgePlacement extends Object {
      * space between label and edge/connected nodes
      */
     offset: number;
+
+    /**
+     * where should the label be moved when move feature is enabled.
+     * 'edge' means the label is moved along the edge, 'free' means the label is moved freely, 'none' means the label is not moved.
+     * Default is 'edge'.
+     */
+    moveMode?: 'edge' | 'free' | 'none';
+
 }
 
 export const DEFAULT_EDGE_PLACEMENT: EdgePlacement = {
     rotate: true,
     side: 'top',
     position: 0.5,
-    offset: 7
+    offset: 7,
+    moveMode: 'edge'
 };

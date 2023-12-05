@@ -23,44 +23,87 @@ import { setAttr } from "../../base/views/vnode-utils";
 import { SEdgeImpl } from "../../graph/sgraph";
 import { Orientation } from "../../utils/geometry";
 import { isAlignable, BoundsAware } from "../bounds/model";
-import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement } from "./model";
+import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement, checkEdgePlacement } from "./model";
 import { EdgeRouterRegistry } from "../routing/routing";
+import { TYPES } from "../../base/types";
+import { ILogger } from "../../utils/logging";
 
 @injectable()
 export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
 
     @inject(EdgeRouterRegistry) edgeRouterRegistry: EdgeRouterRegistry;
+    @inject(TYPES.ILogger) protected readonly logger: ILogger;
 
+    /**
+     * Decorates the vnode with the appropriate transformation based on the element's placement and bounds.
+     * @param vnode - The vnode to decorate.
+     * @param element - The SModelElementImpl to decorate.
+     * @returns The decorated vnode.
+     */
     decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (isEdgeLayoutable(element) && element.parent instanceof SEdgeImpl) {
             if (element.bounds !== Bounds.EMPTY) {
+                const actualBounds = element.bounds;
+                const hasOwnPlacement = checkEdgePlacement(element);
                 const placement = this.getEdgePlacement(element);
                 const edge = element.parent;
                 const position = Math.min(1, Math.max(0, placement.position));
                 const router = this.edgeRouterRegistry.get(edge.routerKind);
+                // point on edge derived from edgePlacement.position
                 const pointOnEdge = router.pointAt(edge, position);
-                const derivativeOnEdge = router.derivativeAt(edge, position);
                 let transform = '';
-                if (pointOnEdge && derivativeOnEdge) {
-                    transform += `translate(${pointOnEdge.x}, ${pointOnEdge.y})`;
-                    const angle = toDegrees(Math.atan2(derivativeOnEdge.y, derivativeOnEdge.x));
-                    if (placement.rotate) {
-                        let flippedAngle = angle;
-                        if (Math.abs(angle) > 90) {
-                             if (angle < 0)
-                                flippedAngle += 180;
-                            else if (angle > 0)
-                                flippedAngle -= 180;
+                // Calculation of potential free movement. Just add the actual bounds to the point on edge.
+                const freeTransform = `translate(${(pointOnEdge?.x ?? 0) + actualBounds.x}, ${(pointOnEdge?.y ?? 0) + actualBounds.y})`;
+                // Check if edgeplacement is set. If not the label is freely movable if movefeature is enabled for such labels.
+                if (hasOwnPlacement) {
+                    if (pointOnEdge) {
+                        let derivativeOnEdge: Point | undefined;
+                        // handle different move modes
+                        if (placement.moveMode && placement.moveMode !== 'edge') {
+                            // get the relative position on segment
+                            derivativeOnEdge = router.derivativeAt(edge, position);
+                            // handle free move mode
+                            if (placement.moveMode === 'free') {
+                                transform += freeTransform;
+                            } else {
+                                // The moveMode is neither 'edge' nor 'free' so it is 'none'. Hence the label is not movable and gets the fixed point on edge.
+                                transform += `translate(${pointOnEdge.x}, ${pointOnEdge.y})`;
+                            }
+                        } else {
+                            // no movemode was set or set to 'edge': label movement is constrained to the edge
+                            // Find orthogonal intersection point on edge and use it as the label's position
+                            const orthogonalPoint = router.findOrthogonalIntersection(edge, Point.add(pointOnEdge, actualBounds));
+                            if (orthogonalPoint) {
+                                derivativeOnEdge = orthogonalPoint.derivative;
+                                transform += `translate(${orthogonalPoint.point.x}, ${orthogonalPoint.point.y})`;
+                            }
                         }
-                        transform += ` rotate(${flippedAngle})`;
-                        const alignment = this.getRotatedAlignment(element, placement, flippedAngle !== angle);
-                        transform += ` translate(${alignment.x}, ${alignment.y})`;
-                    } else {
-                        const alignment = this.getAlignment(element, placement, angle);
-                        transform += ` translate(${alignment.x}, ${alignment.y})`;
+                        if (derivativeOnEdge) {
+                            const angle = toDegrees(Math.atan2(derivativeOnEdge.y, derivativeOnEdge.x));
+                            if (placement.rotate) {
+                                let flippedAngle = angle;
+                                // Flip angle if it exceeds 90 degrees
+                                if (Math.abs(angle) > 90) {
+                                    if (angle < 0)
+                                        flippedAngle += 180;
+                                    else if (angle > 0)
+                                        flippedAngle -= 180;
+                                }
+                                transform += ` rotate(${flippedAngle})`;
+                                // Get rotated alignment based on flipped angle
+                                const alignment = this.getRotatedAlignment(element, placement, flippedAngle !== angle);
+                                transform += ` translate(${alignment.x}, ${alignment.y})`;
+                            } else {
+                                // Get alignment based on angle
+                                const alignment = this.getAlignment(element, placement, angle);
+                                transform += ` translate(${alignment.x}, ${alignment.y})`;
+                            }
+                        }
                     }
-                    setAttr(vnode, 'transform', transform);
+                } else {
+                    transform += freeTransform;
                 }
+                setAttr(vnode, 'transform', transform);
             }
         }
         return vnode;

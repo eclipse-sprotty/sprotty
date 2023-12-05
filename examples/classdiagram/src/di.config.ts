@@ -21,7 +21,7 @@ import {
     SRoutingHandleView, PreRenderedElementImpl, HtmlRootImpl, SGraphImpl, configureModelElement, SLabelImpl,
     SCompartmentImpl, SEdgeImpl, SButtonImpl, SRoutingHandleImpl, RevealNamedElementActionProvider,
     CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
-    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView
+    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView, moveFeature, selectFeature
 } from 'sprotty';
 import edgeIntersectionModule from 'sprotty/lib/features/edge-intersection/di.config';
 import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
@@ -63,7 +63,7 @@ export default (containerId: string) => {
             enable: [editLabelFeature]
         });
         configureModelElement(context, 'label:text', PropertyLabel, SLabelView, {
-            enable: [editLabelFeature]
+            enable: [moveFeature, selectFeature]
         });
         configureModelElement(context, 'comp:comp', SCompartmentImpl, SCompartmentView);
         configureModelElement(context, 'comp:header', SCompartmentImpl, SCompartmentView);

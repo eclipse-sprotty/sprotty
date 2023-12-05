@@ -207,3 +207,45 @@ export interface ForeignObjectElement extends ShapedPreRenderedElement {
     /** The namespace to be assigned to the elements inside of the `foreignObject`. */
     namespace: string
 }
+
+/**
+ * Feature extension interface for {@link edgeLayoutFeature}.
+ */
+export interface EdgeLayoutable {
+    edgePlacement: EdgePlacement
+}
+
+export type EdgeSide = 'left' | 'right' | 'top' | 'bottom' | 'on';
+
+/**
+ * Each label attached to an edge can be placed on the edge in different ways.
+ * With this interface the placement of such a single label is defined.
+ */
+export interface EdgePlacement {
+    /**
+     * true, if the label should be rotated to touch the edge tangentially
+     */
+    rotate: boolean;
+
+    /**
+     * where is the label relative to the line's direction
+     */
+    side: EdgeSide;
+
+    /**
+     * between 0 (source anchor) and 1 (target anchor)
+     */
+    position: number;
+
+    /**
+     * space between label and edge/connected nodes
+     */
+    offset: number;
+
+    /**
+     * where should the label be moved when move feature is enabled.
+     * 'edge' means the label is moved along the edge, 'free' means the label is moved freely, 'none' means the label can not be moved.
+     * Default is 'edge'.
+     */
+    moveMode?: 'edge' | 'free' | 'none';
+}

@@ -88,6 +88,41 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
 
     protected abstract getOptions(edge: SRoutableElementImpl): LinearRouteOptions;
 
+    findOrthogonalIntersection(edge: SRoutableElementImpl, point: Point): {point: Point, derivative: Point} {
+        const calcOrthogonalIntersectionForSegment = (p1: Point, p2: Point) => {
+            // Calculate the direction vector d of the edge and vector pq from p1 to point q
+            const d: Point = Point.subtract(p2, p1);
+            const pq: Point = Point.subtract(point, p1);
+
+            // Calculate the scalar t for the direction vector d
+            const t: number = Point.dotProduct(pq, d) / Point.dotProduct(d, d);
+
+            // Check if the intersection point lies on the edge segment
+            if (t >= 0 && t <= 1) {
+                // Calculate and return the intersection point x
+                return Point.linear(p1, p2, t);
+            } else if (t < 0) {
+                return p1;
+            } else {
+                return p2;
+            }
+        };
+
+        // Calculate the intersection for each segment of the edge and return the closest one
+        const routedPoints = this.route(edge);
+        let intersectionPoint: Point = routedPoints[0];
+        let index = 0;
+        for (let i = 0; i < routedPoints.length - 1; ++i) {
+            const intersection = calcOrthogonalIntersectionForSegment(routedPoints[i], routedPoints[i + 1]);
+            if (Point.euclideanDistance(point, intersection) < Point.euclideanDistance(point, intersectionPoint)) {
+                intersectionPoint = intersection;
+                index = i;
+            }
+        }
+        const derivative = Point.subtract(routedPoints[index + 1], routedPoints[index]);
+        return {point: intersectionPoint, derivative};
+    }
+
     pointAt(edge: SRoutableElementImpl, t: number): Point | undefined {
         const segments = this.calculateSegment(edge, t);
         if (!segments)
