@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { ActionHandlerRegistry, LocalModelSource, Expandable } from 'sprotty';
+import { ActionHandlerRegistry, LocalModelSource, Expandable, EdgeLayoutable } from 'sprotty';
 import {
     Action, CollapseExpandAction, CollapseExpandAllAction, SCompartment, SEdge, SGraph, SLabel,
     SModelElement, SModelIndex, SModelRoot, SNode
@@ -400,14 +400,15 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         rotate: false
                     }
                 },
-                <SLabel> {
+                <SLabel & EdgeLayoutable> {
                     id: 'edge0_label_right',
                     type: 'label:text',
                     text: 'right',
                     edgePlacement:  {
                         position: 0.7,
                         side: 'right',
-                        rotate: false
+                        rotate: false,
+                        moveMode: 'edge' // optional, because it's the default anyway
                     }
                 }
             ]
@@ -456,13 +457,15 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         side: 'left'
                     }
                 },
-                <SLabel> {
+                <SLabel & EdgeLayoutable> {
                     id: 'edge1_label_right',
                     type: 'label:text',
                     text: 'right',
                     edgePlacement:  {
                         position: 1,
-                        side: 'right'
+                        rotate: true,
+                        side: 'right',
+                        moveMode: 'edge'
                     }
                 }
             ]
@@ -480,7 +483,49 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 { x: 390, y: 120 },
                 { x: 450, y: 40 }
             ],
-            children: []
+            children: [
+                <SLabel & EdgeLayoutable> {
+                    id: 'edge2_label_free1',
+                    type: 'label:text',
+                    text: 'free1',
+                    edgePlacement:  {
+                        position: 0.9,
+                        offset: 10,
+                        side: 'top',
+                        rotate: false,
+                        moveMode: 'free'
+                    }
+                },
+                <SLabel & EdgeLayoutable> {
+                    id: 'edge2_label_edge',
+                    type: 'label:text',
+                    text: 'edge',
+                    edgePlacement:  {
+                        position: 0.2,
+                        offset: 0,
+                        side: 'right',
+                        rotate: true,
+                        moveMode: 'edge'
+                    }
+                },
+                <SLabel & EdgeLayoutable> {
+                    id: 'edge2_label_fix',
+                    type: 'label:text',
+                    text: 'fix',
+                    edgePlacement:  {
+                        position: 0.3,
+                        offset: 10,
+                        side: 'left',
+                        rotate: true,
+                        moveMode: 'none'
+                    }
+                },
+                <SLabel> {
+                    id: 'edge2_label_free2',
+                    type: 'label:text',
+                    text: 'free2'
+                }
+            ]
         } as SEdge;
         const graph: SGraph = {
             id: 'graph',

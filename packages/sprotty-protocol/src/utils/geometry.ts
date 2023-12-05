@@ -150,6 +150,16 @@ export namespace Point {
     export function maxDistance(a: Point, b: Point): number {
         return Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
     }
+
+    /**
+     * Returns the dot product of two points.
+     * @param {Point} a - First point
+     * @param {Point} b - Second point
+     * @returns {number} The dot product
+     */
+    export function dotProduct(a: Point, b: Point): number {
+        return a.x * b.x + a.y * b.y;
+    }
 }
 
 /**
