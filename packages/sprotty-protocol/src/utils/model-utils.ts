@@ -84,13 +84,15 @@ export function getSubType(schema: { type: string }): string {
  * `SModelIndex` might be more effective.
  */
 export function findElement(parent: SModelElement, elementId: string): SModelElement | undefined {
-    if (parent.id === elementId)
+    if (parent.id === elementId) {
         return parent;
-    if (parent.children !== undefined) {
+    }
+    if (parent.children) {
         for (const child of parent.children) {
             const result = findElement(child, elementId);
-            if (result !== undefined)
+            if (result !== undefined) {
                 return result;
+            }
         }
     }
     return undefined;
@@ -105,7 +107,7 @@ export class SModelIndex {
     private readonly id2element: Map<string, SModelElement> = new Map();
     private id2parent: Map<string, SModelElement> = new Map();
 
-    add(element: SModelElement): void {
+    add(element: SModelElement): this {
         if (!element.id) {
             throw new Error("Model element has no ID.");
         } else if (this.contains(element)) {
@@ -118,9 +120,10 @@ export class SModelIndex {
                 this.id2parent.set(child.id, element);
             }
         }
+        return this;
     }
 
-    remove(element: SModelElement): void {
+    remove(element: SModelElement): this {
         this.id2element.delete(element.id);
         if (Array.isArray(element.children)) {
             for (const child of element.children) {
@@ -128,6 +131,7 @@ export class SModelIndex {
                 this.remove(child as any);
             }
         }
+        return this;
     }
 
     contains(element: SModelElement): boolean {
