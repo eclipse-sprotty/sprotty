@@ -25,9 +25,10 @@ export type DiagramOptions = JsonMap;
  * The current state captured by a `DiagramServer`.
  */
 export interface DiagramState {
-    options?: DiagramOptions;
-    currentRoot: SModelRoot;
-    revision: number;
+    options?: DiagramOptions
+    currentRoot: SModelRoot
+    revision: number
+    index?: SModelIndex
 }
 
 /**

@@ -18,7 +18,7 @@ import { Action } from './actions';
 import { DiagramServer } from './diagram-server';
 import { DiagramState } from './diagram-services';
 
-export type ServerActionHandler<A extends Action = Action> = (action: A, state: DiagramState, server: DiagramServer) => Promise<void>;
+export type ServerActionHandler<A extends Action = Action> = (action: A, state: DiagramState, server: DiagramServer) => void | Promise<void>;
 
 /**
  * Use this service to register handlers to specific actions. The `DiagramServer` queries this registry

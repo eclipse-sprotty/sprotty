@@ -161,9 +161,9 @@ export class DiagramServer {
         // Find a matching action handler in the registry
         const handlers = this.actionHandlerRegistry?.getHandler(action.kind);
         if (handlers && handlers.length === 1) {
-            return handlers[0](action, this.state, this);
+            return handlers[0](action, this.state, this) ?? Promise.resolve();
         } else if (handlers && handlers.length > 1) {
-            return Promise.all(handlers.map(h => h(action, this.state, this))) as Promise<any>;
+            return Promise.all(handlers.map(h => h(action, this.state, this) ?? Promise.resolve())) as Promise<any>;
         }
         // If no handler is registered, call one of the default handling methods
         switch (action.kind) {
