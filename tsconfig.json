@@ -7,9 +7,6 @@
             "ES2017",
             "DOM"
         ],
-        "types": [
-            "reflect-metadata"
-        ],
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,

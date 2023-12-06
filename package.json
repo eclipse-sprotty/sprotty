@@ -4,30 +4,37 @@
     "prepare": "yarn run clean && yarn run build",
     "clean": "lerna run clean",
     "build": "tsc --build tsconfig.build.json && yarn --cwd examples build",
-    "watch": "concurrently -n sprotty,examples -c blue,green, \"yarn --cwd examples watch\" \"tsc -b tsconfig.build.json -w\"",
+    "watch:tsc": "tsc --build --watch tsconfig.build.json",
+    "watch": "concurrently -n sprotty,examples -c blue,green, \"yarn --cwd examples watch\" \"yarn run watch:tsc\"",
     "lint": "eslint {**/src/**/*.ts,**/src/**/*.tsx}",
     "lint:fix": "eslint {**/src/**/*.ts,**/src/**/*.tsx} --fix",
-    "test": "vitest run",
-    "coverage": "vitest run --coverage",
+    "test": "vitest run --config vite.config.mts",
+    "coverage": "vitest run --coverage --config vite.config.mts",
     "publish:prepare": "lerna version --ignore-scripts --yes --no-push",
     "publish:latest": "lerna publish from-git --yes --no-push",
     "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
   },
   "devDependencies": {
+    "@types/node": "~18.19.3",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
+    "@vitest/coverage-v8": "~1.0.2",
     "eslint": "^8.53.0",
     "concurrently": "~8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-no-null": "^1.0.2",
     "lerna": "^7.3.0",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "~0.1.14",
     "semver": "^7.5.4",
     "shx": "^0.3.4",
     "typescript": "~5.2.2",
-    "@vitest/coverage-v8": "~0.34.6",
-    "vitest": "~0.34.6"
+    "vite": "~5.0.6",
+    "vitest": "~1.0.2"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "1.22.21"
   },
   "workspaces": [
     "packages/*",

@@ -17,16 +17,24 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+    optimizeDeps: {
+        esbuildOptions: {
+            tsconfig: 'tsconfig.json'
+        }
+    },
     test: {
+        pool: 'threads',
+        poolOptions: {
+            threads: {
+                minThreads: 1,
+                maxThreads: 1
+            }
+        },
         coverage: {
             provider: 'v8',
             reporter: ['text', 'html'],
             include: ['packages/*'],
         },
-        deps: {
-            interopDefault: true
-        },
-        include: ['**/*.spec.ts', '**/*.spec.tsx'],
-        globals: true,
+        include: ['**/*.spec.ts', '**/*.spec.tsx']
     }
 });

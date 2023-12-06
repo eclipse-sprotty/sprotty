@@ -37,6 +37,10 @@
         "@types/yeoman-test": "^4.0.4",
         "yeoman-test": "^7.4.0"
     },
+    "volta": {
+        "node": "18.19.0",
+        "yarn": "1.22.21"
+    },
     "scripts": {
         "clean": "shx rm -fr app *.tsbuildinfo",
         "build": "tsc",

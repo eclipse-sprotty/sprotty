@@ -16,7 +16,7 @@
 
 "use strict";
 
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { VNode, h } from 'snabbdom';
 import virtualize from './virtualize';
 

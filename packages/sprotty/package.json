@@ -22,19 +22,24 @@
     "directory": "packages/sprotty"
   },
   "peerDependencies": {
-    "inversify": "^6.0.1"
+    "inversify": "~6.0.2"
   },
   "dependencies": {
     "autocompleter": "^9.1.0",
     "file-saver": "^2.0.5",
+    "inversify": "~6.0.2",
     "snabbdom": "^3.5.1",
     "sprotty-protocol": "^1.0.0",
     "tinyqueue": "^2.0.3"
   },
   "devDependencies": {
-    "happy-dom": "^12.10.3",
     "@types/file-saver": "^2.0.5",
+    "happy-dom": "^12.10.3",
     "snabbdom-to-html": "^7.1.0"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "1.22.21"
   },
   "scripts": {
     "clean": "shx rm -fr lib artifacts *.tsbuildinfo",

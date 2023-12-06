@@ -3,9 +3,6 @@
     "compilerOptions": {
       "target": "ES2022",
       "module": "commonjs",
-      "types": [
-        "reflect-metadata"
-      ],
       "esModuleInterop": true,
       "sourceMap": true,
       "experimentalDecorators": true,

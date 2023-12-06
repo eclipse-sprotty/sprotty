@@ -1,12 +1,16 @@
-// this file is required for VSCode to work properly
 {
   "extends": "./tsconfig.src.json",
   "compilerOptions": {
+    "rootDir": "src",
     "noEmit": true,
-    "rootDir": "."
+    "skipLibCheck": true
   },
+  "references": [{
+    "path": "./tsconfig.src.json"
+  }],
   "include": [
-    "src/**/*"
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ],
   "exclude": [
     "lib",
