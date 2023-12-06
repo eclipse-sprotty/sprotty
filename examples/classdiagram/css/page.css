@@ -14,11 +14,23 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-.copyright {
+
+.footer {
     margin-top: 10px;
     text-align: right;
     font-size: 10px;
     color: #888;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.shortcuts {
+    text-align: left;
+}
+
+.copyright {
+    text-align: right;
 }
 
 .help {

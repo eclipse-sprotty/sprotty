@@ -50,12 +50,20 @@ export class SvgExporter {
 
     export(root: SModelRootImpl, request?: RequestAction<ExportSvgAction>): void {
         if (typeof document !== 'undefined') {
-            const div = document.getElementById(this.options.hiddenDiv);
-            if (div !== null && div.firstElementChild && div.firstElementChild.tagName === 'svg') {
-                const svgElement = div.firstElementChild as SVGSVGElement;
-                const svg = this.createSvg(svgElement, root);
-                this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : ''));
+            const hiddenDiv = document.getElementById(this.options.hiddenDiv);
+            if (hiddenDiv === null) {
+                this.log.warn(this, `Element with id ${this.options.hiddenDiv} not found. Nothing to export.`);
+                return;
+
             }
+
+            const svgElement = hiddenDiv.querySelector('svg');
+            if (svgElement === null) {
+                this.log.warn(this, `No svg element found in ${this.options.hiddenDiv} div. Nothing to export.`);
+                return;
+            }
+            const svg = this.createSvg(svgElement, root);
+            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : ''));
         }
     }
 
@@ -70,9 +78,10 @@ export class SvgExporter {
         docCopy.open();
         docCopy.write(svgCopy);
         docCopy.close();
-        const svgElementNew = docCopy.getElementById(svgElementOrig.id)!;
+        const svgElementNew = docCopy.querySelector('svg')!;
         svgElementNew.removeAttribute('opacity');
-        this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity']);
+        // inline-size copied from sprotty-hidden svg shrinks the svg so it is not visible.
+        this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size']);
         svgElementNew.setAttribute('version', '1.1');
         const bounds = this.getBounds(root);
         svgElementNew.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
@@ -81,13 +90,13 @@ export class SvgExporter {
         return svgCode;
     }
 
-    protected copyStyles(source: Element, target: Element, skipedProperties: string[]) {
+    protected copyStyles(source: Element, target: Element, skippedProperties: string[]) {
         const sourceStyle = getComputedStyle(source);
         const targetStyle = getComputedStyle(target);
         let diffStyle = '';
         for (let i = 0; i < sourceStyle.length; i++) {
             const key = sourceStyle[i];
-            if (skipedProperties.indexOf(key) === -1) {
+            if (skippedProperties.indexOf(key) === -1) {
                 const value = sourceStyle.getPropertyValue(key);
                 if (targetStyle.getPropertyValue(key) !== value) {
                     diffStyle += key + ":" + value + ";";
@@ -96,7 +105,7 @@ export class SvgExporter {
         }
         if (diffStyle !== '')
             target.setAttribute('style', diffStyle);
-        // IE doesn't retrun anything on source.children
+        // IE doesn't return anything on source.children
         for (let i = 0; i < source.childNodes.length; ++i) {
             const sourceChild = source.childNodes[i];
             const targetChild = target.childNodes[i];
