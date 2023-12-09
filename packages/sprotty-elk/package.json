@@ -25,7 +25,11 @@
     "sprotty-protocol": "^1.0.0"
   },
   "optionalDependencies": {
-    "inversify": "^6.0.1"
+    "inversify": "~6.0.2"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "1.22.21"
   },
   "scripts": {
     "clean": "shx rm -fr lib artifacts *.tsbuildinfo",

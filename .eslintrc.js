@@ -10,7 +10,8 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     ignorePatterns: [
         '**/{node_modules,lib}',
-        '**/sprotty-local-template/**/*'
+        '**/sprotty-local-template/**/*',
+        '**/lib/**/src/**/*'
     ],
     parserOptions: {
         tsconfigRootDir: __dirname,

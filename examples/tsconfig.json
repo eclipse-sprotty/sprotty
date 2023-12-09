@@ -1,19 +1,22 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": [
-      "reflect-metadata",
-      "webpack-env"
-    ],
-    "composite": false,
-    "declaration": false,
-    "declarationMap": false
+    "outDir": "lib",
+    "rootDir": "."
   },
   "include": [
-    "./server/**/*.ts"
+    "**/src/**/*.ts",
+    "**/src/**/*.tsx",
+    "server/**/*.ts"
   ],
   "exclude": [
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
+    "lib",
+    "node_modules",
+    "resources"
+  ],
+  "references": [
+    { "path": "../packages/sprotty-protocol/tsconfig.src.json" },
+    { "path": "../packages/sprotty/tsconfig.src.json" },
+    { "path": "../packages/sprotty-elk/tsconfig.src.json" },
   ]
 }

@@ -2,13 +2,16 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "app"
+    "outDir": "lib"
   },
   "include": [
-      "src"
+    "**/*.ts",
+    "**/*.tsx",
   ],
   "exclude": [
-      "app",
-      "node_modules"
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "lib",
+    "node_modules"
   ]
 }

@@ -55,7 +55,7 @@ wsServer.on('connection', socket => {
     });
 });
 
-serverApp.use(express.static(path.join(__dirname, '..')));
+serverApp.use(express.static(path.join(__dirname, '../..')));
 
 const server = serverApp.listen(8080, () => {
     console.log('Sprotty examples are available at http://localhost:8080');

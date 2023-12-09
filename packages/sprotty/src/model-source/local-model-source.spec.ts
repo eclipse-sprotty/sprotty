@@ -21,12 +21,12 @@ import { Container, injectable } from "inversify";
 import { Action, ComputedBoundsAction, isResponseAction, RequestAction, RequestBoundsAction, ResponseAction, SetModelAction, UpdateModelAction } from 'sprotty-protocol/lib/actions';
 import { Deferred } from 'sprotty-protocol/lib/utils/async';
 import { TYPES } from "../base/types";
-import { SModelRootSchema } from "../base/model/smodel";
 import { ViewerOptions, overrideViewerOptions } from "../base/views/viewer-options";
 import { IActionDispatcher } from "../base/actions/action-dispatcher";
 import { LocalModelSource } from "./local-model-source";
 import { ComputedBoundsApplicator } from "./model-source";
 import defaultContainerModule from "../base/di.config";
+import { SModelElement } from "sprotty-protocol";
 
 describe('LocalModelSource', () => {
 
@@ -81,12 +81,12 @@ describe('LocalModelSource', () => {
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
-        const root1: SModelRootSchema = {
+        const root1: SModelElement = {
             type: 'root',
             id: 'root'
         };
         modelSource.setModel(root1);
-        const root2: SModelRootSchema = {
+        const root2: SModelElement = {
             type: 'root',
             id: 'root',
             children: [
@@ -112,7 +112,7 @@ describe('LocalModelSource', () => {
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
-        const root1: SModelRootSchema = {
+        const root1: SModelElement = {
             type: 'root',
             id: 'root',
             children: [
@@ -131,7 +131,7 @@ describe('LocalModelSource', () => {
                 newSize: { width: 20, height: 20 }
             }
         ], { requestId: dispatcher.requests[0].requestId }));
-        const root2: SModelRootSchema = {
+        const root2: SModelElement = {
             type: 'root',
             id: 'root',
             children: [
@@ -256,13 +256,13 @@ describe('LocalModelSource', () => {
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
-        const root1: SModelRootSchema = {
+        const root1: SModelElement = {
             type: 'root',
             id: 'root'
         };
         await modelSource.setModel(root1);
 
-        const root2: SModelRootSchema = {
+        const root2: SModelElement = {
             type: 'root',
             id: 'root',
             children: [{ type: 'blob', id: 'foo' }]
@@ -277,7 +277,7 @@ describe('LocalModelSource', () => {
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
-        const root1: SModelRootSchema = {
+        const root1: SModelElement = {
             type: 'root',
             id: 'root',
             children: [{ type: 'node', id: 'child1' }]
@@ -293,7 +293,7 @@ describe('LocalModelSource', () => {
         ], { requestId: dispatcher.requests[0].requestId }));
         await promise1;
 
-        const root2: SModelRootSchema = {
+        const root2: SModelElement = {
             type: 'root',
             id: 'root',
             children: [{ type: 'node', id: 'bar' }]

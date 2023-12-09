@@ -1,3 +1,2 @@
-/resources/
-/server/*.js
-/server/*.js.map
+/resources
+/lib

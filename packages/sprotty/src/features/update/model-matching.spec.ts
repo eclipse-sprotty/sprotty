@@ -16,17 +16,17 @@
 
 import "reflect-metadata";
 import { expect, describe, it } from 'vitest';
-import { SModelRootSchema } from "../../base/model/smodel";
+import { SModelElement } from 'sprotty-protocol';
 import { ModelMatcher } from "./model-matching";
 
 describe('ModelMatcher', () => {
     it('finds new elements', () => {
         const modelMatcher = new ModelMatcher();
-        const left: SModelRootSchema = {
+        const left: SModelElement = {
             type: 't',
             id: 'root'
         };
-        const right: SModelRootSchema = {
+        const right: SModelElement = {
             type: 't',
             id: 'root',
             children: [
@@ -62,7 +62,7 @@ describe('ModelMatcher', () => {
 
     it('finds deleted elements', () => {
         const modelMatcher = new ModelMatcher();
-        const left: SModelRootSchema = {
+        const left: SModelElement = {
             type: 't',
             id: 'root',
             children: [
@@ -76,7 +76,7 @@ describe('ModelMatcher', () => {
                 }
             ]
         };
-        const right: SModelRootSchema = {
+        const right: SModelElement = {
             type: 't',
             id: 'root'
         };
@@ -102,7 +102,7 @@ describe('ModelMatcher', () => {
 
     it('matches elements with equal id', () => {
         const modelMatcher = new ModelMatcher();
-        const left: SModelRootSchema = {
+        const left: SModelElement = {
             type: 't',
             id: 'root',
             children: [
@@ -118,7 +118,7 @@ describe('ModelMatcher', () => {
                 }
             ]
         };
-        const right: SModelRootSchema = {
+        const right: SModelElement = {
             type: 't',
             id: 'root',
             children: [
