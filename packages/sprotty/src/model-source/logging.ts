@@ -16,7 +16,7 @@
 
 import { injectable, inject } from 'inversify';
 import { LoggingAction } from 'sprotty-protocol/lib/actions';
-import { ILogger, LogLevel } from '../utils/logging';
+import { ILogger, LogLevel, NullLogger } from '../utils/logging';
 import { TYPES } from '../base/types';
 import { ModelSource } from './model-source';
 
@@ -28,6 +28,13 @@ export class ForwardingLogger implements ILogger {
 
     @inject(TYPES.ModelSourceProvider) protected modelSourceProvider: () => Promise<ModelSource>;
     @inject(TYPES.LogLevel) public logLevel: LogLevel;
+
+    condition(condition: boolean): ILogger {
+        if (condition)
+            return this;
+        else
+            return new NullLogger();
+    }
 
     error(thisArg: any, message: string, ...params: any[]): void {
         if (this.logLevel >= LogLevel.error)

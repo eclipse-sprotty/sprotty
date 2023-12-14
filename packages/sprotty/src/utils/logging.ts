@@ -21,6 +21,8 @@ import { ViewerOptions } from "../base/views/viewer-options";
 export interface ILogger {
     logLevel: LogLevel
 
+    condition(condition: boolean): ILogger
+
     error(thisArg: any, message: string, ...params: any[]): void
     warn(thisArg: any, message: string, ...params: any[]): void
     info(thisArg: any, message: string, ...params: any[]): void
@@ -33,6 +35,10 @@ export enum LogLevel { none = 0, error = 1, warn = 2, info = 3, log = 4 }
 export class NullLogger implements ILogger {
     logLevel: LogLevel = LogLevel.none;
 
+    condition(condition: boolean): ILogger {
+        return this;
+    }
+
     error(thisArg: any, message: string, ...params: any[]): void {}
     warn(thisArg: any, message: string, ...params: any[]): void {}
     info(thisArg: any, message: string, ...params: any[]): void {}
@@ -44,6 +50,13 @@ export class ConsoleLogger implements ILogger {
 
     @inject(TYPES.LogLevel) public logLevel: LogLevel = LogLevel.log;
     @inject(TYPES.ViewerOptions) protected viewOptions: ViewerOptions = { baseDiv: '' } as ViewerOptions;
+
+    condition(condition: boolean): ILogger {
+        if (condition)
+            return this;
+        else
+            return new NullLogger();
+    }
 
     error(thisArg: any, message: string, ...params: any[]): void {
         if (this.logLevel >= LogLevel.error)
