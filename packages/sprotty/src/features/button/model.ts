@@ -18,6 +18,9 @@ import { SShapeElement } from 'sprotty-protocol';
 import { boundsFeature, layoutableChildFeature, SShapeElementImpl } from '../bounds/model';
 import { fadeFeature } from '../fade/model';
 
+/**
+ * @deprecated Use SButton from `sprotty-protocol` instead.
+ */
 export interface SButtonSchema extends SShapeElement {
     pressed: boolean
     enabled: boolean

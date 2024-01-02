@@ -55,10 +55,10 @@ export interface LayoutableChild extends BoundsAware {
 }
 
 /**
+ * Feature extension interface for {@link alignFeature}.
  * Used to adjust elements whose bounding box is not at the origin, e.g.
  * labels, or pre-rendered SVG figures.
- *
- * Feature extension interface for {@link alignFeature}.
+ * @deprecated use the definition from `sprotty-protocol` instead.
  */
 export interface Alignable {
     alignment: Point

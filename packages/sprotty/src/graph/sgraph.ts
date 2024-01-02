@@ -15,19 +15,20 @@
  ********************************************************************************/
 
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
+import { Alignable, EdgePlacement, Fadeable, Hoverable, Selectable } from 'sprotty-protocol/lib/model';
 import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel';
 import {
-    Alignable, alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
     ModelLayoutOptions, SShapeElementImpl
 } from '../features/bounds/model';
-import { edgeLayoutFeature, EdgePlacement } from '../features/edge-layout/model';
+import { edgeLayoutFeature } from '../features/edge-layout/model';
 import { deletableFeature } from '../features/edit/delete';
 import { editFeature } from '../features/edit/model';
-import { Fadeable, fadeFeature } from '../features/fade/model';
-import { Hoverable, hoverFeedbackFeature, popupFeature } from '../features/hover/model';
+import { fadeFeature } from '../features/fade/model';
+import { hoverFeedbackFeature, popupFeature } from '../features/hover/model';
 import { moveFeature } from '../features/move/model';
 import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model';
-import { Selectable, selectFeature } from '../features/select/model';
+import { selectFeature } from '../features/select/model';
 import { ViewportRootElementImpl } from '../features/viewport/viewport-root';
 import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
 

@@ -20,6 +20,7 @@ export const hoverFeedbackFeature = Symbol('hoverFeedbackFeature');
 
 /**
  * Feature extension interface for {@link hoverFeedbackFeature}.
+ * @deprecated Use the definition from `sprotty-protocol` instead.
  */
 export interface Hoverable {
     hoverFeedback: boolean

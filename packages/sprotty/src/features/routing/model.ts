@@ -14,13 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Hoverable, Selectable } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel';
 import { FluentIterable } from '../../utils/iterable';
 import { SShapeElementImpl } from '../bounds/model';
 import { deletableFeature } from '../edit/delete';
-import { Selectable, selectFeature } from '../select/model';
-import { Hoverable, hoverFeedbackFeature } from '../hover/model';
+import { selectFeature } from '../select/model';
+import { hoverFeedbackFeature } from '../hover/model';
 import { moveFeature } from '../move/model';
 
 export abstract class SRoutableElementImpl extends SChildElementImpl {

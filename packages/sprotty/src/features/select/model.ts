@@ -20,6 +20,7 @@ export const selectFeature = Symbol('selectFeature');
 
 /**
  * Feature extension interface for {@link selectFeature}.
+ * @deprecated Use the definition from `sprotty-protocol` instead.
  */
 export interface Selectable {
     selected: boolean

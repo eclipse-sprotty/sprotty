@@ -14,14 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement as SModelElementSchema, SModelRoot as SModelRootSchema } from 'sprotty-protocol/lib/model';
-import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelRootImpl, SChildElementImpl } from "../base/model/smodel";
-import { BoundsAware, boundsFeature, Alignable, alignFeature, isBoundsAware } from "../features/bounds/model";
-import { Locateable, moveFeature } from "../features/move/model";
-import { Selectable, selectFeature } from "../features/select/model";
+import { Alignable, Selectable, SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SModelRootImpl, SChildElementImpl } from '../base/model/smodel';
+import { BoundsAware, boundsFeature, alignFeature, isBoundsAware } from '../features/bounds/model';
+import { Locateable, moveFeature } from '../features/move/model';
+import { selectFeature } from '../features/select/model';
 import { SNodeImpl, SPortImpl } from '../graph/sgraph';
-import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from "../features/routing/anchor";
+import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from '../features/routing/anchor';
 
 /**
  * A node that is represented by a circle.
@@ -73,7 +73,7 @@ export class RectangularPort extends SPortImpl {
  *
  * @deprecated Use `HtmlRoot` from `sprotty-protocol` instead.
  */
-export interface HtmlRootSchema extends SModelRootSchema {
+export interface HtmlRootSchema extends SModelRoot {
     classes?: string[]
 }
 
@@ -92,7 +92,7 @@ export const HtmlRoot = HtmlRootImpl;
  *
  * @deprecated Use `PreRenderedElement` from `sprotty-protocol` instead.
  */
-export interface PreRenderedElementSchema extends SModelElementSchema {
+export interface PreRenderedElementSchema extends SModelElement {
     code: string
 }
 

@@ -14,9 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, Projectable, LocalModelSource } from 'sprotty';
+import { TYPES, LocalModelSource } from 'sprotty';
 import createContainer from './di.config';
-import { ForeignObjectElement, SShapeElement, ShapedPreRenderedElement, ViewportRootElement } from 'sprotty-protocol';
+import {
+    ForeignObjectElement, SShapeElement, ShapedPreRenderedElement, ViewportRootElement, Projectable
+} from 'sprotty-protocol';
 
 function loadFile(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {

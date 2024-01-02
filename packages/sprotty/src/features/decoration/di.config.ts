@@ -16,13 +16,13 @@
 
 import { configureModelElement } from "../../base/views/view";
 import { ContainerModule } from "inversify";
-import { SIssueMarker } from "./model";
+import { SIssueMarkerImpl } from "./model";
 import { IssueMarkerView } from "./views";
 import { TYPES } from "../../base/types";
 import { DecorationPlacer } from "./decoration-placer";
 
 const decorationModule = new ContainerModule((bind, _unbind, isBound)  => {
-    configureModelElement({ bind, isBound }, 'marker', SIssueMarker, IssueMarkerView);
+    configureModelElement({ bind, isBound }, 'marker', SIssueMarkerImpl, IssueMarkerView);
     bind(DecorationPlacer).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(DecorationPlacer);
 });

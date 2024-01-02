@@ -16,11 +16,12 @@
 
 import { inject, injectable } from 'inversify';
 import { Action, ComputedBoundsAction, RequestBoundsAction, SetBoundsAction } from 'sprotty-protocol/lib/actions';
+import { Alignable } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { CommandExecutionContext, CommandResult, CommandReturn, HiddenCommand, SystemCommand } from '../../base/commands/command';
 import { SModelElementImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
-import { Alignable, BoundsAware, isBoundsAware } from './model';
+import { BoundsAware, isBoundsAware } from './model';
 
 export interface ResolvedElementAndBounds {
     element: SModelElementImpl & BoundsAware

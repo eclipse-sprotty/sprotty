@@ -14,19 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { VNode } from "snabbdom";
-import { Bounds, Point, toDegrees } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { setAttr } from "../../base/views/vnode-utils";
-import { SEdgeImpl } from "../../graph/sgraph";
-import { Orientation } from "../../utils/geometry";
-import { isAlignable, BoundsAware } from "../bounds/model";
-import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, EdgeLayoutable, EdgePlacement, checkEdgePlacement } from "./model";
-import { EdgeRouterRegistry } from "../routing/routing";
-import { TYPES } from "../../base/types";
-import { ILogger } from "../../utils/logging";
+import { injectable, inject } from 'inversify';
+import { VNode } from 'snabbdom';
+import { Bounds, Point, toDegrees } from 'sprotty-protocol/lib/utils/geometry';
+import { EdgeLayoutable, EdgePlacement } from 'sprotty-protocol/lib/model';
+import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
+import { setAttr } from '../../base/views/vnode-utils';
+import { SEdgeImpl } from '../../graph/sgraph';
+import { Orientation } from '../../utils/geometry';
+import { isAlignable, BoundsAware } from '../bounds/model';
+import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, checkEdgePlacement } from './model';
+import { EdgeRouterRegistry } from '../routing/routing';
+import { TYPES } from '../../base/types';
+import { ILogger } from '../../utils/logging';
 
 @injectable()
 export class EdgeLayoutPostprocessor implements IVNodePostprocessor {

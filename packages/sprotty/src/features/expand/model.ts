@@ -19,9 +19,9 @@ import { SModelElementImpl } from '../../base/model/smodel';
 export const expandFeature = Symbol('expandFeature');
 
 /**
- * Model elements that implement this interface can be expanded/collapsed
- *
  * Feature extension interface for {@link expandFeature}.
+ * Model elements that implement this interface can be expanded/collapsed
+ * @deprecated Use the definition from `sprotty-protocol` instead.
  */
 export interface Expandable {
     expanded: boolean

@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { SIssue as SIssueSchema } from 'sprotty-protocol/lib/model';
 import { SModelElementImpl } from '../../base/model/smodel';
 import { SShapeElementImpl, boundsFeature } from '../bounds/model';
 import { hoverFeedbackFeature, popupFeature } from '../hover/model';
@@ -34,12 +35,21 @@ export class SDecoration extends SShapeElementImpl implements Decoration {
     static readonly DEFAULT_FEATURES = [decorationFeature, boundsFeature, hoverFeedbackFeature, popupFeature];
 }
 
-export type SIssueSeverity = 'error' | 'warning' | 'info';
-
-export class SIssueMarker extends SDecoration {
-    issues: SIssue[];
+export class SIssueMarkerImpl extends SDecoration {
+    issues: SIssueSchema[];
 }
 
+/** @deprecated Use SIssueMarkerImpl instead. */
+export const SIssueMarker = SIssueMarkerImpl;
+
+/**
+ * @deprecated Use the definition from `sprotty-protocol` instead.
+ */
+export type SIssueSeverity = 'error' | 'warning' | 'info';
+
+/**
+ * @deprecated Use the definition from `sprotty-protocol` instead.
+ */
 export class SIssue {
     message: string;
     severity: SIssueSeverity;

@@ -14,16 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import "reflect-metadata";
+import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
-import { Container } from "inversify";
+import { Container } from 'inversify';
 import { Action, HoverFeedbackAction } from 'sprotty-protocol/lib/actions';
-import { TYPES } from "../../base/types";
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { HoverMouseListener } from "./hover";
-import { Hoverable, hoverFeedbackFeature, popupFeature } from "./model";
-import defaultModule from "../../base/di.config";
-import hoverModule from "./di.config";
+import { Hoverable } from 'sprotty-protocol/lib/model';
+import { TYPES } from '../../base/types';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { HoverMouseListener } from './hover';
+import { hoverFeedbackFeature, popupFeature } from './model';
+import defaultModule from '../../base/di.config';
+import hoverModule from './di.config';
 
 describe('hover', () => {
     class HoverListenerMock extends HoverMouseListener {
@@ -72,7 +73,7 @@ describe('hover', () => {
     class HoverableTarget extends SModelElementImpl implements Hoverable {
         hoverFeedback: boolean = false;
 
-        constructor(id: string = "1") {
+        constructor(id: string = '1') {
             super();
             this.id = id;
         }
@@ -103,8 +104,8 @@ describe('hover', () => {
             expect((mouseOverResult[0] as Action).kind).to.equal(HoverFeedbackAction.KIND);
         });
         it('resets the hover feedback on hovering over another element', () => {
-            const target = new HoverableTarget("1");
-            const anotherTarget = new HoverableTarget("2");
+            const target = new HoverableTarget('1');
+            const anotherTarget = new HoverableTarget('2');
             hoverListener.mouseOver(target, event);
             const mouseOverResult: (Action | Promise<Action>)[] = hoverListener.mouseOver(anotherTarget, event);
 
@@ -132,8 +133,8 @@ describe('hover', () => {
         });
         it('resets the hover feedback when moving out of another element', () => {
             hoverListener.resetLastHoverFeedbackElement();
-            const target = new HoverableTarget("1");
-            const anotherTarget = new HoverableTarget("2");
+            const target = new HoverableTarget('1');
+            const anotherTarget = new HoverableTarget('2');
             hoverListener.mouseOver(target, event);
             const mouseOutResult: (Action | Promise<Action>)[] = hoverListener.mouseOut(anotherTarget, event);
 

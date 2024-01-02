@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { ActionHandlerRegistry, LocalModelSource, Expandable, EdgeLayoutable } from 'sprotty';
+import { ActionHandlerRegistry, LocalModelSource } from 'sprotty';
 import {
     Action, CollapseExpandAction, CollapseExpandAllAction, SCompartment, SEdge, SGraph, SLabel,
-    SModelElement, SModelIndex, SModelRoot, SNode
+    SModelElement, SModelIndex, SModelRoot, SNode, Expandable, EdgeLayoutable
 } from 'sprotty-protocol';
 
 @injectable()

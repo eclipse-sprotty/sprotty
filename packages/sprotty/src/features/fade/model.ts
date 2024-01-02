@@ -19,7 +19,8 @@ import { SModelElementImpl } from '../../base/model/smodel';
 export const fadeFeature = Symbol('fadeFeature');
 
 /**
-* Feature extension interface for {@link fadeFeature}.
+ * Feature extension interface for {@link fadeFeature}.
+ * @deprecated Use the definition from `sprotty-protocol` instead.
  */
 export interface Fadeable {
     opacity: number
