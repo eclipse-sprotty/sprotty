@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Viewport } from 'sprotty-protocol/lib/model';
+import { Projectable as ProjectableSchema, Viewport } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
@@ -25,13 +25,14 @@ import { isBoundsAware } from '../bounds/model';
  * Model elements implementing this interface can be displayed on a projection bar.
  * _Note:_ If set, the projectedBounds property will be prefered over the model element bounds.
  * Otherwise model elements also have to be `BoundsAware` so their projections can be shown.
+ * @deprecated Use the definition from `sprotty-protocol` instead.
  */
 export interface Projectable {
     projectionCssClasses: string[],
     projectedBounds?: Bounds,
 }
 
-export function isProjectable(arg: unknown): arg is Projectable {
+export function isProjectable(arg: unknown): arg is ProjectableSchema {
     return hasOwnProperty(arg, 'projectionCssClasses');
 }
 
@@ -82,7 +83,7 @@ export function getProjections(parent: Readonly<SParentElementImpl>): ViewProjec
 /**
  * Compute the projected bounds of the given model element, that is the absolute position in the diagram.
  */
-export function getProjectedBounds(model: Readonly<SChildElementImpl & Projectable>): Bounds | undefined {
+export function getProjectedBounds(model: Readonly<SChildElementImpl & ProjectableSchema>): Bounds | undefined {
     const parent = model.parent;
     if (model.projectedBounds) {
         let bounds = model.projectedBounds;

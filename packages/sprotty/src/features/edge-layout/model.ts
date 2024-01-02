@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import type { EdgePlacement as EdgePlacementSchema } from 'sprotty-protocol/lib/model';
 import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { BoundsAware, isBoundsAware } from '../bounds/model';
 import { SRoutableElementImpl } from '../routing/model';
@@ -25,7 +26,7 @@ export const edgeLayoutFeature = Symbol('edgeLayout');
  * Feature extension interface for {@link edgeLayoutFeature}.
  */
 export interface EdgeLayoutable {
-    edgePlacement: EdgePlacement
+    edgePlacement: EdgePlacementSchema
 }
 
 export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): element is T & SChildElementImpl & BoundsAware & EdgeLayoutable {
@@ -77,7 +78,7 @@ export class EdgePlacement extends Object {
 
 }
 
-export const DEFAULT_EDGE_PLACEMENT: EdgePlacement = {
+export const DEFAULT_EDGE_PLACEMENT: EdgePlacementSchema = {
     rotate: true,
     side: 'top',
     position: 0.5,

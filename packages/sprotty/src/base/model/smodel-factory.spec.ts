@@ -17,13 +17,14 @@
 import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
+import { Selectable } from 'sprotty-protocol/lib/model';
 import { TYPES } from '../types';
 import { ModelIndexImpl, SChildElementImpl } from './smodel';
-import { SModelFactory } from "./smodel-factory";
+import { SModelFactory } from './smodel-factory';
 import { registerModelElement } from './smodel-utils';
-import { selectFeature, Selectable } from '../../features/select/model';
+import { selectFeature } from '../../features/select/model';
 import { boundsFeature } from '../../features/bounds/model';
-import defaultModule from "../di.config";
+import defaultModule from '../di.config';
 import { SModelElement } from 'sprotty-protocol';
 
 describe('model factory', () => {

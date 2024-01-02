@@ -14,14 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from "inversify";
-import { VNode } from "snabbdom";
-import { Animation } from "../../base/animations/animation";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { SModelRootImpl, SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { setAttr } from "../../base/views/vnode-utils";
-import { Fadeable, isFadeable } from "./model";
+import { injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { Fadeable } from 'sprotty-protocol/lib/model';
+import { Animation } from '../../base/animations/animation';
+import { CommandExecutionContext } from '../../base/commands/command';
+import { SModelRootImpl, SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
+import { setAttr } from '../../base/views/vnode-utils';
+import { isFadeable } from './model';
 
 export interface ResolvedElementFade {
     element: SModelElementImpl & Fadeable

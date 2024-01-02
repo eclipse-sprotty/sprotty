@@ -15,11 +15,13 @@
  ********************************************************************************/
 
 import {
-    SShapeElementImpl, SChildElementImpl, BoundsAware, boundsFeature, Fadeable, fadeFeature,
-    layoutContainerFeature, LayoutContainer, Selectable, selectFeature,
-    ViewportRootElementImpl, hoverFeedbackFeature, Hoverable, popupFeature
+    SShapeElementImpl, SChildElementImpl, BoundsAware, boundsFeature, fadeFeature,
+    layoutContainerFeature, LayoutContainer, selectFeature, ViewportRootElementImpl,
+    hoverFeedbackFeature, popupFeature
 } from 'sprotty';
-import { Bounds, SModelElement, SModelRoot, JsonMap, SShapeElement } from 'sprotty-protocol';
+import {
+    Bounds, SModelElement, SModelRoot, JsonMap, SShapeElement, Selectable, Hoverable, Fadeable
+} from 'sprotty-protocol';
 
 export enum Direction { up, down, left, right }
 

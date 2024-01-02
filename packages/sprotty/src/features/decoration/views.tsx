@@ -19,13 +19,13 @@ import { svg } from '../../lib/jsx';
 
 import { VNode } from 'snabbdom';
 import { IView, RenderingContext } from '../../base/views/view';
-import { SIssueMarker, SIssueSeverity } from './model';
+import { SIssueMarkerImpl, SIssueSeverity } from './model';
 import { setClass } from '../../base/views/vnode-utils';
 import { injectable } from 'inversify';
 
 @injectable()
 export class IssueMarkerView implements IView {
-    render(marker: SIssueMarker, context: RenderingContext): VNode {
+    render(marker: SIssueMarkerImpl, context: RenderingContext): VNode {
         const scale = 16 / 1792;
         const trafo = `scale(${scale}, ${scale})`;
         const maxSeverity = this.getMaxSeverity(marker);
@@ -38,7 +38,7 @@ export class IssueMarkerView implements IView {
         return group;
     }
 
-    protected getMaxSeverity(marker: SIssueMarker): SIssueSeverity {
+    protected getMaxSeverity(marker: SIssueMarkerImpl): SIssueSeverity {
         let currentSeverity: SIssueSeverity = 'info';
         for (const severity of marker.issues.map(s => s.severity)) {
             if (severity === 'error' || (severity === 'warning' && currentSeverity === 'info'))

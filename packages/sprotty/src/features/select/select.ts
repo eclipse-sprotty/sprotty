@@ -16,7 +16,10 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Action, BringToFrontAction, GetSelectionAction, ResponseAction, SelectAction, SelectAllAction, SelectionResult } from 'sprotty-protocol/lib/actions';
+import {
+    Action, BringToFrontAction, GetSelectionAction, ResponseAction, SelectAction, SelectAllAction, SelectionResult
+} from 'sprotty-protocol/lib/actions';
+import { Selectable } from 'sprotty-protocol/lib/model';
 import { Command, CommandExecutionContext } from '../../base/commands/command';
 import { ModelRequestCommand } from '../../base/commands/request-command';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
@@ -34,7 +37,7 @@ import { SwitchEditModeAction } from '../edit/edit-routing';
 import { SRoutingHandleImpl } from '../routing/model';
 import { SRoutableElementImpl } from '../routing/model';
 import { findViewportScrollbar } from '../viewport/scroll';
-import { isSelectable, Selectable } from './model';
+import { isSelectable } from './model';
 
 @injectable()
 export class SelectCommand extends Command {

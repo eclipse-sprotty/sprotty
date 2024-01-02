@@ -16,13 +16,14 @@
 
 import { injectable, inject, optional } from 'inversify';
 import { UpdateModelAction } from 'sprotty-protocol/lib/actions';
+import { Fadeable } from 'sprotty-protocol/lib/model';
 import { almostEquals, Dimension } from 'sprotty-protocol/lib/utils/geometry';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
 import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
 import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
 import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from '../move/move';
-import { Fadeable, isFadeable } from '../fade/model';
+import { isFadeable } from '../fade/model';
 import { isLocateable } from '../move/model';
 import { isSizeable } from '../bounds/model';
 import { ViewportRootElementImpl } from '../viewport/viewport-root';

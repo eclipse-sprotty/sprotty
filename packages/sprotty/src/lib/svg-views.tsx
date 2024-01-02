@@ -15,17 +15,16 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from './jsx';
+import { svg } from './jsx';
 
-import { VNode } from "snabbdom";
+import { VNode } from 'snabbdom';
+import { Hoverable, Selectable } from 'sprotty-protocol/lib/model';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { IView, IViewArgs, RenderingContext } from "../base/views/view";
-import { SNodeImpl, SPortImpl } from "../graph/sgraph";
-import { ViewportRootElementImpl } from "../features/viewport/viewport-root";
+import { IView, IViewArgs, RenderingContext } from '../base/views/view';
+import { SNodeImpl, SPortImpl } from '../graph/sgraph';
+import { ViewportRootElementImpl } from '../features/viewport/viewport-root';
 import { SShapeElementImpl } from '../features/bounds/model';
 import { ShapeView } from '../features/bounds/views';
-import { Hoverable } from '../features/hover/model';
-import { Selectable } from '../features/select/model';
 import { Diamond } from '../utils/geometry';
 import { SModelElementImpl } from '../base/model/smodel';
 import { injectable } from 'inversify';
