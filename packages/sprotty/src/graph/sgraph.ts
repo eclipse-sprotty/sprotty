@@ -18,7 +18,7 @@ import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { Alignable, EdgePlacement, Fadeable, Hoverable, Selectable } from 'sprotty-protocol/lib/model';
 import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel';
 import {
-    alignFeature, BoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    alignFeature, InternalBoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
     ModelLayoutOptions, SShapeElementImpl
 } from '../features/bounds/model';
 import { edgeLayoutFeature } from '../features/edge-layout/model';
@@ -118,7 +118,7 @@ export class SPortImpl extends SConnectableElementImpl implements Selectable, Fa
  * each of which can be either a node or a port. The source and target elements are referenced via their
  * ids and can be resolved with the index stored in the root element.
  */
-export class SEdgeImpl extends SRoutableElementImpl implements Fadeable, Selectable, Hoverable, BoundsAware {
+export class SEdgeImpl extends SRoutableElementImpl implements Fadeable, Selectable, Hoverable, InternalBoundsAware {
     static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
         hoverFeedbackFeature];
 

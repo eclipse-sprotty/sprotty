@@ -14,18 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Dimension, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SParentElementImpl, SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
-import { isLayoutContainer, isLayoutableChild, LayoutContainer, isBoundsAware } from "./model";
+import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { SParentElementImpl, SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
+import { isLayoutContainer, isLayoutableChild, InternalLayoutContainer, isBoundsAware } from './model';
 import { ILayout, StatefulLayouter } from './layout';
 import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
-import { injectable } from "inversify";
+import { injectable } from 'inversify';
 
 @injectable()
 export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements ILayout {
 
-    layout(container: SParentElementImpl & LayoutContainer,
+    layout(container: SParentElementImpl & InternalLayoutContainer,
            layouter: StatefulLayouter) {
         const boundsData = layouter.getBoundsData(container);
         const options = this.getLayoutOptions(container);
@@ -50,7 +50,7 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
                                 currentOffset: Point,
                                 maxWidth: number, maxHeight: number): Point;
 
-    protected getFinalContainerBounds(container: SParentElementImpl & LayoutContainer,
+    protected getFinalContainerBounds(container: SParentElementImpl & InternalLayoutContainer,
                                     lastOffset: Point,
                                     options: T,
                                     maxWidth: number,
@@ -85,11 +85,11 @@ export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements
         }
     }
 
-    protected abstract getChildrenSize(container: SParentElementImpl & LayoutContainer,
+    protected abstract getChildrenSize(container: SParentElementImpl & InternalLayoutContainer,
                                containerOptions: T,
                                layouter: StatefulLayouter): Dimension;
 
-    protected layoutChildren(container: SParentElementImpl & LayoutContainer,
+    protected layoutChildren(container: SParentElementImpl & InternalLayoutContainer,
                             layouter: StatefulLayouter,
                             containerOptions: T,
                             maxWidth: number,

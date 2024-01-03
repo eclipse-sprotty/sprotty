@@ -45,22 +45,14 @@ export interface ViewportRootElement extends SModelRoot, Partial<Viewport>, Part
 /**
  * Root element for graph-like models.
  */
-export interface SGraph extends ViewportRootElement {
+export interface SGraph extends ViewportRootElement, Partial<LayoutableChild> {
     children: SModelElement[]
-    layoutOptions?: ModelLayoutOptions
 
     /** @deprecated Use `position` and `size` instead. */
     bounds?: Bounds
 }
 
-/**
- * Options to control the "micro layout" of a model element, i.e. the arrangement of its content
- * using simple algorithms such as horizontal or vertical box layout.
- */
-export type ModelLayoutOptions = { [key: string]: string | number | boolean };
-
-export interface SShapeElement extends SModelElement, Partial<BoundsAware> {
-    layoutOptions?: ModelLayoutOptions
+export interface SShapeElement extends SModelElement, Partial<LayoutableChild> {
 }
 
 /**
@@ -68,8 +60,7 @@ export interface SShapeElement extends SModelElement, Partial<BoundsAware> {
  * another node via an SEdge. Such a connection can be direct, i.e. the node is the source or target of
  * the edge, or indirect through a port, i.e. it contains an SPort which is the source or target of the edge.
  */
-export interface SNode extends SShapeElement, Partial<Selectable>, Partial<Hoverable>, Partial<Fadeable> {
-    layout?: string
+export interface SNode extends SShapeElement, Partial<LayoutContainer>, Partial<Selectable>, Partial<Hoverable>, Partial<Fadeable> {
     anchorKind?: string
 }
 
@@ -102,8 +93,7 @@ export interface SLabel extends SShapeElement, Partial<Selectable>, Partial<Alig
  * A compartment is used to group multiple child elements such as labels of a node. Usually a `vbox`
  * or `hbox` layout is used to arrange these children.
  */
-export interface SCompartment extends SShapeElement {
-    layout?: string
+export interface SCompartment extends SShapeElement, Partial<LayoutContainer> {
 }
 
 /**
@@ -138,11 +128,35 @@ export function isZoomable(element: SModelElement | Zoomable): element is Zoomab
 }
 
 /**
+ * An element that can be placed at a specific location using its position property.
+ * Feature extension interface for `moveFeature`.
+ */
+export interface Locateable {
+    position: Point
+}
+
+/**
  * Model elements that implement this interface have a position and a size.
  */
-export interface BoundsAware {
-    position: Point
+export interface BoundsAware extends Locateable {
     size: Dimension
+}
+
+export type ModelLayoutOptions = { [key: string]: string | number | boolean };
+
+/**
+ * Feature extension interface for `layoutableChildFeature`. This is used when the parent
+ * element has a `layout` property (meaning it's a `LayoutContainer`).
+ */
+export interface LayoutableChild extends BoundsAware {
+    layoutOptions?: ModelLayoutOptions
+}
+
+/**
+ * Used to identify model elements that specify a layout to apply to their children.
+ */
+export interface LayoutContainer extends LayoutableChild {
+    layout: string
 }
 
 /**

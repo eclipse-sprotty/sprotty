@@ -19,13 +19,13 @@ import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/g
 import { SModelRootImpl, ModelIndexImpl } from '../../base/model/smodel';
 import { viewportFeature } from "./model";
 import { exportFeature } from "../export/model";
-import { BoundsAware } from "../bounds/model";
+import { InternalBoundsAware } from "../bounds/model";
 
 /**
  * Model root element that defines a viewport, so it transforms the coordinate system with
  * a `scroll` translation and a `zoom` scaling.
  */
-export class ViewportRootElementImpl extends SModelRootImpl implements Viewport, BoundsAware {
+export class ViewportRootElementImpl extends SModelRootImpl implements Viewport, InternalBoundsAware {
     static readonly DEFAULT_FEATURES = [viewportFeature, exportFeature];
 
     scroll: Point = { x: 0, y: 0 };

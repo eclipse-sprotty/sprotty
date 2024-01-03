@@ -16,7 +16,7 @@
 
 import type { EdgePlacement as EdgePlacementSchema } from 'sprotty-protocol/lib/model';
 import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { BoundsAware, isBoundsAware } from '../bounds/model';
+import { InternalBoundsAware, isBoundsAware } from '../bounds/model';
 import { SRoutableElementImpl } from '../routing/model';
 
 export const edgeLayoutFeature = Symbol('edgeLayout');
@@ -29,7 +29,7 @@ export interface EdgeLayoutable {
     edgePlacement: EdgePlacementSchema
 }
 
-export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): element is T & SChildElementImpl & BoundsAware & EdgeLayoutable {
+export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): element is T & SChildElementImpl & InternalBoundsAware & EdgeLayoutable {
     return element instanceof SChildElementImpl
         && element.parent instanceof SRoutableElementImpl
         && isBoundsAware(element)

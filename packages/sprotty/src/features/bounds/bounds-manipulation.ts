@@ -21,10 +21,10 @@ import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { CommandExecutionContext, CommandResult, CommandReturn, HiddenCommand, SystemCommand } from '../../base/commands/command';
 import { SModelElementImpl } from '../../base/model/smodel';
 import { TYPES } from '../../base/types';
-import { BoundsAware, isBoundsAware } from './model';
+import { InternalBoundsAware, isBoundsAware } from './model';
 
 export interface ResolvedElementAndBounds {
-    element: SModelElementImpl & BoundsAware
+    element: SModelElementImpl & InternalBoundsAware
     oldBounds: Bounds
     newPosition?: Point
     newSize: Dimension
