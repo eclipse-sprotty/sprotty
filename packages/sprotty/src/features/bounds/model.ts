@@ -14,13 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Locateable } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
 import { findParentByFeature } from '../../base/model/smodel-utils';
 import { DOMHelper } from '../../base/views/dom-helper';
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { getWindowScroll } from '../../utils/browser';
-import type { Locateable } from '../move/model';
 
 export const boundsFeature = Symbol('boundsFeature');
 export const layoutContainerFeature = Symbol('layoutContainerFeature');
@@ -34,25 +34,34 @@ export const alignFeature = Symbol('alignFeature');
  *
  * Feature extension interface for {@link boundsFeature}.
  */
-export interface BoundsAware {
+export interface InternalBoundsAware {
     bounds: Bounds
 }
+
+/** @deprecated Use `InternalBoundsAware` instead. */
+export type BoundsAware = InternalBoundsAware;
 
 /**
  * Used to identify model elements that specify a layout to apply to their children.
  */
-export interface LayoutContainer extends LayoutableChild {
+export interface InternalLayoutContainer extends InternalLayoutableChild {
     layout: string
 }
+
+/** @deprecated Use `InternalLayoutContainer` instead. */
+export type LayoutContainer = InternalLayoutContainer;
 
 export type ModelLayoutOptions = { [key: string]: string | number | boolean };
 
 /**
  * Feature extension interface for {@link layoutableChildFeature}.
  */
-export interface LayoutableChild extends BoundsAware {
+export interface InternalLayoutableChild extends InternalBoundsAware {
     layoutOptions?: ModelLayoutOptions
 }
+
+/** @deprecated Use `InternalLayoutableChild` instead. */
+export type LayoutableChild = InternalLayoutableChild;
 
 /**
  * Feature extension interface for {@link alignFeature}.
@@ -64,22 +73,22 @@ export interface Alignable {
     alignment: Point
 }
 
-export function isBoundsAware(element: SModelElementImpl): element is SModelElementImpl & BoundsAware {
+export function isBoundsAware(element: SModelElementImpl): element is SModelElementImpl & InternalBoundsAware {
     return 'bounds' in element;
 }
 
-export function isLayoutContainer(element: SModelElementImpl): element is SParentElementImpl & LayoutContainer {
+export function isLayoutContainer(element: SModelElementImpl): element is SParentElementImpl & InternalLayoutContainer {
     return isBoundsAware(element)
         && element.hasFeature(layoutContainerFeature)
         && 'layout' in element;
 }
 
-export function isLayoutableChild(element: SModelElementImpl): element is SChildElementImpl & LayoutableChild {
+export function isLayoutableChild(element: SModelElementImpl): element is SChildElementImpl & InternalLayoutableChild {
     return isBoundsAware(element)
         && element.hasFeature(layoutableChildFeature);
 }
 
-export function isSizeable(element: SModelElementImpl): element is SModelElementImpl & BoundsAware {
+export function isSizeable(element: SModelElementImpl): element is SModelElementImpl & InternalBoundsAware {
     return element.hasFeature(boundsFeature) && isBoundsAware(element);
 }
 
@@ -165,7 +174,7 @@ function doFindChildrenAtPosition(parent: SParentElementImpl, point: Point, matc
 /**
  * Abstract class for elements with a position and a size.
  */
-export abstract class SShapeElementImpl extends SChildElementImpl implements BoundsAware, Locateable, LayoutableChild {
+export abstract class SShapeElementImpl extends SChildElementImpl implements InternalBoundsAware, Locateable, InternalLayoutableChild {
 
     position: Point = Point.ORIGIN;
     size: Dimension = Dimension.EMPTY;

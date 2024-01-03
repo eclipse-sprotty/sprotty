@@ -20,7 +20,7 @@ import { TYPES } from "../../base/types";
 import { ILogger } from '../../utils/logging';
 import { InstanceRegistry } from "../../utils/registry";
 import { SParentElementImpl, SModelElementImpl } from "../../base/model/smodel";
-import { isLayoutContainer, LayoutContainer } from "./model";
+import { isLayoutContainer, InternalLayoutContainer } from "./model";
 import { BoundsData } from "./hidden-bounds-updater";
 import { isInjectable } from "../../utils/inversify";
 
@@ -59,7 +59,7 @@ export class Layouter {
 
 export class StatefulLayouter {
 
-    private toBeLayouted: (SParentElementImpl & LayoutContainer)[];
+    private toBeLayouted: (SParentElementImpl & InternalLayoutContainer)[];
 
     constructor(private readonly element2boundsData: Map<SModelElementImpl, BoundsData>,
                 private readonly layoutRegistry: LayoutRegistry,
@@ -96,7 +96,7 @@ export class StatefulLayouter {
         }
     }
 
-    protected doLayout(element: SParentElementImpl & LayoutContainer): Bounds {
+    protected doLayout(element: SParentElementImpl & InternalLayoutContainer): Bounds {
         const index = this.toBeLayouted.indexOf(element);
         if (index >= 0)
             this.toBeLayouted.splice(index, 1);
@@ -114,7 +114,7 @@ export class StatefulLayouter {
 }
 
 export interface ILayout {
-    layout(container: SParentElementImpl & LayoutContainer,
+    layout(container: SParentElementImpl & InternalLayoutContainer,
            layouter: StatefulLayouter): void
 }
 

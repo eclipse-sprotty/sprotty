@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import {
-    SShapeElementImpl, SChildElementImpl, BoundsAware, boundsFeature, fadeFeature,
-    layoutContainerFeature, LayoutContainer, selectFeature, ViewportRootElementImpl,
+    SShapeElementImpl, SChildElementImpl, InternalBoundsAware, boundsFeature, fadeFeature,
+    layoutContainerFeature, selectFeature, ViewportRootElementImpl, InternalLayoutContainer,
     hoverFeedbackFeature, popupFeature
 } from 'sprotty';
 import {
@@ -33,7 +33,7 @@ export interface ProcessorSchema extends SModelRoot {
     columns: number
 }
 
-export class Processor extends ViewportRootElementImpl implements BoundsAware {
+export class Processor extends ViewportRootElementImpl implements InternalBoundsAware {
     static override readonly DEFAULT_FEATURES = [...ViewportRootElementImpl.DEFAULT_FEATURES, boundsFeature];
 
     rows: number = 0;
@@ -64,7 +64,7 @@ export interface CoreSchema extends SShapeElement {
     children: SModelElement[]
 }
 
-export class Core extends SShapeElementImpl implements Selectable, Fadeable, Hoverable, LayoutContainer {
+export class Core extends SShapeElementImpl implements Selectable, Fadeable, Hoverable, InternalLayoutContainer {
     static readonly DEFAULT_FEATURES = [selectFeature, fadeFeature, layoutContainerFeature,
         hoverFeedbackFeature, popupFeature];
 

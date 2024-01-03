@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Alignable, Selectable, SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
+import { Alignable, Locateable, Selectable, SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
 import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelRootImpl, SChildElementImpl } from '../base/model/smodel';
-import { BoundsAware, boundsFeature, alignFeature, isBoundsAware } from '../features/bounds/model';
-import { Locateable, moveFeature } from '../features/move/model';
+import { InternalBoundsAware, boundsFeature, alignFeature, isBoundsAware } from '../features/bounds/model';
+import { moveFeature } from '../features/move/model';
 import { selectFeature } from '../features/select/model';
 import { SNodeImpl, SPortImpl } from '../graph/sgraph';
 import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from '../features/routing/anchor';
@@ -120,7 +120,7 @@ export interface ShapedPreRenderedElementSchema extends PreRenderedElementSchema
 /**
  * Same as PreRenderedElement, but with a position and a size.
  */
-export class ShapedPreRenderedElementImpl extends PreRenderedElementImpl implements BoundsAware, Locateable, Selectable, Alignable {
+export class ShapedPreRenderedElementImpl extends PreRenderedElementImpl implements InternalBoundsAware, Locateable, Selectable, Alignable {
     static readonly DEFAULT_FEATURES = [moveFeature, boundsFeature, selectFeature, alignFeature];
 
     position: Point = Point.ORIGIN;

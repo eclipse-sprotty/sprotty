@@ -25,7 +25,7 @@ import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base
 import { TYPES } from '../../base/types';
 import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { Layouter } from './layout';
-import { BoundsAware, isAlignable, isLayoutContainer, isSizeable } from './model';
+import { InternalBoundsAware, isAlignable, isLayoutContainer, isSizeable } from './model';
 
 export class BoundsData {
     vnode?: VNode;
@@ -53,7 +53,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.Layouter) protected layouter: Layouter;
 
-    private readonly element2boundsData: Map<SModelElementImpl & BoundsAware, BoundsData> = new Map;
+    private readonly element2boundsData: Map<SModelElementImpl & InternalBoundsAware, BoundsData> = new Map;
 
     root: SModelRootImpl | undefined;
 
@@ -155,7 +155,7 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
      * their parent, you can add the `ATTR_BBOX_ELEMENT` attribute to the SVG element
      * that shall be used to compute the bounding box.
      */
-    protected getBounds(elm: Node, element: SModelElementImpl & BoundsAware): Bounds {
+    protected getBounds(elm: Node, element: SModelElementImpl & InternalBoundsAware): Bounds {
         if (!isSVGGraphicsElement(elm)) {
             this.logger.error(this, 'Not an SVG element:', elm);
             return Bounds.EMPTY;

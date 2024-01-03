@@ -16,6 +16,7 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
+import { Locateable } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction } from 'sprotty-protocol/lib/actions';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
@@ -37,7 +38,7 @@ import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from '../r
 import { isEdgeLayoutable } from '../edge-layout/model';
 import { isSelectable } from '../select/model';
 import { isViewport } from '../viewport/model';
-import { isLocateable, isMoveable, Locateable } from './model';
+import { isLocateable, isMoveable } from './model';
 import { ISnapper } from './snap';
 
 export interface ElementMove {

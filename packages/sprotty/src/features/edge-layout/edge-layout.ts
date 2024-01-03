@@ -23,7 +23,7 @@ import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { setAttr } from '../../base/views/vnode-utils';
 import { SEdgeImpl } from '../../graph/sgraph';
 import { Orientation } from '../../utils/geometry';
-import { isAlignable, BoundsAware } from '../bounds/model';
+import { isAlignable, InternalBoundsAware } from '../bounds/model';
 import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, checkEdgePlacement } from './model';
 import { EdgeRouterRegistry } from '../routing/routing';
 import { TYPES } from '../../base/types';
@@ -110,7 +110,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
         return vnode;
     }
 
-    protected getRotatedAlignment(element: EdgeLayoutable & SModelElementImpl & BoundsAware, placement: EdgePlacement, flip: boolean) {
+    protected getRotatedAlignment(element: EdgeLayoutable & SModelElementImpl & InternalBoundsAware, placement: EdgePlacement, flip: boolean) {
         let x = isAlignable(element) ? element.alignment.x : 0;
         let y = isAlignable(element) ? element.alignment.y : 0;
         const bounds = element.bounds;
@@ -168,7 +168,7 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
             (a, b) => { return {...a, ...b}; }, DEFAULT_EDGE_PLACEMENT);
     }
 
-    protected getAlignment(label: EdgeLayoutable & SModelElementImpl & BoundsAware, placement: EdgePlacement, angle: number): Point {
+    protected getAlignment(label: EdgeLayoutable & SModelElementImpl & InternalBoundsAware, placement: EdgePlacement, angle: number): Point {
         const bounds = label.bounds;
         const x = isAlignable(label) ? label.alignment.x - bounds.width : 0;
         const y = isAlignable(label) ? label.alignment.y - bounds.height : 0;
