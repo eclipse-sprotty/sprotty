@@ -2,7 +2,16 @@
 
 This change log covers only the client-server protocol of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
-### v1.0.0 (Oct. 2023)
+### v1.1.0 (Jan. 2024)
+
+ * Moved more interfaces used for defining Sprotty (external) models into this package so they can be used in backend applications ([#413](https://github.com/eclipse-sprotty/sprotty/pull/413)).
+ * Other smaller improvements ([#409](https://github.com/eclipse-sprotty/sprotty/pull/409))
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/11?closed=1
+
+-----
+
+## v1.0.0 (Oct. 2023)
 
 This version marks the transition of Sprotty's incubation phase into maturity. As part of this, all deprecated API have been removed.
 
@@ -13,7 +22,7 @@ Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/mileston
 
 -----
 
-## v.0.14.0 (Aug. 2023)
+### v.0.14.0 (Aug. 2023)
 
 Fixed issues: https://github.com/eclipse-sprotty/sprotty/milestone/10?closed=1
 

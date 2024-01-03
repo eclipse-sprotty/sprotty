@@ -2,7 +2,17 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
-### v1.0.0 (Oct. 2023)
+### v1.1.0 (Jan. 2024)
+
+ * Resolved a [license issue](https://gitlab.eclipse.org/eclipsefdn/emo-team/iplab/-/issues/10784) regarding `jsdom` (it was only used as a dev-dependency).
+ * Moving edge labels is now supported ([#411](https://github.com/eclipse-sprotty/sprotty/pull/411)).
+ * Moved more interfaces used for defining Sprotty (external) models to `sprotty-protocol` so they can be used in backend applications ([#413](https://github.com/eclipse-sprotty/sprotty/pull/413)).
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/11?closed=1
+
+-----
+
+## v1.0.0 (Oct. 2023)
 
 This version marks the transition of Sprotty's incubation phase into maturity. As part of this, all deprecated API have been removed.
 
