@@ -53,6 +53,17 @@ export interface ICommand {
 }
 
 /**
+ * A stoppable commands execution (e.g. one that starts an animation) can be interrupted.
+ */
+export interface IStoppableCommand extends ICommand {
+    stopExecution(): void
+}
+
+export function isStoppableCommand(command: any): command is IStoppableCommand {
+    return command && 'stopExecution' in command && typeof command.stopExecution === 'function';
+}
+
+/**
  * Commands return the changed model or a Promise for it. Promises
  * serve animating commands to render some intermediate states before
  * finishing. The CommandStack is in charge of chaining these promises,

@@ -676,16 +676,18 @@ export interface MoveAction extends Action {
     moves: ElementMove[]
     animate: boolean
     finished: boolean
+    stoppable: boolean
 }
 export namespace MoveAction {
     export const KIND = 'move';
 
-    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean } = {}): MoveAction {
+    export function create(moves: ElementMove[], options: { animate?: boolean, finished?: boolean, stoppable?: boolean } = {}): MoveAction {
         return {
             kind: KIND,
             moves,
             animate: options.animate ?? true,
-            finished: options.finished ?? false
+            finished: options.finished ?? false,
+            stoppable: options.stoppable ?? false
         };
     }
 }

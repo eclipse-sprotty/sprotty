@@ -77,11 +77,15 @@ export default async function runCircleGraph() {
         graph.children.push(...newElements);
     }
 
+    let viewport = initialViewport;
+    window.addEventListener('resize', async () => {
+        viewport = await modelSource.getViewport();
+    });
+
     // Run
     modelSource.setModel(graph);
 
     async function createNode(point?: Point) {
-        const viewport = await modelSource.getViewport();
         const newElements = addNode(getVisibleBounds(viewport));
         if (point) {
             const adjust = (offset: number) => {
@@ -103,7 +107,6 @@ export default async function runCircleGraph() {
     });
 
     document.getElementById('scrambleAll')!.addEventListener('click', async () => {
-        const viewport = await modelSource.getViewport();
         const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         graph.children.forEach(shape => {
@@ -117,13 +120,12 @@ export default async function runCircleGraph() {
                 });
             }
         });
-        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true }));
+        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true, stoppable: true }));
         focusGraph();
     });
 
     document.getElementById('scrambleSelection')!.addEventListener('click', async () => {
         const selection = await modelSource.getSelection();
-        const viewport = await modelSource.getViewport();
         const bounds = getVisibleBounds(viewport);
         const nodeMoves: ElementMove[] = [];
         selection.forEach(shape => {
@@ -137,7 +139,7 @@ export default async function runCircleGraph() {
                 });
             }
         });
-        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true }));
+        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true, stoppable: true }));
         focusGraph();
     });
 
