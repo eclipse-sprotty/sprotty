@@ -27,7 +27,11 @@ export abstract class Animation {
     constructor(protected context: CommandExecutionContext, protected ease: (x: number) => number = easeInOut) {
     }
 
+    protected stopped = false;
+
     start(): Promise<SModelRootImpl> {
+        // in case start() is called multiple times, we need to reset the stopped flag
+        this.stopped = false;
         return new Promise<SModelRootImpl>(
             (resolve: (model: SModelRootImpl) => void, reject: (model: SModelRootImpl) => void) => {
                 let start: number | undefined = undefined;
@@ -47,6 +51,9 @@ export abstract class Animation {
                     if (t === 1) {
                         this.context.logger.log(this, (frames * 1000 / this.context.duration) + ' fps');
                         resolve(current);
+                    } else if (this.stopped) {
+                        this.context.logger.log(this, 'Animation stopped at ' + (t * 100) + '%');
+                        resolve(current);
                     } else {
                         this.context.syncer.onNextFrame(lambda);
                     }
@@ -58,6 +65,14 @@ export abstract class Animation {
                     resolve(finalModel);
                 }
             });
+    }
+
+    /**
+     * Stop the animation at the current state.
+     * The promise returned by start() will be resolved with the current state after the next tweening step.
+     */
+    stop(): void {
+        this.stopped = true;
     }
 
     /**

@@ -20,7 +20,7 @@ import { Locateable } from 'sprotty-protocol/lib/model';
 import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction } from 'sprotty-protocol/lib/actions';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
-import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn } from '../../base/commands/command';
+import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn, IStoppableCommand } from '../../base/commands/command';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { findParentByFeature, translatePoint } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
@@ -61,16 +61,25 @@ export interface ResolvedHandleMove {
 }
 
 @injectable()
-export class MoveCommand extends MergeableCommand {
+export class MoveCommand extends MergeableCommand implements IStoppableCommand {
     static readonly KIND = MoveAction.KIND;
 
     @inject(EdgeRouterRegistry) @optional() edgeRouterRegistry?: EdgeRouterRegistry;
 
     protected resolvedMoves: Map<string, ResolvedElementMove> = new Map;
     protected edgeMementi: EdgeMemento[] = [];
+    protected animation: Animation | undefined;
 
     constructor(@inject(TYPES.Action) protected readonly action: MoveAction) {
         super();
+    }
+
+    // stop the execution of the CompoundAnimation started below
+    stopExecution(): void {
+        if (this.animation) {
+            this.animation.stop();
+            this.animation = undefined;
+        }
     }
 
     execute(context: CommandExecutionContext): CommandReturn {
@@ -114,10 +123,10 @@ export class MoveCommand extends MergeableCommand {
         this.doMove(edge2handleMoves, attachedEdgeShifts);
         if (this.action.animate) {
             this.undoMove();
-            return new CompoundAnimation(context.root, context, [
+            return (this.animation = new CompoundAnimation(context.root, context, [
                 new MoveAnimation(context.root, this.resolvedMoves, context, false),
                 new MorphEdgesAnimation(context.root, this.edgeMementi, context, false)
-            ]).start();
+            ])).start();
         }
         return context.root;
     }

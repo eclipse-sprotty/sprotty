@@ -25,7 +25,7 @@ import { IViewer, IViewerProvider } from "../views/viewer";
 import { CommandStackOptions } from './command-stack-options';
 import {
     HiddenCommand, ICommand, CommandExecutionContext, CommandReturn, SystemCommand,
-    MergeableCommand, PopupCommand, ResetCommand, CommandResult
+    MergeableCommand, PopupCommand, ResetCommand, CommandResult, isStoppableCommand, IStoppableCommand
 } from './command';
 
 /**
@@ -119,6 +119,11 @@ export class CommandStack implements ICommandStack {
     protected redoStack: ICommand[] = [];
 
     /**
+     * Map which holds the last stoppable command for certain action kinds.
+     */
+    protected stoppableCommands: Map<string, IStoppableCommand> = new Map();
+
+    /**
      * System commands should be transparent to the user in undo/redo
      * operations. When a system command is executed when the redo
      * stack is not empty, it is pushed to offStack instead.
@@ -210,6 +215,16 @@ export class CommandStack implements ICommandStack {
     protected handleCommand(command: ICommand,
                             operation: (context: CommandExecutionContext) => CommandReturn,
                             beforeResolve: (command: ICommand, context: CommandExecutionContext) => void) {
+        // If the command implements the IStoppableCommand interface, we first need to stop the execution of the
+        // previous command with the same action kind and then store the new command as the last stoppable command.
+        if (isStoppableCommand(command)) {
+            const stoppableCommand = this.stoppableCommands.get((command as any).action.kind);
+            if (stoppableCommand) {
+                stoppableCommand.stopExecution();
+            }
+            this.stoppableCommands.set((command as any).action.kind, command);
+        }
+
         this.currentPromise = this.currentPromise.then(state =>
             new Promise<CommandStackState>(resolve => {
                 let target: 'main' | 'hidden' | 'popup';
