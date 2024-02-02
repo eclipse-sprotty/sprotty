@@ -14,13 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import {
+    Decision,
+    Process,
+    Terminal
+} from "sprotty-library";
 import { SEdge, SGraph, SLabel, SModelRoot, SNode } from "sprotty-protocol";
 
 export function initializeModel(): SModelRoot {
     const nodes: SNode[] = [];
     const edges: SEdge[] = [];
 
-    const node0: SNode = {
+    const node0: Terminal = {
         id: '0',
         type: 'node:terminal',
         position: { x: 150, y: 10 },
@@ -42,7 +47,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node0);
 
-    const node1: SNode = {
+    const node1: Process = {
         id: '1',
         type: 'node:process',
         position: { x: 109.15, y: 153.9 },
@@ -63,7 +68,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node1);
 
-    const node2: SNode = {
+    const node2: Decision = {
         id: '2',
         type: 'node:decision',
         position: { x: 71.4, y: 297.8 },
@@ -86,7 +91,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node2);
 
-    const node3: SNode = {
+    const node3: Process = {
         id: '3',
         type: 'node:process',
         position: { x: 102.35, y: 517.8 },
@@ -107,7 +112,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node3);
 
-    const node4: SNode = {
+    const node4: Decision = {
         id: '4',
         type: 'node:decision',
         position: { x: 411.1, y: 297.8 },
@@ -130,10 +135,10 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node4);
 
-    const node5: SNode = {
+    const node5: Process = {
         id: '5',
         type: 'node:process',
-        position: { x: 395.7, y: 517.8},
+        position: { x: 395.7, y: 517.8 },
         children: [<SLabel>{
             id: '5_label',
             text: 'Wait for available nurse',
@@ -152,7 +157,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node5);
 
-    const node6: SNode = {
+    const node6: Process = {
         id: '6',
         type: 'node:process',
         position: { x: 722.3, y: 335.85 },
@@ -174,7 +179,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node6);
 
-    const node7: SNode = {
+    const node7: Decision = {
         id: '7',
         type: 'node:decision',
         position: { x: 736, y: 479.75 },
@@ -197,10 +202,10 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node7);
 
-    const node8: SNode = {
+    const node8: Process = {
         id: '8',
         type: 'node:process',
-        position: { x: 720.5, y: 699.75},
+        position: { x: 720.5, y: 699.75 },
         children: [<SLabel>{
             id: '8_label',
             text: 'Wait for available doctor',
@@ -219,7 +224,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node8);
 
-    const node9: SNode = {
+    const node9: Process = {
         id: '9',
         type: 'node:process',
         position: { x: 1055.7, y: 517.8 },
@@ -241,7 +246,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node9);
 
-    const node10: SNode = {
+    const node10: Decision = {
         id: '10',
         type: 'node:decision',
         position: { x: 1074.9, y: 661.7 },
@@ -264,7 +269,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node10);
 
-    const node11: SNode = {
+    const node11: Decision = {
         id: '11',
         type: 'node:decision',
         position: { x: 1065.75, y: 881.7 },
@@ -287,7 +292,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node11);
 
-    const node12: SNode = {
+    const node12: Process = {
         id: '12',
         type: 'node:process',
         position: { x: 1099.7, y: 1101.7 },
@@ -309,7 +314,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node12);
 
-    const node13: SNode = {
+    const node13: Terminal = {
         id: '13',
         type: 'node:terminal',
         position: { x: 1143.25, y: 1245.6 },
@@ -331,7 +336,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node13);
 
-    const node14: SNode = {
+    const node14: Process = {
         id: '14',
         type: 'node:process',
         position: { x: 1385.4, y: 699.75 },
@@ -353,7 +358,7 @@ export function initializeModel(): SModelRoot {
     };
     nodes.push(node14);
 
-    const node15: SNode = {
+    const node15: Process = {
         id: '15',
         type: 'node:process',
         position: { x: 1386.1, y: 919.75 },

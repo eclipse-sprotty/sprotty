@@ -16,53 +16,24 @@
 
 import { Container, ContainerModule } from "inversify";
 import {
-    CircularNodeView,
     ConsoleLogger,
     LogLevel,
-    SCompartmentImpl,
-    SCompartmentView,
-    SEdgeImpl,
-    SGraphImpl,
-    SGraphView,
-    SLabelImpl,
-    SLabelView,
-    SNodeImpl,
-    SPortImpl,
-    SRoutingHandleImpl,
-    SRoutingHandleView,
     TYPES,
-    configureModelElement,
     configureViewerOptions,
-    editLabelFeature,
-    loadDefaultModules,
-    moveFeature,
-    selectFeature
+    loadDefaultModules
 } from "sprotty";
+import { flowchartModule } from 'sprotty-library';
 import { FlowchartModelSource } from "./model-source";
-import { DecisionNodeView, EdgeLabel, EdgeWithArrow, ProcessNodeView, TerminalNodeView } from "./views";
 
 export default (containerId: string) => {
     require('../css/diagram.css');
 
-    const flowchartModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const module = new ContainerModule((bind, unbind, isBound, rebind) => {
         bind(TYPES.ModelSource).to(FlowchartModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
-
-        configureModelElement(context, 'graph', SGraphImpl, SGraphView);
-        configureModelElement(context, 'node:terminal', SNodeImpl, TerminalNodeView);
-        configureModelElement(context, 'node:process', SNodeImpl, ProcessNodeView);
-        configureModelElement(context, 'node:decision', SNodeImpl, DecisionNodeView);
-        configureModelElement(context, 'label', SLabelImpl, SLabelView, {enable: [editLabelFeature]});
-        configureModelElement(context, 'label:edge', SLabelImpl, EdgeLabel, {enable: [moveFeature, selectFeature, editLabelFeature]});
-        configureModelElement(context, 'edge', SEdgeImpl, EdgeWithArrow);
-        configureModelElement(context, 'routing-point', SRoutingHandleImpl, SRoutingHandleView);
-        configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
-        configureModelElement(context, 'port:in', SPortImpl, CircularNodeView);
-        configureModelElement(context, 'port:out', SPortImpl, CircularNodeView);
-        configureModelElement(context, 'compartment', SCompartmentImpl, SCompartmentView);
 
         configureViewerOptions(context, {
             needsClientLayout: true,
@@ -72,5 +43,6 @@ export default (containerId: string) => {
     const container = new Container();
     loadDefaultModules(container);
     container.load(flowchartModule);
+    container.load(module);
     return container;
 };
