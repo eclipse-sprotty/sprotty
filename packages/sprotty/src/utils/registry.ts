@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,16 @@ export class FactoryRegistry<T, U> {
             throw new Error('Key is undefined');
         }
         if (this.hasKey(key)) {
-            throw new Error('Key is already registered: ' + key);
+            throw new Error(`Key is already registered: ${key}. Use \`overrideModelElement\` instead.`);
+        }
+        this.elements.set(key, factory);
+    }
+
+    override(key: string, factory: (u: U) => T) {
+        if (key === undefined) {
+            throw new Error('Key is undefined');
+        } else if (!this.hasKey(key)) {
+            throw new Error(`Key is not registered: ${key}. Use \`configureModelElement\` instead.`);
         }
         this.elements.set(key, factory);
     }
@@ -99,7 +108,16 @@ export class InstanceRegistry<T> {
             throw new Error('Key is undefined');
         }
         if (this.hasKey(key)) {
-            throw new Error('Key is already registered: ' + key);
+            throw new Error(`Key is already registered: ${key}. Use \`overrideModelElement\` instead.`);
+        }
+        this.elements.set(key, instance);
+    }
+
+    override(key: string, instance: T) {
+        if (key === undefined) {
+            throw new Error('Key is undefined');
+        } else if (!this.hasKey(key)) {
+            throw new Error(`Key is not registered: ${key}. Use \`configureModelElement\` instead.`);
         }
         this.elements.set(key, instance);
     }

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,6 +86,7 @@ export interface RenderingContext {
 export interface ViewRegistration {
     type: string
     factory: () => IView
+    isOverride?: boolean
 }
 
 export type ViewRegistrationFactory = () => ViewRegistration;
@@ -101,8 +102,13 @@ export class ViewRegistry extends InstanceRegistry<IView> {
     constructor(@multiInject(TYPES.ViewRegistration) @optional() registrations: ViewRegistration[]) {
         super();
         this.registerDefaults();
-        registrations.forEach(registration =>
-            this.register(registration.type, registration.factory())
+        registrations.forEach(registration => {
+            if (registration.isOverride) {
+                this.override(registration.type, registration.factory());
+            } else {
+                this.register(registration.type, registration.factory());
+            }
+        }
         );
     }
 
@@ -125,12 +131,20 @@ export function configureModelElement(context: { bind: interfaces.Bind, isBound:
     registerModelElement(context, type, modelConstr, features);
     configureView(context, type, viewConstr);
 }
+export function overrideModelElement(context: {bind: interfaces.Bind, isBound: interfaces.IsBound},
+        type: string, modelConstr: new () => SModelElementImpl, viewConstr: interfaces.ServiceIdentifier<IView>,
+        features?: CustomFeatures): void {
+    registerModelElement(context, type, modelConstr, features, true);
+    configureView(context, type, viewConstr, true);
+}
+
+
 
 /**
  * Utility function to register a view for a model element type.
  */
 export function configureView(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, constr: interfaces.ServiceIdentifier<IView>): void {
+        type: string, constr: interfaces.ServiceIdentifier<IView>, isOverride?: boolean): void {
     if (typeof constr === 'function') {
         if (!isInjectable(constr)) {
             throw new Error(`Views should be @injectable: ${constr.name}`);
@@ -141,7 +155,8 @@ export function configureView(context: { bind: interfaces.Bind, isBound: interfa
     }
     context.bind(TYPES.ViewRegistration).toDynamicValue(ctx => ({
         type,
-        factory: () => ctx.container.get(constr)
+        factory: () => ctx.container.get(constr),
+        isOverride
     }));
 }
 

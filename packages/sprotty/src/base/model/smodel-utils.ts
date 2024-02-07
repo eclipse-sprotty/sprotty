@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@ import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
  * Register a model element constructor for an element type.
  */
 export function registerModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, constr: new () => SModelElementImpl, features?: CustomFeatures): void {
+        type: string, constr: new () => SModelElementImpl, features?: CustomFeatures, isOverride?: boolean): void {
     context.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
-        type, constr, features
+        type, constr, features, isOverride
     });
 }
 
