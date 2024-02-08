@@ -142,22 +142,46 @@ export interface BoundsAware extends Locateable {
     size: Dimension
 }
 
-export type ModelLayoutOptions = { [key: string]: string | number | boolean };
-
 /**
  * Feature extension interface for `layoutableChildFeature`. This is used when the parent
  * element has a `layout` property (meaning it's a `LayoutContainer`).
- */
+*/
 export interface LayoutableChild extends BoundsAware {
     layoutOptions?: ModelLayoutOptions
 }
 
 /**
+ * Layout options of a `LayoutableChild`.
+ */
+export interface ModelLayoutOptions {
+    hAlign?: HAlignment
+    hGap?: number
+    vAlign?: VAlignment
+    vGap?: number
+    paddingTop?: number
+    paddingRight?: number
+    paddingBottom?: number
+    paddingLeft?: number
+    paddingFactor?: number
+    minWidth?: number
+    minHeight?: number
+    resizeContainer?: boolean
+    [key: string]: string | number | boolean | undefined};
+
+export type HAlignment = 'left' | 'center' | 'right';
+export type VAlignment = 'top' | 'center' | 'bottom';
+
+/**
  * Used to identify model elements that specify a layout to apply to their children.
  */
 export interface LayoutContainer extends LayoutableChild {
-    layout: string
+    layout: Layout
 }
+
+/**
+ * Type for the layout property of a `LayoutContainer`.
+ */
+export type Layout = 'stack' | 'vbox' | 'hbox' | (string & {});
 
 /**
  * Feature extension interface for `alignFeature`.
