@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,13 +34,25 @@ export class SModelRegistry extends FactoryRegistry<SModelElementImpl, void> {
                 defaultFeatures = [];
             if (defaultFeatures) {
                 const featureSet = createFeatureSet(defaultFeatures, registration.features);
-                this.register(registration.type, () => {
-                    const element = new registration.constr();
-                    element.features = featureSet;
-                    return element;
-                });
+                if (registration.isOverride) {
+                    this.override(registration.type, () => {
+                        const element = new registration.constr();
+                        element.features = featureSet;
+                        return element;
+                    });
+                } else {
+                    this.register(registration.type, () => {
+                        const element = new registration.constr();
+                        element.features = featureSet;
+                        return element;
+                    });
+                }
             } else {
-                this.register(registration.type, () => new registration.constr());
+                if (registration.isOverride) {
+                    this.override(registration.type, () => new registration.constr());
+                } else {
+                    this.register(registration.type, () => new registration.constr());
+                }
             }
         });
     }
@@ -177,6 +189,7 @@ export interface SModelElementRegistration {
     type: string
     constr: SModelElementConstructor
     features?: CustomFeatures
+    isOverride?: boolean
 }
 
 export interface SModelElementConstructor {
