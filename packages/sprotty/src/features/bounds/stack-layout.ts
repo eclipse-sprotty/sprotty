@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,11 @@ import { injectable } from 'inversify';
 import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SParentElementImpl, SChildElementImpl } from "../../base/model/smodel";
 import { AbstractLayout } from './abstract-layout';
-import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
+import { AbstractLayoutOptions } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { InternalLayoutContainer, isLayoutableChild } from './model';
 import { StatefulLayouter } from './layout';
+import { VAlignment, HAlignment } from 'sprotty-protocol/lib/model';
 
 export interface StackLayoutOptions extends AbstractLayoutOptions {
     paddingFactor: number

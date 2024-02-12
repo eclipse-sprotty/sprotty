@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,10 @@ import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SParentElementImpl, SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { isLayoutContainer, isLayoutableChild, InternalLayoutContainer, isBoundsAware } from './model';
 import { ILayout, StatefulLayouter } from './layout';
-import { AbstractLayoutOptions, HAlignment, VAlignment } from './layout-options';
+import { AbstractLayoutOptions } from './layout-options';
 import { BoundsData } from './hidden-bounds-updater';
 import { injectable } from 'inversify';
+import { HAlignment, VAlignment } from 'sprotty-protocol/lib/model';
 
 @injectable()
 export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements ILayout {
