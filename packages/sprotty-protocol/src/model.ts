@@ -166,7 +166,8 @@ export interface ModelLayoutOptions {
     minWidth?: number
     minHeight?: number
     resizeContainer?: boolean
-    [key: string]: string | number | boolean | undefined};
+    [key: string]: string | number | boolean | undefined
+};
 
 export type HAlignment = 'left' | 'center' | 'right';
 export type VAlignment = 'top' | 'center' | 'bottom';
@@ -175,13 +176,13 @@ export type VAlignment = 'top' | 'center' | 'bottom';
  * Used to identify model elements that specify a layout to apply to their children.
  */
 export interface LayoutContainer extends LayoutableChild {
-    layout: Layout
+    layout: LayoutKind
 }
 
 /**
  * Type for the layout property of a `LayoutContainer`.
  */
-export type Layout = 'stack' | 'vbox' | 'hbox' | (string & {});
+export type LayoutKind = 'stack' | 'vbox' | 'hbox' | (string & {});
 
 /**
  * Feature extension interface for `alignFeature`.
