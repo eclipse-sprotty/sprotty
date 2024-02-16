@@ -2,6 +2,10 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.1.1 (Feb. 2024)
+
+ * Excluded `snabbdom` versions 3.6.x from dependencies and removed `inversify` from peer dependencies ([#429](https://github.com/eclipse-sprotty/sprotty/pull/429)).
+
 ### v1.1.0 (Jan. 2024)
 
  * Resolved a [license issue](https://gitlab.eclipse.org/eclipsefdn/emo-team/iplab/-/issues/10784) regarding `jsdom` (it was only used as a dev-dependency).
