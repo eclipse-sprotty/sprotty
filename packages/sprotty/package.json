@@ -21,14 +21,11 @@
     "url": "https://github.com/eclipse-sprotty/sprotty",
     "directory": "packages/sprotty"
   },
-  "peerDependencies": {
-    "inversify": "~6.0.2"
-  },
   "dependencies": {
-    "autocompleter": "^9.1.0",
+    "autocompleter": "^9.1.2",
     "file-saver": "^2.0.5",
     "inversify": "~6.0.2",
-    "snabbdom": "^3.5.1",
+    "snabbdom": "~3.5.1",
     "sprotty-protocol": "^1.1.0",
     "tinyqueue": "^2.0.3"
   },

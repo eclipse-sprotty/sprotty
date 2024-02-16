@@ -1745,10 +1745,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-autocompleter@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/autocompleter/-/autocompleter-9.1.0.tgz#c7248a8cc0c58376d0969734c40e29626d950f04"
-  integrity sha512-dwAYJTaLHj1MpzCZXFg8WLmk+tgQ85OEDFfBegGnA+uVUZyzW/PZAdjSXR3fOt0+q8ZeEfMDiHDqw60uoF1NDg==
+autocompleter@^9.1.2:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/autocompleter/-/autocompleter-9.1.2.tgz#1f30c2db277de029a05a3fbbfac642e73ca107c1"
+  integrity sha512-L4DJ2UIsIy/YrTchKHHfyQRng2p8m9xpari1uHYZ/5DynQombeshF73uVQbrtdLxLSlK0R7ObhpnbPBkI8j8xA==
 
 axios@^1.0.0:
   version "1.6.1"
@@ -5808,7 +5808,7 @@ snabbdom-to-html@^7.1.0:
     object-assign "^4.1.0"
     parse-sel "^1.0.0"
 
-snabbdom@^3.5.1:
+snabbdom@~3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/snabbdom/-/snabbdom-3.5.1.tgz#25f80ef15b194baea703d9d5441892e369de18e1"
   integrity sha512-wHMNIOjkm/YNE5EM3RCbr/+DVgPg6AqQAX1eOxO46zYNvCXjKP5Y865tqQj3EXnaMBjkxmQA5jFuDpDK/dbfiA==
