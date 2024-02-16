@@ -48,9 +48,14 @@ function normalizeAttrs(source: VNodeData | null, defNS: string, namespace?: str
   Object.keys(source).forEach(key => {
     if (key === 'key' || key === 'classNames' || key === 'selector') return;
     const idx = key.indexOf('-');
-    if (idx > 0)
-      addAttr(key.slice(0, idx), key.slice(idx + 1), source[key]);
-    else if (!data[key])
+    if (idx > 0) {
+      const modname = key.slice(0, idx);
+      if (modulesNS.includes(modname)) {
+        addAttr(modname, key.slice(idx + 1), source[key]);
+      } else {
+        addAttr(defNS, key, source[key]);
+      }
+    } else if (!data[key])
       addAttr(defNS, key, source[key]);
   });
   return data;
@@ -63,7 +68,10 @@ function normalizeAttrs(source: VNodeData | null, defNS: string, namespace?: str
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function JSX(namespace?: string, defNS: string = 'props') {
-  return (tag: FunctionComponent | string, attrs: VNodeData | null, ...children: JsxVNodeChild[]) => jsx(tag, normalizeAttrs(attrs, defNS, namespace), children);
+  return (tag: FunctionComponent | string, attrs: VNodeData | null, ...children: JsxVNodeChild[]) => {
+    const isComponent = typeof tag === 'function';
+    return jsx(tag, (isComponent ? attrs : normalizeAttrs(attrs, defNS, namespace)), children);
+  };
 }
 
 const html = JSX();

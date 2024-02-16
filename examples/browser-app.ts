@@ -23,6 +23,7 @@ import runRandomGraphDistributed from "./random-graph-distributed/src/standalone
 import runSvgPreRendered from "./svg/src/standalone";
 import runMulticore from "./multicore/src/multicore";
 import runFlowchart from "./flowchart/src/standalone";
+import runJsxample from "./jsxample/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -41,6 +42,8 @@ if (appDiv) {
         runMulticore();
     else if (appMode === 'flowchart')
         runFlowchart();
+    else if (appMode === 'jsxample')
+        runJsxample();
     else
         throw new Error('Dunno what to do :-(');
 }
