@@ -22,6 +22,7 @@ import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
 import { SModelRootImpl } from "../model/smodel";
 import { IModelFactory } from "../model/smodel-factory";
 import { IViewer } from "../views/viewer";
+import { hasOwnProperty } from 'sprotty-protocol';
 
 /**
  * A command holds the behaviour of an action.
@@ -57,10 +58,11 @@ export interface ICommand {
  */
 export interface IStoppableCommand extends ICommand {
     stopExecution(): void
+    stoppableCommandKey: string
 }
 
 export function isStoppableCommand(command: any): command is IStoppableCommand {
-    return command && 'stopExecution' in command && typeof command.stopExecution === 'function';
+    return command &&  hasOwnProperty(command, 'stoppableCommandKey') && 'stopExecution' in command && typeof command.stopExecution === 'function';
 }
 
 /**

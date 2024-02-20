@@ -218,11 +218,11 @@ export class CommandStack implements ICommandStack {
         // If the command implements the IStoppableCommand interface, we first need to stop the execution of the
         // previous command with the same action kind and then store the new command as the last stoppable command.
         if (isStoppableCommand(command)) {
-            const stoppableCommand = this.stoppableCommands.get((command as any).action.kind);
+            const stoppableCommand = this.stoppableCommands.get(command.stoppableCommandKey);
             if (stoppableCommand) {
                 stoppableCommand.stopExecution();
             }
-            this.stoppableCommands.set((command as any).action.kind, command);
+            this.stoppableCommands.set(command.stoppableCommandKey, command);
         }
 
         this.currentPromise = this.currentPromise.then(state =>
