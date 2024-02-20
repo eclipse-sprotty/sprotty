@@ -70,9 +70,13 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
     protected edgeMementi: EdgeMemento[] = [];
     protected animation: Animation | undefined;
 
+    stoppableCommandKey: string;
+
     constructor(@inject(TYPES.Action) protected readonly action: MoveAction) {
         super();
+        this.stoppableCommandKey = MoveCommand.KIND;
     }
+
 
     // stop the execution of the CompoundAnimation started below
     stopExecution(): void {
