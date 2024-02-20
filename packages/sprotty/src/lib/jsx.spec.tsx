@@ -53,4 +53,33 @@ describe("JSX", () => {
             [])
         );
     });
+
+    it("should convert a JSX function component to a vnode", () => {
+        const MyComponent = (props: { name: string }) => <text>{props.name}</text>;
+        expect(<MyComponent name="foo"/>).to.deep.equal(
+            MyComponent({ name: "foo" })
+        );
+
+        expect(MyComponent({ name: "foo" })).to.deep.equal(
+            h('text', {
+                ns: svgNS
+            },
+            'foo')
+        );
+    });
+
+    it("should convert regular svg attributes to vnode attributes", () => {
+        const element = <g>
+            <rect stroke-width={5} x={10} y={20} width={30} height={40}/>
+        </g>;
+
+        expect(element.children[0]).to.deep.equal(
+            h('rect', {
+                ns: svgNS,
+                attrs: { 'stroke-width': 5, x: 10, y: 20, width: 30, height: 40 }
+            },
+            [])
+        );
+    });
+
 });
