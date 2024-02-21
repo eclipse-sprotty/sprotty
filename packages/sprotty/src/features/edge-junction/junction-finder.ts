@@ -31,7 +31,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
         this.findJunctions(routing, parent);
     }
 
-    findJunctions(routing: EdgeRouting, parent: SParentElementImpl) {
+    protected findJunctions(routing: EdgeRouting, parent: SParentElementImpl) {
         // gather all edges from the parent
         const edges = parent.children.filter(child => child instanceof SEdgeImpl) as SEdgeImpl[];
 
@@ -46,15 +46,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
             // we find all edges with the same source as the current edge, excluding the current edge
             const edgesWithSameSource = edges.filter(e => e.sourceId === edge.sourceId && e.id !== edge.id);
             // for each edge with the same source we find the corresponding route from the routing
-            const routesWithSameSource: RoutedPoint[][] = [];
-            edgesWithSameSource.forEach(e => {
-                const foundRoute = routing.get(e.id);
-                if (!foundRoute) {
-                    return;
-                }
-                routesWithSameSource.push(foundRoute);
-            });
-
+            const routesWithSameSource: RoutedPoint[][] = edgesWithSameSource.map(e => routing.get(e.id)).filter(r => r !== undefined) as RoutedPoint[][];
             // if there are any routes with the same source, we find the junction points
             if (routesWithSameSource.length > 0) {
                 this.findJunctionPointsWithSameSource(route, routesWithSameSource);
@@ -63,15 +55,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
             // we find all edges with the same target as the current edge, excluding the current edge
             const edgesWithSameTarget = edges.filter(e => e.targetId === edge.targetId && e.id !== edge.id);
             // for each edge with the same target we find the corresponding route from the routing
-            const routesWithSameTarget: RoutedPoint[][] = [];
-            edgesWithSameTarget.forEach(e => {
-                const routeOfGivenEdge = routing.get(e.id);
-                if (!routeOfGivenEdge) {
-                    return;
-                }
-                routesWithSameTarget.push(routeOfGivenEdge);
-            });
-
+            const routesWithSameTarget: RoutedPoint[][] = edgesWithSameTarget.map(e => routing.get(e.id)).filter(r => r !== undefined) as RoutedPoint[][];
             // if there are any routes with the same target, we find the junction points
             if (routesWithSameTarget.length > 0) {
                 this.findJunctionPointsWithSameTarget(route, routesWithSameTarget);
@@ -84,7 +68,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
     /**
      * Finds the junction points of routes with the same source
      */
-    findJunctionPointsWithSameSource(route: RoutedPoint[], otherRoutes: RoutedPoint[][]) {
+    protected findJunctionPointsWithSameSource(route: RoutedPoint[], otherRoutes: RoutedPoint[][]) {
         for (const otherRoute of otherRoutes) {
             // finds the index where the two routes diverge
             const junctionIndex: number = this.getJunctionIndex(route, otherRoute);
@@ -103,7 +87,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
     /**
      * Finds the junction points of routes with the same target
      */
-    findJunctionPointsWithSameTarget(route: RoutedPoint[], otherRoutes: RoutedPoint[][]) {
+    protected findJunctionPointsWithSameTarget(route: RoutedPoint[], otherRoutes: RoutedPoint[][]) {
         // we reverse the route so that the target is considered the source for the algorithm
         route.reverse();
         for (const otherRoute of otherRoutes) {
@@ -131,7 +115,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
      * If the segments have different directions, the junction point is the previous common point.
      * If the segments have the same direction, the junction point is the point with the greatest or lowest value axis value depending on the direction.
      */
-    setJunctionPoints(route: RoutedPoint[], otherRoute: RoutedPoint[], junctionIndex: number) {
+    protected setJunctionPoints(route: RoutedPoint[], otherRoute: RoutedPoint[], junctionIndex: number) {
         const firstSegmentDirection = this.getSegmentDirection(route[junctionIndex - 1], route[junctionIndex]);
         const secondSegmentDirection = this.getSegmentDirection(otherRoute[junctionIndex - 1], otherRoute[junctionIndex]);
 
@@ -178,7 +162,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
      * This is used when two segments have the same direction but the other axis is different.
      * For example if the routes are going in opposite directions, or if the route don't split orthogonally.
      */
-    setPreviousPointAsJunction(route: RoutedPoint[], sameSourceRoute: RoutedPoint[], junctionIndex: number) {
+    protected setPreviousPointAsJunction(route: RoutedPoint[], sameSourceRoute: RoutedPoint[], junctionIndex: number) {
         route[junctionIndex - 1].isJunction = true;
         sameSourceRoute[junctionIndex - 1].isJunction = true;
     }
@@ -187,7 +171,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
      * Get the main direction of a segment.
      * The main direction is the axis with the greatest difference between the two points.
      */
-    getSegmentDirection(firstPoint: RoutedPoint, secondPoint: RoutedPoint) {
+    protected getSegmentDirection(firstPoint: RoutedPoint, secondPoint: RoutedPoint) {
         const dX = secondPoint.x - firstPoint.x;
         const dY = secondPoint.y - firstPoint.y;
 
@@ -215,7 +199,7 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
      * Finds the index where two routes diverge.
      * Returns -1 if no divergence can be found.
      */
-    getJunctionIndex(firstRoute: RoutedPoint[], secondRoute: RoutedPoint[]): number {
+    protected getJunctionIndex(firstRoute: RoutedPoint[], secondRoute: RoutedPoint[]): number {
         let idx = 0;
         while (idx < firstRoute.length && idx < secondRoute.length) {
             if (firstRoute[idx].x !== secondRoute[idx].x
