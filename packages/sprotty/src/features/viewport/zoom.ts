@@ -25,6 +25,7 @@ import { MouseListener } from '../../base/views/mouse-tool';
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { getWindowScroll } from '../../utils/browser';
 import { isViewport } from './model';
+import { limit } from '../../utils/geometry';
 
 export function getZoom(label: SModelElementImpl) {
     let zoom = 1;
@@ -71,7 +72,10 @@ export class ZoomMouseListener extends MouseListener {
             || zoomFactor < 1 && almostEquals(viewport.zoom, this.viewerOptions.zoomLimits.min)) {
             return;
         }
-        const zoom = viewport.zoom * zoomFactor;
+
+        // 'limitViewport' used by 'SetViewportCommand' will set the zoom to the min max level
+        // so we need to do this here to to avoid 'jumps' of the diagram based on the viewport.scroll
+        const zoom = limit(viewport.zoom * zoomFactor, this.viewerOptions.zoomLimits);
         const viewportOffset = this.getViewportOffset(target.root, event);
         const offsetFactor = 1.0 / zoom - 1.0 / viewport.zoom;
         return {
