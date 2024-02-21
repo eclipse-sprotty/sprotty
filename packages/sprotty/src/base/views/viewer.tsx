@@ -151,7 +151,15 @@ export class ModelViewer implements IViewer {
             this.lastVDOM = this.patcher.call(this, this.lastVDOM, newVDOM);
             this.restoreFocus(hadFocus);
         } else if (typeof document !== 'undefined') {
-            const placeholder = document.getElementById(this.options.baseDiv);
+            let placeholder = null;
+            if (this.options.shadowRoot) {
+                const shadowRoot = document.getElementById(this.options.shadowRoot)?.shadowRoot;
+                if (shadowRoot) {
+                    placeholder = shadowRoot.getElementById(this.options.baseDiv);
+                }
+            } else {
+                placeholder = document.getElementById(this.options.baseDiv);
+            }
             if (placeholder !== null) {
                 if (typeof window !== 'undefined') {
                     window.addEventListener('resize', () => {
