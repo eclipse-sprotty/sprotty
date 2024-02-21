@@ -15,7 +15,19 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { SEdgeImpl, SGraphImpl, SGraphView, SLabelImpl, SLabelView, SNodeImpl, SRoutingHandleImpl, SRoutingHandleView, configureModelElement } from "sprotty";
+import {
+    CircularNode,
+    DiamondNode,
+    RectangularNode,
+    SEdgeImpl,
+    SGraphImpl,
+    SGraphView,
+    SLabelImpl,
+    SLabelView,
+    SRoutingHandleImpl,
+    SRoutingHandleView,
+    configureModelElement
+} from "sprotty";
 import {
     AlternateProcessNodeView,
     CommentNodeView,
@@ -47,25 +59,25 @@ export const flowchartModule = new ContainerModule((bind, unbind, isBound, rebin
     configureModelElement(context, 'graph', SGraphImpl, SGraphView);
 
     // Register nodes
-    configureModelElement(context, 'node:terminal', SNodeImpl, TerminalNodeView);
-    configureModelElement(context, 'node:process', SNodeImpl, ProcessNodeView);
-    configureModelElement(context, 'node:decision', SNodeImpl, DecisionNodeView);
-    configureModelElement(context, 'node:input', SNodeImpl, InputOutputNodeView);
-    configureModelElement(context, 'node:output', SNodeImpl, InputOutputNodeView);
-    configureModelElement(context, 'node:comment', SNodeImpl, CommentNodeView);
-    configureModelElement(context, 'node:predefined-process', SNodeImpl, PredefinedProcessNodeView);
-    configureModelElement(context, 'node:on-page-connector', SNodeImpl, OnPageConnectorNodeView);
-    configureModelElement(context, 'node:off-page-connector', SNodeImpl, OffPageConnectorNodeView);
-    configureModelElement(context, 'node:delay', SNodeImpl, DelayNodeView);
-    configureModelElement(context, 'node:alternate-process', SNodeImpl, AlternateProcessNodeView);
-    configureModelElement(context, 'node:data', SNodeImpl, DataNodeView);
-    configureModelElement(context, 'node:document', SNodeImpl, DocumentNodeView);
-    configureModelElement(context, 'node:multi-document', SNodeImpl, MultiDocumentNodeView);
-    configureModelElement(context, 'node:preparation', SNodeImpl, PreparationNodeView);
-    configureModelElement(context, 'node:display', SNodeImpl, DisplayNodeView);
-    configureModelElement(context, 'node:manual-input', SNodeImpl, ManualInputNodeView);
-    configureModelElement(context, 'node:manual-operation', SNodeImpl, ManualOperationNodeView);
-    configureModelElement(context, 'node:database', SNodeImpl, DatabaseNodeView);
+    configureModelElement(context, 'node:terminal', RectangularNode, TerminalNodeView);
+    configureModelElement(context, 'node:process', RectangularNode, ProcessNodeView);
+    configureModelElement(context, 'node:decision', DiamondNode, DecisionNodeView);
+    configureModelElement(context, 'node:input', RectangularNode, InputOutputNodeView);
+    configureModelElement(context, 'node:output', RectangularNode, InputOutputNodeView);
+    configureModelElement(context, 'node:comment', RectangularNode, CommentNodeView);
+    configureModelElement(context, 'node:predefined-process', RectangularNode, PredefinedProcessNodeView);
+    configureModelElement(context, 'node:on-page-connector', CircularNode, OnPageConnectorNodeView);
+    configureModelElement(context, 'node:off-page-connector', RectangularNode, OffPageConnectorNodeView);
+    configureModelElement(context, 'node:delay', RectangularNode, DelayNodeView);
+    configureModelElement(context, 'node:alternate-process', RectangularNode, AlternateProcessNodeView);
+    configureModelElement(context, 'node:data', RectangularNode, DataNodeView);
+    configureModelElement(context, 'node:document', RectangularNode, DocumentNodeView);
+    configureModelElement(context, 'node:multi-document', RectangularNode, MultiDocumentNodeView);
+    configureModelElement(context, 'node:preparation', RectangularNode, PreparationNodeView);
+    configureModelElement(context, 'node:display', RectangularNode, DisplayNodeView);
+    configureModelElement(context, 'node:manual-input', RectangularNode, ManualInputNodeView);
+    configureModelElement(context, 'node:manual-operation', RectangularNode, ManualOperationNodeView);
+    configureModelElement(context, 'node:database', RectangularNode, DatabaseNodeView);
 
     // Register labels
     configureModelElement(context, 'label', SLabelImpl, SLabelView);
