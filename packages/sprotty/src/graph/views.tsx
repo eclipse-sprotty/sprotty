@@ -93,7 +93,11 @@ export class PolylineEdgeView extends RoutableView {
                 junctionPoints.push(<circle cx={route[i].x} cy={route[i].y} r={5} class-sprotty-junction={true}/>);
             }
         }
-        return <g>{junctionPoints}</g>;
+        if (junctionPoints.length > 0) {
+            return <g>{junctionPoints}</g>;
+        }
+
+        return undefined;
     }
 
     protected renderLine(edge: SEdgeImpl, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
