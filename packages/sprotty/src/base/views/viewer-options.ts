@@ -77,10 +77,11 @@ export function configureViewerOptions(context: { bind: interfaces.Bind, isBound
         ...defaultViewerOptions(),
         ...options
     };
-    if (context.isBound(TYPES.ViewerOptions))
+    if (context.isBound(TYPES.ViewerOptions)) {
         context.rebind(TYPES.ViewerOptions).toConstantValue(opt);
-    else
+    } else {
         context.bind(TYPES.ViewerOptions).toConstantValue(opt);
+    }
 }
 
 /**

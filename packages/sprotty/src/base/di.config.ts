@@ -21,7 +21,7 @@ import { LogLevel, NullLogger } from "../utils/logging";
 import { ActionDispatcher, IActionDispatcher } from "./actions/action-dispatcher";
 import { ActionHandlerRegistry } from "./actions/action-handler";
 import { CommandStack, ICommandStack } from "./commands/command-stack";
-import { CommandStackOptions } from "./commands/command-stack-options";
+import { CommandStackOptions, defaultCommandStackOptions } from "./commands/command-stack-options";
 import { SModelFactory, SModelRegistry } from './model/smodel-factory';
 import { AnimationFrameSyncer } from "./animations/animation-frame-syncer";
 import { IViewer, ModelViewer, HiddenModelViewer, PopupModelViewer, ModelRenderer, PatcherProvider } from "./views/viewer";
@@ -82,10 +82,7 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
             });
         };
     });
-    bind<CommandStackOptions>(TYPES.CommandStackOptions).toConstantValue({
-        defaultDuration: 250,
-        undoHistoryLimit: 50
-    });
+    bind<CommandStackOptions>(TYPES.CommandStackOptions).toConstantValue(defaultCommandStackOptions());
 
     // Viewer ---------------------------------------------
     bind(ModelViewer).toSelf().inSingletonScope();
