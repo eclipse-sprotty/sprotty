@@ -312,6 +312,10 @@ export class ElkLayoutEngine implements IModelLayoutEngine {
                 points.push(elkEdge.targetPoint);
             }
         }
+        // if x or y of first and last point are equal then use only them and leave the middle points
+        if (points.length > 1 && (points[0].x === points[points.length - 1].x || points[0].y === points[points.length - 1].y)) {
+            points.splice(1, points.length - 2);
+        }
         sedge.routingPoints = points;
 
         if (elkEdge.labels) {
