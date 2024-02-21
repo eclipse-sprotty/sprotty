@@ -17,11 +17,12 @@
 import { LocalModelSource, TYPES } from 'sprotty';
 import { BringToFrontAction, FitToScreenAction } from 'sprotty-protocol';
 import createContainer from './di.config';
+import { initializeModel } from './data';
 
 export default async function runFlowchart() {
     const container = createContainer('sprotty');
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    await modelSource.updateModel();
+    await modelSource.updateModel(initializeModel());
 
     const bringToFrontAction: BringToFrontAction = {
         kind: 'bringToFront',

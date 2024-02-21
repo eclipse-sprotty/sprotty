@@ -16,12 +16,8 @@
     "author": {
         "name": "Eclipse Sprotty"
     },
-    "peerDependencies": {
-        "inversify": "~6.0.2"
-    },
     "dependencies": {
-        "sprotty": "^1.1.0",
-        "sprotty-protocol": "^1.1.0"
+        "sprotty": "^1.1.0"
     },
     "devDependencies": {},
     "repository": {

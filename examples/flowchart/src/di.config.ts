@@ -17,19 +17,19 @@
 import { Container, ContainerModule } from "inversify";
 import {
     ConsoleLogger,
+    LocalModelSource,
     LogLevel,
     TYPES,
     configureViewerOptions,
     loadDefaultModules
 } from "sprotty";
-import { flowchartModule } from 'sprotty-library';
-import { FlowchartModelSource } from "./model-source";
+import { Flowchart } from 'sprotty-library';
 
 export default (containerId: string) => {
     require('../css/diagram.css');
 
     const module = new ContainerModule((bind, unbind, isBound, rebind) => {
-        bind(TYPES.ModelSource).to(FlowchartModelSource).inSingletonScope();
+        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
@@ -42,7 +42,7 @@ export default (containerId: string) => {
 
     const container = new Container();
     loadDefaultModules(container);
-    container.load(flowchartModule);
+    container.load(Flowchart.flowchartModule);
     container.load(module);
     return container;
 };
