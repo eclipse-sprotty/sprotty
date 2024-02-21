@@ -38,6 +38,7 @@ import { PolylineEdgeRouter } from "./polyline-edge-router";
 export interface RoutedPoint extends Point {
     kind: 'source' | 'target' | 'linear' | 'bezier-control-before' | 'bezier-junction' | 'bezier-control-after'
     pointIndex?: number
+    isJunction?: boolean
 }
 
 /**
@@ -147,7 +148,7 @@ function isMultipleEdgesRouter(
 
 /** A postprocessor that is applied to all routes, once they are computed. */
 export interface IEdgeRoutePostprocessor {
-    apply(routing: EdgeRouting): void;
+    apply(routing: EdgeRouting, parent?: SParentElementImpl): void;
 }
 
 @injectable()
@@ -178,7 +179,7 @@ export class EdgeRouterRegistry extends InstanceRegistry<IEdgeRouter> {
     routeAllChildren(parent: Readonly<SParentElementImpl>): EdgeRouting {
         const routing = this.doRouteAllChildren(parent);
         for (const postProcessor of this.postProcessors) {
-            postProcessor.apply(routing);
+            postProcessor.apply(routing, parent);
         }
         return routing;
     }

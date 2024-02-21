@@ -81,8 +81,19 @@ export class PolylineEdgeView extends RoutableView {
         return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
             {this.renderLine(edge, route, context, args)}
             {this.renderAdditionals(edge, route, context)}
+            {this.renderJunctionPoints(edge, route, context, args)}
             {context.renderChildren(edge, { route })}
         </g>;
+    }
+
+    protected renderJunctionPoints(edge: Readonly<SEdgeImpl>, route: RoutedPoint[], context: RenderingContext, args: IViewArgs | undefined) {
+        const junctionPoints = [];
+        for (let i = 1; i < route.length; i++) {
+            if (route[i].isJunction) {
+                junctionPoints.push(<circle cx={route[i].x} cy={route[i].y} r={5} class-sprotty-junction={true}/>);
+            }
+        }
+        return <g>{junctionPoints}</g>;
     }
 
     protected renderLine(edge: SEdgeImpl, segments: Point[], context: RenderingContext, args?: IViewArgs): VNode {
