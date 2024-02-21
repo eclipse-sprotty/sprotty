@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container } from "inversify";
-import { safeAssign } from "sprotty-protocol/lib/utils/object";
+import { Container, interfaces } from 'inversify';
+import { safeAssign } from 'sprotty-protocol/lib/utils/object';
 import { TYPES } from '../types';
 
 /**
@@ -37,6 +37,31 @@ export interface CommandStackOptions {
     undoHistoryLimit: number
 }
 
+export const defaultCommandStackOptions: () => CommandStackOptions = () => ({
+    defaultDuration: 250,
+    undoHistoryLimit: 50
+});
+
+/**
+ * Utility function to partially set command stack options. Default values (from `defaultViewerOptions`) are used for
+ * options that are not specified.
+ */
+export function configureCommandStackOptions(context: { bind: interfaces.Bind, isBound: interfaces.IsBound, rebind: interfaces.Rebind },
+        options: Partial<CommandStackOptions>): void {
+    const opt: CommandStackOptions = {
+        ...defaultCommandStackOptions(),
+        ...options
+    };
+    if (context.isBound(TYPES.CommandStackOptions)) {
+        context.rebind(TYPES.CommandStackOptions).toConstantValue(opt);
+    } else {
+        context.bind(TYPES.CommandStackOptions).toConstantValue(opt);
+    }
+}
+
+/**
+ * Utility function to partially override the currently configured command stack options in a DI container.
+ */
 export function overrideCommandStackOptions(container: Container, options: Partial<CommandStackOptions>): CommandStackOptions {
     const defaultOptions = container.get<CommandStackOptions>(TYPES.CommandStackOptions);
     safeAssign(defaultOptions, options);
