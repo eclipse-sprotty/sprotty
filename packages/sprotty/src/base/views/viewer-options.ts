@@ -28,9 +28,9 @@ export interface ViewerOptions {
     hiddenDiv: string
     /** CSS class added to the base element of the hidden rendering. */
     hiddenClass: string
-    /** ID of the HTML element into which hover popup boxes are rendered. */
-    shadowRoot?: string
     /** ID of the HTML element holding the shadow root. */
+    shadowRoot?: string
+    /** ID of the HTML element into which hover popup boxes are rendered. */
     popupDiv: string
     /** CSS class added to the base element of popup boxes. */
     popupClass: string
