@@ -34,6 +34,7 @@
 .sprotty-node {
     stroke: var(--black);
     stroke-width: var(--stroke-normal);
+    fill: var(--white);
 }
 
 .sprotty-node.terminal {

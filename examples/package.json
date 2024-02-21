@@ -9,6 +9,7 @@
     "reflect-metadata": "~0.1.14",
     "sprotty": "^1.1.0",
     "sprotty-elk": "^1.1.0",
+    "sprotty-library": "^0.0.1",
     "ws": "^8.14.2"
   },
   "devDependencies": {

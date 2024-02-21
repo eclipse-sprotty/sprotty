@@ -13,27 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import * as Flowchart from './flowchart';
 
-import { LocalModelSource, TYPES } from 'sprotty';
-import { BringToFrontAction, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config';
-import { initializeModel } from './data';
-
-export default async function runFlowchart() {
-    const container = createContainer('sprotty');
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    await modelSource.updateModel(initializeModel());
-
-    const bringToFrontAction: BringToFrontAction = {
-        kind: 'bringToFront',
-        elementIDs: ['2-4', '10-11', '11-12']
-    };
-
-    const fitToScreenAction: FitToScreenAction = {
-        kind: 'fit',
-        animate: true,
-        elementIds: [],
-        padding: 20
-    };
-    await modelSource.actionDispatcher.dispatchAll([fitToScreenAction, bringToFrontAction]);
-}
+export { Flowchart };

@@ -1,0 +1,45 @@
+{
+    "name": "sprotty-library",
+    "version": "0.0.1",
+    "description": "Views and elements library for Sprotty",
+    "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
+    "keywords": [
+        "eclipse",
+        "graphics",
+        "diagram",
+        "modeling",
+        "visualization",
+        "svg"
+    ],
+    "homepage": "https://github.com/eclipse-sprotty/sprotty",
+    "bugs": "https://github.com/eclipse-sprotty/sprotty/issues",
+    "author": {
+        "name": "Eclipse Sprotty"
+    },
+    "dependencies": {
+        "sprotty": "^1.1.0"
+    },
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/eclipse-sprotty/sprotty",
+        "directory": "packages/sprotty-library"
+    },
+    "volta": {
+        "node": "18.19.0",
+        "yarn": "1.22.21"
+    },
+    "scripts": {
+        "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "test": "vitest run --config ../../vite.config.ts"
+    },
+    "files": [
+        "lib",
+        "css",
+        "src"
+    ],
+    "main": "lib/index",
+    "types": "lib/index"
+}
