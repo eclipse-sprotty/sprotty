@@ -148,7 +148,7 @@ function isMultipleEdgesRouter(
 
 /** A postprocessor that is applied to all routes, once they are computed. */
 export interface IEdgeRoutePostprocessor {
-    apply(routing: EdgeRouting, parent?: SParentElementImpl): void;
+    apply(routing: EdgeRouting, parent: SParentElementImpl): void;
 }
 
 @injectable()

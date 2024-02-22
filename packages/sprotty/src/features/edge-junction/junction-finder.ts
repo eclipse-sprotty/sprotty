@@ -27,48 +27,67 @@ import { EdgeRouting, IEdgeRoutePostprocessor, RoutedPoint } from "../routing/ro
  */
 @injectable()
 export class JunctionFinder implements IEdgeRoutePostprocessor {
+    /** Map of edges as SEdgeImpl for faster lookup by id */
+    protected edgesMap: Map<string, SEdgeImpl> = new Map();
+    /** Map of unique edges ids with the same source */
+    protected sourcesMap: Map<string, Set<string>> = new Map();
+    /** Map of unique edges ids with the same target */
+    protected targetsMap: Map<string, Set<string>> = new Map();
+
     apply(routing: EdgeRouting, parent: SParentElementImpl): void {
         this.findJunctions(routing, parent);
     }
 
     protected findJunctions(routing: EdgeRouting, parent: SParentElementImpl) {
         // gather all edges from the parent
-        const edges = parent.children.filter(child => child instanceof SEdgeImpl) as SEdgeImpl[];
+        const edges = Array.from(parent.index.all().filter(child => child instanceof SEdgeImpl)) as SEdgeImpl[];
+
+        // populate the maps for faster lookup
+        edges.forEach(edge => {
+            this.edgesMap.set(edge.id, edge);
+            const sameSources = this.sourcesMap.get(edge.sourceId);
+            if (sameSources) {
+                sameSources.add(edge.id);
+            } else {
+                this.sourcesMap.set(edge.sourceId, new Set([edge.id]));
+            }
+
+            const sameTargets = this.targetsMap.get(edge.targetId);
+            if (sameTargets) {
+                sameTargets.add(edge.id);
+            } else {
+                this.targetsMap.set(edge.targetId, new Set([edge.id]));
+            }
+        });
 
         routing.routes.forEach((route, routeId) => {
-            // for each route we find the corresponding edge from the model by matching the route id and the edge id
-            const edge = edges.find(e => e.id === routeId);
-
+            // for each route we find the corresponding edge from the edges map by matching the route id and the edge id
+            const edge = this.edgesMap.get(routeId);
             if (!edge) {
                 return;
             }
 
-            // we find all edges with the same source as the current edge, excluding the current edge
-            const edgesWithSameSource = edges.filter(e => e.sourceId === edge.sourceId && e.id !== edge.id);
-            // for each edge with the same source we find the corresponding route from the routing
-            const routesWithSameSource: RoutedPoint[][] = edgesWithSameSource.map(e => routing.get(e.id)).filter(r => r !== undefined) as RoutedPoint[][];
-            // if there are any routes with the same source, we find the junction points
-            if (routesWithSameSource.length > 0) {
-                this.findJunctionPointsWithSameSource(route, routesWithSameSource);
-            }
+            // find the junction points for edges with the same source
+            this.findJunctionPointsWithSameSource(edge, route, routing);
 
-            // we find all edges with the same target as the current edge, excluding the current edge
-            const edgesWithSameTarget = edges.filter(e => e.targetId === edge.targetId && e.id !== edge.id);
-            // for each edge with the same target we find the corresponding route from the routing
-            const routesWithSameTarget: RoutedPoint[][] = edgesWithSameTarget.map(e => routing.get(e.id)).filter(r => r !== undefined) as RoutedPoint[][];
-            // if there are any routes with the same target, we find the junction points
-            if (routesWithSameTarget.length > 0) {
-                this.findJunctionPointsWithSameTarget(route, routesWithSameTarget);
-            }
+            // find the junction points for edges with the same target
+            this.findJunctionPointsWithSameTarget(edge, route, routing);
         });
-
-
     }
 
     /**
      * Finds the junction points of routes with the same source
      */
-    protected findJunctionPointsWithSameSource(route: RoutedPoint[], otherRoutes: RoutedPoint[][]) {
+    protected findJunctionPointsWithSameSource(edge: SEdgeImpl, route: RoutedPoint[], routing: EdgeRouting) {
+        // get an array of edge/route ids with the same source as the current edge, excluding the current edge
+        const sourcesSet = this.sourcesMap.get(edge.sourceId);
+        if (!sourcesSet) {
+            return;
+        }
+        const otherRoutesIds = Array.from(sourcesSet).filter(id => id !== edge.id);
+        const otherRoutes = otherRoutesIds.map(id => routing.get(id)).filter(r => r !== undefined) as RoutedPoint[][];
+
+
         for (const otherRoute of otherRoutes) {
             // finds the index where the two routes diverge
             const junctionIndex: number = this.getJunctionIndex(route, otherRoute);
@@ -87,7 +106,16 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
     /**
      * Finds the junction points of routes with the same target
      */
-    protected findJunctionPointsWithSameTarget(route: RoutedPoint[], otherRoutes: RoutedPoint[][]) {
+    protected findJunctionPointsWithSameTarget(edge: SEdgeImpl, route: RoutedPoint[], routing: EdgeRouting) {
+        // get an array of edge/route ids with the same target as the current edge, excluding the current edge
+        const targetsSet = this.targetsMap.get(edge.targetId);
+        if (!targetsSet) {
+            return;
+        }
+        const otherRoutesIds = Array.from(targetsSet).filter(id => id !== edge.id);
+        const otherRoutes = otherRoutesIds.map(id => routing.get(id)).filter(r => r !== undefined) as RoutedPoint[][];
+
+
         // we reverse the route so that the target is considered the source for the algorithm
         route.reverse();
         for (const otherRoute of otherRoutes) {
@@ -132,8 +160,8 @@ export class JunctionFinder implements IEdgeRoutePostprocessor {
                 }
                 // depending on the direction, the junction point is the point with the greatest or lowest x value
                 route[junctionIndex].isJunction = firstSegmentDirection === 'left' ?
-                 route[junctionIndex].x > otherRoute[junctionIndex].x
-                 : route[junctionIndex].x < otherRoute[junctionIndex].x;
+                    route[junctionIndex].x > otherRoute[junctionIndex].x
+                    : route[junctionIndex].x < otherRoute[junctionIndex].x;
 
                 otherRoute[junctionIndex].isJunction = firstSegmentDirection === 'left' ?
                     otherRoute[junctionIndex].x > route[junctionIndex].x
