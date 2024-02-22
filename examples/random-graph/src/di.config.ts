@@ -19,7 +19,7 @@ import ElkConstructor from 'elkjs/lib/elk.bundled';
 import { Container, ContainerModule } from 'inversify';
 import {
     Animation, CommandExecutionContext, configureModelElement, configureViewerOptions, ConsoleLogger,
-    edgeIntersectionModule, isSelectable, isViewport, loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
+    edgeIntersectionModule, edgeJunctionModule, isSelectable, isViewport, loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
     RectangularNodeView, SEdgeImpl, SGraphImpl, SGraphView, SLabelImpl, SLabelView, SModelRootImpl, SNodeImpl, SPortImpl,
     TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
 } from 'sprotty';
@@ -64,6 +64,7 @@ export default (containerId: string) => {
     const container = new Container();
     loadDefaultModules(container);
     container.load(edgeIntersectionModule);
+    container.load(edgeJunctionModule);
     container.load(elkLayoutModule, randomGraphModule);
     return container;
 };
