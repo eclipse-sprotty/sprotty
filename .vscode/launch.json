@@ -5,9 +5,17 @@
             "name": "Vitest: Run All",
             "type": "node",
             "request": "launch",
-            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ],
             "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
-            "args": ["run", "--no-color", "--no-coverage", "--no-watch"],
+            "args": [
+                "run",
+                "--no-color",
+                "--no-coverage",
+                "--no-watch"
+            ],
             "smartStep": true,
             "console": "integratedTerminal",
         },
@@ -16,9 +24,15 @@
             "type": "node",
             "request": "launch",
             "autoAttachChildProcesses": true,
-            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ],
             "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
-            "args": ["run", "${relativeFile}"],
+            "args": [
+                "run",
+                "${relativeFile}"
+            ],
             "smartStep": true,
             "console": "integratedTerminal",
         },
@@ -41,6 +55,17 @@
                 "${workspaceFolder}/packages/sprotty-protocol/lib/**/*.js",
                 "${workspaceFolder}/packages/sprotty-elk/lib/**/*.js"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Trigger export command",
+            "runtimeExecutable": "${workspaceFolder}/packages/sprotty/bin/sprotty",
+            "args": [
+                "export",
+                "http://localhost:8080/jsxample/jsxample.html"
+            ],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
