@@ -91,11 +91,11 @@ export class PolylineEdgeView extends RoutableView {
         const junctionPoints = [];
         for (let i = 1; i < route.length; i++) {
             if (route[i].isJunction) {
-                junctionPoints.push(<circle cx={route[i].x} cy={route[i].y} r={radius} class-sprotty-junction={true}/>);
+                junctionPoints.push(<circle cx={route[i].x} cy={route[i].y} r={radius} />);
             }
         }
         if (junctionPoints.length > 0) {
-            return <g>{junctionPoints}</g>;
+            return <g class-sprotty-junction={true}>{junctionPoints}</g>;
         }
 
         return undefined;

@@ -17,10 +17,13 @@
 import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types";
 import { JunctionFinder } from "./junction-finder";
+import { JunctionPostProcessor } from "./junction-postprocessor";
 
 const edgeJunctionModule = new ContainerModule(bind => {
     bind(JunctionFinder).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRoutePostprocessor).toService(JunctionFinder);
+    bind(JunctionPostProcessor).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(JunctionPostProcessor);
 });
 
 export default edgeJunctionModule;
