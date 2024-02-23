@@ -21,8 +21,8 @@ export default async function runJsxample() {
     const container = createContainer('sprotty');
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
 
-    document.addEventListener('export', () => {
-        modelSource.actionDispatcher.dispatch(RequestExportSvgAction.create());
+    document.addEventListener('export', (event: CustomEvent) => {
+        modelSource.actionDispatcher.dispatch(RequestExportSvgAction.create(event.detail.fileName));
     });
 
     const graph = {

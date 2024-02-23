@@ -17,21 +17,37 @@
 import { Command } from 'commander';
 import puppeteer from 'puppeteer';
 
+interface ExportOptions {
+    output?: string
+    directory?: string
+}
+
 export function sprottyCli(argv: string[]): void {
     const program = new Command();
 
     program.command('export')
         .argument('<url>', 'The url of the Sprotty page')
-        .action(async (url: string) => {
+        .option('-o, --output <outputFile>', 'The output file', 'diagram.svg')
+        .option('-d, --directory <outputDirectory>', 'The output directory', undefined)
+        .action(async (url: string, options: ExportOptions) => {
             const browser = await puppeteer.launch();
             const page = await browser.newPage();
+            if (options.directory) {
+                const client = await page.createCDPSession();
+                await client.send('Page.setDownloadBehavior', {
+                    behavior: 'allow',
+                    downloadPath: options.directory
+                });
+            }
             await page.goto(url);
-            await page.evaluate(() => {
+            await page.evaluate((evalOptions) => {
                 // trigger the export
-                document.dispatchEvent(new Event('export'));
-            });
+                document.dispatchEvent(new CustomEvent('export', {detail: {fileName: evalOptions.output}}));
+            }, options);
 
-            // await browser.close();
+            // wait for the download to finish before closing the browser
+            await page.waitForNetworkIdle();
+            await browser.close();
         });
 
     program.parse(argv);
