@@ -41,14 +41,16 @@ export class ExportSvgKeyListener extends KeyListener {
 
 export interface RequestExportSvgAction extends RequestAction<ExportSvgAction> {
     kind: typeof RequestExportSvgAction.KIND
+    fileName: string
 }
 export namespace RequestExportSvgAction {
     export const KIND = 'requestExportSvg';
 
-    export function create(): RequestExportSvgAction {
+    export function create(fileName: string = 'diagram'): RequestExportSvgAction {
         return {
             kind: KIND,
-            requestId: generateRequestId()
+            requestId: generateRequestId(),
+            fileName: fileName
         };
     }
 }
@@ -83,7 +85,8 @@ export class ExportSvgCommand extends HiddenCommand {
         }
         return {
             model: context.root,
-            modelChanged: false
+            modelChanged: false,
+            cause: this.action
         };
     }
 }

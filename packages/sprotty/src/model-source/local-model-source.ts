@@ -278,6 +278,6 @@ export class LocalModelSource extends ModelSource {
 
     protected handleExportSvgAction(action: ExportSvgAction): void {
         const blob = new Blob([action.svg], { type: 'text/plain;charset=utf-8' });
-        saveAs(blob, 'diagram.svg');
+        saveAs(blob, action.fileName.endsWith('.svg') ? action.fileName : action.fileName + '.svg');
     }
 }

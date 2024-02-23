@@ -199,7 +199,7 @@ export abstract class DiagramServerProxy extends ModelSource {
 
     protected handleExportSvgAction(action: ExportSvgAction): boolean {
         const blob = new Blob([action.svg], { type: 'text/plain;charset=utf-8' });
-        saveAs(blob, 'diagram.svg');
+        saveAs(blob, action.fileName.endsWith('.svg') ? action.fileName : action.fileName + '.svg');
         return false;
     }
 

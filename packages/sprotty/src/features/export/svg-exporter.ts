@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable, inject } from "inversify";
-import { RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
+import { ResponseAction } from 'sprotty-protocol/lib/actions';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { isBoundsAware } from '../bounds/model';
@@ -23,20 +23,23 @@ import { ActionDispatcher } from '../../base/actions/action-dispatcher';
 import { TYPES } from '../../base/types';
 import { SModelRootImpl } from '../../base/model/smodel';
 import { ILogger } from '../../utils/logging';
+import { RequestExportSvgAction } from "./export";
 
 export interface ExportSvgAction extends ResponseAction {
     kind: typeof ExportSvgAction.KIND;
     svg: string
     responseId: string
+    fileName: string
 }
 export namespace ExportSvgAction {
     export const KIND = 'exportSvg';
 
-    export function create(svg: string, requestId: string): ExportSvgAction {
+    export function create(svg: string, requestId: string, fileName: string): ExportSvgAction {
         return {
             kind: KIND,
             svg,
-            responseId: requestId
+            responseId: requestId,
+            fileName: fileName
         };
     }
 }
@@ -48,7 +51,7 @@ export class SvgExporter {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: ActionDispatcher;
     @inject(TYPES.ILogger) protected log: ILogger;
 
-    export(root: SModelRootImpl, request?: RequestAction<ExportSvgAction>): void {
+    export(root: SModelRootImpl, request?: RequestExportSvgAction): void {
         if (typeof document !== 'undefined') {
             const hiddenDiv = document.getElementById(this.options.hiddenDiv);
             if (hiddenDiv === null) {
@@ -63,7 +66,7 @@ export class SvgExporter {
                 return;
             }
             const svg = this.createSvg(svgElement, root);
-            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : ''));
+            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : '', request ? request.fileName : 'diagram'));
         }
     }
 
