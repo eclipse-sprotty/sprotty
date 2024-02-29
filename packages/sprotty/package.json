@@ -23,10 +23,8 @@
   },
   "dependencies": {
     "autocompleter": "^9.1.2",
-    "commander": "^12.0.0",
     "file-saver": "^2.0.5",
     "inversify": "~6.0.2",
-    "puppeteer": "^22.2.0",
     "snabbdom": "~3.5.1",
     "sprotty-protocol": "^1.1.0",
     "tinyqueue": "^2.0.3"
@@ -47,14 +45,10 @@
     "test": "vitest run --config ../../vite.config.ts"
   },
   "files": [
-    "bin",
     "lib",
     "css",
     "src"
   ],
-  "bin": {
-    "sprotty": "bin/sprotty"
-  },
   "main": "lib/index",
   "types": "lib/index"
 }
