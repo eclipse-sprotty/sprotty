@@ -21,7 +21,7 @@ import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction } from 'sprotty-protocol/lib/actions';
 import { Animation, CompoundAnimation } from '../../base/animations/animation';
 import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn, IStoppableCommand } from '../../base/commands/command';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, isParent } from '../../base/model/smodel';
 import { findParentByFeature, translatePoint } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
 import { MouseListener } from '../../base/views/mouse-tool';
@@ -33,7 +33,7 @@ import { findChildrenAtPosition, isAlignable } from '../bounds/model';
 import { CreatingOnDrag, isCreatingOnDrag } from '../edit/create-on-drag';
 import { SwitchEditModeAction } from '../edit/edit-routing';
 import { ReconnectCommand } from '../edit/reconnect';
-import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SRoutableElementImpl, SRoutingHandleImpl } from '../routing/model';
+import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SConnectableElementImpl, SRoutableElementImpl, SRoutingHandleImpl } from '../routing/model';
 import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from '../routing/routing';
 import { isEdgeLayoutable } from '../edge-layout/model';
 import { isSelectable } from '../select/model';
@@ -106,16 +106,32 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
                 if (resolvedMove) {
                     this.resolvedMoves.set(resolvedMove.element.id, resolvedMove);
                     if (this.edgeRouterRegistry) {
-                        index.getAttachedElements(element).forEach(edge => {
-                            if (edge instanceof SRoutableElementImpl) {
-                                const existingDelta = attachedEdgeShifts.get(edge);
-                                const newDelta = Point.subtract(resolvedMove.toPosition, resolvedMove.fromPosition);
-                                const delta = (existingDelta)
-                                    ? Point.linear(existingDelta, newDelta, 0.5)
-                                    : newDelta;
-                                attachedEdgeShifts.set(edge, delta);
+                        const handleEdges = (el: SModelElementImpl) => {
+                            index.getAttachedElements(el).forEach(edge => {
+                                if (edge instanceof SRoutableElementImpl) {
+                                    const existingDelta = attachedEdgeShifts.get(edge);
+                                    const newDelta = Point.subtract(resolvedMove.toPosition, resolvedMove.fromPosition);
+                                    const delta = (existingDelta)
+                                        ? Point.linear(existingDelta, newDelta, 0.5)
+                                        : newDelta;
+                                    attachedEdgeShifts.set(edge, delta);
+                                }
+                            });
+                        };
+                        const handleEdgesForChildren = (el: SModelElementImpl) => {
+                            if (isParent(el)) {
+                                el.children.forEach(childEl => {
+                                    if (childEl instanceof SModelElementImpl) {
+                                        if (childEl instanceof SConnectableElementImpl) {
+                                            handleEdges(childEl);
+                                        }
+                                        handleEdgesForChildren(childEl);
+                                    }
+                                });
                             }
-                        });
+                        };
+                        handleEdgesForChildren(element);
+                        handleEdges(element);
                     }
                 }
             }
@@ -172,10 +188,7 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
             if (!edge2move.get(edge)) {
                 const router = this.edgeRouterRegistry!.get(edge.routerKind);
                 const before = router.takeSnapshot(edge);
-                if (edge.source
-                    && edge.target
-                    && this.resolvedMoves.get(edge.source.id)
-                    && this.resolvedMoves.get(edge.target.id)) {
+                if (this.isAttachedEdge(edge)) {
                     // move the entire edge when both source and target are moved
                     edge.routingPoints = edge.routingPoints.map(rp => Point.add(rp, delta));
                 } else {
@@ -187,6 +200,37 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
                 this.edgeMementi.push({ edge, before, after });
             }
         });
+    }
+
+    // tests if the edge is attached to the moved element directly or to on of their children
+    protected isAttachedEdge(edge: SRoutableElementImpl): boolean {
+        const source = edge.source;
+        const target = edge.target;
+        const checkMovedElementsAndChildren = (sourceOrTarget: SConnectableElementImpl): boolean => {
+            return Array.from(this.resolvedMoves.values()).some(res => {
+                const recursiveCheck = (el: SModelElementImpl): boolean => {
+                    if (isParent(el)) {
+                        return el.children.some(child => {
+                            if (child instanceof SModelElementImpl) {
+                         if (child === sourceOrTarget)
+                                    return true;
+                                return recursiveCheck(child);
+                            }
+                            return false;
+                        });
+                    }
+                    return false;
+                };
+                return recursiveCheck(res.element);
+            }) || !!(this.resolvedMoves.get(sourceOrTarget.id));
+        };
+
+        return !!(
+            source &&
+            target &&
+            checkMovedElementsAndChildren(source) &&
+            checkMovedElementsAndChildren(target)
+        );
     }
 
     protected undoMove() {
