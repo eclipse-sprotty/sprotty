@@ -241,8 +241,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 200,
-                y: 350
+                x: 270,
+                y: 200
             },
             layout: 'vbox',
             children: [
@@ -285,7 +285,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 540,
+                x: 740,
                 y: 25
             },
             layout: 'vbox',
@@ -339,7 +339,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                 <SLabel>{
                     id: 'package0_pkgname',
                     type: 'label:heading',
-                    text: 'com.example.package',
+                    text: 'com.example.package0',
                     position: {
                         x: 10,
                         y: 10
@@ -349,7 +349,37 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     id: 'package0_content',
                     type: 'comp:pkgcontent',
                     children: [
-                        node1
+                        node1, node2
+                    ]
+                }
+            ]
+        };
+        const package1: SNode = {
+            id: 'package1',
+            type: 'node:package',
+            position: {
+                x: 60,
+                y: 10
+            },
+            size: {
+                width: 300,
+                height: 200
+            },
+            children: [
+                <SLabel>{
+                    id: 'package1_pkgname',
+                    type: 'label:heading',
+                    text: 'com.example.package1',
+                    position: {
+                        x: 10,
+                        y: 10
+                    }
+                },
+                <SCompartment>{
+                    id: 'package1_content',
+                    type: 'comp:pkgcontent',
+                    children: [
+                        node0
                     ]
                 }
             ]
@@ -357,118 +387,18 @@ export class ClassDiagramModelSource extends LocalModelSource {
         const edge0 = {
             id: 'edge0',
             type: 'edge:straight',
+            routerKind: 'manhattan',
             sourceId: node0.id,
             targetId: node1.id,
-            children: [
-                <SLabel> {
-                    id: 'edge0_label_on',
-                    type: 'label:text',
-                    text: 'on',
-                    edgePlacement:  {
-                        position: 0.5,
-                        side: 'on',
-                        rotate: false
-                    }
-                },
-                <SLabel> {
-                    id: 'edge0_label_top',
-                    type: 'label:text',
-                    text: 'top',
-                    edgePlacement:  {
-                        position: 0.3,
-                        side: 'top',
-                        rotate: false
-                    }
-                },
-                <SLabel> {
-                    id: 'edge0_label_bottom',
-                    type: 'label:text',
-                    text: 'bottom',
-                    edgePlacement:  {
-                        position: 0.3,
-                        side: 'bottom',
-                        rotate: false
-                    }
-                },
-                <SLabel> {
-                    id: 'edge0_label_left',
-                    type: 'label:text',
-                    text: 'left',
-                    edgePlacement:  {
-                        position: 0.7,
-                        side: 'left',
-                        rotate: false
-                    }
-                },
-                <SLabel & EdgeLayoutable> {
-                    id: 'edge0_label_right',
-                    type: 'label:text',
-                    text: 'right',
-                    edgePlacement:  {
-                        position: 0.7,
-                        side: 'right',
-                        rotate: false,
-                        moveMode: 'edge' // optional, because it's the default anyway
-                    }
-                }
-            ]
+            children: []
         } as SEdge;
         const edge1 = {
             id: 'edge1',
             type: 'edge:straight',
-            sourceId: node0.id,
+            sourceId: node1.id,
             targetId: node2.id,
             routerKind: 'manhattan',
-            children: [
-                <SLabel> {
-                    id: 'edge1_label_on',
-                    type: 'label:text',
-                    text: 'on',
-                    edgePlacement:  {
-                        position: 0.5,
-                        side: 'on',
-                        rotate: true
-                    }
-                },
-                <SLabel> {
-                    id: 'edge1_label_top',
-                    type: 'label:text',
-                    text: 'top',
-                    edgePlacement:  {
-                        position: 0,
-                        side: 'top',
-                    }
-                },
-                <SLabel> {
-                    id: 'edge1_label_bottom',
-                    type: 'label:text',
-                    text: 'bottom',
-                    edgePlacement:  {
-                        position: 0,
-                        side: 'bottom',
-                    }
-                },
-                <SLabel> {
-                    id: 'edge1_label_left',
-                    type: 'label:text',
-                    text: 'left',
-                    edgePlacement:  {
-                        position: 1,
-                        side: 'left'
-                    }
-                },
-                <SLabel & EdgeLayoutable> {
-                    id: 'edge1_label_right',
-                    type: 'label:text',
-                    text: 'right',
-                    edgePlacement:  {
-                        position: 1,
-                        rotate: true,
-                        side: 'right',
-                        moveMode: 'edge'
-                    }
-                }
-            ]
+            children: []
         } as SEdge;
         const edge2 = {
             id: 'edge2',
@@ -477,11 +407,11 @@ export class ClassDiagramModelSource extends LocalModelSource {
             targetId: node3.id,
             routerKind: 'bezier',
             routingPoints: [
-                { x: 260, y: 140 },
-                { x: 290, y: 80 },
-                { x: 350, y: 100 },
-                { x: 390, y: 120 },
-                { x: 450, y: 40 }
+                { x: 360, y: 140 },
+                { x: 390, y: 80 },
+                { x: 450, y: 100 },
+                { x: 490, y: 120 },
+                { x: 550, y: 40 }
             ],
             children: [
                 <SLabel & EdgeLayoutable> {
@@ -530,7 +460,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
         const graph: SGraph = {
             id: 'graph',
             type: 'graph',
-            children: [node0, node2, node3, package0, edge0, edge1, edge2 ],
+            children: [package0, package1, node3, edge0, edge1, edge2 ],
             layoutOptions: {
                 hGap: 5,
                 hAlign: 'left',
