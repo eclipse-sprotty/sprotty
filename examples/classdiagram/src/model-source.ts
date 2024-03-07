@@ -118,26 +118,26 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     ],
                 });
                 break;
-            case 'node1':
+            case 'node2':
                 element.children.push(<SCompartment> {
-                    id: 'node1_attrs',
+                    id: 'node2_attrs',
                     type: 'comp:comp',
                     layout: 'vbox',
                     children: [
                         <SLabel> {
-                            id: 'node1_op2',
+                            id: 'node2_op2',
                             type: 'label:text',
                             text: 'name: string'
                         }
                     ],
                 });
                 element.children.push(<SCompartment> {
-                    id: 'node1_ops',
+                    id: 'node2_ops',
                     type: 'comp:comp',
                     layout: 'vbox',
                     children: [
                         <SLabel> {
-                            id: 'node1_op0',
+                            id: 'node2_op0',
                             type: 'label:text',
                             text: '+ foo(): Foo'
                         }
@@ -153,8 +153,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 100,
-                y: 100
+                x: 150,
+                y: 150
             },
             layout: 'vbox',
             children: [
@@ -197,8 +197,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 100,
-                y: 100
+                x: 50,
+                y: 50
             },
             layout: 'vbox',
             children: [
@@ -220,13 +220,13 @@ export class ClassDiagramModelSource extends LocalModelSource {
                                     id: 'node1_ticon',
                                     type: 'label:icon',
                                     text: 'C'
-                                },
+                                }
                             ]
                         },
                         <SLabel>{
                             id: 'node1_classname',
                             type: 'label:heading',
-                            text: 'Bar'
+                            text: 'Qux'
                         },
                         {
                             id: 'node1_expand',
@@ -241,8 +241,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 270,
-                y: 200
+                x: 100,
+                y: 100
             },
             layout: 'vbox',
             children: [
@@ -270,7 +270,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         <SLabel>{
                             id: 'node2_classname',
                             type: 'label:heading',
-                            text: 'Baz'
+                            text: 'Bar'
                         },
                         {
                             id: 'node2_expand',
@@ -285,8 +285,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
             type: 'node:class',
             expanded: false,
             position: {
-                x: 740,
-                y: 25
+                x: 270,
+                y: 200
             },
             layout: 'vbox',
             children: [
@@ -314,10 +314,54 @@ export class ClassDiagramModelSource extends LocalModelSource {
                         <SLabel>{
                             id: 'node3_classname',
                             type: 'label:heading',
-                            text: 'Ada'
+                            text: 'Baz'
                         },
                         {
                             id: 'node3_expand',
+                            type: 'button:expand'
+                        }
+                    ]
+                }
+            ]
+        };
+        const node4: SNode & Expandable = {
+            id: 'node4',
+            type: 'node:class',
+            expanded: false,
+            position: {
+                x: 740,
+                y: 25
+            },
+            layout: 'vbox',
+            children: [
+                <SCompartment>{
+                    id: 'node4_header',
+                    type: 'comp:header',
+                    layout: 'hbox',
+                    children: [
+                        {
+                            id: 'node4_icon',
+                            type: 'icon',
+                            layout: 'stack',
+                            layoutOptions: {
+                                hAlign: 'center',
+                                resizeContainer: false
+                            },
+                            children: [
+                                <SLabel>{
+                                    id: 'node4_ticon',
+                                    type: 'label:icon',
+                                    text: 'C'
+                                },
+                            ]
+                        },
+                        <SLabel>{
+                            id: 'node4_classname',
+                            type: 'label:heading',
+                            text: 'Ada'
+                        },
+                        {
+                            id: 'node4_expand',
                             type: 'button:expand'
                         }
                     ]
@@ -349,11 +393,19 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     id: 'package0_content',
                     type: 'comp:pkgcontent',
                     children: [
-                        node1, node2
+                        node2, node3
                     ]
                 }
             ]
         };
+        const edge0 = {
+            id: 'edge0',
+            type: 'edge:straight',
+            routerKind: 'manhattan',
+            sourceId: node0.id,
+            targetId: node1.id,
+            children: []
+        } as SEdge;
         const package1: SNode = {
             id: 'package1',
             type: 'node:package',
@@ -363,7 +415,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             },
             size: {
                 width: 300,
-                height: 200
+                height: 250
             },
             children: [
                 <SLabel>{
@@ -379,32 +431,34 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     id: 'package1_content',
                     type: 'comp:pkgcontent',
                     children: [
-                        node0
+                        node0,
+                        node1,
+                        edge0
                     ]
                 }
             ]
         };
-        const edge0 = {
-            id: 'edge0',
-            type: 'edge:straight',
-            routerKind: 'manhattan',
-            sourceId: node0.id,
-            targetId: node1.id,
-            children: []
-        } as SEdge;
         const edge1 = {
             id: 'edge1',
             type: 'edge:straight',
-            sourceId: node1.id,
-            targetId: node2.id,
             routerKind: 'manhattan',
+            sourceId: node0.id,
+            targetId: node2.id,
             children: []
         } as SEdge;
         const edge2 = {
             id: 'edge2',
+            type: 'edge:straight',
+            sourceId: node2.id,
+            targetId: node3.id,
+            routerKind: 'manhattan',
+            children: []
+        } as SEdge;
+        const edge3 = {
+            id: 'edge3',
             type: 'edge:bezier',
             sourceId: node0.id,
-            targetId: node3.id,
+            targetId: node4.id,
             routerKind: 'bezier',
             routingPoints: [
                 { x: 360, y: 140 },
@@ -415,7 +469,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
             ],
             children: [
                 <SLabel & EdgeLayoutable> {
-                    id: 'edge2_label_free1',
+                    id: 'edge3_label_free1',
                     type: 'label:text',
                     text: 'free1',
                     edgePlacement:  {
@@ -427,11 +481,11 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabel & EdgeLayoutable> {
-                    id: 'edge2_label_edge',
+                    id: 'edge3_label_edge',
                     type: 'label:text',
                     text: 'edge',
                     edgePlacement:  {
-                        position: 0.2,
+                        position: 0.1,
                         offset: 0,
                         side: 'right',
                         rotate: true,
@@ -439,7 +493,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabel & EdgeLayoutable> {
-                    id: 'edge2_label_fix',
+                    id: 'edge3_label_fix',
                     type: 'label:text',
                     text: 'fix',
                     edgePlacement:  {
@@ -451,7 +505,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
                     }
                 },
                 <SLabel> {
-                    id: 'edge2_label_free2',
+                    id: 'edge3_label_free2',
                     type: 'label:text',
                     text: 'free2'
                 }
@@ -460,7 +514,7 @@ export class ClassDiagramModelSource extends LocalModelSource {
         const graph: SGraph = {
             id: 'graph',
             type: 'graph',
-            children: [package0, package1, node3, edge0, edge1, edge2 ],
+            children: [package0, package1, node4, edge1, edge2, edge3],
             layoutOptions: {
                 hGap: 5,
                 hAlign: 'left',
@@ -472,8 +526,8 @@ export class ClassDiagramModelSource extends LocalModelSource {
         };
         this.expansionState = {
             node0: false,
-            node1: false,
-            node2: false
+            node2: false,
+            node3: false
         };
         return graph;
     }

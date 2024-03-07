@@ -112,7 +112,7 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
                     if (this.edgeRouterRegistry) {
                         const handleEdges = (el: SModelElementImpl) => {
                             index.getAttachedElements(el).forEach(edge => {
-                                if (edge instanceof SRoutableElementImpl) {
+                                if (edge instanceof SRoutableElementImpl && !this.isChildOfMovedElements(edge as SRoutableElementImpl)) {
                                     const existingDelta = attachedEdgeShifts.get(edge);
                                     const newDelta = Point.subtract(resolvedMove.toPosition, resolvedMove.fromPosition);
                                     const delta = (existingDelta)
@@ -206,24 +206,23 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
         });
     }
 
+    protected isChildOfMovedElements(el: SChildElementImpl): boolean {
+        const parent = el.parent;
+        if (Array.from(this.resolvedMoves.values()).map(rm => rm.element.id).includes(parent.id)) {
+            return true;
+        }
+        if (parent instanceof SChildElementImpl) {
+            return this.isChildOfMovedElements(parent);
+        }
+        return false;
+    };
+
     // tests if the edge is attached to the moved element directly or to on of their children
     protected isAttachedEdge(edge: SRoutableElementImpl): boolean {
         const source = edge.source;
         const target = edge.target;
         const checkMovedElementsAndChildren = (sourceOrTarget: SConnectableElementImpl): boolean => {
-            const recursiveCheck = (el: SChildElementImpl): boolean => {
-                const parent = el.parent;
-                if (Array.from(this.resolvedMoves.values()).map(rm => rm.element.id).includes(parent.id)) {
-                    return true;
-                }
-                if (parent instanceof SChildElementImpl) {
-                    return recursiveCheck(parent);
-                }
-                return false;
-            };
-            const isChildOfMovedElement = recursiveCheck(sourceOrTarget);
-
-            return isChildOfMovedElement || Boolean(this.resolvedMoves.get(sourceOrTarget.id));
+            return Boolean(this.resolvedMoves.get(sourceOrTarget.id)) || this.isChildOfMovedElements(sourceOrTarget);
         };
 
         return Boolean(
