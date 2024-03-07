@@ -211,25 +211,22 @@ export class MoveCommand extends MergeableCommand implements IStoppableCommand {
         const source = edge.source;
         const target = edge.target;
         const checkMovedElementsAndChildren = (sourceOrTarget: SConnectableElementImpl): boolean => {
-            return Array.from(this.resolvedMoves.values()).some(res => {
-                const recursiveCheck = (el: SModelElementImpl): boolean => {
-                    if (isParent(el)) {
-                        return el.children.some(child => {
-                            if (child instanceof SModelElementImpl) {
-                         if (child === sourceOrTarget)
-                                    return true;
-                                return recursiveCheck(child);
-                            }
-                            return false;
-                        });
-                    }
-                    return false;
-                };
-                return recursiveCheck(res.element);
-            }) || !!(this.resolvedMoves.get(sourceOrTarget.id));
+            const recursiveCheck = (el: SChildElementImpl): boolean => {
+                const parent = el.parent;
+                if (Array.from(this.resolvedMoves.values()).map(rm => rm.element.id).includes(parent.id)) {
+                    return true;
+                }
+                if (parent instanceof SChildElementImpl) {
+                    return recursiveCheck(parent);
+                }
+                return false;
+            };
+            const isChildOfMovedElement = recursiveCheck(sourceOrTarget);
+
+            return isChildOfMovedElement || Boolean(this.resolvedMoves.get(sourceOrTarget.id));
         };
 
-        return !!(
+        return Boolean(
             source &&
             target &&
             checkMovedElementsAndChildren(source) &&
