@@ -112,6 +112,8 @@ export * from './features/decoration/decoration-placer';
 export * from './features/edge-intersection/intersection-finder';
 export * from './features/edge-intersection/sweepline';
 
+export * from './features/edge-junction/junction-finder';
+
 export * from './features/move/model';
 export * from './features/move/move';
 export * from './features/move/snap';
@@ -159,6 +161,7 @@ import commandPaletteModule from './features/command-palette/di.config';
 import contextMenuModule from './features/context-menu/di.config';
 import decorationModule from './features/decoration/di.config';
 import edgeIntersectionModule from './features/edge-intersection/di.config';
+import edgeJunctionModule from './features/edge-junction/di.config';
 import edgeLayoutModule from './features/edge-layout/di.config';
 import expandModule from './features/expand/di.config';
 import exportModule from './features/export/di.config';
@@ -175,7 +178,7 @@ import zorderModule from './features/zorder/di.config';
 
 export {
     boundsModule, buttonModule, commandPaletteModule, contextMenuModule, decorationModule,
-    edgeIntersectionModule, edgeLayoutModule, expandModule, exportModule, fadeModule, hoverModule, moveModule,
+    edgeIntersectionModule, edgeJunctionModule, edgeLayoutModule, expandModule, exportModule, fadeModule, hoverModule, moveModule,
     openModule, routingModule, selectModule, undoRedoModule, updateModule, viewportModule, zorderModule
 };
 

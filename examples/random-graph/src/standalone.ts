@@ -30,6 +30,14 @@ export default function runRandomGraph() {
         layoutConfigurator.setDirection((event.target as any)?.value ?? 'LEFT');
         modelSource.updateModel();
     });
+
+    document.getElementById('junction')!.addEventListener('change', async (event) => {
+        if ((event.target as any).checked) {
+            modelSource.updateModel(createRandomGraphWithJunction());
+        } else {
+            modelSource.updateModel(createRandomGraph());
+        }
+    });
 }
 
 const NODES = 50;
@@ -98,6 +106,69 @@ function createRandomGraph(): SGraph {
             ]
         };
         graph.children.find(c => c.id === `node${targetNo}`)!.children!.push(targetPort);
+    }
+    return graph;
+}
+
+function createRandomGraphWithJunction(): SGraph {
+    const graph: SGraph = {
+        type: 'graph',
+        id: 'root',
+        children: []
+    };
+
+    for (let i = 0; i < NODES; i++) {
+        const node: SNode = {
+            type: 'node',
+            id: `node${i}`,
+            children: [
+                <SLabel>{
+                    type: 'label:node',
+                    id: `node${i}_label`,
+                    text: i.toString()
+                },
+                <SPort>{
+                    type: 'port',
+                    id: `port${i}-in`,
+                    size: { width: 8, height: 8 },
+                    children: [
+                        <SLabel>{
+                            type: 'label:port',
+                            id: `port${i}-in-label`,
+                            text: `in`
+                        }
+                    ]
+                },
+                <SPort>{
+                    type: 'port',
+                    id: `port${i}-out`,
+                    size: { width: 8, height: 8 },
+                    children: [
+                        <SLabel>{
+                            type: 'label:port',
+                            id: `port${i}-out-label`,
+                            text: `out`
+                        }
+                    ]
+                }
+            ]
+        };
+        graph.children.push(node);
+    }
+
+    for (let i = 0; i < EDGES; i++) {
+        const sourceNo = Math.floor(Math.random() * NODES);
+        const targetNo = Math.floor(Math.random() * NODES);
+        if (sourceNo === targetNo) {
+            continue;
+        }
+        const edge: SEdge = {
+            type: 'edge',
+            id: `edge${i}`,
+            sourceId: `port${sourceNo}-out`,
+            targetId: `port${targetNo}-in`
+        };
+        graph.children.push(edge);
     }
     return graph;
 }

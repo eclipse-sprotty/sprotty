@@ -101,3 +101,9 @@
     font-size: 14pt;
     text-anchor: start;
 }
+
+.sprotty-junction {
+    stroke: #000;
+    stroke-width: 1;
+    fill: #fff;
+}
