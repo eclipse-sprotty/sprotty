@@ -2,6 +2,20 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.2.0 (Apr. 2024)
+
+ * New package `sprotty-library` with standard Flowchart views ([#423](https://github.com/eclipse-sprotty/sprotty/pull/423)).
+ * New feature to show junction points when multiple edges are connected to the same port with Manhattan (orthogonal) routing ([#434](https://github.com/eclipse-sprotty/sprotty/pull/434)).
+ * Enabled to stop animated commands ([#414](https://github.com/eclipse-sprotty/sprotty/pull/414)).
+ * Enabled to override model element registrations ([#424](https://github.com/eclipse-sprotty/sprotty/pull/424)).
+ * Enabled to use function components in JSX syntax, improved support for attributes ([#430](https://github.com/eclipse-sprotty/sprotty/pull/430)).
+ * Added support for shadow DOM ([#435](https://github.com/eclipse-sprotty/sprotty/pull/435)).
+ * Added utility to configure the command stack ([#433](https://github.com/eclipse-sprotty/sprotty/pull/433)).
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/13?closed=1
+
+-----
+
 ### v1.1.0 (Jan. 2024)
 
  * Resolved a [license issue](https://gitlab.eclipse.org/eclipsefdn/emo-team/iplab/-/issues/10784) regarding `jsdom` (it was only used as a dev-dependency).

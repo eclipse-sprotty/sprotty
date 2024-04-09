@@ -2,6 +2,14 @@
 
 This change log covers only the client-server protocol of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.2.0 (Apr. 2024)
+
+ * Made (client) layout options available in `sprotty-protocol` ([#426](https://github.com/eclipse-sprotty/sprotty/pull/426)).
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/13?closed=1
+
+-----
+
 ### v1.1.0 (Jan. 2024)
 
  * Moved more interfaces used for defining Sprotty (external) models into this package so they can be used in backend applications ([#413](https://github.com/eclipse-sprotty/sprotty/pull/413)).
