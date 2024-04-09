@@ -1,15 +1,15 @@
 {
   "name": "sprotty-examples",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": "true",
   "dependencies": {
     "@vscode/codicons": "^0.0.33",
     "express": "^4.18.2",
     "inversify": "~6.0.2",
     "reflect-metadata": "~0.1.14",
-    "sprotty": "^1.1.0",
-    "sprotty-elk": "^1.1.0",
-    "sprotty-library": "^0.0.1",
+    "sprotty": "^1.2.0",
+    "sprotty-elk": "^1.2.0",
+    "sprotty-library": "^1.2.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {

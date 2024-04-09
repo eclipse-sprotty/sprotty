@@ -9,4 +9,5 @@ tasks:
   - init: |
       yarn
     command: |
+      if [[ $NPM_TOKEN ]]; then echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc; fi
       yarn --cwd examples start
