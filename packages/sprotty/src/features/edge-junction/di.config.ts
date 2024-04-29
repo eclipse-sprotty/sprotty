@@ -24,6 +24,7 @@ const edgeJunctionModule = new ContainerModule(bind => {
     bind(TYPES.IEdgeRoutePostprocessor).toService(JunctionFinder);
     bind(JunctionPostProcessor).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(JunctionPostProcessor);
+    bind(TYPES.HiddenVNodePostprocessor).toService(JunctionPostProcessor);
 });
 
 export default edgeJunctionModule;

@@ -113,6 +113,7 @@ export * from './features/edge-intersection/intersection-finder';
 export * from './features/edge-intersection/sweepline';
 
 export * from './features/edge-junction/junction-finder';
+export * from './features/edge-junction/junction-postprocessor';
 
 export * from './features/move/model';
 export * from './features/move/move';

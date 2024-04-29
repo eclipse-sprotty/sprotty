@@ -17,7 +17,7 @@
 import { injectable, inject } from "inversify";
 import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
 import { VNode } from "snabbdom";
-import { Action } from "sprotty-protocol";
+import { Action, RequestBoundsAction } from "sprotty-protocol";
 import { SModelElementImpl } from "../../base/model/smodel";
 import { TYPES } from "../../base/types";
 import { ViewerOptions } from "../../base/views/viewer-options";
@@ -34,10 +34,17 @@ export class JunctionPostProcessor implements IVNodePostprocessor {
         return vnode;
     }
     postUpdate(cause?: Action | undefined): void {
-        const baseDiv = this.viewerOptions.baseDiv;
-        const svg = document.querySelector(`#${baseDiv} > svg > g`);
+        let targetDiv: string = this.viewerOptions.baseDiv;
+        let junctionSelector = `#${targetDiv} > svg > g > g.sprotty-junction`;
+
+        if (cause?.kind === RequestBoundsAction.KIND) {
+            targetDiv = this.viewerOptions.hiddenDiv;
+            junctionSelector = `#${targetDiv} > svg > g > g > g.sprotty-junction`;
+        }
+
+        const svg = document.querySelector(`#${targetDiv} > svg > g`);
         if (svg) {
-            const junctionGroups = Array.from(document.querySelectorAll('g.sprotty-junction'));
+            const junctionGroups = Array.from(document.querySelectorAll(junctionSelector));
 
             junctionGroups.forEach(junctionGroup => {
                 junctionGroup.remove();
