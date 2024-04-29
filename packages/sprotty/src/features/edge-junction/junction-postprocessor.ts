@@ -35,13 +35,11 @@ export class JunctionPostProcessor implements IVNodePostprocessor {
     }
     postUpdate(cause?: Action | undefined): void {
         let targetDiv: string = this.viewerOptions.baseDiv;
-        let junctionSelector = `#${targetDiv} > svg > g > g.sprotty-junction`;
-
         if (cause?.kind === RequestBoundsAction.KIND) {
             targetDiv = this.viewerOptions.hiddenDiv;
-            junctionSelector = `#${targetDiv} > svg > g > g > g.sprotty-junction`;
         }
 
+        const junctionSelector = `#${targetDiv} > svg > g > g > g.sprotty-junction`;
         const svg = document.querySelector(`#${targetDiv} > svg > g`);
         if (svg) {
             const junctionGroups = Array.from(document.querySelectorAll(junctionSelector));
