@@ -28,6 +28,8 @@ import { ViewerOptions } from "../../base/views/viewer-options";
  */
 @injectable()
 export class JunctionPostProcessor implements IVNodePostprocessor {
+    isFirstRender = true;
+
     @inject(TYPES.ViewerOptions) private viewerOptions: ViewerOptions;
 
     decorate(vnode: VNode, element: SModelElementImpl): VNode {
@@ -36,19 +38,28 @@ export class JunctionPostProcessor implements IVNodePostprocessor {
     postUpdate(cause?: Action | undefined): void {
         let targetDiv: string = this.viewerOptions.baseDiv;
         if (cause?.kind === RequestBoundsAction.KIND) {
+            this.isFirstRender = true;
             targetDiv = this.viewerOptions.hiddenDiv;
+        }
+
+        // remove moved junction points only if it is the first render cycle
+        if (this.isFirstRender) {
+            const outsideJunctionPoints = document.querySelectorAll(`#${targetDiv} > svg > g > g.sprotty-junction`);
+            outsideJunctionPoints.forEach(e => e.remove());
         }
 
         const junctionSelector = `#${targetDiv} > svg > g > g > g.sprotty-junction`;
         const svg = document.querySelector(`#${targetDiv} > svg > g`);
         if (svg) {
+            // find all nested junction points and move them down in the hierarchy so they are always rendered on top
             const junctionGroups = Array.from(document.querySelectorAll(junctionSelector));
-
             junctionGroups.forEach(junctionGroup => {
                 junctionGroup.remove();
             });
-
             svg.append(...junctionGroups);
+
+            // if we are not rendering the hidden model, set the flag to false to prevent incorrect handling of junction points when updating/setting a new model
+            this.isFirstRender = targetDiv === this.viewerOptions.hiddenDiv;
         }
     }
 }
