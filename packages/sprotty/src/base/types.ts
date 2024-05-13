@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,6 +66,7 @@ export const TYPES = {
     SModelRegistry: Symbol('SModelRegistry'),
     ISnapper: Symbol('ISnapper'),
     SvgExporter: Symbol('SvgExporter'),
+    ISvgExportPostprocessor: Symbol('ISvgExportPostprocessor'),
     IUIExtension: Symbol('IUIExtension'),
     UIExtensionRegistry: Symbol('UIExtensionRegistry'),
     IVNodePostprocessor: Symbol('IVNodePostprocessor'),

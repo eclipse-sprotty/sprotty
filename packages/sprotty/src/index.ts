@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,6 +98,7 @@ export * from './features/expand/views';
 export * from './features/export/export';
 export * from './features/export/model';
 export * from './features/export/svg-exporter';
+export * from './features/export/svg-export-postprocessor';
 
 export * from './features/fade/fade';
 export * from './features/fade/model';
