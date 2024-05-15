@@ -23,24 +23,24 @@ import { TYPES } from '../../base/types';
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { ILogger } from '../../utils/logging';
 import { isBoundsAware } from '../bounds/model';
-import { RequestExportSvgAction } from "./export";
+import { RequestExportSvgAction, ExportSvgOptions } from "./export";
 import { ISvgExportPostProcessor } from "./svg-export-postprocessor";
 
 export interface ExportSvgAction extends ResponseAction {
     kind: typeof ExportSvgAction.KIND;
     svg: string;
     responseId: string;
-    skipCopyStyles?: boolean;
+    options?: ExportSvgOptions;
 }
 export namespace ExportSvgAction {
     export const KIND = 'exportSvg';
 
-    export function create(svg: string, requestId: string, skipCopyStyles: boolean = false): ExportSvgAction {
+    export function create(svg: string, requestId: string, options?: ExportSvgOptions): ExportSvgAction {
         return {
             kind: KIND,
             svg,
             responseId: requestId,
-            skipCopyStyles
+            options
         };
     }
 }
@@ -67,12 +67,12 @@ export class SvgExporter {
                 this.log.warn(this, `No svg element found in ${this.options.hiddenDiv} div. Nothing to export.`);
                 return;
             }
-            const svg = this.createSvg(svgElement, root, request?.skipCopyStyles, request);
-            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : '', request?.skipCopyStyles));
+            const svg = this.createSvg(svgElement, root, request?.options || {}, request);
+            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : '', request?.options));
         }
     }
 
-    protected createSvg(svgElementOrig: SVGSVGElement, root: SModelRootImpl, skipCopyStyles: boolean = false, cause?: Action): string {
+    protected createSvg(svgElementOrig: SVGSVGElement, root: SModelRootImpl, options?: ExportSvgOptions, cause?: Action): string {
         const serializer = new XMLSerializer();
         const svgCopy = serializer.serializeToString(svgElementOrig);
         const iframe: HTMLIFrameElement = document.createElement('iframe');
@@ -85,7 +85,7 @@ export class SvgExporter {
         docCopy.close();
         const svgElementNew = docCopy.querySelector('svg')!;
         svgElementNew.removeAttribute('opacity');
-        if (!skipCopyStyles) {
+        if (!options?.skipCopyStyles) {
             // inline-size copied from sprotty-hidden svg shrinks the svg so it is not visible.
             this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size']);
         }
