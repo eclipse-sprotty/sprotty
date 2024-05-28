@@ -28,6 +28,7 @@ import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, checkEdgePlacement } from './
 import { EdgeRouterRegistry } from '../routing/routing';
 import { TYPES } from '../../base/types';
 import { ILogger } from '../../utils/logging';
+import { isMoveable } from '../move/model';
 
 @injectable()
 export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
@@ -53,31 +54,30 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
                 // point on edge derived from edgePlacement.position
                 const pointOnEdge = router.pointAt(edge, position);
                 let transform = '';
-                // Calculation of potential free movement. Just add the actual bounds to the point on edge.
-                const freeTransform = `translate(${(pointOnEdge?.x ?? 0) + actualBounds.x}, ${(pointOnEdge?.y ?? 0) + actualBounds.y})`;
+                // get the relative position on segment. This can be later changed if the moveMode is set to 'edge'.
+                let derivativeOnEdge = router.derivativeAt(edge, position);;
                 // Check if edgeplacement is set. If not the label is freely movable if movefeature is enabled for such labels.
-                if (hasOwnPlacement) {
-                    if (pointOnEdge) {
-                        let derivativeOnEdge: Point | undefined;
-                        // handle different move modes
-                        if (placement.moveMode && placement.moveMode !== 'edge') {
-                            // get the relative position on segment
-                            derivativeOnEdge = router.derivativeAt(edge, position);
-                            // handle free move mode
-                            if (placement.moveMode === 'free') {
-                                transform += freeTransform;
-                            } else {
-                                // The moveMode is neither 'edge' nor 'free' so it is 'none'. Hence the label is not movable and gets the fixed point on edge.
+                if (pointOnEdge) {
+                    if (hasOwnPlacement) {
+                        switch (placement.moveMode) {
+                            case 'edge':
+                                // Find orthogonal intersection point on edge and use it as the label's position
+                                const orthogonalPoint = router.findOrthogonalIntersection(edge, Point.add(pointOnEdge, actualBounds));
+                                if (orthogonalPoint) {
+                                    derivativeOnEdge = orthogonalPoint.derivative;
+                                    transform += `translate(${orthogonalPoint.point.x}, ${orthogonalPoint.point.y})`;
+                                }
+                                break;
+                            case 'free':
+                                // Calculation of potential free movement. Just add the actual bounds to the point on edge.
+                                transform += `translate(${(pointOnEdge?.x ?? 0) + actualBounds.x}, ${(pointOnEdge?.y ?? 0) + actualBounds.y})`;;
+                                break;
+                            case 'none':
                                 transform += `translate(${pointOnEdge.x}, ${pointOnEdge.y})`;
-                            }
-                        } else {
-                            // no movemode was set or set to 'edge': label movement is constrained to the edge
-                            // Find orthogonal intersection point on edge and use it as the label's position
-                            const orthogonalPoint = router.findOrthogonalIntersection(edge, Point.add(pointOnEdge, actualBounds));
-                            if (orthogonalPoint) {
-                                derivativeOnEdge = orthogonalPoint.derivative;
-                                transform += `translate(${orthogonalPoint.point.x}, ${orthogonalPoint.point.y})`;
-                            }
+                                break;
+                            default:
+                                this.logger.error({}, 'No moveMode set for edge label. Skipping edge placement.');
+                                break;
                         }
                         if (derivativeOnEdge) {
                             const angle = toDegrees(Math.atan2(derivativeOnEdge.y, derivativeOnEdge.x));
@@ -100,9 +100,15 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
                                 transform += ` translate(${alignment.x}, ${alignment.y})`;
                             }
                         }
+                    } else {
+                        // if the element is moveable and no placement is specified, the label is freely movable (i.e. moveMode = 'free').
+                        // Otherwise it is fixed to its position (i.e. moveMode = 'none').
+                        if (isMoveable(element)) {
+                            transform += `translate(${(pointOnEdge?.x ?? 0) + actualBounds.x}, ${(pointOnEdge?.y ?? 0) + actualBounds.y})`;;
+                        } else {
+                            transform += `translate(${pointOnEdge.x}, ${pointOnEdge.y})`;
+                        }
                     }
-                } else {
-                    transform += freeTransform;
                 }
                 setAttr(vnode, 'transform', transform);
             }
@@ -164,8 +170,14 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
             else
                 break;
         }
-        return allPlacements.reverse().reduce(
+        const edgePlacement = allPlacements.reverse().reduce(
             (a, b) => { return {...a, ...b}; }, DEFAULT_EDGE_PLACEMENT);
+
+        if (!edgePlacement.moveMode) {
+            edgePlacement.moveMode = isMoveable(element) ? 'edge' : 'none';
+        }
+
+        return edgePlacement;
     }
 
     protected getAlignment(label: EdgeLayoutable & SModelElementImpl & InternalBoundsAware, placement: EdgePlacement, angle: number): Point {
