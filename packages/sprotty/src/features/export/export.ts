@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,16 +39,22 @@ export class ExportSvgKeyListener extends KeyListener {
     }
 }
 
+export interface ExportSvgOptions {
+    skipCopyStyles?: boolean
+}
+
 export interface RequestExportSvgAction extends RequestAction<ExportSvgAction> {
     kind: typeof RequestExportSvgAction.KIND
+    options?: ExportSvgOptions
 }
 export namespace RequestExportSvgAction {
     export const KIND = 'requestExportSvg';
 
-    export function create(): RequestExportSvgAction {
+    export function create(options: ExportSvgOptions = {}): RequestExportSvgAction {
         return {
             kind: KIND,
-            requestId: generateRequestId()
+            requestId: generateRequestId(),
+            options
         };
     }
 }

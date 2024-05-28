@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2024 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,29 +14,33 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { RequestAction, ResponseAction } from 'sprotty-protocol/lib/actions';
+import { inject, injectable, multiInject, optional } from "inversify";
+import { Action, ResponseAction } from 'sprotty-protocol/lib/actions';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { isBoundsAware } from '../bounds/model';
 import { ActionDispatcher } from '../../base/actions/action-dispatcher';
-import { TYPES } from '../../base/types';
 import { SModelRootImpl } from '../../base/model/smodel';
+import { TYPES } from '../../base/types';
+import { ViewerOptions } from '../../base/views/viewer-options';
 import { ILogger } from '../../utils/logging';
+import { isBoundsAware } from '../bounds/model';
+import { RequestExportSvgAction, ExportSvgOptions } from "./export";
+import { ISvgExportPostProcessor } from "./svg-export-postprocessor";
 
 export interface ExportSvgAction extends ResponseAction {
     kind: typeof ExportSvgAction.KIND;
-    svg: string
-    responseId: string
+    svg: string;
+    responseId: string;
+    options?: ExportSvgOptions;
 }
 export namespace ExportSvgAction {
     export const KIND = 'exportSvg';
 
-    export function create(svg: string, requestId: string): ExportSvgAction {
+    export function create(svg: string, requestId: string, options?: ExportSvgOptions): ExportSvgAction {
         return {
             kind: KIND,
             svg,
-            responseId: requestId
+            responseId: requestId,
+            options
         };
     }
 }
@@ -47,8 +51,9 @@ export class SvgExporter {
     @inject(TYPES.ViewerOptions) protected options: ViewerOptions;
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: ActionDispatcher;
     @inject(TYPES.ILogger) protected log: ILogger;
+    @multiInject(TYPES.ISvgExportPostprocessor) @optional() protected postprocessors: ISvgExportPostProcessor[] = [];
 
-    export(root: SModelRootImpl, request?: RequestAction<ExportSvgAction>): void {
+    export(root: SModelRootImpl, request?: RequestExportSvgAction): void {
         if (typeof document !== 'undefined') {
             const hiddenDiv = document.getElementById(this.options.hiddenDiv);
             if (hiddenDiv === null) {
@@ -62,12 +67,12 @@ export class SvgExporter {
                 this.log.warn(this, `No svg element found in ${this.options.hiddenDiv} div. Nothing to export.`);
                 return;
             }
-            const svg = this.createSvg(svgElement, root);
-            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : ''));
+            const svg = this.createSvg(svgElement, root, request?.options || {}, request);
+            this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : '', request?.options));
         }
     }
 
-    protected createSvg(svgElementOrig: SVGSVGElement, root: SModelRootImpl): string {
+    protected createSvg(svgElementOrig: SVGSVGElement, root: SModelRootImpl, options?: ExportSvgOptions, cause?: Action): string {
         const serializer = new XMLSerializer();
         const svgCopy = serializer.serializeToString(svgElementOrig);
         const iframe: HTMLIFrameElement = document.createElement('iframe');
@@ -80,13 +85,24 @@ export class SvgExporter {
         docCopy.close();
         const svgElementNew = docCopy.querySelector('svg')!;
         svgElementNew.removeAttribute('opacity');
-        // inline-size copied from sprotty-hidden svg shrinks the svg so it is not visible.
-        this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size']);
+        if (!options?.skipCopyStyles) {
+            // inline-size copied from sprotty-hidden svg shrinks the svg so it is not visible.
+            this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size']);
+        }
         svgElementNew.setAttribute('version', '1.1');
-        const bounds = this.getBounds(root);
+        const bounds = this.getBounds(root, docCopy);
+
         svgElementNew.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
+        svgElementNew.setAttribute('width', `${bounds.width}`);
+        svgElementNew.setAttribute('height', `${bounds.height}`);
+
+        this.postprocessors.forEach(postprocessor => {
+            postprocessor.postUpdate(svgElementNew, cause);
+        });
+
         const svgCode = serializer.serializeToString(svgElementNew);
         document.body.removeChild(iframe);
+
         return svgCode;
     }
 
@@ -114,8 +130,13 @@ export class SvgExporter {
         }
     }
 
-    protected getBounds(root: SModelRootImpl) {
-        const allBounds: Bounds[] = [ Bounds.EMPTY ];
+    protected getBounds(root: SModelRootImpl, document: Document) {
+        const svgElement = document.querySelector('svg');
+        if (svgElement) {
+            return svgElement.getBBox();
+        }
+
+        const allBounds: Bounds[] = [Bounds.EMPTY];
         root.children.forEach(element => {
             if (isBoundsAware(element)) {
                 allBounds.push(element.bounds);
