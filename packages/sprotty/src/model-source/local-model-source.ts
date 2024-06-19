@@ -143,7 +143,7 @@ export class LocalModelSource extends ModelSource {
         if (this.viewerOptions.needsClientLayout) {
             const computedBounds = await this.actionDispatcher.request<ComputedBoundsAction>(RequestBoundsAction.create(newRoot));
             const index = this.computedBoundsApplicator.apply(this.currentRoot, computedBounds);
-            await this.doSubmitModel(newRoot, true, cause, index);
+            await this.doSubmitModel(newRoot, update, cause, index);
         } else {
             await this.doSubmitModel(newRoot, update, cause);
         }
