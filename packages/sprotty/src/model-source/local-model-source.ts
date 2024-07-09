@@ -17,7 +17,7 @@
 import { saveAs } from 'file-saver';
 import { inject, injectable, optional } from 'inversify';
 import {
-    Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
+    Action, ComputedBoundsAction, ExportSvgAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
     SetModelAction, SetPopupModelAction, UpdateModelAction
 } from 'sprotty-protocol/lib/actions';
 import { SModelElement, SModelRoot, Viewport} from 'sprotty-protocol/lib/model';
@@ -29,7 +29,6 @@ import { FluentIterable } from '../utils/iterable';
 import { TYPES } from '../base/types';
 import { ActionHandlerRegistry } from '../base/actions/action-handler';
 import { EMPTY_ROOT } from '../base/model/smodel-factory';
-import { ExportSvgAction } from '../features/export/svg-exporter';
 import { applyMatches, Match } from '../features/update/model-matching';
 import { ModelSource, ComputedBoundsApplicator } from './model-source';
 

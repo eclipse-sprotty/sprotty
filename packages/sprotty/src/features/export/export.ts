@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
+import { injectable, inject } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Action, generateRequestId, RequestAction } from "sprotty-protocol/lib/actions";
+import { Action, ExportSvgAction, generateRequestId, RequestAction } from 'sprotty-protocol/lib/actions';
 import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
 import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
 import { isSelectable } from '../select/model';
@@ -24,7 +24,7 @@ import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { KeyListener } from '../../base/views/key-tool';
 import { matchesKeystroke } from '../../utils/keyboard';
 import { isExportable } from './model';
-import { SvgExporter, ExportSvgAction } from './svg-exporter';
+import { SvgExporter } from './svg-exporter';
 import { isViewport } from '../viewport/model';
 import { isHoverable } from '../hover/model';
 import { TYPES } from '../../base/types';
@@ -39,10 +39,16 @@ export class ExportSvgKeyListener extends KeyListener {
     }
 }
 
+/**
+ * @deprecated Use the definition from `sprotty-protocol` instead.
+ */
 export interface ExportSvgOptions {
     skipCopyStyles?: boolean
 }
 
+/**
+ * @deprecated Use the definition from `sprotty-protocol` instead.
+ */
 export interface RequestExportSvgAction extends RequestAction<ExportSvgAction> {
     kind: typeof RequestExportSvgAction.KIND
     options?: ExportSvgOptions

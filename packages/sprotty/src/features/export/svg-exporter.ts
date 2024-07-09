@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, multiInject, optional } from "inversify";
-import { Action, ResponseAction } from 'sprotty-protocol/lib/actions';
+import { inject, injectable, multiInject, optional } from 'inversify';
+import { Action, ExportSvgOptions, RequestExportSvgAction, ResponseAction } from 'sprotty-protocol/lib/actions';
 import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
 import { ActionDispatcher } from '../../base/actions/action-dispatcher';
 import { SModelRootImpl } from '../../base/model/smodel';
@@ -23,9 +23,11 @@ import { TYPES } from '../../base/types';
 import { ViewerOptions } from '../../base/views/viewer-options';
 import { ILogger } from '../../utils/logging';
 import { isBoundsAware } from '../bounds/model';
-import { RequestExportSvgAction, ExportSvgOptions } from "./export";
-import { ISvgExportPostProcessor } from "./svg-export-postprocessor";
+import { ISvgExportPostProcessor } from './svg-export-postprocessor';
 
+/**
+ * @deprecated Use the definition from `sprotty-protocol` instead.
+ */
 export interface ExportSvgAction extends ResponseAction {
     kind: typeof ExportSvgAction.KIND;
     svg: string;
@@ -67,7 +69,7 @@ export class SvgExporter {
                 this.log.warn(this, `No svg element found in ${this.options.hiddenDiv} div. Nothing to export.`);
                 return;
             }
-            const svg = this.createSvg(svgElement, root, request?.options || {}, request);
+            const svg = this.createSvg(svgElement, root, request?.options ?? {}, request);
             this.actionDispatcher.dispatch(ExportSvgAction.create(svg, request ? request.requestId : '', request?.options));
         }
     }
@@ -115,7 +117,7 @@ export class SvgExporter {
             if (skippedProperties.indexOf(key) === -1) {
                 const value = sourceStyle.getPropertyValue(key);
                 if (targetStyle.getPropertyValue(key) !== value) {
-                    diffStyle += key + ":" + value + ";";
+                    diffStyle += key + ':' + value + ';';
                 }
             }
         }
