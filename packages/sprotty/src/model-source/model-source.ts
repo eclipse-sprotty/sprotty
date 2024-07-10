@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action, ComputedBoundsAction, RequestModelAction } from 'sprotty-protocol/lib/actions';
+import { Action, ComputedBoundsAction, ExportSvgAction, RequestModelAction } from 'sprotty-protocol/lib/actions';
 import { SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
 import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
@@ -24,7 +24,6 @@ import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from
 import { ICommand } from '../base/commands/command';
 import { TYPES } from '../base/types';
 import { ViewerOptions } from '../base/views/viewer-options';
-import { ExportSvgAction } from '../features/export/svg-exporter';
 
 /**
  * A model source is serving the model to the event cycle. It represents

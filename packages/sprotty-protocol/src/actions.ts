@@ -720,6 +720,51 @@ export namespace HoverFeedbackAction {
 }
 
 /**
+ * Request to extract the currently displayed diagram as an SVG.
+ */
+export interface RequestExportSvgAction extends RequestAction<ExportSvgAction> {
+    kind: typeof RequestExportSvgAction.KIND
+    options?: ExportSvgOptions
+}
+export namespace RequestExportSvgAction {
+    export const KIND = 'requestExportSvg';
+
+    export function create(options?: ExportSvgOptions): RequestExportSvgAction {
+        return {
+            kind: KIND,
+            requestId: generateRequestId(),
+            options
+        };
+    }
+}
+
+export interface ExportSvgOptions {
+    skipCopyStyles?: boolean
+}
+
+/**
+ * Response to a `RequestExportSvgAction` containing the current diagram's SVG code.
+ */
+export interface ExportSvgAction extends ResponseAction {
+    kind: typeof ExportSvgAction.KIND;
+    svg: string;
+    responseId: string;
+    options?: ExportSvgOptions;
+}
+export namespace ExportSvgAction {
+    export const KIND = 'exportSvg';
+
+    export function create(svg: string, requestId: string, options?: ExportSvgOptions): ExportSvgAction {
+        return {
+            kind: KIND,
+            svg,
+            responseId: requestId,
+            options
+        };
+    }
+}
+
+/**
  * Create an element with the given schema and add it to the diagram.
  */
 export interface CreateElementAction extends Action {

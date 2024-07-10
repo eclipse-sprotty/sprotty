@@ -21,9 +21,10 @@ import { TYPES } from '../../base/types';
 import { ConsoleLogger } from '../../utils/logging';
 import { CommandExecutionContext } from '../../base/commands/command';
 import { SNodeImpl, SGraphImpl } from '../../graph/sgraph';
-import { ExportSvgCommand, RequestExportSvgAction } from './export';
+import { ExportSvgCommand } from './export';
 import defaultModule from '../../base/di.config';
-import { SNode } from 'sprotty-protocol';
+import { RequestExportSvgAction } from 'sprotty-protocol/lib/actions';
+import { SNode } from 'sprotty-protocol/lib/model';
 import { IModelFactory } from '../../base/model/smodel-factory';
 import { registerModelElement } from '../../base/model/smodel-utils';
 
