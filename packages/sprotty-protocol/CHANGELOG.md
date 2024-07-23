@@ -2,6 +2,14 @@
 
 This change log covers only the client-server protocol of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.3.0 (Jul. 2024)
+
+ * Moved actions related to SVG exporting from the `sprotty` package ([#459](https://github.com/eclipse-sprotty/sprotty/pull/459)).
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/14?closed=1
+
+-----
+
 ### v1.2.0 (Apr. 2024)
 
  * Made (client) layout options available in `sprotty-protocol` ([#426](https://github.com/eclipse-sprotty/sprotty/pull/426)).
