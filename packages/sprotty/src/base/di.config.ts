@@ -71,7 +71,8 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.IDiagramLocker).to(DefaultDiagramLocker).inSingletonScope();
 
     // Action handler
-    bind(TYPES.IActionHandlerInitializer).to(CommandActionHandlerInitializer);
+    bind(CommandActionHandlerInitializer).toSelf().inSingletonScope();
+    bind(TYPES.IActionHandlerInitializer).toService(CommandActionHandlerInitializer);
 
     // Command Stack ---------------------------------------------
     bind(TYPES.ICommandStack).to(CommandStack).inSingletonScope();
