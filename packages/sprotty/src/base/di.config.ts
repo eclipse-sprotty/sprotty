@@ -38,6 +38,7 @@ import { CssClassPostprocessor } from "./views/css-class-postprocessor";
 import { SetModelCommand } from "./features/set-model";
 import { UIExtensionRegistry, SetUIExtensionVisibilityCommand } from "./ui-extensions/ui-extension-registry";
 import { DefaultDiagramLocker } from "./actions/diagram-locker";
+import { TouchTool } from "./views/touch-tool";
 
 const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // Logging ---------------------------------------------
@@ -134,6 +135,8 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.HiddenVNodePostprocessor).toService(CssClassPostprocessor);
     bind(MouseTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(MouseTool);
+    bind(TouchTool).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(TouchTool);
     bind(KeyTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(KeyTool);
     bind(FocusFixPostprocessor).toSelf().inSingletonScope();

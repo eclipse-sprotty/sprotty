@@ -32,6 +32,7 @@ const viewportModule = new ContainerModule((bind , _unbind, isBound) => {
     bind(ScrollMouseListener).toSelf().inSingletonScope();
     bind(ZoomMouseListener).toSelf().inSingletonScope();
     bind(TYPES.MouseListener).toService(ScrollMouseListener);
+    bind(TYPES.ITouchListener).toService(ScrollMouseListener);
     bind(TYPES.MouseListener).toService(ZoomMouseListener);
 });
 
