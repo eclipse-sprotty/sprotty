@@ -5,7 +5,7 @@
   "dependencies": {
     "@vscode/codicons": "^0.0.33",
     "express": "^4.18.2",
-    "inversify": "~6.0.2",
+    "inversify": "^6.1.3",
     "reflect-metadata": "~0.1.14",
     "sprotty": "^1.3.0",
     "sprotty-elk": "^1.3.0",

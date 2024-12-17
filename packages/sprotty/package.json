@@ -24,7 +24,7 @@
   "dependencies": {
     "autocompleter": "^9.1.2",
     "file-saver": "^2.0.5",
-    "inversify": "~6.0.2",
+    "inversify": "^6.1.3",
     "snabbdom": "~3.5.1",
     "sprotty-protocol": "^1.3.0",
     "tinyqueue": "^2.0.3"
