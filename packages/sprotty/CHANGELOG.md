@@ -2,6 +2,14 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v1.4.0 (Dec. 2024)
+
+ * Updated dependency to `inversify` ([#477](https://github.com/eclipse-sprotty/sprotty/pull/477)):  version constraint is now `^6.1.3` in all sprotty packages.
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/15?closed=1
+
+-----
+
 ### v1.3.0 (Jul. 2024)
 
  * Added a way to inject an SVG export postprocessor to manipulate the produced SVG element during an export ([#454](https://github.com/eclipse-sprotty/sprotty/pull/454)).
