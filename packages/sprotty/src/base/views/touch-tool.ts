@@ -77,15 +77,15 @@ export class TouchTool implements IVNodePostprocessor {
     }
 
     touchStart(model: SModelRootImpl, event: TouchEvent) {
-        this.handleEvent('touchStart', model, event)
+        this.handleEvent('touchStart', model, event);
     }
 
     touchMove(model: SModelRootImpl, event: TouchEvent) {
-        this.handleEvent('touchMove', model, event)
+        this.handleEvent('touchMove', model, event);
     }
 
     touchEnd(model: SModelRootImpl, event: TouchEvent) {
-        this.handleEvent('touchEnd', model, event)
+        this.handleEvent('touchEnd', model, event);
     }
 
     decorate(vnode: VNode, element: SModelElementImpl): VNode {

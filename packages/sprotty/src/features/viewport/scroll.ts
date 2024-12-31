@@ -116,9 +116,9 @@ export class ScrollMouseListener extends MouseListener implements ITouchListener
 
     touchMove(target: SModelElementImpl, event: TouchEvent): Action[] {
         const touches = event.touches;
-        if (touches.length == 1) {
+        if (touches.length === 1) {
             return this.mouseOrSingleTouchMove(target, touches[0]);
-        } else if (touches.length == 2) {
+        } else if (touches.length === 2) {
             return this.twoTouchMove(target, touches);
         } else {
             return [];
