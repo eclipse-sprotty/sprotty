@@ -17,7 +17,7 @@
 import { inject } from 'inversify';
 import { Viewport } from 'sprotty-protocol/lib/model';
 import { Action, CenterAction, SetViewportAction } from 'sprotty-protocol/lib/actions';
-import { almostEquals, Point } from 'sprotty-protocol/lib/utils/geometry';
+import { almostEquals, Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { findParentByFeature } from '../../base/model/smodel-utils';
@@ -25,15 +25,19 @@ import { isViewport } from './model';
 import { isMoveable } from '../move/model';
 import { SRoutingHandleImpl } from '../routing/model';
 import { getModelBounds } from '../projection/model';
-import { hitsMouseEvent } from '../../utils/browser';
+import { getWindowScroll, hitsMouseEvent } from '../../utils/browser';
 import { TYPES } from '../../base/types';
 import { ViewerOptions } from '../../base/views/viewer-options';
+import { ITouchListener } from '../../base/views/touch-tool';
+import { limit } from '../../utils/geometry';
 
-export class ScrollMouseListener extends MouseListener {
+export class ScrollMouseListener extends MouseListener implements ITouchListener {
 
     @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
 
-    protected lastScrollPosition: Point |undefined;
+    protected lastScrollPosition: Point | undefined;
+    protected lastTouchDistance: number | undefined;
+    protected lastTouchMidpoint: Point | undefined;
     protected scrollbar: HTMLElement | undefined;
     protected scrollbarMouseDownTimeout: number | undefined;
     protected scrollbarMouseDownDelay = 200;
@@ -43,15 +47,7 @@ export class ScrollMouseListener extends MouseListener {
         if (moveable === undefined && !(target instanceof SRoutingHandleImpl)) {
             const viewport = findParentByFeature(target, isViewport);
             if (viewport) {
-                this.lastScrollPosition = { x: event.pageX, y: event.pageY };
-                this.scrollbar = this.getScrollbar(event);
-                if (this.scrollbar) {
-                    window.clearTimeout(this.scrollbarMouseDownTimeout);
-                    return this.moveScrollBar(viewport, event, this.scrollbar, true)
-                        .map(action => new Promise(resolve => {
-                            this.scrollbarMouseDownTimeout = window.setTimeout(() => resolve(action), this.scrollbarMouseDownDelay);
-                        }));
-                }
+                return this.mouseDownOrSingleTouchStart(event, viewport);
             } else {
                 this.lastScrollPosition = undefined;
                 this.scrollbar = undefined;
@@ -64,20 +60,7 @@ export class ScrollMouseListener extends MouseListener {
         if (event.buttons === 0) {
             return this.mouseUp(target, event);
         }
-        if (this.scrollbar) {
-            window.clearTimeout(this.scrollbarMouseDownTimeout);
-            const viewport = findParentByFeature(target, isViewport);
-            if (viewport) {
-                return this.moveScrollBar(viewport, event, this.scrollbar);
-            }
-        }
-        if (this.lastScrollPosition) {
-            const viewport = findParentByFeature(target, isViewport);
-            if (viewport) {
-                return this.dragCanvas(viewport, event, this.lastScrollPosition);
-            }
-        }
-        return [];
+        return this.mouseOrSingleTouchMove(target, event);
     }
 
     override mouseEnter(target: SModelElementImpl, event: MouseEvent): Action[] {
@@ -114,7 +97,108 @@ export class ScrollMouseListener extends MouseListener {
         return [];
     }
 
-    protected dragCanvas(model: SModelRootImpl & Viewport, event: MouseEvent, lastScrollPosition: Point): Action[] {
+    touchStart(target: SModelElementImpl, event: TouchEvent): (Action | Promise<Action>)[] {
+        const viewport = findParentByFeature(target, isViewport);
+        if (viewport) {
+            const touches = event.touches;
+            if (touches.length === 1) {
+                return this.mouseDownOrSingleTouchStart(touches[0], viewport);
+            } else if (touches.length === 2) {
+                this.lastTouchDistance = this.calculateDistance(touches);
+                this.lastTouchMidpoint = this.calculateMidpoint(touches, viewport.canvasBounds);
+            }
+        } else {
+            this.lastScrollPosition = undefined;
+            this.scrollbar = undefined;
+        }
+        return [];
+    }
+
+    touchMove(target: SModelElementImpl, event: TouchEvent): Action[] {
+        const touches = event.touches;
+        if (touches.length === 1) {
+            return this.mouseOrSingleTouchMove(target, touches[0]);
+        } else if (touches.length === 2) {
+            return this.twoTouchMove(target, touches);
+        } else {
+            return [];
+        }
+    }
+
+    protected mouseDownOrSingleTouchStart(event: MouseEvent | Touch, viewport: SModelRootImpl & Viewport): (Action | Promise<Action>)[] {
+        this.lastScrollPosition = { x: event.pageX, y: event.pageY };
+        this.scrollbar = this.getScrollbar(event);
+        if (this.scrollbar) {
+            window.clearTimeout(this.scrollbarMouseDownTimeout);
+            return this.moveScrollBar(viewport, event, this.scrollbar, true)
+                .map(action => new Promise(resolve => {
+                    this.scrollbarMouseDownTimeout = window.setTimeout(() => resolve(action), this.scrollbarMouseDownDelay);
+                }));
+        }
+        return [];
+    }
+
+    protected mouseOrSingleTouchMove(target: SModelElementImpl, event: MouseEvent | Touch): Action[] {
+        if (this.scrollbar) {
+            window.clearTimeout(this.scrollbarMouseDownTimeout);
+            const viewport = findParentByFeature(target, isViewport);
+            if (viewport) {
+                return this.moveScrollBar(viewport, event, this.scrollbar);
+            }
+        }
+        if (this.lastScrollPosition) {
+            const viewport = findParentByFeature(target, isViewport);
+            if (viewport) {
+                return this.dragCanvas(viewport, event, this.lastScrollPosition);
+            }
+        }
+        return [];
+    }
+
+    protected twoTouchMove(target: SModelElementImpl, touches: TouchList): Action[] {
+        const viewport = findParentByFeature(target, isViewport);
+        if (!viewport) {
+            return [];
+        }
+        const newDistance = this.calculateDistance(touches);
+        const newMidpoint = this.calculateMidpoint(touches, viewport.canvasBounds);
+
+        const scaleChange = newDistance / this.lastTouchDistance!;
+        const newZoom = limit(viewport.zoom * scaleChange, this.viewerOptions.zoomLimits);
+
+        const dx = (newMidpoint.x - this.lastTouchMidpoint!.x) / viewport.zoom;
+        const dy = (newMidpoint.y - this.lastTouchMidpoint!.y) / viewport.zoom;
+        const offsetFactor = 1.0 / newZoom - 1.0 / viewport.zoom;
+        const newViewport = {
+            scroll: {
+                x: viewport.scroll.x - dx - offsetFactor * newMidpoint.x,
+                y: viewport.scroll.y - dy - offsetFactor * newMidpoint.y
+            },
+            zoom: newZoom
+        };
+
+        this.lastTouchDistance = newDistance;
+        this.lastTouchMidpoint = newMidpoint;
+        return [SetViewportAction.create(viewport.id, newViewport, { animate: false })];
+    }
+
+    touchEnd(target: SModelElementImpl, event: TouchEvent): Action[] {
+        if (event.touches.length === 0) {
+            this.lastScrollPosition = undefined;
+            this.lastTouchDistance = undefined;
+            this.lastTouchMidpoint = undefined;
+            this.scrollbar = undefined;
+            return [];
+        } else if (event.touches.length === 1) {
+            this.lastScrollPosition = {
+                x: event.touches[0].pageX,
+                y: event.touches[0].pageY
+            };
+        }
+        return [];
+    }
+
+    protected dragCanvas(model: SModelRootImpl & Viewport, event: MouseEvent | Touch, lastScrollPosition: Point): Action[] {
         let dx = (event.pageX - lastScrollPosition.x) / model.zoom;
         if (dx > 0 && almostEquals(model.scroll.x, this.viewerOptions.horizontalScrollLimits.min)
             || dx < 0 && almostEquals(model.scroll.x, this.viewerOptions.horizontalScrollLimits.max - model.canvasBounds.width / model.zoom)) {
@@ -139,7 +223,7 @@ export class ScrollMouseListener extends MouseListener {
         return [SetViewportAction.create(model.id, newViewport, { animate: false })];
     }
 
-    protected moveScrollBar(model: SModelRootImpl & Viewport, event: MouseEvent, scrollbar: HTMLElement, animate: boolean = false): Action[] {
+    protected moveScrollBar(model: SModelRootImpl & Viewport, event: MouseEvent | Touch, scrollbar: HTMLElement, animate: boolean = false): Action[] {
         const modelBounds = getModelBounds(model);
         if (!modelBounds || model.zoom <= 0) {
             return [];
@@ -196,7 +280,7 @@ export class ScrollMouseListener extends MouseListener {
         return [SetViewportAction.create(model.id, { scroll: newScroll, zoom: model.zoom }, { animate })];
     }
 
-    protected getScrollbar(event: MouseEvent): HTMLElement | undefined {
+    protected getScrollbar(event: MouseEvent | Touch): HTMLElement | undefined {
         return findViewportScrollbar(event);
     }
 
@@ -218,9 +302,23 @@ export class ScrollMouseListener extends MouseListener {
         return undefined;
     }
 
+    protected calculateDistance(touches: TouchList): number {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    protected calculateMidpoint(touches: TouchList, canvasBounds: Bounds): Point {
+        const windowScroll = getWindowScroll();
+        return {
+            x: (touches[0].clientX + touches[1].clientX) / 2 + windowScroll.x - canvasBounds.x,
+            y: (touches[0].clientY + touches[1].clientY) / 2 + windowScroll.y - canvasBounds.y
+        };
+    }
+
 }
 
-export function findViewportScrollbar(event: MouseEvent): HTMLElement | undefined {
+export function findViewportScrollbar(event: MouseEvent | Touch): HTMLElement | undefined {
     let element = event.target as HTMLElement | null;
     while (element) {
         if (element.classList && element.classList.contains('sprotty-projection-bar')) {

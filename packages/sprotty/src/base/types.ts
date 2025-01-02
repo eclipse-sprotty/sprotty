@@ -67,6 +67,7 @@ export const TYPES = {
     ISnapper: Symbol('ISnapper'),
     SvgExporter: Symbol('SvgExporter'),
     ISvgExportPostprocessor: Symbol('ISvgExportPostprocessor'),
+    ITouchListener: Symbol('ITouchListener'),
     IUIExtension: Symbol('IUIExtension'),
     UIExtensionRegistry: Symbol('UIExtensionRegistry'),
     IVNodePostprocessor: Symbol('IVNodePostprocessor'),
