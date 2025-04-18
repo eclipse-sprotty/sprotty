@@ -31,12 +31,12 @@ export class TouchTool implements IVNodePostprocessor {
 
     constructor(@multiInject(TYPES.ITouchListener) @optional() protected touchListeners: ITouchListener[] = []) { }
 
-    register(mouseListener: ITouchListener) {
-        this.touchListeners.push(mouseListener);
+    register(touchListener: ITouchListener) {
+        this.touchListeners.push(touchListener);
     }
 
-    deregister(mouseListener: ITouchListener) {
-        const index = this.touchListeners.indexOf(mouseListener);
+    deregister(touchListener: ITouchListener) {
+        const index = this.touchListeners.indexOf(touchListener);
         if (index >= 0)
             this.touchListeners.splice(index, 1);
     }
