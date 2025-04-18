@@ -39,6 +39,7 @@ import { SetModelCommand } from "./features/set-model";
 import { UIExtensionRegistry, SetUIExtensionVisibilityCommand } from "./ui-extensions/ui-extension-registry";
 import { DefaultDiagramLocker } from "./actions/diagram-locker";
 import { TouchTool } from "./views/touch-tool";
+import { PointerTool } from "./views/pointer-tool";
 
 const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // Logging ---------------------------------------------
@@ -135,6 +136,8 @@ const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(TYPES.HiddenVNodePostprocessor).toService(CssClassPostprocessor);
     bind(MouseTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(MouseTool);
+    bind(PointerTool).toSelf().inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).toService(PointerTool);
     bind(TouchTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(TouchTool);
     bind(KeyTool).toSelf().inSingletonScope();
