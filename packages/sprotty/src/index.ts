@@ -42,7 +42,9 @@ export * from './base/ui-extensions/ui-extension';
 
 export * from './base/views/key-tool';
 export * from './base/views/mouse-tool';
+export * from './base/views/pointer-tool';
 export * from './base/views/thunk-view';
+export * from './base/views/touch-tool';
 export * from './base/views/view';
 export * from './base/views/viewer-cache';
 export * from './base/views/viewer-options';
