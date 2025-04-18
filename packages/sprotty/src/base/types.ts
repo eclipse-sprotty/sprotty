@@ -58,6 +58,7 @@ export const TYPES = {
     ModelViewer: Symbol('ModelViewer'),
     MouseListener: Symbol('MouseListener'),
     PatcherProvider: Symbol('PatcherProvider'),
+    IPointerListener: Symbol('IPointerListener'),
     IPopupModelProvider: Symbol('IPopupModelProvider'),
     PopupModelViewer: Symbol('PopupModelViewer'),
     PopupMouseListener: Symbol('PopupMouseListener'),
