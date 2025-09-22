@@ -1,0 +1,198 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* =============================================================================
+   SECTION 1: DEFAULT STYLING
+   All nodes get the sprotty-node class by default
+   ============================================================================= */
+
+.sprotty-graph {
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+}
+
+.sprotty-node {
+    fill: #e8f4fd;
+    stroke: #4a90e2;
+    stroke-width: 2px;
+    font-weight: bold;
+}
+
+.sprotty-edge {
+    fill: none;
+    stroke: #666;
+    stroke-width: 2px;
+}
+
+.sprotty-text {
+    fill: #333;
+    font-size: 11px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+/* =============================================================================
+   SECTION 2: SUBTYPE-BASED STYLING
+   Additional CSS classes based on node type (server, database, router)
+   The CssClassPostprocessor automatically adds subtype classes (server, database, router)
+   ============================================================================= */
+
+.server .sprotty-node {
+    fill: #d4edda;
+    stroke: #28a745;
+    stroke-width: 2px;
+}
+
+.database .sprotty-node {
+    fill: #e1f5fe;
+    stroke: #0288d1;
+    stroke-width: 2px;
+}
+
+.router .sprotty-node {
+    fill: #fce4ec;
+    stroke: #c2185b;
+    stroke-width: 2px;
+}
+
+/* =============================================================================
+   SECTION 3: CUSTOM CSS CLASSES
+   Per-element styling using cssClasses property
+   ============================================================================= */
+
+.critical-system .sprotty-node {
+    fill: #ff6b6b;
+    stroke: #d63031;
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 8px rgba(214, 48, 49, 0.5));
+}
+
+.high-priority .sprotty-node {
+    stroke-dasharray: 5, 5;
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0% {
+        stroke-opacity: 1;
+    }
+
+    50% {
+        stroke-opacity: 0.5;
+    }
+
+    100% {
+        stroke-opacity: 1;
+    }
+}
+
+/* =============================================================================
+   SECTION 4: CONDITIONAL STYLING
+   Dynamic CSS classes applied based on node properties
+   ============================================================================= */
+
+.sprotty-node.low-load {
+    fill: #d4edda;
+    stroke: #28a745;
+    stroke-width: 2px;
+}
+
+.sprotty-node.medium-load {
+    fill: #fff3cd;
+    stroke: #ffc107;
+    stroke-width: 2px;
+}
+
+.sprotty-node.high-load {
+    fill: #f8d7da;
+    stroke: #dc3545;
+    stroke-width: 3px;
+}
+
+.load-value {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* =============================================================================
+   SECTION 5: INTERACTIVE STYLING
+   Styling for user interactions (selection, hover)
+   ============================================================================= */
+
+.interactive .sprotty-node.selected {
+    stroke: #007bff;
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 10px rgba(0, 123, 255, 0.6));
+}
+
+.interactive .sprotty-node.mouseover:not(.selected) {
+    stroke-width: 3px;
+    stroke: #17a2b8;
+    fill: #b8daff;
+    cursor: pointer;
+}
+
+/* =============================================================================
+   EDGE STYLING
+   Different styles for different connection types
+   ============================================================================= */
+
+.sprotty-edge.ethernet {
+    stroke: #4a90e2;
+    stroke-width: 2px;
+}
+
+.sprotty-edge.wireless {
+    stroke: #28a745;
+    stroke-width: 2px;
+    stroke-dasharray: 8, 4;
+}
+
+.sprotty-edge.fiber {
+    stroke: #dc3545;
+    stroke-width: 3px;
+}
+
+.sprotty-edge.selected {
+    stroke: #007bff;
+    stroke-width: 4px;
+}
+
+/* =============================================================================
+   DEMO SECTION HEADERS
+   Visual separation between different styling concepts
+   ============================================================================= */
+
+.demo-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.demo-section h3 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.demo-section p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 12px;
+}

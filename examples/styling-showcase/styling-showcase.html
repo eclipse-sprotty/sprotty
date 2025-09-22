@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sprotty Styling Showcase</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/page.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row" id="sprotty-app" data-app="styling-showcase">
+            <div class="col-md-10">
+                <h1>Sprotty Styling Showcase</h1>
+                <p>This example demonstrates the different approaches to styling elements in Sprotty diagrams.</p>
+            </div>
+            <div class="help col-md-2">
+                <a href="https://sprotty.org/docs/recipes/styling/">Styling Recipe</a>
+            </div>
+        </div>
+
+        <div class="explanation">
+            <h2>Network Topology - Styling Methods</h2>
+            <p>This diagram shows a simple network topology using different styling approaches:</p>
+            <ul>
+                <li><strong>Default Styling:</strong> Top row - Server A and Client B use only the default
+                    <code>sprotty-node</code> CSS class
+                </li>
+                <li><strong>Subtype Styling:</strong> Second row - Database, Router, and Host get additional CSS classes
+                    based on their type</li>
+                <li><strong>Custom CSS Classes:</strong> Third row left - Critical Server uses the
+                    <code>cssClasses</code> property for per-element styling
+                </li>
+                <li><strong>Conditional Styling:</strong> Third row right - Load Monitor changes color based on load
+                    percentage (click button to change)</li>
+                <li><strong>Interactive Styling:</strong> Bottom - Gateway responds to selection and hover interactions
+                </li>
+            </ul>
+        </div>
+
+        <div class="controls">
+            <button id="changeLoad">Change Load Percentage</button>
+            <span style="margin-left: 20px; color: #6c757d;">
+                Try clicking and hovering on the Gateway node to see interactive styling!
+            </span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="sprotty" class="sprotty" />
+            </div>
+        </div>
+
+
+        <div class="copyright">
+            &copy; 2025 <a href="https://www.typefox.io/">TypeFox GmbH</a>.
+        </div>
+    </div>
+
+    <script src="../resources/bundle.js"></script>
+</body>
+
+</html>

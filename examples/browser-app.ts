@@ -24,6 +24,7 @@ import runSvgPreRendered from "./svg/src/standalone";
 import runMulticore from "./multicore/src/multicore";
 import runFlowchart from "./flowchart/src/standalone";
 import runJsxample from "./jsxample/src/standalone";
+import runStylingShowcase from "./styling-showcase/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -44,6 +45,8 @@ if (appDiv) {
         runFlowchart();
     else if (appMode === 'jsxample')
         runJsxample();
+    else if (appMode === 'styling-showcase')
+        runStylingShowcase();
     else
         throw new Error('Dunno what to do :-(');
 }

@@ -1,0 +1,143 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+}
+
+.container {
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.sprotty {
+    height: 600px;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
+/* SVG element sizing - this is the key for proper diagram display */
+svg.sprotty-graph {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    display: block;
+    /* Remove any inline spacing */
+    box-sizing: border-box;
+    /* Include border in dimensions */
+}
+
+/* Ensure the SVG viewport is properly set */
+.sprotty svg {
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.controls button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.controls button:hover {
+    background: #0056b3;
+}
+
+.controls button:active {
+    background: #004085;
+}
+
+.explanation {
+    margin: 20px 0;
+    padding: 15px;
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    border-radius: 4px;
+}
+
+.explanation h2 {
+    color: #1976d2;
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.explanation p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.explanation ul {
+    padding-left: 20px;
+}
+
+.explanation li {
+    margin-bottom: 5px;
+}
+
+.help {
+    text-align: right;
+    font-size: 12px;
+}
+
+.help a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.help a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.copyright a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.copyright a:hover {
+    text-decoration: underline;
+}
