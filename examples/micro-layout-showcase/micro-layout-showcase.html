@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sprotty Micro-Layout Showcase</title>
+    <link rel="stylesheet" href="css/page.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="row" id="sprotty-app" data-app="micro-layout-showcase">
+                <div class="col-md-10">
+                    <h1>Sprotty Micro-Layout Showcase</h1>
+                    <p>This example demonstrates micro-layout concepts - how to arrange elements inside nodes using
+                        different layout types and options.</p>
+                </div>
+                <div class="help">
+                    <a href="https://sprotty.org/docs/recipes/micro-layout/">Micro-Layout Recipe</a>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h3>What You'll See</h3>
+                <ul>
+                    <li><strong>Basic Layout Types:</strong> VBox, HBox, and Stack layouts with different child
+                        arrangements</li>
+                    <li><strong>Interactive Card:</strong> Use the controls on the right to experiment with layout
+                        options</li>
+                    <li><strong>Complex Layouts:</strong> Dashboard card showing nested compartments with different
+                        layouts</li>
+                    <li><strong>Layoutable Children:</strong> Demonstrates how nested nodes can respect parent layouts
+                    </li>
+                </ul>
+            </div>
+
+            <div id="sprotty" class="sprotty"></div>
+        </div>
+
+        <div class="controls-panel">
+            <h2>🎛️ Interactive Controls</h2>
+            <p>Modify the blue interactive card in real-time:</p>
+
+            <div class="control-group">
+                <h3>Layout Type</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="layout-vbox" name="layout" value="vbox" checked>
+                        <label for="layout-vbox">VBox</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="layout-hbox" name="layout" value="hbox">
+                        <label for="layout-hbox">HBox</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="layout-stack" name="layout" value="stack">
+                        <label for="layout-stack">Stack</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Horizontal Alignment</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="hAlign-left" name="hAlign" value="left">
+                        <label for="hAlign-left">Left</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="hAlign-center" name="hAlign" value="center" checked>
+                        <label for="hAlign-center">Center</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="hAlign-right" name="hAlign" value="right">
+                        <label for="hAlign-right">Right</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Vertical Alignment</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="vAlign-top" name="vAlign" value="top">
+                        <label for="vAlign-top">Top</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="vAlign-center" name="vAlign" value="center" checked>
+                        <label for="vAlign-center">Center</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="vAlign-bottom" name="vAlign" value="bottom">
+                        <label for="vAlign-bottom">Bottom</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Padding</h3>
+                <div class="number-input">
+                    <label for="paddingTop">Top:</label>
+                    <input type="range" id="paddingTop" min="0" max="50" value="10">
+                    <span class="value">10px</span>
+                </div>
+                <div class="number-input">
+                    <label for="paddingRight">Right:</label>
+                    <input type="range" id="paddingRight" min="0" max="50" value="15">
+                    <span class="value">15px</span>
+                </div>
+                <div class="number-input">
+                    <label for="paddingBottom">Bottom:</label>
+                    <input type="range" id="paddingBottom" min="0" max="50" value="10">
+                    <span class="value">10px</span>
+                </div>
+                <div class="number-input">
+                    <label for="paddingLeft">Left:</label>
+                    <input type="range" id="paddingLeft" min="0" max="50" value="15">
+                    <span class="value">15px</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Size Options</h3>
+                <div class="number-input">
+                    <label for="minWidth">Min Width:</label>
+                    <input type="range" id="minWidth" min="100" max="300" value="150">
+                    <span class="value">150px</span>
+                </div>
+                <div class="number-input">
+                    <label for="minHeight">Min Height:</label>
+                    <input type="range" id="minHeight" min="80" max="200" value="100">
+                    <span class="value">100px</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="resizeContainer" checked>
+                    <label for="resizeContainer">Resize Container</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Presets</h3>
+                <div class="preset-buttons">
+                    <button class="preset-button" id="preset-card">UI Card</button>
+                    <button class="preset-button" id="preset-dashboard">Dashboard</button>
+                    <button class="preset-button" id="preset-menu">Menu Item</button>
+                    <button class="preset-button reset" id="reset-defaults">Reset to Defaults</button>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h3>💡 Tips</h3>
+                <ul>
+                    <li><code>VBox</code>: Stacks children vertically</li>
+                    <li><code>HBox</code>: Arranges children horizontally</li>
+                    <li><code>Stack</code>: Overlays children on top of each other</li>
+                    <li>Alignment options are disabled for the primary layout direction</li>
+                    <li>Try different presets to see common layout patterns</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="copyright">
+        &copy; 2025 <a href="https://www.typefox.io/">TypeFox GmbH</a>.
+    </div>
+
+    <script>
+        // Update value displays for range inputs
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            const valueSpan = input.parentElement.querySelector('.value');
+            if (valueSpan) {
+                input.addEventListener('input', () => {
+                    valueSpan.textContent = input.value + 'px';
+                });
+            }
+        });
+    </script>
+    <script src="../resources/bundle.js"></script>
+</body>
+
+</html>
