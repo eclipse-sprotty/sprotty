@@ -1,0 +1,241 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* =============================================================================
+   SECTION 1: DEFAULT STYLING
+   Base styles for all diagram elements
+   ============================================================================= */
+
+.sprotty-graph {
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+}
+
+.sprotty-node {
+    fill: #e8f4fd;
+    stroke: #4a90e2;
+    stroke-width: 2px;
+    font-weight: bold;
+}
+
+.sprotty-label {
+    fill: #333;
+    font-size: 11px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    stroke: none;
+}
+
+/* Ensure text elements don't inherit stroke from parent nodes */
+text.sprotty-label,
+.text.sprotty-label {
+    stroke: none !important;
+    stroke-width: 0;
+}
+
+/* =============================================================================
+   SECTION 2: DEMO CARD STYLING
+   Cards that demonstrate different layout types
+   ============================================================================= */
+
+.demo-card {
+    fill: #f8f9fa;
+    stroke: #dee2e6;
+    stroke-width: 2px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.demo-card .sprotty-label {
+    fill: #495057;
+    font-weight: bold;
+    font-size: 11px;
+    stroke: none;
+}
+
+/* =============================================================================
+   SECTION 3: INTERACTIVE CARD STYLING
+   Main demonstration card that users can modify
+   ============================================================================= */
+
+.interactive-card {
+    fill: #e3f2fd;
+    stroke: #1976d2;
+    stroke-width: 3px;
+    filter: drop-shadow(0 4px 8px rgba(25, 118, 210, 0.2));
+}
+
+.interactive-card .sprotty-label {
+    fill: #1565c0;
+    font-weight: bold;
+    font-size: 12px;
+    stroke: none;
+}
+
+/* Hover effect for interactive card */
+.interactive-card:hover {
+    stroke: #1565c0;
+    filter: drop-shadow(0 6px 12px rgba(25, 118, 210, 0.3));
+}
+
+/* =============================================================================
+   SECTION 4: COMPONENT STYLING
+   Small UI elements (icons, buttons, metrics)
+   ============================================================================= */
+
+.component {
+    fill: #ffffff;
+    stroke: #6c757d;
+    stroke-width: 1px;
+}
+
+/* Icon components */
+.component-type .sprotty-node {
+    fill: #fff3e0;
+    stroke: #ff9800;
+}
+
+/* Button components */
+.component-button .sprotty-node {
+    fill: #e8f5e8;
+    stroke: #4caf50;
+}
+
+/* Metric components */
+.component-metric .sprotty-node {
+    fill: #f3e5f5;
+    stroke: #9c27b0;
+}
+
+.component .sprotty-label {
+    fill: #212529;
+    font-size: 10px;
+    stroke: none;
+}
+
+.component-button .sprotty-label {
+    fill: #2e7d32;
+    font-weight: bold;
+    stroke: none;
+}
+
+.component-metric .sprotty-label {
+    fill: #7b1fa2;
+    font-weight: bold;
+    stroke: none;
+}
+
+/* =============================================================================
+   SECTION 5: BASIC NODES
+   For layoutable children demonstration
+   ============================================================================= */
+
+.sprotty-node.basic {
+    fill: #fff8e1;
+    stroke: #ffc107;
+    stroke-width: 2px;
+}
+
+.sprotty-node.basic .sprotty-label {
+    fill: #f57f17;
+    font-size: 10px;
+    font-weight: bold;
+    stroke: none;
+}
+
+/* Regular nodes (without layoutableChildFeature) */
+.sprotty-node.regular {
+    fill: #ffebee;
+    stroke: #e91e63;
+    stroke-width: 2px;
+}
+
+.sprotty-node.regular .sprotty-label {
+    fill: #c2185b;
+    font-size: 10px;
+    font-weight: bold;
+    stroke: none;
+}
+
+/* =============================================================================
+   SECTION 6: COMPARTMENTS
+   For complex layout demonstrations
+   ============================================================================= */
+
+.sprotty-comp {
+    /* Compartments are invisible by default, just grouping elements */
+    fill: none;
+    stroke: none;
+}
+
+/* Optional: Show compartment boundaries for debugging */
+.sprotty-comp.debug {
+    fill: rgba(255, 0, 0, 0.1);
+    stroke: #ff0000;
+    stroke-width: 1px;
+    stroke-dasharray: 2, 2;
+}
+
+/* =============================================================================
+   SECTION 7: LAYOUT TYPE SPECIFIC STYLING
+   Visual differentiation for different layout types
+   ============================================================================= */
+
+/* VBox layout cards */
+[data-layout="vbox"] .demo-card {
+    fill: #e8f5e8;
+    stroke: #4caf50;
+}
+
+/* HBox layout cards */
+[data-layout="hbox"] .demo-card {
+    fill: #fff3e0;
+    stroke: #ff9800;
+}
+
+/* Stack layout cards */
+[data-layout="stack"] .demo-card {
+    fill: #f3e5f5;
+    stroke: #9c27b0;
+}
+
+/* =============================================================================
+   SECTION 8: ANIMATIONS AND TRANSITIONS
+   Smooth visual feedback for interactions
+   ============================================================================= */
+
+.sprotty-node,
+.sprotty-comp {
+    transition: all 0.3s ease;
+}
+
+.interactive-card {
+    transition: all 0.5s ease;
+}
+
+/* =============================================================================
+   SECTION 9: RESPONSIVE ADJUSTMENTS
+   Mobile and smaller screen adaptations
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .sprotty-label {
+        font-size: 10px;
+    }
+
+    .demo-card {
+        stroke-width: 1px;
+    }
+}
