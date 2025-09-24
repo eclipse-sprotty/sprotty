@@ -26,6 +26,7 @@ import runFlowchart from "./flowchart/src/standalone";
 import runJsxample from "./jsxample/src/standalone";
 import runStylingShowcase from "./styling-showcase/src/standalone";
 import runMicroLayoutShowcase from "./micro-layout-showcase/src/standalone";
+import runCustomViewsShowcase from "./custom-views-showcase/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -50,6 +51,8 @@ if (appDiv) {
         runStylingShowcase();
     else if (appMode === 'micro-layout-showcase')
         runMicroLayoutShowcase();
+    else if (appMode === 'custom-views-showcase')
+        runCustomViewsShowcase();
     else
         throw new Error('Dunno what to do :-(');
 }
