@@ -1,0 +1,22 @@
+{
+    "name": "sprotty-advanced-interactions-showcase",
+    "version": "1.4.0",
+    "description": "Sprotty Advanced Interactions Showcase",
+    "main": "lib/standalone.js",
+    "types": "lib/standalone.d.ts",
+    "dependencies": {
+        "sprotty": "^1.4.0"
+    },
+    "scripts": {
+        "clean": "rimraf lib",
+        "build": "tsc",
+        "watch": "tsc -w"
+    },
+    "keywords": [
+        "sprotty",
+        "interactions",
+        "showcase"
+    ],
+    "author": "TypeFox",
+    "license": "EPL-2.0"
+}

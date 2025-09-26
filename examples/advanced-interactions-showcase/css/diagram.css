@@ -1,0 +1,281 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* Advanced Interactions Diagram Styles */
+
+/* Interactive Node Styles */
+.interactive-node {
+    cursor: pointer;
+}
+
+.interactive-node .node-background {
+    fill: #ffffff;
+    stroke: #cccccc;
+    stroke-width: 1px;
+    rx: 4px;
+    ry: 4px;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.interactive-node.selected .node-background {
+    stroke: #1976d2;
+    stroke-width: 2px;
+    filter: drop-shadow(2px 2px 8px rgba(25, 118, 210, 0.3));
+}
+
+.interactive-node.mouseover .node-background {
+    fill: #f5f5f5;
+    stroke: #1976d2;
+}
+
+.interactive-node .node-header {
+    fill: #f0f0f0;
+    stroke: none;
+    rx: 4px 4px 0 0;
+    ry: 4px 4px 0 0;
+}
+
+.interactive-node .node-icon {
+    font-size: 14px;
+    fill: #666666;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.interactive-node .node-title {
+    font-size: 14px;
+    font-weight: bold;
+    fill: #333333;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.interactive-node .node-description {
+    font-size: 12px;
+    fill: #666666;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Status Indicators */
+.status-indicator {
+    stroke: #ffffff;
+    stroke-width: 1px;
+}
+
+.status-indicator.status-online {
+    fill: #4caf50;
+}
+
+.status-indicator.status-offline {
+    fill: #9e9e9e;
+}
+
+.status-indicator.status-warning {
+    fill: #ff9800;
+}
+
+.status-indicator.status-error {
+    fill: #f44336;
+}
+
+/* Interactive Button Styles */
+.interactive-button {
+    cursor: pointer;
+}
+
+.interactive-button .button-background {
+    fill: #ffffff;
+    stroke: #cccccc;
+    stroke-width: 1px;
+}
+
+.interactive-button:hover .button-background {
+    fill: #f5f5f5;
+    stroke: #1976d2;
+}
+
+.interactive-button.pressed .button-background {
+    fill: #e3f2fd;
+    stroke: #1976d2;
+    stroke-width: 2px;
+}
+
+.interactive-button .button-icon {
+    font-size: 12px;
+    fill: #666666;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.interactive-button:hover .button-icon {
+    fill: #1976d2;
+}
+
+/* Button Type Specific Styles */
+.button-info:hover .button-background {
+    fill: #e3f2fd;
+    stroke: #2196f3;
+}
+
+.button-info:hover .button-icon {
+    fill: #2196f3;
+}
+
+.button-delete:hover .button-background {
+    fill: #ffebee;
+    stroke: #f44336;
+}
+
+.button-delete:hover .button-icon {
+    fill: #f44336;
+}
+
+.button-edit:hover .button-background {
+    fill: #f3e5f5;
+    stroke: #9c27b0;
+}
+
+.button-edit:hover .button-icon {
+    fill: #9c27b0;
+}
+
+.button-settings:hover .button-background {
+    fill: #fff3e0;
+    stroke: #ff9800;
+}
+
+.button-settings:hover .button-icon {
+    fill: #ff9800;
+}
+
+/* Tooltip Styles */
+.button-tooltip {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.interactive-button:hover .button-tooltip {
+    opacity: 1;
+}
+
+.tooltip-background {
+    fill: #333333;
+    stroke: none;
+}
+
+.tooltip-text {
+    font-size: 11px;
+    fill: #ffffff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Edge Styles */
+.sprotty-edge {
+    stroke: #999999;
+    stroke-width: 1px;
+    fill: none;
+}
+
+.sprotty-edge.selected {
+    stroke: #1976d2;
+    stroke-width: 2px;
+}
+
+.sprotty-edge.mouseover {
+    stroke: #1976d2;
+    stroke-width: 2px;
+}
+
+/* Arrow Head Styles */
+.arrow-head {
+    stroke: none;
+}
+
+/* Edge Labels */
+.sprotty-label {
+    font-size: 12px;
+    fill: #2c3e50;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    stroke: #ffffff;
+    stroke-width: 2px;
+    paint-order: stroke fill;
+}
+
+/* Selected edge labels */
+.sprotty-edge.selected .sprotty-label {
+    fill: #1976d2;
+    font-weight: 700;
+    stroke: #ffffff;
+    stroke-width: 2px;
+}
+
+/* Hovered edge labels */
+.sprotty-edge.mouseover .sprotty-label {
+    fill: #1976d2;
+    font-weight: 700;
+    stroke: #ffffff;
+    stroke-width: 2px;
+}
+
+/* Projection Bar Styles */
+.sprotty-projection-bar {
+    background-color: rgba(245, 245, 245, 0.9);
+    border: 1px solid #cccccc;
+}
+
+.sprotty-viewport {
+    border-color: #1976d2;
+    border-width: 1px;
+    border-style: solid;
+    background-color: rgba(25, 118, 210, 0.1);
+}
+
+/* Projection Element Styles */
+.service-projection {
+    background-color: rgba(76, 175, 80, 0.3);
+    border: 1px solid #4caf50;
+}
+
+.database-projection {
+    background-color: rgba(255, 152, 0, 0.3);
+    border: 1px solid #ff9800;
+}
+
+.critical-projection {
+    background-color: rgba(244, 67, 54, 0.3);
+    border: 1px solid #f44336;
+}
+
+/* Arrow Marker */
+.sprotty-graph defs marker path {
+    fill: #999999;
+    stroke: none;
+}
+
+.sprotty-graph .selected defs marker path {
+    fill: #1976d2;
+}
+
+/* Selection Feedback */
+.sprotty-selected {
+    outline: none;
+}
+
+/* Focus Styles */
+.sprotty-graph:focus {
+    outline: none;
+}
