@@ -1,0 +1,28 @@
+{
+    "name": "sprotty-layout-strategies-showcase",
+    "version": "1.0.0",
+    "description": "Sprotty Layout Strategies Showcase - demonstrates client, server, and hybrid layout approaches",
+    "author": "Eclipse Sprotty",
+    "license": "EPL-2.0",
+    "keywords": [
+        "sprotty",
+        "layout",
+        "client-layout",
+        "server-layout",
+        "micro-layout",
+        "macro-layout"
+    ],
+    "dependencies": {
+        "sprotty": "^1.0.0",
+        "sprotty-protocol": "^1.0.0",
+        "inversify": "^6.0.0",
+        "reflect-metadata": "^0.1.13"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w"
+    }
+}
