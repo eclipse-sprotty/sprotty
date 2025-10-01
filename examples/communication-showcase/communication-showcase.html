@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprotty Communication Patterns Showcase</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/page.css">
+    <link rel="stylesheet" href="./css/diagram.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <h1>🔗 Communication Patterns Showcase</h1>
+                <p class="description">
+                    This showcase demonstrates <strong>Sprotty's communication patterns and action system</strong>.
+                    Every action flowing through the system is <strong>intercepted, logged, and analyzed</strong>.
+                    Explore the complete <strong>Action → Interceptor → Handler → Command → Model Update</strong>
+                    workflow through interactive examples and comprehensive debugging tools.
+                </p>
+
+                <!-- Control Panel -->
+                <div class="control-panel">
+                    <!-- Node Creation -->
+                    <div class="control-section">
+                        <h3>➕ Create Nodes</h3>
+                        <div class="control-group">
+                            <button id="create-client" class="control-btn primary">Add Client 💻</button>
+                            <button id="create-server" class="control-btn primary">Add Server 🖥️</button>
+                            <button id="create-database" class="control-btn primary">Add Database 🗄️</button>
+                        </div>
+                    </div>
+
+                    <!-- Node Operations -->
+                    <div class="control-section">
+                        <h3>🔧 Modify Nodes</h3>
+                        <div class="control-group">
+                            <button id="update-random-node" class="control-btn warning">Update Random Node</button>
+                            <button id="delete-random-node" class="control-btn danger">Delete Random Node</button>
+                            <button id="connect-random-nodes" class="control-btn info">Connect Random Nodes</button>
+                        </div>
+                    </div>
+
+                    <!-- Demo -->
+                    <div class="control-section">
+                        <h3>🎭 Demo</h3>
+                        <div class="control-group">
+                            <button id="run-demo-sequence" class="control-btn success">Run Demo Sequence</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagram Container -->
+                <div class="diagram-container">
+                    <div id="sprotty-app" data-app="communication-showcase"></div>
+                </div>
+            </div>
+
+            <!-- Debug Panel -->
+            <div class="col-lg-4">
+                <div class="debug-panel">
+                    <!-- Debug Statistics -->
+                    <div class="debug-section">
+                        <h3>📊 Action Statistics</h3>
+                        <div id="debug-stats" class="debug-stats">
+                            <div class="stat-item">Total Actions: <strong>0</strong></div>
+                            <div class="stat-item">User Actions: <strong>0</strong></div>
+                            <div class="stat-item">System Actions: <strong>0</strong></div>
+                            <div class="stat-item">Avg Duration: <strong>0ms</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Log -->
+                    <div class="debug-section">
+                        <div class="debug-section-header">
+                            <h3>📋 Action Log</h3>
+                            <button id="clear-debug-log" class="clear-log-btn">Clear</button>
+                        </div>
+                        <div id="debug-action-log" class="debug-action-log">
+                            <div class="log-empty">No actions logged yet. Start interacting with the diagram!</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../resources/bundle.js"></script>
+</body>
+
+</html>

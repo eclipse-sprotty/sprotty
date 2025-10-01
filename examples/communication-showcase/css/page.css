@@ -1,0 +1,413 @@
+/*
+ * Copyright (C) 2025 TypeFox GmbH.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/* Page-level styling for the Diagram Action Debugging/Monitoring Tool */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container-fluid {
+    padding: 20px;
+}
+
+h1 {
+    color: #343a40;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.description {
+    color: #6c757d;
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Control Panel Styling */
+.control-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.control-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.control-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.control-btn.primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.control-btn.primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.control-btn.warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.control-btn.warning:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+
+.control-btn.danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.control-btn.danger:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.control-btn.info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.control-btn.info:hover {
+    background-color: #138496;
+    transform: translateY(-1px);
+}
+
+.control-btn.success {
+    background-color: #28a745;
+    color: white;
+}
+
+.control-btn.success:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.control-btn.secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.control-btn.secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Diagram Container */
+.diagram-container {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    height: 500px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#sprotty-app {
+    width: 100%;
+    height: 100%;
+}
+
+.sprotty svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Debug Panel Styling */
+.debug-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.debug-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.debug-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.debug-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.debug-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.clear-log-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.clear-log-btn:hover {
+    background: #c82333;
+}
+
+/* Debug Statistics */
+.debug-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-item {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.stat-item strong {
+    color: #007bff;
+    font-size: 16px;
+}
+
+/* Action Log */
+.debug-action-log {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+
+.log-empty {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.debug-log-entry {
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.debug-log-entry:hover {
+    background-color: #e9ecef;
+}
+
+.debug-log-entry:last-child {
+    border-bottom: none;
+}
+
+.debug-log-entry.user {
+    border-left: 4px solid #007bff;
+}
+
+.debug-log-entry.system {
+    border-left: 4px solid #6c757d;
+}
+
+.debug-log-entry.replay {
+    border-left: 4px solid #28a745;
+}
+
+.debug-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.action-kind {
+    font-weight: bold;
+    color: #495057;
+}
+
+.action-time {
+    color: #6c757d;
+}
+
+.action-source {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.action-duration {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.debug-log-error {
+    color: #dc3545;
+    font-size: 11px;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.debug-log-details {
+    margin-top: 10px;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.debug-log-details pre {
+    margin: 0;
+    font-size: 11px;
+    color: #495057;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Debug Help */
+.debug-help {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.debug-help p {
+    margin-bottom: 10px;
+}
+
+.debug-help code {
+    background: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: #e83e8c;
+}
+
+/* Pattern List */
+.pattern-list {
+    font-size: 13px;
+}
+
+.pattern-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+}
+
+.pattern-item strong {
+    color: #495057;
+}
+
+.pattern-item code {
+    background: #e9ecef;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #6f42c1;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .control-panel {
+        flex-direction: column;
+    }
+
+    .debug-panel {
+        height: auto;
+        margin-top: 20px;
+    }
+
+    .debug-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Action Notification Animations */
+.debug-action-notification {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Toast Notifications */
+.debug-toast {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
