@@ -1,48 +1,62 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sprotty Examples</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
 </head>
+
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h1>Sprotty Examples</h1>
-            <a href="https://sprotty.org/">Sprotty</a> is a web-based diagramming framework.
-            For information how to use these examples see the <a href="https://sprotty.org/docs/user-interaction/">documentation</a>.
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Sprotty Examples</h1>
+                <a href="https://sprotty.org/">Sprotty</a> is a web-based diagramming framework.
+                For information how to use these examples see the <a
+                    href="https://sprotty.org/docs/user-interaction/">documentation</a>.
 
-            <h3>Without Server</h3>
-            The following examples run completely in the browser and do not require any additional component.
-            <ul>
-                <li><a href="circlegraph/circlegraph.html">Circles and lines:</a><br>
-                A basic diagram showing a graph of moveable nodes and edges.</li>
-                <li><a href="classdiagram/class-diagram.html">Class diagram:</a><br>
-                A basic class diagram using node layouts and hovers.</li>
-                <li><a href="random-graph/random-graph.html">Random graph:</a><br>
-                Randomly generated graph with automatic layout running in the browser.</li>
-                <li><a href="svg/svg-prerendered.html">SVG:</a><br>
-                Demonstrates how to use existing SVG figures.</li>
-                <li><a href="multicore/multicore.html">Multicore:</a><br>
-                Shows a multi-core chip. The color of the cores changes with the code they execute.
-                If you zoom in, the communication channels between the cores appear.</li>
-                <li><a href="flowchart/flowchart.html">Flowchart:</a><br>
-                    A flowchart with custom views for nodes and edges. The labels on nodes and edges are editable and the nodes and edges are moveable.</li>
-                <li><a href="jsxample/jsxample.html">JSXample:</a><br>
-                    A demonstration how to use React alike components in Sprotty views.</li>
-            </ul>
+                <h3>Recipes</h3>
+                The following examples demonstrate concepts from the <a href="https://sprotty.org/docs/recipes/">Sprotty
+                    recipes documentation</a>.
+                <ul>
+                    <li><a href="styling-showcase/styling-showcase.html">Styling Showcase:</a><br>
+                        Demonstrates all the different approaches to styling diagram elements in Sprotty.</li>
+                </ul>
 
-            <h3>With Server</h3>
-            The following example requires to download and run <a href="https://github.com/TypeFox/elk-server">ELK Server</a> in socket mode.
-            The example server connects to the ELK server and uses it as layout engine.
-            <ul>
-                <li><a href="random-graph-distributed/random-graph.html">Random graph:</a><br>
-                Randomly generated graph with automatic layout running in a separate layout server.</li>
-            </ul>
+                <h3>Without Server</h3>
+                The following examples run completely in the browser and do not require any additional component.
+                <ul>
+                    <li><a href="circlegraph/circlegraph.html">Circles and lines:</a><br>
+                        A basic diagram showing a graph of moveable nodes and edges.</li>
+                    <li><a href="classdiagram/class-diagram.html">Class diagram:</a><br>
+                        A basic class diagram using node layouts and hovers.</li>
+                    <li><a href="random-graph/random-graph.html">Random graph:</a><br>
+                        Randomly generated graph with automatic layout running in the browser.</li>
+                    <li><a href="svg/svg-prerendered.html">SVG:</a><br>
+                        Demonstrates how to use existing SVG figures.</li>
+                    <li><a href="multicore/multicore.html">Multicore:</a><br>
+                        Shows a multi-core chip. The color of the cores changes with the code they execute.
+                        If you zoom in, the communication channels between the cores appear.</li>
+                    <li><a href="flowchart/flowchart.html">Flowchart:</a><br>
+                        A flowchart with custom views for nodes and edges. The labels on nodes and edges are editable
+                        and the nodes and edges are moveable.</li>
+                    <li><a href="jsxample/jsxample.html">JSXample:</a><br>
+                        A demonstration how to use React alike components in Sprotty views.</li>
+                </ul>
+
+                <h3>With Server</h3>
+                The following example requires to download and run <a href="https://github.com/TypeFox/elk-server">ELK
+                    Server</a> in socket mode.
+                The example server connects to the ELK server and uses it as layout engine.
+                <ul>
+                    <li><a href="random-graph-distributed/random-graph.html">Random graph:</a><br>
+                        Randomly generated graph with automatic layout running in a separate layout server.</li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>
