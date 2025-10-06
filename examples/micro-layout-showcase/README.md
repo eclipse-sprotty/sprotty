@@ -49,9 +49,9 @@ This example demonstrates the micro-layout concepts in Sprotty, showing how to a
 
 ### Preset Buttons
 
-- **UI Card**: Typical card layout with centered content and generous padding
-- **Dashboard**: Horizontal layout optimized for dashboard widgets
-- **Menu Item**: Compact horizontal layout for menu items
+- **Preset 1**: Typical card layout with centered content and generous padding
+- **Preset 2**: Horizontal layout optimized for dashboard widgets
+- **Preset 3**: Compact horizontal layout for menu items
 - **Reset**: Return to default settings
 
 ### Real-time Feedback
