@@ -301,6 +301,12 @@
     stroke-width: 2 !important;
 }
 
+/* Prevent text elements from getting selection styling */
+.selected text {
+    stroke: none !important;
+    stroke-width: 0 !important;
+}
+
 /* Hover effects */
 .mouseover {
     opacity: 0.9;

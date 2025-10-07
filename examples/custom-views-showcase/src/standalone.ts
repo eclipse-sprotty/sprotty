@@ -37,7 +37,7 @@ export default async function runCustomViewsShowcase() {
             {
                 type: 'node:basic-circle',
                 id: 'circle1',
-                position: { x: 50, y: 50 },
+                position: { x: 60, y: 50 },
                 size: { width: 80, height: 80 },
                 shape: 'circle',
                 color: '#e3f2fd',
@@ -55,7 +55,7 @@ export default async function runCustomViewsShowcase() {
             {
                 type: 'node:basic-triangle',
                 id: 'triangle1',
-                position: { x: 180, y: 50 },
+                position: { x: 190, y: 50 },
                 size: { width: 80, height: 80 },
                 shape: 'triangle',
                 color: '#fce4ec',
@@ -73,7 +73,7 @@ export default async function runCustomViewsShowcase() {
             {
                 type: 'node:basic-diamond',
                 id: 'diamond1',
-                position: { x: 310, y: 50 },
+                position: { x: 320, y: 50 },
                 size: { width: 80, height: 80 },
                 shape: 'diamond',
                 color: '#e8f5e8',
