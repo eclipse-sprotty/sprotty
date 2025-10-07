@@ -1,0 +1,361 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 20px auto;
+    max-width: 1400px;
+    display: flex;
+    gap: 20px;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 800px;
+}
+
+.controls-panel {
+    width: 320px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+h2 {
+    color: #495057;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+h3 {
+    color: #6c757d;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 5px;
+}
+
+/* =============================================================================
+   DIAGRAM CONTAINER
+   ============================================================================= */
+
+.sprotty {
+    height: 700px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #fafafa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* SVG element sizing */
+svg.sprotty-graph {
+    width: 100%;
+    height: 700px;
+    border-radius: 8px;
+}
+
+/* =============================================================================
+   INTERACTIVE CONTROLS
+   ============================================================================= */
+
+.control-group {
+    margin-bottom: 20px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.radio-item input[type="radio"] {
+    margin: 0;
+}
+
+.radio-item label {
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.number-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.number-input label {
+    min-width: 60px;
+    margin: 0;
+    font-weight: normal;
+}
+
+.number-input input[type="range"] {
+    flex: 1;
+    margin: 0;
+}
+
+.number-input .value {
+    min-width: 35px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #dee2e6;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: none;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin: 0;
+}
+
+.checkbox-item label {
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+/* =============================================================================
+   PRESET BUTTONS
+   ============================================================================= */
+
+.preset-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.preset-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.preset-button:hover {
+    background: #0056b3;
+}
+
+.preset-button:active {
+    background: #004085;
+    transform: translateY(1px);
+}
+
+.preset-button.reset {
+    background: #6c757d;
+    grid-column: 1 / -1;
+}
+
+.preset-button.reset:hover {
+    background: #545b62;
+}
+
+/* =============================================================================
+   EXPLANATION SECTIONS
+   ============================================================================= */
+
+.explanation {
+    margin: 20px 0;
+    padding: 15px;
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    border-radius: 4px;
+}
+
+.explanation h3 {
+    color: #1976d2;
+    margin-top: 0;
+    border: none;
+    padding: 0;
+}
+
+.explanation p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.explanation ul {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+.explanation li {
+    margin-bottom: 5px;
+}
+
+.explanation code {
+    background: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 12px;
+}
+
+/* =============================================================================
+   HELP AND FOOTER
+   ============================================================================= */
+
+.help {
+    text-align: right;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.help a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.help a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.copyright a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.copyright a:hover {
+    text-decoration: underline;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 1200px) {
+    .container {
+        flex-direction: column;
+        max-width: 900px;
+    }
+
+    .controls-panel {
+        width: 100%;
+        position: static;
+    }
+
+    .main-content {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        gap: 15px;
+    }
+
+    .controls-panel {
+        padding: 15px;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .preset-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .sprotty {
+        height: 500px;
+    }
+
+    svg.sprotty-graph {
+        height: 500px;
+    }
+}

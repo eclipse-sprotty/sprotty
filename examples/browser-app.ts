@@ -25,6 +25,7 @@ import runMulticore from "./multicore/src/multicore";
 import runFlowchart from "./flowchart/src/standalone";
 import runJsxample from "./jsxample/src/standalone";
 import runStylingShowcase from "./styling-showcase/src/standalone";
+import runMicroLayoutShowcase from "./micro-layout-showcase/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -47,6 +48,8 @@ if (appDiv) {
         runJsxample();
     else if (appMode === 'styling-showcase')
         runStylingShowcase();
+    else if (appMode === 'micro-layout-showcase')
+        runMicroLayoutShowcase();
     else
         throw new Error('Dunno what to do :-(');
 }
