@@ -30,6 +30,7 @@ import runCustomViewsShowcase from "./custom-views-showcase/src/standalone";
 import runLayoutStrategiesShowcase from "./layout-strategies-showcase/src/standalone";
 import runAdvancedInteractionsShowcase from "./advanced-interactions-showcase/src/standalone";
 import runCommunicationShowcase from "./communication-showcase/src/standalone";
+import runAnimationShowcase from "./animation-showcase/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -62,6 +63,8 @@ if (appDiv) {
         runAdvancedInteractionsShowcase();
     else if (appMode === 'communication-showcase')
         runCommunicationShowcase();
+    else if (appMode === 'animation-showcase')
+        runAnimationShowcase();
     else
         throw new Error('Dunno what to do :-(');
 }

@@ -1,0 +1,113 @@
+/********************************************************************************
+ * Copyright (c) 2024 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* =============================================================================
+   ANIMATION SHOWCASE DIAGRAM STYLES
+   ============================================================================= */
+
+/* Base animatable node styling */
+.sprotty-node {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sprotty-node:hover {
+    filter: brightness(1.05);
+}
+
+/* Animation state indicators */
+.sprotty-node[data-animation-state="idle"] .node-shape {
+    fill: #f8f9fa;
+    stroke: #6c757d;
+    stroke-width: 2px;
+}
+
+.sprotty-node[data-animation-state="processing"] .node-shape {
+    fill: #fff3cd;
+    stroke: #ffc107;
+    stroke-width: 3px;
+}
+
+.sprotty-node[data-animation-state="complete"] .node-shape {
+    fill: #d4edda;
+    stroke: #28a745;
+    stroke-width: 2px;
+}
+
+.sprotty-node[data-animation-state="error"] .node-shape {
+    fill: #f8d7da;
+    stroke: #dc3545;
+    stroke-width: 3px;
+}
+
+/* Node labels */
+.node-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+/* Base edge styling */
+.sprotty-edge {
+    transition: all 0.3s ease;
+}
+
+.animated-edge .edge-line {
+    stroke: #666;
+    stroke-width: 2px;
+    fill: none;
+}
+
+/* Flow effect animations */
+.flow-effect {
+    stroke: #007bff;
+    stroke-width: 3px;
+    fill: none;
+}
+
+/* Animated labels */
+.animated-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    fill: #333;
+}
+
+/* Hover effects */
+.sprotty-node:hover .node-shape {
+    stroke-width: 3px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Selection effects */
+.sprotty-node.selected .node-shape {
+    stroke: #007bff;
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 8px rgba(0, 123, 255, 0.5));
+}
+
+/* Accessibility - Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+    .sprotty-node,
+    .sprotty-edge,
+    .animated-label {
+        animation: none !important;
+        transition: none !important;
+    }
+}
