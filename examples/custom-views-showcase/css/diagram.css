@@ -1,0 +1,328 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* Custom Views Diagram Styles */
+
+/* Basic Shape Views */
+.basic-shape-node {
+    cursor: pointer;
+}
+
+.basic-shape-node.mouseover {
+    opacity: 0.8;
+}
+
+.basic-shape-node.selected {
+    stroke: #1976d2 !important;
+    stroke-width: 3 !important;
+}
+
+.shape-circle {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.shape-triangle {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.shape-diamond {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Enhanced Node Views */
+.enhanced-node {
+    cursor: pointer;
+}
+
+.enhanced-rect {
+    fill: #f8f9fa;
+    stroke: #dee2e6;
+    stroke-width: 1;
+}
+
+.enhanced-node.status-warning .enhanced-rect {
+    fill: #fff8e1;
+    stroke: #ffb74d;
+}
+
+.enhanced-node.status-error .enhanced-rect {
+    fill: #ffebee;
+    stroke: #ef5350;
+}
+
+.enhanced-node.status-success .enhanced-rect {
+    fill: #e8f5e8;
+    stroke: #66bb6a;
+}
+
+.enhanced-node.selected .enhanced-rect {
+    stroke-width: 2;
+    stroke: #1976d2;
+}
+
+.enhanced-node.mouseover .enhanced-rect {
+    opacity: 0.9;
+}
+
+.indicator-warning {
+    fill: #ff9800;
+}
+
+.indicator-error {
+    fill: #f44336;
+}
+
+.indicator-success {
+    fill: #4caf50;
+}
+
+.enhanced-border {
+    stroke: #1976d2;
+    stroke-dasharray: 5, 5;
+    animation: border-dash 1s linear infinite;
+}
+
+@keyframes border-dash {
+    to {
+        stroke-dashoffset: 10;
+    }
+}
+
+/* Complex Node Views */
+.complex-node {
+    cursor: pointer;
+}
+
+.complex-container {
+    fill: #ffffff;
+    stroke: #e0e0e0;
+    stroke-width: 1;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+.complex-node.selected .complex-container {
+    stroke: #1976d2;
+    stroke-width: 2;
+}
+
+.complex-node.mouseover .complex-container {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+.header-rect {
+    rx: 4;
+    ry: 4;
+}
+
+.header-title {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.header-subtitle {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+.header-icon {
+    font-size: 16px;
+}
+
+.body-rect {
+    fill: #fafafa;
+}
+
+.footer-line {
+    stroke: #e0e0e0;
+    stroke-width: 1;
+}
+
+/* Stateful Node Views */
+.stateful-node {
+    cursor: pointer;
+}
+
+/* Loading state */
+.state-loading .loading-background {
+    fill: #e3f2fd;
+    stroke: #1976d2;
+    stroke-width: 1;
+}
+
+.progress-background {
+    fill: #e0e0e0;
+    rx: 2;
+    ry: 2;
+}
+
+.progress-fill {
+    fill: #1976d2;
+    rx: 2;
+    ry: 2;
+    /* Removed transition for better performance */
+}
+
+.loading-text {
+    fill: #1976d2;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Error state */
+.state-error .error-background {
+    fill: #ffebee;
+    stroke: #f44336;
+    stroke-width: 2;
+}
+
+.error-icon {
+    fill: #f44336;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.error-text {
+    fill: #d32f2f;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Success state */
+.state-success .success-background {
+    fill: #e8f5e8;
+    stroke: #4caf50;
+    stroke-width: 2;
+}
+
+.success-icon {
+    fill: #4caf50;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.success-text {
+    fill: #2e7d32;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Idle state */
+.state-idle .idle-background {
+    fill: #f5f5f5;
+    stroke: #9e9e9e;
+    stroke-width: 1;
+}
+
+.idle-text {
+    fill: #616161;
+    font-size: 12px;
+}
+
+/* Styled Edge Views */
+.styled-edge.mouseover {
+    opacity: 0.8;
+}
+
+.edge-dashed {
+    stroke-dasharray: 10, 5;
+}
+
+.edge-dotted {
+    stroke-dasharray: 2, 3;
+}
+
+.edge-animated {
+    stroke-dasharray: 8, 4;
+    animation: edge-flow 1s linear infinite;
+    /* Use transform3d to enable hardware acceleration */
+    will-change: stroke-dashoffset;
+}
+
+@keyframes edge-flow {
+    from {
+        stroke-dashoffset: 12;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Custom Label Views */
+.custom-label {
+    pointer-events: none;
+}
+
+.label-background {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.label-text {
+    fill: #333;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* General Sprotty overrides */
+.sprotty-graph {
+    background: linear-gradient(45deg, #f0f2f5 25%, transparent 25%),
+        linear-gradient(-45deg, #f0f2f5 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f0f2f5 75%),
+        linear-gradient(-45deg, transparent 75%, #f0f2f5 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.sprotty-node:hover {
+    cursor: pointer;
+}
+
+.sprotty-edge:hover {
+    cursor: pointer;
+}
+
+/* Selection highlighting */
+.selected {
+    stroke: #1976d2 !important;
+    stroke-width: 2 !important;
+}
+
+/* Prevent text elements from getting selection styling */
+.selected text {
+    stroke: none !important;
+    stroke-width: 0 !important;
+}
+
+/* Hover effects */
+.mouseover {
+    opacity: 0.9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 12px;
+    }
+
+    .header-subtitle {
+        font-size: 9px;
+    }
+
+    .label-text {
+        font-size: 10px;
+    }
+}
