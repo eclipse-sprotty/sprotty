@@ -56,14 +56,29 @@ export class ZoomMouseListener extends MouseListener {
         return event.altKey;
     }
 
+    protected isShift(event: WheelEvent) {
+        return event.shiftKey;
+    }
+
     protected processScroll(viewport: Viewport, event: WheelEvent): Viewport {
-        return {
-            scroll: {
-                x: viewport.scroll.x + event.deltaX,
-                y: viewport.scroll.y + event.deltaY
-            },
-            zoom: viewport.zoom
-        };
+        if (this.isShift(event)) {
+            return {
+                scroll: {
+                    // when the user holds down the Shift key and uses the mouse side scroll wheel, the viewport also moves horizontally.
+                    x: viewport.scroll.x + event.deltaX + event.deltaY,
+                    y: viewport.scroll.y,
+                },
+                zoom: viewport.zoom,
+            };
+        } else {
+            return {
+                scroll: {
+                    x: viewport.scroll.x + event.deltaX,
+                    y: viewport.scroll.y + event.deltaY
+                },
+                zoom: viewport.zoom
+            };
+        }
     }
 
     protected processZoom(viewport: Viewport, target: SModelElementImpl, event: WheelEvent): Viewport | undefined {
