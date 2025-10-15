@@ -33,7 +33,8 @@ import {
     SLabelImpl,
     SLabelView,
     layoutableChildFeature,
-    layoutContainerFeature
+    layoutContainerFeature,
+    boundsFeature
 } from 'sprotty';
 import {
     DefaultLayoutConfigurator,
@@ -100,16 +101,9 @@ export class HybridLayoutConfigurator extends DefaultLayoutConfigurator {
     }
 
     protected override nodeOptions(snode: SNode, index: SModelIndex): LayoutOptions | undefined {
-        // Use originalWidth if available for proper ELK sizing
-        const node = snode as any;
-        const width = node.originalWidth || 120;
-        const height = 80;
-
-        return {
-            'elk.nodeSize.constraints': 'FIXED_SIZE',
-            'elk.nodeSize.minimum': `(${width}, ${height})`,
-            'elk.nodeLabels.placement': 'INSIDE H_CENTER V_TOP'
-        };
+        // For hybrid layout, ELK should only position nodes, not their children
+        // Client layout handles all internal positioning (labels, compartments, etc.)
+        return undefined;
     }
 }
 
@@ -132,9 +126,15 @@ export const clientLayoutModule = new ContainerModule((bind, unbind, isBound, re
     // Register model elements and views
     configureModelElement(context, 'graph', SGraphImpl, SGraphView);
     configureModelElement(context, 'node:client', SNodeImpl, ClientLayoutNodeView);
-    configureModelElement(context, 'compartment:layout', SCompartmentImpl, SCompartmentView);
-    configureModelElement(context, 'label:layout', SLabelImpl, SLabelView);
-    configureModelElement(context, 'label:text', SLabelImpl, SLabelView);
+    configureModelElement(context, 'compartment:layout', SCompartmentImpl, SCompartmentView, {
+        enable: [layoutContainerFeature, layoutableChildFeature]
+    });
+    configureModelElement(context, 'label:layout', SLabelImpl, SLabelView, {
+        enable: [layoutableChildFeature]
+    });
+    configureModelElement(context, 'label:text', SLabelImpl, SLabelView, {
+        enable: [layoutableChildFeature]
+    });
     configureModelElement(context, 'edge', SEdgeImpl, LayoutEdgeView);
 
     // Logging
@@ -211,15 +211,19 @@ export const hybridLayoutModule = new ContainerModule((bind, unbind, isBound, re
     });
 
     // Register model elements and views
+    // Note: Same registrations as client layout since hybrid uses same rich content structure
     configureModelElement(context, 'graph', SGraphImpl, SGraphView);
     configureModelElement(context, 'node:hybrid', SNodeImpl, HybridLayoutNodeView, {
-        enable: [layoutContainerFeature, layoutableChildFeature]
+        enable: [layoutContainerFeature, layoutableChildFeature, boundsFeature]
     });
     configureModelElement(context, 'compartment:layout', SCompartmentImpl, SCompartmentView, {
-        enable: [layoutContainerFeature, layoutableChildFeature]
+        enable: [layoutContainerFeature, layoutableChildFeature, boundsFeature]
     });
     configureModelElement(context, 'label:layout', SLabelImpl, SLabelView, {
-        enable: [layoutableChildFeature]
+        enable: [layoutableChildFeature, boundsFeature]
+    });
+    configureModelElement(context, 'label:text', SLabelImpl, SLabelView, {
+        enable: [layoutableChildFeature, boundsFeature]
     });
     configureModelElement(context, 'edge', SEdgeImpl, LayoutEdgeView);
 

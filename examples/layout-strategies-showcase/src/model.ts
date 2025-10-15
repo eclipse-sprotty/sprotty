@@ -16,14 +16,11 @@
 
 import {
     SNodeImpl,
-    SLabelImpl,
     SEdgeImpl,
-    SCompartmentImpl,
     selectFeature,
     moveFeature,
     hoverFeedbackFeature,
     fadeFeature,
-    layoutableChildFeature,
     layoutContainerFeature,
     boundsFeature
 } from 'sprotty';
@@ -131,51 +128,6 @@ export class HybridLayoutNode extends SNodeImpl {
 }
 
 /**
- * Compartment for organizing content within nodes
- */
-export class LayoutCompartment extends SCompartmentImpl {
-    static override readonly DEFAULT_FEATURES = [
-        layoutableChildFeature,
-        layoutContainerFeature,
-        boundsFeature
-    ];
-
-    // Compartment-specific layout
-    override layout: string = 'vbox';
-    override layoutOptions?: {
-        paddingTop?: number;
-        paddingBottom?: number;
-        paddingLeft?: number;
-        paddingRight?: number;
-        vGap?: number;
-        hGap?: number;
-    };
-
-    compartmentType?: 'header' | 'body' | 'footer' | 'properties' | 'actions';
-}
-
-/**
- * Smart Label - adjusts to layout context
- */
-export class LayoutAwareLabel extends SLabelImpl {
-    static override readonly DEFAULT_FEATURES = [
-        layoutableChildFeature,
-        boundsFeature
-    ];
-
-    // Label styling based on context
-    labelType?: 'title' | 'subtitle' | 'property' | 'value' | 'caption';
-    fontSize?: number;
-    fontWeight?: 'normal' | 'bold' | 'light';
-    color?: string;
-
-    // Layout behavior
-    wrap?: boolean;
-    maxWidth?: number;
-    textAlignment?: 'left' | 'center' | 'right';
-}
-
-/**
  * Connection Edge - works with all layout strategies
  */
 export class LayoutEdge extends SEdgeImpl {
@@ -206,7 +158,6 @@ export interface LayoutConfiguration {
     strategy: 'client' | 'server' | 'hybrid';
     clientLayoutEnabled: boolean;
     serverLayoutEnabled: boolean;
-    debugMode: boolean;
 
     // Client layout options
     clientOptions?: {

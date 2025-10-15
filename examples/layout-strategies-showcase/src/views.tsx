@@ -21,8 +21,6 @@ import { VNode } from 'snabbdom';
 import { IView, RenderingContext, IViewArgs, PolylineEdgeView, ShapeView } from 'sprotty';
 import {
     ServerLayoutNode,
-    LayoutCompartment,
-    LayoutAwareLabel,
     LayoutEdge
 } from './model';
 
@@ -148,7 +146,12 @@ export class ServerLayoutNodeView implements IView {
 }
 
 /**
- * Hybrid Layout Node View - Combines both approaches
+ * Hybrid Layout Node View - Simple container, client layout handles content
+ *
+ * This view is intentionally the same as ClientLayoutNodeView to demonstrate that
+ * hybrid layout uses the same client layout capabilities for internal content.
+ * The difference is that ELK positions the nodes, while client layout arranges
+ * the content inside each node.
  */
 @injectable()
 export class HybridLayoutNodeView extends ShapeView {
@@ -157,185 +160,21 @@ export class HybridLayoutNodeView extends ShapeView {
             return undefined;
         }
 
-        // Use original width (before ELK overwrites it) or fallback to current size
-        const width = Math.max(node.originalWidth || node.size?.width || 120, 120);
-        const height = Math.max(node.size?.height || 80, 80);
-
-        // Debug: Log the actual size being used
-        console.log(`Rendering ${node.id}:`, {
-            nodeSize: node.size,
-            originalWidth: node.originalWidth,
-            calculatedWidth: width,
-            calculatedHeight: height
-        });
-        const headerHeight = 30;
-        const icon = this.getNodeIcon(node.nodeType);
-
-        return <g
-            class-sprotty-node={true}
-            class-hybrid-layout-node={true}
-            class-selected={node.selected}
-            class-mouseover={node.hoverFeedback}
-            class-node-type={node.nodeType || 'default'}>
-
-            {/* Container */}
+        // Simple container - client layout handles all internal structure
+        return <g>
             <rect
-                x="0" y="0"
-                width={width} height={height}
-                class-node-container={true} />
-
-            {/* Header (fixed layout) */}
-            <g class-node-header={true}>
-                <rect
-                    x="0" y="0"
-                    width={width} height={headerHeight}
-                    class-header-background={true} />
-
-                {/* Icon */}
-                {icon && (
-                    <text
-                        x="8" y="20"
-                        class-header-icon={true}
-                        font-size="16">
-                        {icon}
-                    </text>
-                )}
-
-                {/* Title */}
-                <text
-                    x={icon ? "28" : "8"} y="20"
-                    class-header-title={true}
-                    font-size="14"
-                    fill="white">
-                    {node.title || 'Hybrid Node'}
-                </text>
-            </g>
-
-            {/* Body (client layout managed) */}
-            <g class-node-body={true} transform={`translate(0, ${headerHeight})`}>
-                <rect
-                    x="0" y="0"
-                    width={width} height={height - headerHeight}
-                    class-body-background={true} />
-
-                {/* Content managed by client layout */}
-                {context.renderChildren(node)}
-            </g>
+                class-sprotty-node={true}
+                class-hybrid-layout-node={true}
+                x="0"
+                y="0"
+                width={node.size.width}
+                height={node.size.height}
+                rx="6"
+                ry="6"
+            />
+            {/* Client layout manages all child elements (same as client-only strategy) */}
+            {context.renderChildren(node)}
         </g>;
-    }
-
-
-    protected getNodeIcon(nodeType?: string): string {
-        switch (nodeType) {
-            case 'service': return '⚙️';
-            case 'component': return '🧩';
-            case 'interface': return '🔌';
-            default: return '📋';
-        }
-    }
-}
-
-/**
- * Layout Compartment View - Organizes content within nodes
- */
-@injectable()
-export class LayoutCompartmentView implements IView {
-    render(compartment: Readonly<LayoutCompartment>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
-        if (!this.isVisible(compartment, context)) {
-            return undefined;
-        }
-
-        const { width, height } = compartment.size;
-
-        return <g
-            class-sprotty-compartment={true}
-            class-layout-compartment={true}
-            class-compartment-type={compartment.compartmentType || 'default'}>
-
-            {/* Optional background for debugging */}
-            {context.targetKind !== 'main' && (
-                <rect
-                    x="0" y="0"
-                    width={width} height={height}
-                    class-compartment-debug={true} />
-            )}
-
-            {/* Content */}
-            {context.renderChildren(compartment)}
-        </g>;
-    }
-
-    protected isVisible(element: LayoutCompartment, context: RenderingContext): boolean {
-        return context.targetKind !== 'hidden';
-    }
-}
-
-/**
- * Layout Aware Label View - Adapts to layout context
- */
-@injectable()
-export class LayoutAwareLabelView implements IView {
-    render(label: Readonly<LayoutAwareLabel>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
-        if (!this.isVisible(label, context) || !label.text) {
-            return undefined;
-        }
-
-        const fontSize = label.fontSize || this.getDefaultFontSize(label.labelType);
-        const fontWeight = label.fontWeight || this.getDefaultFontWeight(label.labelType);
-        const color = label.color || this.getDefaultColor(label.labelType);
-        const alignment = label.textAlignment || 'left';
-
-        return <g
-            class-sprotty-label={true}
-            class-layout-aware-label={true}
-            class-label-type={label.labelType || 'default'}>
-
-            <text
-                class-label-text={true}
-                font-size={fontSize}
-                font-weight={fontWeight}
-                fill={color}
-                text-anchor={alignment === 'center' ? 'middle' : alignment === 'right' ? 'end' : 'start'}>
-                {label.text}
-            </text>
-        </g>;
-    }
-
-    protected isVisible(element: LayoutAwareLabel, context: RenderingContext): boolean {
-        return context.targetKind !== 'hidden';
-    }
-
-    protected getDefaultFontSize(labelType?: string): number {
-        switch (labelType) {
-            case 'title': return 16;
-            case 'subtitle': return 14;
-            case 'property': return 12;
-            case 'value': return 12;
-            case 'caption': return 10;
-            default: return 12;
-        }
-    }
-
-    protected getDefaultFontWeight(labelType?: string): string {
-        switch (labelType) {
-            case 'title': return 'bold';
-            case 'subtitle': return 'normal';
-            case 'property': return 'bold';
-            case 'value': return 'normal';
-            case 'caption': return 'light';
-            default: return 'normal';
-        }
-    }
-
-    protected getDefaultColor(labelType?: string): string {
-        switch (labelType) {
-            case 'title': return '#1976d2';
-            case 'subtitle': return '#424242';
-            case 'property': return '#666';
-            case 'value': return '#333';
-            case 'caption': return '#999';
-            default: return '#333';
-        }
     }
 }
 
@@ -429,34 +268,3 @@ export class LayoutEdgeView extends PolylineEdgeView {
     }
 }
 
-/**
- * Performance Monitor View - Shows layout performance metrics
- */
-@injectable()
-export class PerformanceMonitorView implements IView {
-    render(monitor: any, context: RenderingContext, args?: IViewArgs): VNode | undefined {
-        return <g class-performance-monitor={true}>
-            <rect
-                x="10" y="10"
-                width="200" height="80"
-                fill="rgba(0,0,0,0.8)"
-                rx="4" ry="4" />
-
-            <text x="20" y="30" fill="white" font-size="12" font-weight="bold">
-                Layout Performance
-            </text>
-
-            <text x="20" y="45" fill="white" font-size="10">
-                Strategy: {monitor.layoutStrategy}
-            </text>
-
-            <text x="20" y="60" fill="white" font-size="10">
-                Total Time: {monitor.totalLayoutTime?.toFixed(2) || 0}ms
-            </text>
-
-            <text x="20" y="75" fill="white" font-size="10">
-                Nodes: {monitor.nodeCount} | Edges: {monitor.edgeCount}
-            </text>
-        </g>;
-    }
-}

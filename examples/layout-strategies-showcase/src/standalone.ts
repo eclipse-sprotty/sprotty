@@ -26,15 +26,11 @@ let currentStrategy: 'client' | 'server' | 'hybrid' = 'client';
  * Main entry point for the Layout Strategies Showcase
  */
 export default async function runLayoutStrategiesShowcase(): Promise<void> {
-    console.log('Starting Layout Strategies Showcase...');
-
     // Initialize with client layout strategy
     await switchLayoutStrategy('client');
 
     // Set up UI controls
     setupControls();
-
-    console.log('Layout Strategies Showcase loaded successfully!');
 }
 
 /**
@@ -43,19 +39,12 @@ export default async function runLayoutStrategiesShowcase(): Promise<void> {
 async function switchLayoutStrategy(strategy: 'client' | 'server' | 'hybrid'): Promise<void> {
     currentStrategy = strategy;
 
-    console.log(`Switching to ${strategy} layout strategy...`);
-
     // Create new container with the selected strategy
     currentContainer = createLayoutContainer(strategy);
     currentModelSource = await currentContainer.getAsync(TYPES.ModelSource);
 
     // Create and set the appropriate model
     const model = createModelForStrategy(strategy);
-
-    // Debug: Log the model for hybrid layout
-    if (strategy === 'hybrid') {
-        console.log('Hybrid model:', JSON.stringify(model, null, 2));
-    }
 
     await currentModelSource.setModel(model);
 
@@ -66,8 +55,6 @@ async function switchLayoutStrategy(strategy: 'client' | 'server' | 'hybrid'): P
 
     // Update active button state
     updateActiveButton();
-
-    console.log(`${strategy} layout applied`);
 }
 
 /**
@@ -137,6 +124,7 @@ function createNodeForStrategy(
 
     switch (strategy) {
         case 'client':
+        case 'hybrid':
             // Create rich content structure for client layout demonstration
             const clientChildren: Array<SLabel | SCompartment> = [
                 // Header section with icon and title
@@ -225,11 +213,12 @@ function createNodeForStrategy(
                 } as SCompartment
             ];
 
+            // The only difference between client and hybrid: node type and positioning
             return {
                 id: nodeId,
-                type: 'node:client',
-                position,
-                size: { width: 220, height: 160 },
+                type: strategy === 'client' ? 'node:client' : 'node:hybrid',
+                position: position,  // Both need position: client keeps it fixed, hybrid will be updated by ELK
+                size: { width: 220, height: 160 },  // Initial size for both - hybrid will be updated by bounds computation then ELK
                 layout: 'vbox',
                 layoutOptions: {
                     paddingTop: 8,
@@ -249,56 +238,6 @@ function createNodeForStrategy(
                 nodeType,
                 label: title,
                 category: description
-            } as SNode;
-
-        case 'hybrid':
-            // Calculate width based on content
-            const titleWidth = (title.length * 8) + 40; // Approximate text width + icon space
-            const descWidth = (description.length * 7) + 20; // Approximate text width + padding
-            const contentWidth = Math.max(titleWidth, descWidth, 120);
-
-            // Debug logging
-            console.log(`Hybrid node ${nodeId}:`, {
-                title,
-                description,
-                titleWidth,
-                descWidth,
-                contentWidth
-            });
-
-            return {
-                id: nodeId,
-                type: 'node:hybrid',
-                size: { width: contentWidth, height: 100 },
-                // Store original width in custom property that ELK won't touch
-                originalWidth: contentWidth,
-                title,
-                description,
-                icon,
-                nodeType,
-                children: [
-                    {
-                        type: 'compartment:layout',
-                        id: `${nodeId}-content`,
-                        position: { x: 0, y: 0 },
-                        layout: 'vbox',
-                        layoutOptions: {
-                            paddingTop: 8,
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            paddingBottom: 8,
-                            vGap: 4
-                        },
-                        children: [
-                            {
-                                type: 'label:layout',
-                                id: `${nodeId}-desc`,
-                                position: { x: 0, y: 0 },
-                                text: description
-                            } as SLabel
-                        ]
-                    } as SCompartment
-                ]
             } as SNode;
 
         default:

@@ -127,44 +127,27 @@ rect.sprotty-node.client-layout-node {
 }
 
 /* Hybrid Layout Node Styles */
+/* Note: Hybrid nodes use the same view as client nodes (simple container) */
+/* This demonstrates that hybrid = client content layout + server positioning */
 .hybrid-layout-node {
     cursor: pointer;
 }
 
-.hybrid-layout-node .node-container {
-    fill: #ffffff;
+rect.sprotty-node.hybrid-layout-node {
+    fill: #f8f9fa;
     stroke: #dee2e6;
     stroke-width: 2;
-    rx: 6;
-    ry: 6;
 }
 
-.hybrid-layout-node.selected .node-container {
-    stroke: #1976d2;
-    stroke-width: 3;
+/* Selected state */
+.selected rect.sprotty-node.hybrid-layout-node {
+    stroke: #1976d2 !important;
+    stroke-width: 3 !important;
 }
 
-.hybrid-layout-node.mouseover .node-container {
-    opacity: 0.95;
-}
-
-.hybrid-layout-node .header-background {
-    fill: #1976d2;
-    rx: 4;
-    ry: 4;
-}
-
-.hybrid-layout-node .header-icon {
-    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
-    fill: white;
-}
-
-.hybrid-layout-node .header-title {
-    font-weight: bold;
-}
-
-.hybrid-layout-node .body-background {
-    fill: #fafafa;
+/* Hover state */
+.hybrid-layout-node:hover {
+    opacity: 0.8;
 }
 
 /* Layout Compartment Styles */
