@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 TypeFox and others.
+ * Copyright (c) 2025 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,183 +15,74 @@
  ********************************************************************************/
 
 import { Action } from 'sprotty-protocol';
-import { AnimationType, AnimationState } from './model';
+import { AnimationState } from './model';
 
 /**
- * Action to trigger an animation on a specific element
+ * Action to trigger a specific animation on an element
  */
 export interface TriggerAnimationAction extends Action {
     kind: typeof TriggerAnimationAction.KIND;
     elementId: string;
-    animationType: AnimationType;
-    duration?: number;
+    animationType: 'bounce' | 'pulse' | 'shake' | 'spin' | 'glow';
 }
 
 export namespace TriggerAnimationAction {
     export const KIND = 'triggerAnimation';
 
-    export function create(elementId: string, animationType: AnimationType, duration?: number): TriggerAnimationAction {
-        return {
-            kind: KIND,
-            elementId,
-            animationType,
-            duration
-        };
+    export function create(
+        elementId: string,
+        animationType: TriggerAnimationAction['animationType']
+    ): TriggerAnimationAction {
+        return { kind: KIND, elementId, animationType };
     }
 }
 
 /**
- * Action to transition an element to a new state
+ * Action to change an element's state with animation
  */
-export interface TransitionStateAction extends Action {
-    kind: typeof TransitionStateAction.KIND;
+export interface ChangeStateAction extends Action {
+    kind: typeof ChangeStateAction.KIND;
     elementId: string;
     newState: AnimationState;
-    duration?: number;
 }
 
-export namespace TransitionStateAction {
-    export const KIND = 'transitionState';
+export namespace ChangeStateAction {
+    export const KIND = 'changeState';
 
-    export function create(elementId: string, newState: AnimationState, duration?: number): TransitionStateAction {
-        return {
-            kind: KIND,
-            elementId,
-            newState,
-            duration
-        };
+    export function create(elementId: string, newState: AnimationState): ChangeStateAction {
+        return { kind: KIND, elementId, newState };
     }
 }
 
 /**
  * Action to start edge flow animation
  */
-export interface StartEdgeFlowAction extends Action {
-    kind: typeof StartEdgeFlowAction.KIND;
+export interface AnimateFlowAction extends Action {
+    kind: typeof AnimateFlowAction.KIND;
     edgeId: string;
-    speed?: number;
-    direction?: 'forward' | 'backward' | 'bidirectional';
-    duration?: number;
 }
 
-export namespace StartEdgeFlowAction {
-    export const KIND = 'startEdgeFlow';
+export namespace AnimateFlowAction {
+    export const KIND = 'animateFlow';
 
-    export function create(edgeId: string, speed?: number, direction?: 'forward' | 'backward' | 'bidirectional', duration?: number): StartEdgeFlowAction {
-        return {
-            kind: KIND,
-            edgeId,
-            speed,
-            direction,
-            duration
-        };
+    export function create(edgeId: string): AnimateFlowAction {
+        return { kind: KIND, edgeId };
     }
 }
 
 /**
- * Action to start typewriter animation on a label
+ * Action to trigger multiple animations in sequence
  */
-export interface StartTypewriterAction extends Action {
-    kind: typeof StartTypewriterAction.KIND;
-    labelId: string;
-    text: string;
-    duration?: number;
-}
-
-export namespace StartTypewriterAction {
-    export const KIND = 'startTypewriter';
-
-    export function create(labelId: string, text: string, duration?: number): StartTypewriterAction {
-        return {
-            kind: KIND,
-            labelId,
-            text,
-            duration
-        };
-    }
-}
-
-/**
- * Action to configure animation settings
- */
-export interface ConfigureAnimationAction extends Action {
-    kind: typeof ConfigureAnimationAction.KIND;
-    settings: {
-        enabled?: boolean;
-        defaultDuration?: number;
-        performanceMode?: boolean;
-        reducedMotion?: boolean;
-    };
-}
-
-export namespace ConfigureAnimationAction {
-    export const KIND = 'configureAnimation';
-
-    export function create(settings: ConfigureAnimationAction['settings']): ConfigureAnimationAction {
-        return {
-            kind: KIND,
-            settings
-        };
-    }
-}
-
-/**
- * Action to start a complex compound animation
- */
-export interface StartComplexAnimationAction extends Action {
-    kind: typeof StartComplexAnimationAction.KIND;
+export interface CompositeAnimationAction extends Action {
+    kind: typeof CompositeAnimationAction.KIND;
     elementId: string;
-    animationSequence: {
-        type: AnimationType;
-        delay?: number;
-        duration?: number;
-    }[];
 }
 
-export namespace StartComplexAnimationAction {
-    export const KIND = 'startComplexAnimation';
+export namespace CompositeAnimationAction {
+    export const KIND = 'compositeAnimation';
 
-    export function create(elementId: string, animationSequence: StartComplexAnimationAction['animationSequence']): StartComplexAnimationAction {
-        return {
-            kind: KIND,
-            elementId,
-            animationSequence
-        };
+    export function create(elementId: string): CompositeAnimationAction {
+        return { kind: KIND, elementId };
     }
 }
 
-/**
- * Action to stop all animations on an element
- */
-export interface StopAnimationsAction extends Action {
-    kind: typeof StopAnimationsAction.KIND;
-    elementId?: string; // If undefined, stops all animations
-}
-
-export namespace StopAnimationsAction {
-    export const KIND = 'stopAnimations';
-
-    export function create(elementId?: string): StopAnimationsAction {
-        return {
-            kind: KIND,
-            elementId
-        };
-    }
-}
-
-/**
- * Action to request animation performance metrics
- */
-export interface RequestAnimationMetricsAction extends Action {
-    kind: typeof RequestAnimationMetricsAction.KIND;
-}
-
-export namespace RequestAnimationMetricsAction {
-    export const KIND = 'requestAnimationMetrics';
-
-    export function create(): RequestAnimationMetricsAction {
-        return {
-            kind: KIND
-        };
-    }
-}

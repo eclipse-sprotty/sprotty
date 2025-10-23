@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 TypeFox and others.
+ * Copyright (c) 2025 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import {
-    Animation, CompoundAnimation, CommandExecutionContext, SModelRootImpl,
-    isBoundsAware
-} from 'sprotty';
-import { AnimatableNode, isAnimatable, isAnimatableEdge, isAnimatableLabel, AnimationState } from './model';
+import { Animation, CompoundAnimation, CommandExecutionContext, SModelRootImpl, SNodeImpl, SEdgeImpl } from 'sprotty';
+import { AnimationState } from './model';
+import { STATE_COLORS } from './constants';
 
 /**
  * Custom easing functions for natural motion
@@ -28,30 +26,35 @@ export namespace Easing {
         if (t < 1 / 2.75) {
             return 7.5625 * t * t;
         } else if (t < 2 / 2.75) {
-            return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+            t -= 1.5 / 2.75;
+            return 7.5625 * t * t + 0.75;
         } else if (t < 2.5 / 2.75) {
-            return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+            t -= 2.25 / 2.75;
+            return 7.5625 * t * t + 0.9375;
         } else {
-            return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+            t -= 2.625 / 2.75;
+            return 7.5625 * t * t + 0.984375;
         }
     }
 
     export function easeOutElastic(t: number): number {
-        const c4 = (2 * Math.PI) / 3;
-        return t === 0 ? 0 : t === 1 ? 1 :
-            Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+        const p = 0.3;
+        const s = p / 4;
+        return Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + 1;
     }
 
     export function easeInOutBack(t: number): number {
-        const c1 = 1.70158;
-        const c2 = c1 * 1.525;
-        return t < 0.5
-            ? (Math.pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2
-            : (Math.pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
+        const s = 1.70158 * 1.525;
+        t *= 2;
+        if (t < 1) {
+            return 0.5 * (t * t * ((s + 1) * t - s));
+        }
+        t -= 2;
+        return 0.5 * (t * t * ((s + 1) * t + s) + 2);
     }
 
     export function easeOutCirc(t: number): number {
-        return Math.sqrt(1 - Math.pow(t - 1, 2));
+        return Math.sqrt(1 - (--t * t));
     }
 }
 
@@ -59,33 +62,36 @@ export namespace Easing {
  * Bounce animation that makes elements jump up and down
  */
 export class BounceAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected elementId: string,
-        context: CommandExecutionContext
-    ) {
-        super(context, Easing.easeOutBounce);
+    protected elementId: string;
+    private originalPosition: { x: number; y: number } | null = null;
+
+    constructor(protected model: SModelRootImpl, elementId: string, context: CommandExecutionContext) {
+        super(context);
+        this.elementId = elementId;
+        context.duration = 600;
+
+        const element = this.model.index.getById(elementId);
+        if (element && element instanceof SNodeImpl) {
+            this.originalPosition = { ...element.position };
+        }
     }
 
     tween(t: number): SModelRootImpl {
         const element = this.model.index.getById(this.elementId);
-        if (element && isAnimatable(element)) {
-            element.updateAnimation(t);
-
-            // Bounce effect using sine wave with decay
-            const bounceHeight = 30 * Math.sin(t * Math.PI * 3) * (1 - t);
-
-            if (element.originalPosition) {
-                element.position = {
-                    x: element.originalPosition.x,
-                    y: element.originalPosition.y - bounceHeight
-                };
-            }
-
-            if (t === 1) {
-                element.completeAnimation();
-            }
+        if (!(element instanceof SNodeImpl) || !this.originalPosition) {
+            return this.model;
         }
+
+        const bounceHeight = 50;
+        const progress = Easing.easeOutBounce(t);
+        const offset = bounceHeight * (1 - progress);
+
+        // Directly mutate element position
+        element.position = {
+            x: this.originalPosition.x,
+            y: this.originalPosition.y - offset
+        };
+
         return this.model;
     }
 }
@@ -94,39 +100,32 @@ export class BounceAnimation extends Animation {
  * Pulse animation that scales elements in and out
  */
 export class PulseAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected elementId: string,
-        context: CommandExecutionContext
-    ) {
-        super(context, Easing.easeInOutBack);
+    protected elementId: string;
+    private originalSize: { width: number; height: number } | null = null;
+
+    constructor(protected model: SModelRootImpl, elementId: string, context: CommandExecutionContext) {
+        super(context);
+        this.elementId = elementId;
+        context.duration = 800;
+
+        const element = this.model.index.getById(elementId);
+        if (element && element instanceof SNodeImpl) {
+            this.originalSize = { ...element.size };
+        }
     }
 
     tween(t: number): SModelRootImpl {
         const element = this.model.index.getById(this.elementId);
-        if (element && isAnimatable(element) && isBoundsAware(element)) {
-            element.updateAnimation(t);
-
-            // Pulse effect using cosine wave
-            const scale = 1 + 0.3 * Math.cos(t * Math.PI * 4) * (1 - t);
-            element.scale = scale;
-
-            if (element.originalBounds) {
-                const centerX = element.originalBounds.x + element.originalBounds.width / 2;
-                const centerY = element.originalBounds.y + element.originalBounds.height / 2;
-
-                element.bounds = {
-                    x: centerX - (element.originalBounds.width * scale) / 2,
-                    y: centerY - (element.originalBounds.height * scale) / 2,
-                    width: element.originalBounds.width * scale,
-                    height: element.originalBounds.height * scale
-                };
-            }
-
-            if (t === 1) {
-                element.completeAnimation();
-            }
+        if (!(element instanceof SNodeImpl) || !this.originalSize) {
+            return this.model;
         }
+
+        // Pulse: grow then shrink using scale property
+        const scale = 1 + 0.3 * Math.sin(t * Math.PI);
+
+        // Directly mutate element scale property
+        (element as any).scale = scale;
+
         return this.model;
     }
 }
@@ -135,35 +134,37 @@ export class PulseAnimation extends Animation {
  * Shake animation that vibrates elements horizontally
  */
 export class ShakeAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected elementId: string,
-        context: CommandExecutionContext
-    ) {
+    protected elementId: string;
+    private originalPosition: { x: number; y: number } | null = null;
+
+    constructor(protected model: SModelRootImpl, elementId: string, context: CommandExecutionContext) {
         super(context);
+        this.elementId = elementId;
+        context.duration = 500;
+
+        const element = this.model.index.getById(elementId);
+        if (element && element instanceof SNodeImpl) {
+            this.originalPosition = { ...element.position };
+        }
     }
 
     tween(t: number): SModelRootImpl {
         const element = this.model.index.getById(this.elementId);
-        if (element && isAnimatable(element)) {
-            element.updateAnimation(t);
-
-            // Shake effect with larger amplitude and slower frequency
-            const amplitude = 20 * (1 - t); // Increased from 8 to 20
-            const frequency = 8; // Reduced from 20 to 8 for slower shaking
-            const offset = amplitude * Math.sin(t * frequency * Math.PI);
-
-            if (element.originalPosition) {
-                element.position = {
-                    x: element.originalPosition.x + offset,
-                    y: element.originalPosition.y
-                };
-            }
-
-            if (t === 1) {
-                element.completeAnimation();
-            }
+        if (!(element instanceof SNodeImpl) || !this.originalPosition) {
+            return this.model;
         }
+
+        // Shake with decreasing amplitude
+        const amplitude = 10 * (1 - t);
+        const frequency = 20;
+        const offset = amplitude * Math.sin(t * frequency);
+
+        // Directly mutate element position
+        element.position = {
+            x: this.originalPosition.x + offset,
+            y: this.originalPosition.y
+        };
+
         return this.model;
     }
 }
@@ -172,26 +173,26 @@ export class ShakeAnimation extends Animation {
  * Spin animation that rotates elements
  */
 export class SpinAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected elementId: string,
-        context: CommandExecutionContext
-    ) {
-        super(context, Easing.easeOutCirc);
+    protected elementId: string;
+
+    constructor(protected model: SModelRootImpl, elementId: string, context: CommandExecutionContext) {
+        super(context);
+        this.elementId = elementId;
+        context.duration = 1000;
     }
 
     tween(t: number): SModelRootImpl {
         const element = this.model.index.getById(this.elementId);
-        if (element && isAnimatable(element)) {
-            element.updateAnimation(t);
-
-            // Full rotation (360 degrees)
-            element.rotation = t * 360;
-
-            if (t === 1) {
-                element.completeAnimation();
-            }
+        if (!element) {
+            return this.model;
         }
+
+        // Full 360 degree rotation
+        const rotation = t * 360;
+
+        // Directly mutate element rotation property
+        (element as any).rotation = rotation;
+
         return this.model;
     }
 }
@@ -200,28 +201,27 @@ export class SpinAnimation extends Animation {
  * Glow animation that creates a pulsing glow effect
  */
 export class GlowAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected elementId: string,
-        context: CommandExecutionContext
-    ) {
+    protected elementId: string;
+
+    constructor(protected model: SModelRootImpl, elementId: string, context: CommandExecutionContext) {
         super(context);
+        this.elementId = elementId;
+        context.duration = 1500;
     }
 
     tween(t: number): SModelRootImpl {
         const element = this.model.index.getById(this.elementId);
-        if (element && isAnimatable(element)) {
-            element.updateAnimation(t);
-
-            // Glow intensity using sine wave with higher intensity
-            // Oscillates between 0.5 and 1.5 for more visible effect
-            element.glowIntensity = Math.sin(t * Math.PI * 4) * 0.5 + 1.0;
-
-            if (t === 1) {
-                element.completeAnimation();
-                element.glowIntensity = 0; // Reset glow when done
-            }
+        if (!element) {
+            return this.model;
         }
+
+        // Pulsing glow intensity
+        const glowIntensity = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI);
+
+        // Directly mutate element animationClass property
+        const animationClass = glowIntensity > 0.7 ? 'glow-high' : glowIntensity > 0.4 ? 'glow-medium' : 'glow-low';
+        (element as any).animationClass = animationClass;
+
         return this.model;
     }
 }
@@ -230,59 +230,81 @@ export class GlowAnimation extends Animation {
  * State transition animation that smoothly changes element states
  */
 export class StateTransitionAnimation extends Animation {
+    protected elementId: string;
+    protected fromState: AnimationState;
+    protected toState: AnimationState;
+
     constructor(
         protected model: SModelRootImpl,
-        protected elementId: string,
-        protected fromState: AnimationState,
-        protected toState: AnimationState,
+        elementId: string,
+        fromState: AnimationState,
+        toState: AnimationState,
         context: CommandExecutionContext
     ) {
-        super(context, Easing.easeInOutBack);
+        super(context);
+        this.elementId = elementId;
+        this.fromState = fromState;
+        this.toState = toState;
+        context.duration = 400;
     }
 
     tween(t: number): SModelRootImpl {
         const element = this.model.index.getById(this.elementId);
-        if (element && isAnimatable(element)) {
-            element.updateStateTransition(t);
-
-            // Interpolate between state properties
-            this.interpolateStateProperties(element, t);
-
-            // Debug: log interpolation
-            if (t === 0 || t === 0.5 || t === 1) {
-                console.log(`t=${t.toFixed(2)}: ${this.fromState} -> ${this.toState}, color: ${(element as any).interpolatedColor}`);
-            }
-
-            if (t === 1) {
-                element.animationState = this.toState;
-                element.stateProgress = 1;
-                // Clear interpolated color so the view uses the actual state color
-                delete (element as any).interpolatedColor;
-            }
+        if (!element) {
+            return this.model;
         }
+
+        const easedT = Easing.easeInOutBack(t);
+
+        // Interpolate color between states
+        const color = this.interpolateColor(
+            STATE_COLORS[this.fromState],
+            STATE_COLORS[this.toState],
+            easedT
+        );
+
+        // Add subtle scale pulse during transition
+        const scale = 1 + 0.1 * Math.sin(easedT * Math.PI);
+
+        // Directly mutate element properties
+        (element as any).color = color;
+        (element as any).scale = scale;
+        (element as any).state = this.toState;
+
+        // Update label text for state cycle node
+        const label = (element as any).children?.find((c: any) => c.id === 'label-state-cycle');
+        if (label && label.type === 'label:animated') {
+            label.text = `State: ${this.toState}`;
+        }
+
         return this.model;
     }
 
-    private interpolateStateProperties(element: AnimatableNode, t: number): void {
-        // Color transitions based on state - must match the hex colors in views.tsx
-        const stateColors = {
-            idle: { r: 176, g: 176, b: 176 },      // #b0b0b0 - Medium gray
-            processing: { r: 255, g: 193, b: 7 },  // #ffc107 - Bright yellow/amber
-            complete: { r: 76, g: 175, b: 80 },    // #4caf50 - Green
-            error: { r: 244, g: 67, b: 54 }        // #f44336 - Red
-        };
+    private interpolateColor(from: string, to: string, t: number): string {
+        const fromRgb = this.hexToRgb(from);
+        const toRgb = this.hexToRgb(to);
 
-        const fromColor = stateColors[this.fromState];
-        const toColor = stateColors[this.toState];
+        const r = Math.round(fromRgb.r + (toRgb.r - fromRgb.r) * t);
+        const g = Math.round(fromRgb.g + (toRgb.g - fromRgb.g) * t);
+        const b = Math.round(fromRgb.b + (toRgb.b - fromRgb.b) * t);
 
-        if (fromColor && toColor) {
-            const r = Math.round(fromColor.r + (toColor.r - fromColor.r) * t);
-            const g = Math.round(fromColor.g + (toColor.g - fromColor.g) * t);
-            const b = Math.round(fromColor.b + (toColor.b - fromColor.b) * t);
+        return this.rgbToHex(r, g, b);
+    }
 
-            // Store interpolated color for use in views
-            (element as any).interpolatedColor = `rgb(${r}, ${g}, ${b})`;
-        }
+    private hexToRgb(hex: string): { r: number; g: number; b: number } {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    }
+
+    private rgbToHex(r: number, g: number, b: number): string {
+        return '#' + [r, g, b].map(x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
     }
 }
 
@@ -290,53 +312,33 @@ export class StateTransitionAnimation extends Animation {
  * Edge flow animation that shows data flowing along edges
  */
 export class EdgeFlowAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected edgeId: string,
-        context: CommandExecutionContext
-    ) {
+    protected edgeId: string;
+
+    constructor(protected model: SModelRootImpl, edgeId: string, context: CommandExecutionContext) {
         super(context);
+        this.edgeId = edgeId;
+        context.duration = 4000; // Longer duration
     }
 
     tween(t: number): SModelRootImpl {
-        const element = this.model.index.getById(this.edgeId);
-        if (element && isAnimatableEdge(element)) {
-            element.updateFlow(t);
-
-            // Create flowing effect
-            element.pulseIntensity = Math.sin(t * Math.PI * 6) * 0.5 + 0.5;
-
-            if (t === 1) {
-                element.stopAnimations();
-                element.pulseIntensity = 0;
-            }
+        const edge = this.model.index.getById(this.edgeId);
+        if (!(edge instanceof SEdgeImpl)) {
+            return this.model;
         }
-        return this.model;
-    }
-}
 
-/**
- * Typewriter animation for labels
- */
-export class TypewriterAnimation extends Animation {
-    constructor(
-        protected model: SModelRootImpl,
-        protected labelId: string,
-        protected targetText: string,
-        context: CommandExecutionContext
-    ) {
-        super(context);
-    }
+        if (t < 1) {
+            // During animation: faster movement with larger multiplier
+            const strokeDashOffset = 80 * (1 - t);
 
-    tween(t: number): SModelRootImpl {
-        const element = this.model.index.getById(this.labelId);
-        if (element && isAnimatableLabel(element)) {
-            element.updateTypewriter(t);
-
-            if (t === 1) {
-                element.completeTypewriter();
-            }
+            // Directly mutate edge properties
+            (edge as any).strokeDashOffset = strokeDashOffset;
+            (edge as any).animated = true;
+        } else {
+            // At the end: return to solid line
+            (edge as any).strokeDashOffset = 0;
+            (edge as any).animated = false;
         }
+
         return this.model;
     }
 }
@@ -345,51 +347,11 @@ export class TypewriterAnimation extends Animation {
  * Compound animation that combines multiple effects
  */
 export class ComplexTransitionAnimation extends CompoundAnimation {
-    constructor(
-        model: SModelRootImpl,
-        elementId: string,
-        context: CommandExecutionContext
-    ) {
-        const components = [
-            new BounceAnimation(model, elementId, { ...context, duration: 800 }),
-            new GlowAnimation(model, elementId, { ...context, duration: 1200 }),
-            new StateTransitionAnimation(model, elementId, 'idle', 'complete', { ...context, duration: 1000 })
-        ];
-
-        super(model, context, components);
-    }
-}
-
-/**
- * Performance monitoring animation wrapper
- */
-export class MonitoredAnimation extends Animation {
-    private startTime: number = 0;
-    private frameCount: number = 0;
-
-    constructor(
-        protected wrappedAnimation: Animation,
-        context: CommandExecutionContext
-    ) {
-        super(context);
-    }
-
-    override start(): Promise<SModelRootImpl> {
-        this.startTime = performance.now();
-        this.frameCount = 0;
-        return super.start();
-    }
-
-    override tween(t: number, context: CommandExecutionContext): SModelRootImpl {
-        this.frameCount++;
-
-        // Log performance metrics periodically
-        if (this.frameCount % 30 === 0) {
-            const elapsed = performance.now() - this.startTime;
-            const fps = (this.frameCount * 1000) / elapsed;
-            console.log(`Animation FPS: ${fps.toFixed(1)}, Frames: ${this.frameCount}`);
-        }
-
-        return this.wrappedAnimation.tween(t, context);
+    constructor(model: SModelRootImpl, elementId: string, context: CommandExecutionContext) {
+        super(model, context, [
+            new PulseAnimation(model, elementId, context),
+            new SpinAnimation(model, elementId, context),
+            new BounceAnimation(model, elementId, context)
+        ]);
     }
 }

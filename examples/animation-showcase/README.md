@@ -1,62 +1,160 @@
-# Animation and Transitions Showcase
+# Sprotty Animation and Transitions Showcase
 
-This example demonstrates Sprotty's comprehensive animation system, showing how to create smooth visual transitions and interactive effects in diagrams.
+This example demonstrates comprehensive animation capabilities in Sprotty diagrams, including both CSS-based and programmatic animation techniques.
 
-## What This Example Demonstrates
+## Features Demonstrated
 
-### 1. Triggered Animations
+### CSS-Based Animations
 
-- **Bounce Animation**: Click any node to see a bouncing effect
-- **Pulse Animation**: Right-click nodes for a pulsing scale effect
-- **Shake Animation**: Double-click nodes for a shake effect
-- **Glow Animation**: Hover over nodes for a glowing outline
+- **Hover Effects**: Scale and shadow transitions on mouse over
+- **Loading Spinners**: Rotating animation using CSS `@keyframes`
+- **State Indicators**: Pulsing dots, checkmarks, and error crosses
+- **Color Transitions**: Smooth fill color changes on state updates
+- **Selection Highlights**: Pulsing glow effect on selection
+- **Edge Animations**: Dashed line flow using `stroke-dashoffset`
 
-### 2. State Transition Animations
+### Programmatic Animations
 
-- **Status Changes**: Watch nodes smoothly transition between different states (idle → processing → complete)
-- **Color Transitions**: See gradual color changes as node states evolve
-- **Size Transitions**: Observe smooth size changes during state transitions
+- **Bounce Animation**: Natural bouncing motion with easing
+- **Pulse Animation**: Scaling in and out with sine wave
+- **Shake Animation**: Horizontal vibration with decay
+- **Spin Animation**: Full 360° rotation
+- **Glow Animation**: Dynamic shadow intensity pulsing
+- **State Transitions**: Smooth color interpolation between states
+- **Edge Flow**: Animated data flow along connections
+- **Composite Animations**: Sequences of multiple effects
 
-### 3. Compound Animations
+### Advanced Features
 
-- **Complex Transitions**: Some interactions trigger multiple simultaneous animations
-- **Coordinated Effects**: Multiple elements animate together in choreographed sequences
-- **Layered Animations**: CSS and Sprotty animations work together
+- **Custom Easing Functions**: Bounce, elastic, back, circular
+- **Performance Monitoring**: Real-time FPS tracking
+- **Action System Integration**: Triggering animations via actions
+- **Command Pattern**: Undoable animation commands
+- **Accessibility**: Respects `prefers-reduced-motion` preference
 
-### 4. Custom Easing Functions
+## Running the Example
 
-- **Bounce Easing**: Natural bouncing motion with physics-like behavior
-- **Elastic Easing**: Spring-like motion with overshoot and settle
-- **Custom Curves**: Demonstration of different timing functions
+1. Build the examples from the repository root:
 
-### 5. Performance Controls
+   ```bash
+   npm run build
+   ```
 
-- **Animation Toggle**: Enable/disable animations for performance testing
-- **Duration Control**: Adjust animation speeds in real-time
-- **Performance Monitor**: View frame rate and animation metrics
+2. Open `animation-showcase.html` in your browser
 
-## Key Learning Points
+3. Use the interactive controls to trigger different animations
 
-1. **Animation Architecture**: How Sprotty's animation system integrates with the command pattern
-2. **Custom Animation Classes**: Creating your own animation types by extending the base Animation class
-3. **Easing Functions**: Using and creating custom timing functions for natural motion
-4. **Performance Optimization**: Best practices for smooth animations in complex diagrams
-5. **CSS Integration**: Combining Sprotty animations with CSS animations for enhanced effects
+## Learning Objectives
 
-## Interactive Features
+After exploring this example, you should understand:
 
-- **Click**: Trigger bounce animations on nodes
-- **Right-click**: Activate pulse animations
-- **Double-click**: Start shake animations
-- **Hover**: See glow effects and smooth transitions
-- **Control Panel**: Adjust animation settings and monitor performance
+1. **When to use CSS vs Programmatic animations**
+   - CSS: Simple effects, hover states, repeating animations
+   - Programmatic: Complex timing, coordinated effects, model updates
 
-## Technical Highlights
+2. **How to create custom animations**
+   - Extend the `Animation` class
+   - Implement the `tween(t)` method
+   - Apply easing functions for natural motion
 
-- Custom animation classes extending Sprotty's Animation base class
-- Integration of multiple animation types in compound animations
-- Performance monitoring and optimization techniques
-- Accessibility considerations with reduced motion support
-- Real-time animation parameter adjustment
+3. **How to integrate with Sprotty's command system**
+   - Create custom actions for animation triggers
+   - Implement command handlers
+   - Return animated command results
 
-This showcase provides a comprehensive reference for implementing animations in your own Sprotty applications, from simple hover effects to complex multi-stage transitions.
+4. **Performance optimization techniques**
+   - Use GPU-accelerated CSS properties
+   - Monitor frame rates during animation
+   - Optimize tween calculations
+
+5. **CSS animation techniques**
+   - Transitions for property changes
+   - Keyframe animations for complex effects
+   - Combining with model state updates
+
+## File Structure
+
+```
+animation-showcase/
+├── README.md                    # This file
+├── animation-showcase.html      # Demo page with interactive controls
+├── css/
+│   ├── diagram.css             # Diagram styling with CSS animations
+│   └── page.css                # Page layout and control panel styling
+└── src/
+    ├── di.config.ts            # Dependency injection configuration
+    ├── standalone.ts           # Main application and control setup
+    ├── model.ts                # Type definitions for animated elements
+    ├── animations.ts           # Custom animation implementations
+    ├── actions.ts              # Custom action definitions
+    ├── handlers.ts             # Command handlers for animations
+    └── views.tsx               # Custom views for animated elements
+```
+
+## Code Highlights
+
+### Custom Animation Example
+
+```typescript
+export class BounceAnimation extends Animation {
+    tween(t: number): SModelRootImpl {
+        const progress = Easing.easeOutBounce(t);
+        const offset = bounceHeight * (1 - progress);
+        return this.updatePosition(this.model, offset);
+    }
+}
+```
+
+### CSS Animation Example
+
+```css
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.node-loading {
+    animation: pulse 2s ease-in-out infinite;
+}
+```
+
+### Triggering Animations
+
+```typescript
+// Dispatch action to trigger animation
+dispatcher.dispatch(TriggerAnimationAction.create('node1', 'bounce'));
+
+// Command handler executes the animation
+execute(context: CommandExecutionContext): CommandReturn {
+    const animation = new BounceAnimation(context.root, elementId, context);
+    return animation.start();
+}
+```
+
+## Performance Tips
+
+- CSS animations automatically use GPU acceleration
+- Programmatic animations should maintain 60 FPS (16ms per frame)
+- Use `transform` and `opacity` for best performance
+- Monitor performance in console during complex animations
+- Respect user's reduced motion preferences
+
+## Related Documentation
+
+- [Animation and Transitions Recipe](https://sprotty.org/docs/recipes/animation-transitions/)
+- [Custom Views Recipe](https://sprotty.org/docs/recipes/custom-views/)
+- [Actions and Commands](https://sprotty.org/docs/concepts/actions/)
+
+## Browser Compatibility
+
+Tested and working in:
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+
+Requires support for:
+
+- CSS transitions and animations
+- SVG rendering
+- ES6+ JavaScript

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 TypeFox and others.
+ * Copyright (c) 2025 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,142 +16,125 @@
 
 /** @jsx svg */
 import { svg } from 'sprotty/lib/lib/jsx';
+
 import { injectable } from 'inversify';
-import {
-    IView, RenderingContext, SGraphView, PolylineEdgeView, SLabelView
-} from 'sprotty';
 import { VNode } from 'snabbdom';
-import { Point, toDegrees, angleOfPoint } from 'sprotty-protocol';
-import { AnimatableNode, AnimatableEdge, AnimatableLabel, isAnimatable, isAnimatableEdge, isAnimatableLabel } from './model';
+import { IView, RenderingContext, SNodeImpl, SEdgeImpl, SModelElementImpl, IViewArgs, PolylineEdgeView, RoutedPoint } from 'sprotty';
+import { toDegrees } from 'sprotty-protocol';
+import { AnimatedNode, AnimatedEdge, AnimatedLabel, AnimationState } from './model';
+import { STATE_COLORS, ICON_SIZE, ICON_PADDING, ICON_SPINNER_RADIUS_OFFSET, EDGE_DASH_ARRAY } from './constants';
 
 /**
- * Enhanced graph view that supports animation contexts
- */
-@injectable()
-export class AnimatedGraphView extends SGraphView {
-    override render(model: any, context: RenderingContext): VNode {
-        // Animation context is stored globally via singleton
-
-        return super.render(model, context);
-    }
-}
-
-/**
- * Animated node view with support for various animation effects
+ * Custom view for animated nodes
  */
 @injectable()
 export class AnimatedNodeView implements IView {
-    render(node: AnimatableNode, context: RenderingContext): VNode {
-        if (!isAnimatable(node)) {
-            return <g></g>;
+    render(node: Readonly<SNodeImpl & AnimatedNode>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+        if (!this.isVisible(node, context)) {
+            return undefined;
         }
 
-        const { width, height } = node.bounds;
+        const state = node.state || 'idle';
+        const scale = node.scale || 1;
+        const rotation = node.rotation || 0;
+        const color = node.color || this.getStateColor(state);
+        const animationClass = node.animationClass || '';
 
-        // Calculate transform based on current animation state
-        const transform = this.calculateTransform(node);
+        // Apply scale/rotation transforms centered on the node in an inner group
+        const needsTransform = scale !== 1 || rotation !== 0;
+        const transform = needsTransform ?
+            `translate(${node.size.width / 2}, ${node.size.height / 2}) scale(${scale}) rotate(${rotation}) translate(${-node.size.width / 2}, ${-node.size.height / 2})` :
+            undefined;
 
-        // Get current colors based on state
-        const colors = this.getStateColors(node);
-
-        // Build style object for glow effect
-        const glowStyle: any = {};
-        if (node.glowIntensity > 0) {
-            const glowSize = Math.round(node.glowIntensity * 15);
-            glowStyle.filter = `drop-shadow(0 0 ${glowSize}px #00aaff) drop-shadow(0 0 ${glowSize * 2}px #0088ff)`;
-        }
-
-        return <g class-sprotty-node={true}
+        return <g class-animated-node={true}
+            class-state-idle={state === 'idle'}
+            class-state-active={state === 'active'}
+            class-state-success={state === 'success'}
+            class-state-error={state === 'error'}
+            class-state-loading={state === 'loading'}
+            class-sprotty-node={true}
             class-selected={node.selected}
             class-mouseover={node.hoverFeedback}
-            class-animating={!!node.currentAnimation}
-            data-animation-state={node.animationState}
-            transform={transform}
-            style={glowStyle}>
+            class-glow-low={animationClass === 'glow-low'}
+            class-glow-medium={animationClass === 'glow-medium'}
+            class-glow-high={animationClass === 'glow-high'}>
+            <g {...(transform ? { transform } : {})}>
+                <rect x="0" y="0"
+                    width={Math.max(node.size.width, 0)}
+                    height={Math.max(node.size.height, 0)}
+                    rx="8"
+                    class-node-body={true}
+                    style={{ fill: color }} />
 
-            {/* Main node shape */}
-            <rect x={0} y={0} width={width} height={height}
-                fill={colors.fill}
-                stroke={node.glowIntensity > 0 ? '#00aaff' : colors.stroke}
-                stroke-width={node.glowIntensity > 0 ? (colors.strokeWidth + node.glowIntensity * 2) : colors.strokeWidth}
-                class-node-shape={true} />
+                {/* State indicator icon */}
+                {this.renderStateIndicator(state, node.size.width, node.size.height)}
 
-            {/* Node label */}
-            <text x={width / 2} y={height / 2}
-                text-anchor="middle"
-                dominant-baseline="central"
-                class-node-label={true}
-                fill={colors.textFill}>
-                {node.id}
-            </text>
+                {context.renderChildren(node)}
+            </g>
         </g>;
     }
 
-    private calculateTransform(node: AnimatableNode): string | undefined {
-        const transforms: string[] = [];
+    protected renderStateIndicator(state: AnimationState, width: number, height: number): VNode | undefined {
+        const x = width - ICON_SIZE - ICON_PADDING;
+        const y = ICON_PADDING;
 
-        // Scale transformation
-        if (node.scale !== 1) {
-            const centerX = node.bounds.width / 2;
-            const centerY = node.bounds.height / 2;
-            transforms.push(`translate(${centerX}, ${centerY}) scale(${node.scale}) translate(${-centerX}, ${-centerY})`);
+        switch (state) {
+            case 'loading':
+                return <g transform={`translate(${x}, ${y})`}>
+                    <circle cx={ICON_SIZE / 2} cy={ICON_SIZE / 2} r={ICON_SIZE / 2 - ICON_SPINNER_RADIUS_OFFSET}
+                        class-loading-spinner={true}
+                        fill="none"
+                        stroke="#fff"
+                        stroke-width="2"
+                        stroke-dasharray="28 10"
+                        stroke-linecap="round" />
+                </g>;
+            case 'success':
+                return <g transform={`translate(${x}, ${y})`}>
+                    <path d="M3,8 L7,12 L13,4"
+                        class-success-checkmark={true}
+                        fill="none"
+                        stroke="#fff"
+                        stroke-width="2"
+                        stroke-linecap="round" />
+                </g>;
+            case 'error':
+                return <g transform={`translate(${x}, ${y})`}>
+                    <path d="M4,4 L12,12 M12,4 L4,12"
+                        class-error-cross={true}
+                        fill="none"
+                        stroke="#fff"
+                        stroke-width="2"
+                        stroke-linecap="round" />
+                </g>;
+            case 'active':
+                return <g transform={`translate(${x}, ${y})`}>
+                    <circle cx={ICON_SIZE / 2} cy={ICON_SIZE / 2} r={4}
+                        class-active-pulse={true}
+                        fill="#fff" />
+                </g>;
+            default:
+                return undefined;
         }
-
-        // Rotation transformation
-        if (node.rotation !== 0) {
-            const centerX = node.bounds.width / 2;
-            const centerY = node.bounds.height / 2;
-            transforms.push(`rotate(${node.rotation} ${centerX} ${centerY})`);
-        }
-
-        return transforms.length > 0 ? transforms.join(' ') : undefined;
     }
 
-    private getStateColors(node: AnimatableNode): { fill: string; stroke: string; strokeWidth: number; textFill: string } {
-        // Use interpolated color if available (from state transitions)
-        if ((node as any).interpolatedColor) {
-            return {
-                fill: (node as any).interpolatedColor,
-                stroke: this.darkenColor((node as any).interpolatedColor, 0.2),
-                strokeWidth: 2,
-                textFill: '#333'
-            };
-        }
-
-        // Default state colors - using more saturated colors for visible transitions
-        const stateColors = {
-            idle: { fill: '#b0b0b0', stroke: '#6c757d', strokeWidth: 2, textFill: '#000' },      // Medium gray
-            processing: { fill: '#ffc107', stroke: '#ff9800', strokeWidth: 3, textFill: '#000' }, // Bright yellow/amber
-            complete: { fill: '#4caf50', stroke: '#2e7d32', strokeWidth: 2, textFill: '#fff' },  // Green
-            error: { fill: '#f44336', stroke: '#c62828', strokeWidth: 3, textFill: '#fff' }      // Red
-        };
-
-        return stateColors[node.animationState] || stateColors.idle;
+    protected getStateColor(state: AnimationState): string {
+        return STATE_COLORS[state];
     }
 
-    private darkenColor(color: string, factor: number): string {
-        // Simple color darkening - in a real app, use a proper color library
-        const match = color.match(/rgb\((\d+), (\d+), (\d+)\)/);
-        if (match) {
-            const r = Math.max(0, parseInt(match[1]) * (1 - factor));
-            const g = Math.max(0, parseInt(match[2]) * (1 - factor));
-            const b = Math.max(0, parseInt(match[3]) * (1 - factor));
-            return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-        }
-        return color;
+    protected isVisible(element: SNodeImpl, context: RenderingContext): boolean {
+        return context.targetKind !== 'hidden';
     }
-
 }
 
 /**
- * Animated edge view with flow effects
+ * Custom view for animated edges with flow effects
  */
 @injectable()
 export class AnimatedEdgeView extends PolylineEdgeView {
-    protected override renderLine(edge: AnimatableEdge, segments: Point[], context: RenderingContext): VNode {
-        if (!isAnimatableEdge(edge)) {
-            return super.renderLine(edge as any, segments, context);
-        }
+    protected override renderLine(edge: SEdgeImpl & AnimatedEdge, segments: RoutedPoint[], context: RenderingContext, args?: IViewArgs): VNode {
+        const animated = (edge as AnimatedEdge).animated || false;
+        const strokeDashOffset = (edge as AnimatedEdge).strokeDashOffset || 0;
 
         const firstPoint = segments[0];
         let path = `M ${firstPoint.x},${firstPoint.y}`;
@@ -160,126 +143,59 @@ export class AnimatedEdgeView extends PolylineEdgeView {
             path += ` L ${p.x},${p.y}`;
         }
 
-        // Calculate stroke properties based on animation state
-        const strokeWidth = edge.thickness + (edge.pulseIntensity * 2);
-        const opacity = 0.7 + (edge.pulseIntensity * 0.3);
-
-        return <g class-sprotty-edge={true} class-animated-edge={true}>
-            {/* Main edge line */}
-            <path d={path}
-                fill="none"
-                stroke="#666"
-                stroke-width={strokeWidth}
-                opacity={opacity}
-                class-edge-line={true} />
-
-            {/* Flow animation overlay */}
-            {edge.animationProgress > 0 && this.renderFlowEffect(edge, path)}
-
-            {/* Pulse effect */}
-            {edge.pulseIntensity > 0 && this.renderPulseEffect(edge, path)}
-        </g>;
-    }
-
-    private renderFlowEffect(edge: AnimatableEdge, path: string): VNode {
-        const dashArray = "10,5";
-        const dashOffset = -edge.animationProgress * 15;
-
-        return <path d={path}
+        return <path class-animated-edge={true}
+            class-edge-animated={animated}
+            d={path}
             fill="none"
-            stroke="#007bff"
-            stroke-width={edge.thickness + 1}
-            stroke-dasharray={dashArray}
-            stroke-dashoffset={dashOffset}
-            opacity={0.8}
-            class-flow-effect={true} />;
+            stroke="#666"
+            stroke-width="2"
+            stroke-dasharray={animated ? EDGE_DASH_ARRAY : undefined}
+            stroke-dashoffset={strokeDashOffset} />;
     }
 
-    private renderPulseEffect(edge: AnimatableEdge, path: string): VNode {
-        const glowWidth = edge.thickness + (edge.pulseIntensity * 4);
+    protected override renderAdditionals(edge: SEdgeImpl & AnimatedEdge, segments: RoutedPoint[], context: RenderingContext): VNode[] {
+        const additionals = super.renderAdditionals(edge, segments, context);
 
-        return <path d={path}
-            fill="none"
-            stroke="#007bff"
-            stroke-width={glowWidth}
-            opacity={edge.pulseIntensity * 0.3}
-            filter="blur(2px)"
-            class-pulse-effect={true} />;
-    }
+        // Add arrow head
+        if (segments.length >= 2) {
+            const lastPoint = segments[segments.length - 1];
+            const secondLastPoint = segments[segments.length - 2];
 
-    protected override renderAdditionals(edge: AnimatableEdge, segments: Point[], context: RenderingContext): VNode[] {
-        const additionals = super.renderAdditionals(edge as any, segments, context);
+            const dx = lastPoint.x - secondLastPoint.x;
+            const dy = lastPoint.y - secondLastPoint.y;
+            const angle = toDegrees(Math.atan2(dy, dx));
 
-        if (isAnimatableEdge(edge) && edge.flowDirection !== 'forward') {
-            // Add directional indicators for bidirectional or backward flow
-            additionals.push(this.renderDirectionIndicators(edge, segments));
+            additionals.push(
+                <g transform={`translate(${lastPoint.x}, ${lastPoint.y}) rotate(${angle})`}>
+                    <polygon points="-8,-4 0,0 -8,4"
+                        class-arrow-head={true}
+                        fill="#666" />
+                </g>
+            );
         }
 
         return additionals;
     }
-
-    private renderDirectionIndicators(edge: AnimatableEdge, segments: Point[]): VNode {
-        if (segments.length < 2) return <g></g>;
-
-        const midIndex = Math.floor(segments.length / 2);
-        const midPoint = segments[midIndex];
-        const nextPoint = segments[midIndex + 1] || segments[midIndex - 1];
-
-        const angle = toDegrees(angleOfPoint({ x: nextPoint.x - midPoint.x, y: nextPoint.y - midPoint.y }));
-
-        return <g transform={`translate(${midPoint.x}, ${midPoint.y}) rotate(${angle})`}>
-            <polygon points="-5,-3 5,0 -5,3"
-                fill="#007bff"
-                opacity={0.7}
-                class-direction-indicator={true} />
-        </g>;
-    }
 }
 
 /**
- * Animated label view with typewriter effects
+ * View for demonstration labels
  */
 @injectable()
-export class AnimatedLabelView extends SLabelView {
-    override render(label: AnimatableLabel, context: RenderingContext): VNode | undefined {
-        if (!isAnimatableLabel(label)) {
-            return super.render(label as any, context);
-        }
+export class AnimatedLabelView implements IView {
+    render(model: Readonly<SModelElementImpl>, context: RenderingContext): VNode | undefined {
+        const label = model as unknown as AnimatedLabel;
+        const fontSize = label.fontSize || 12;
+        const color = label.color || '#333';
 
-        const vnode = super.render(label as any, context);
-
-        if (!vnode) return undefined;
-
-        // Add animation-specific classes and effects
-        if (vnode && vnode.data) {
-            vnode.data.class = {
-                ...vnode.data.class,
-                'animated-label': true,
-                'typewriter-active': label.typewriterProgress > 0 && label.typewriterProgress < 1
-            };
-
-            // Add text glow effect
-            if (label.textGlow > 0) {
-                if (!vnode.data) vnode.data = {};
-                if (!vnode.data.style) vnode.data.style = {};
-                (vnode.data.style as any).filter = `drop-shadow(0 0 ${label.textGlow * 5}px rgba(0, 123, 255, 0.6))`;
-            }
-
-            // Add text scale effect
-            if (label.textScale !== 1) {
-                const transform = vnode.data.attrs?.transform || '';
-                vnode.data.attrs = {
-                    ...vnode.data.attrs,
-                    transform: `${transform} scale(${label.textScale})`
-                };
-            }
-        }
-
-        return vnode;
+        return <text class-animated-label={true}
+            class-sprotty-label={true}
+            x={0}
+            y={fontSize}
+            font-size={fontSize}
+            fill={color}>
+            {label.text}
+        </text>;
     }
 }
 
-/**
- * Control panel view for animation settings
- */
-// Control panel view removed - controls are in HTML

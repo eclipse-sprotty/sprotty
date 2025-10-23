@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sprotty Animation and Transitions Showcase</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/page.css">
+    <link rel="stylesheet" href="css/diagram.css">
 </head>
 
 <body>
     <div class="container">
         <div class="row" id="sprotty-app" data-app="animation-showcase">
             <div class="col-md-10">
-                <h1>Sprotty Animation & Transitions Showcase</h1>
-                <p>This example demonstrates Sprotty's comprehensive animation system with various animation types,
-                    state transitions, and performance optimizations.</p>
+                <h1>Sprotty Animation and Transitions Showcase</h1>
+                <p>This example demonstrates both CSS-based and programmatic animation techniques in Sprotty diagrams.
+                </p>
             </div>
             <div class="help col-md-2">
                 <a href="https://sprotty.org/docs/recipes/animation-transitions/">Animation Recipe</a>
@@ -23,56 +24,55 @@
         </div>
 
         <div class="explanation">
-            <h2>Interactive Controls</h2>
+            <h2>Animation Techniques Demonstrated</h2>
+            <p>This showcase illustrates two complementary approaches to animation in Sprotty:</p>
             <ul>
-                <li><strong>Click Animation Nodes:</strong> Each node triggers its own animation (bounce-node bounces,
-                    pulse-node pulses, shake-node shakes, glow-node glows, complex-node spins)</li>
-                <li><strong>Click State Nodes:</strong> Cycle through different states (idle, processing, complete,
-                    error) with smooth color transitions</li>
-                <li><strong>Shift+Click Complex Node:</strong> Trigger a compound animation combining multiple effects
-                </li>
-                <li><strong>Click Edges:</strong> Start animated flow effects along the connections</li>
-                <li><strong>Press Escape:</strong> Stop all running animations</li>
+                <li><strong>CSS-Based Animations:</strong> Simple, performant effects using CSS transitions and
+                    keyframes (hover effects, state indicators, loading spinners)</li>
+                <li><strong>Programmatic Animations:</strong> Complex, coordinated transitions using TypeScript (bounce,
+                    pulse, shake, spin, state morphing)</li>
             </ul>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div id="sprotty-animation" class="sprotty"></div>
+        <!-- Diagram and Controls -->
+        <div class="diagram-and-controls">
+            <div class="diagram-container">
+                <div id="sprotty" class="sprotty"></div>
             </div>
-        </div>
 
-        <!-- Hidden div for Sprotty -->
-        <div id="sprotty-hidden-animation" style="position: fixed; width: 0; height: 0; visibility: hidden;"></div>
+            <div class="control-panel">
+                <h2>Interactive Controls</h2>
 
-        <div class="explanation">
-            <h3>Animation System Features</h3>
-            <ul>
-                <li><strong>Triggered Animations:</strong> User interactions trigger smooth, responsive animations with
-                    customizable easing functions and durations</li>
-                <li><strong>State Transitions:</strong> Visual elements smoothly transition between different states
-                    with interpolated colors and properties</li>
-                <li><strong>Compound Animations:</strong> Multiple animations can be combined and choreographed for
-                    complex, coordinated visual effects</li>
-                <li><strong>Performance Optimized:</strong> Built on browser's animation frame for smooth 60fps
-                    performance with monitoring and optimization tools</li>
-                <li><strong>CSS Integration:</strong> Seamlessly combines Sprotty animations with CSS animations for
-                    enhanced visual effects</li>
-                <li><strong>Accessibility Aware:</strong> Respects user preferences for reduced motion and provides
-                    alternative interaction methods</li>
-            </ul>
-        </div>
+                <div class="control-section">
+                    <h4>Basic Animations (Programmatic)</h4>
+                    <p>Click buttons to trigger different animation effects on nodes:</p>
+                    <div class="control-buttons">
+                        <button id="btn-bounce" class="btn btn-primary">Bounce</button>
+                        <button id="btn-pulse" class="btn btn-primary">Pulse</button>
+                        <button id="btn-shake" class="btn btn-primary">Shake</button>
+                        <button id="btn-spin" class="btn btn-primary">Spin</button>
+                        <button id="btn-glow" class="btn btn-primary">Glow</button>
+                        <button id="btn-animate-all" class="btn btn-success">Animate All</button>
+                    </div>
+                </div>
 
-        <div class="explanation">
-            <h3>Animation Types Demonstrated</h3>
-            <ul>
-                <li><strong>Bounce:</strong> Elements jump with elastic easing using a decay function</li>
-                <li><strong>Pulse:</strong> Scaling effect that oscillates in and out</li>
-                <li><strong>Shake:</strong> Rapid horizontal movement with decreasing amplitude</li>
-                <li><strong>Spin:</strong> Full 360-degree rotation animation</li>
-                <li><strong>Glow:</strong> Pulsing glow effect using SVG filters</li>
-                <li><strong>Edge Flow:</strong> Animated data flow along connection edges</li>
-            </ul>
+                <div class="control-section">
+                    <h4>State Transitions (CSS + Programmatic)</h4>
+                    <p>Cycle through different states with smooth color transitions:</p>
+                    <div class="control-buttons">
+                        <button id="btn-cycle-state" class="btn btn-primary">Cycle State</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h4>Complex Animations</h4>
+                    <p>Composite animations combining multiple effects:</p>
+                    <div class="control-buttons">
+                        <button id="btn-composite" class="btn btn-primary">Complex Sequence</button>
+                        <button id="btn-flow" class="btn btn-success">Edge Flow Animation</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="copyright">

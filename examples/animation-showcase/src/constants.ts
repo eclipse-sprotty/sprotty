@@ -14,40 +14,28 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SEdge, SLabel, SNode } from 'sprotty-protocol';
+import { AnimationState } from './model';
 
 /**
- * Animation states for nodes
+ * Color mapping for different animation states
  */
-export type AnimationState = 'idle' | 'active' | 'success' | 'error' | 'loading';
+export const STATE_COLORS: Record<AnimationState, string> = {
+    idle: '#e0e0e0',
+    active: '#2196f3',
+    success: '#4caf50',
+    error: '#f44336',
+    loading: '#ff9800'
+};
 
 /**
- * Extended node interface with animation properties
+ * State indicator icon dimensions
  */
-export interface AnimatedNode extends SNode {
-    state?: AnimationState;
-    previousState?: AnimationState;
-    color?: string;
-    scale?: number;
-    rotation?: number;
-    animationClass?: string;
-}
+export const ICON_SIZE = 16;
+export const ICON_PADDING = 8;
+export const ICON_SPINNER_RADIUS_OFFSET = 2;
 
 /**
- * Extended edge interface with flow animation support
+ * Edge animation dash pattern
  */
-export interface AnimatedEdge extends SEdge {
-    animated?: boolean;
-    flowSpeed?: number;
-    strokeDashOffset?: number;
-    animationClass?: string;
-}
-
-/**
- * Extended label interface
- */
-export interface AnimatedLabel extends SLabel {
-    fontSize?: number;
-    color?: string;
-}
+export const EDGE_DASH_ARRAY = '80 20';
 

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 TypeFox and others.
+ * Copyright (c) 2025 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,421 +14,267 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import {
-    LocalModelSource, TYPES, IActionDispatcher
-} from 'sprotty';
-import { FitToScreenAction } from 'sprotty-protocol';
-import type { SGraph, SNode, SEdge, SLabel } from 'sprotty-protocol';
+import { TYPES, LocalModelSource, IActionDispatcher } from 'sprotty';
+import { SGraph, SNode, SEdge, SLabel, FitToScreenAction } from 'sprotty-protocol';
 import createContainer from './di.config';
-import {
-    TriggerAnimationAction, TransitionStateAction, StartEdgeFlowAction,
-    ConfigureAnimationAction, StartComplexAnimationAction,
-    StopAnimationsAction
-} from './actions';
-import { AnimationSettings } from './handlers';
-import './actions';
-import { AnimationState } from './model';
+import { TriggerAnimationAction, ChangeStateAction, AnimateFlowAction, CompositeAnimationAction } from './actions';
+import { AnimatedNode, AnimatedEdge, AnimationState } from './model';
 
 export default async function runAnimationShowcase() {
-    console.log('Starting Animation Showcase...');
-
-    // Initialize the dependency injection container
     const container = createContainer();
-
-    // Get the model source and action dispatcher
     const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
     const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-    const animationSettings = AnimationSettings.getInstance();
 
-    // Configure initial animation settings
-    dispatcher.dispatch(ConfigureAnimationAction.create({
-        enabled: true,
-        defaultDuration: 600,
-        performanceMode: false,
-        reducedMotion: false
-    }));
-
-    // Create the sample model with animatable elements
-    const sampleModel: SGraph = {
+    // Create demo model
+    const model: SGraph = {
         type: 'graph',
-        id: 'animation-showcase',
+        id: 'animation-demo',
         children: [
-            // Animatable nodes demonstrating different animation types
+            // Row 1: Basic animations
             {
-                type: 'node:animatable',
-                id: 'bounce-node',
+                type: 'node:animated',
+                id: 'node-bounce',
                 position: { x: 50, y: 50 },
-                size: { width: 100, height: 60 },
-                animationState: 'idle' as AnimationState,
+                size: { width: 120, height: 80 },
+                state: 'idle',
                 children: [
                     {
-                        type: 'label:text',
-                        id: 'bounce-label',
+                        type: 'label:animated',
+                        id: 'label-bounce',
                         text: 'Bounce',
-                        position: { x: 50, y: 30 }
+                        position: { x: 35, y: 35 },
+                        fontSize: 14
                     } as SLabel
                 ]
-            } as SNode,
+            } as AnimatedNode & SNode,
 
             {
-                type: 'node:animatable',
-                id: 'pulse-node',
+                type: 'node:animated',
+                id: 'node-pulse',
                 position: { x: 200, y: 50 },
-                size: { width: 100, height: 60 },
-                animationState: 'processing' as AnimationState,
+                size: { width: 120, height: 80 },
+                state: 'idle',
                 children: [
                     {
-                        type: 'label:text',
-                        id: 'pulse-label',
+                        type: 'label:animated',
+                        id: 'label-pulse',
                         text: 'Pulse',
-                        position: { x: 50, y: 30 }
+                        position: { x: 40, y: 35 },
+                        fontSize: 14
                     } as SLabel
                 ]
-            } as SNode,
+            } as AnimatedNode & SNode,
 
             {
-                type: 'node:animatable',
-                id: 'shake-node',
+                type: 'node:animated',
+                id: 'node-shake',
                 position: { x: 350, y: 50 },
-                size: { width: 100, height: 60 },
-                animationState: 'complete' as AnimationState,
+                size: { width: 120, height: 80 },
+                state: 'idle',
                 children: [
                     {
-                        type: 'label:text',
-                        id: 'shake-label',
+                        type: 'label:animated',
+                        id: 'label-shake',
                         text: 'Shake',
-                        position: { x: 50, y: 30 }
+                        position: { x: 40, y: 35 },
+                        fontSize: 14
                     } as SLabel
                 ]
-            } as SNode,
+            } as AnimatedNode & SNode,
 
             {
-                type: 'node:animatable',
-                id: 'glow-node',
+                type: 'node:animated',
+                id: 'node-spin',
                 position: { x: 500, y: 50 },
-                size: { width: 100, height: 60 },
-                animationState: 'error' as AnimationState,
+                size: { width: 120, height: 80 },
+                state: 'idle',
                 children: [
                     {
-                        type: 'label:text',
-                        id: 'glow-label',
+                        type: 'label:animated',
+                        id: 'label-spin',
+                        text: 'Spin',
+                        position: { x: 45, y: 35 },
+                        fontSize: 14
+                    } as SLabel
+                ]
+            } as AnimatedNode & SNode,
+
+            {
+                type: 'node:animated',
+                id: 'node-glow',
+                position: { x: 650, y: 50 },
+                size: { width: 120, height: 80 },
+                state: 'idle',
+                children: [
+                    {
+                        type: 'label:animated',
+                        id: 'label-glow',
                         text: 'Glow',
-                        position: { x: 50, y: 30 }
+                        position: { x: 45, y: 35 },
+                        fontSize: 14
                     } as SLabel
                 ]
-            } as SNode,
+            } as AnimatedNode & SNode,
 
-            // State transition demonstration nodes
+            // Row 2: State cycle demonstration
             {
-                type: 'node:animatable',
-                id: 'state-node-1',
-                position: { x: 50, y: 150 },
-                size: { width: 120, height: 60 },
-                animationState: 'idle' as AnimationState,
-                children: [
-                    {
-                        type: 'label:text',
-                        id: 'state-label-1',
-                        text: 'State Demo 1',
-                        position: { x: 60, y: 30 }
-                    } as SLabel
-                ]
-            } as SNode,
-
-            {
-                type: 'node:animatable',
-                id: 'state-node-2',
-                position: { x: 220, y: 150 },
-                size: { width: 120, height: 60 },
-                animationState: 'processing' as AnimationState,
-                children: [
-                    {
-                        type: 'label:text',
-                        id: 'state-label-2',
-                        text: 'State Demo 2',
-                        position: { x: 60, y: 30 }
-                    } as SLabel
-                ]
-            } as SNode,
-
-            {
-                type: 'node:animatable',
-                id: 'state-node-3',
-                position: { x: 390, y: 150 },
-                size: { width: 120, height: 60 },
-                animationState: 'complete' as AnimationState,
-                children: [
-                    {
-                        type: 'label:text',
-                        id: 'state-label-3',
-                        text: 'State Demo 3',
-                        position: { x: 60, y: 30 }
-                    } as SLabel
-                ]
-            } as SNode,
-
-            // Compound animation demonstration
-            {
-                type: 'node:animatable',
-                id: 'complex-node',
-                position: { x: 300, y: 250 },
+                type: 'node:animated',
+                id: 'node-state-cycle',
+                position: { x: 340, y: 180 },
                 size: { width: 140, height: 80 },
-                animationState: 'idle' as AnimationState,
+                state: 'idle',
                 children: [
                     {
-                        type: 'label:text',
-                        id: 'complex-label',
-                        text: 'Complex Animation',
-                        position: { x: 70, y: 40 }
+                        type: 'label:animated',
+                        id: 'label-state-cycle',
+                        text: 'State: idle',
+                        position: { x: 35, y: 35 },
+                        fontSize: 14
                     } as SLabel
                 ]
-            } as SNode,
+            } as AnimatedNode & SNode,
 
-            // Animatable edges with flow effects
+            // Row 3: Composite animations
             {
-                type: 'edge:animatable',
-                id: 'flow-edge-1',
-                sourceId: 'bounce-node',
-                targetId: 'pulse-node',
-                thickness: 2,
-                flowSpeed: 1,
-                flowDirection: 'forward'
-            } as SEdge,
+                type: 'node:animated',
+                id: 'node-composite',
+                position: { x: 335, y: 310 },
+                size: { width: 150, height: 100 },
+                state: 'idle',
+                children: [
+                    {
+                        type: 'label:animated',
+                        id: 'label-composite',
+                        text: 'Complex Animation',
+                        position: { x: 15, y: 45 },
+                        fontSize: 14
+                    } as SLabel
+                ]
+            } as AnimatedNode & SNode,
 
+            // Row 4: Network with animated edges
             {
-                type: 'edge:animatable',
-                id: 'flow-edge-2',
-                sourceId: 'pulse-node',
-                targetId: 'shake-node',
-                thickness: 3,
-                flowSpeed: 1.5,
-                flowDirection: 'forward'
-            } as SEdge,
-
-            {
-                type: 'edge:animatable',
-                id: 'flow-edge-3',
-                sourceId: 'shake-node',
-                targetId: 'glow-node',
-                thickness: 2,
-                flowSpeed: 0.8,
-                flowDirection: 'bidirectional'
-            } as SEdge,
-
-            {
-                type: 'edge:animatable',
-                id: 'state-edge-1',
-                sourceId: 'state-node-1',
-                targetId: 'state-node-2',
-                thickness: 2
-            } as SEdge,
+                type: 'node:animated',
+                id: 'node-source',
+                position: { x: 150, y: 450 },
+                size: { width: 100, height: 60 },
+                state: 'active',
+                children: [
+                    {
+                        type: 'label:animated',
+                        id: 'label-source',
+                        text: 'Source',
+                        position: { x: 30, y: 30 },
+                        fontSize: 12
+                    } as SLabel
+                ]
+            } as AnimatedNode & SNode,
 
             {
-                type: 'edge:animatable',
-                id: 'state-edge-2',
-                sourceId: 'state-node-2',
-                targetId: 'state-node-3',
-                thickness: 2
-            } as SEdge,
+                type: 'node:animated',
+                id: 'node-target',
+                position: { x: 550, y: 450 },
+                size: { width: 100, height: 60 },
+                state: 'idle',
+                children: [
+                    {
+                        type: 'label:animated',
+                        id: 'label-target',
+                        text: 'Target',
+                        position: { x: 30, y: 30 },
+                        fontSize: 12
+                    } as SLabel
+                ]
+            } as AnimatedNode & SNode,
 
+            // Animated edge
             {
-                type: 'edge:animatable',
-                id: 'complex-edge-1',
-                sourceId: 'state-node-2',
-                targetId: 'complex-node',
-                thickness: 3
-            } as SEdge
+                type: 'edge:animated',
+                id: 'edge-flow',
+                sourceId: 'node-source',
+                targetId: 'node-target',
+                animated: false
+            } as AnimatedEdge & SEdge
         ]
     };
 
-    // Initialize the model
-    modelSource.setModel(sampleModel);
+    // Set initial model
+    await modelSource.setModel(model);
 
     // Fit the diagram to screen with padding
-    setTimeout(() => {
-        dispatcher.dispatch(FitToScreenAction.create([], { padding: 50 }));
-    }, 100);
+    dispatcher.dispatch(FitToScreenAction.create([], { padding: 50 }));
 
-    // Set up interaction handlers
-    setupInteractionHandlers(dispatcher, modelSource, animationSettings);
-
-    // Start some initial animations to demonstrate the system
-    setTimeout(() => {
-        startDemoAnimations(dispatcher);
-    }, 1000);
-
-    // Set up performance monitoring
-    setupPerformanceMonitoring(animationSettings);
-
-    console.log('Animation Showcase loaded successfully!');
-    console.log('Interactions:');
-    console.log('- Click nodes: Each node has its own animation');
-    console.log('- Ctrl+Click state nodes: Transition between states');
-    console.log('- Shift+Click complex node: Compound animation');
-    console.log('- Click edges: Start flow animation');
+    // Set up control panel interactions
+    setupControlPanel(dispatcher);
 }
 
-function setupInteractionHandlers(dispatcher: IActionDispatcher, modelSource: LocalModelSource, settings: AnimationSettings) {
-    // Map node IDs to their specific animation types
-    const nodeAnimations: { [key: string]: string } = {
-        'bounce-node': 'bounce',
-        'pulse-node': 'pulse',
-        'shake-node': 'shake',
-        'glow-node': 'glow',
-        'complex-node': 'spin'
-    };
+function setupControlPanel(dispatcher: IActionDispatcher) {
+    // Basic animation buttons
+    const bounceBtn = document.getElementById('btn-bounce');
+    if (bounceBtn) {
+        bounceBtn.onclick = () => dispatcher.dispatch(TriggerAnimationAction.create('node-bounce', 'bounce'));
+    }
 
-    // Track current state of each state node locally
-    const nodeStates: { [key: string]: AnimationState } = {
-        'state-node-1': 'idle',
-        'state-node-2': 'processing',
-        'state-node-3': 'complete'
-    };
+    const pulseBtn = document.getElementById('btn-pulse');
+    if (pulseBtn) {
+        pulseBtn.onclick = () => dispatcher.dispatch(TriggerAnimationAction.create('node-pulse', 'pulse'));
+    }
 
-    let lastClickedNode: string | null = null;
+    const shakeBtn = document.getElementById('btn-shake');
+    if (shakeBtn) {
+        shakeBtn.onclick = () => dispatcher.dispatch(TriggerAnimationAction.create('node-shake', 'shake'));
+    }
 
-    // Wait for SVG to be rendered, then attach listeners
-    setTimeout(() => {
-        const svg = document.querySelector('#sprotty-animation svg');
+    const spinBtn = document.getElementById('btn-spin');
+    if (spinBtn) {
+        spinBtn.onclick = () => dispatcher.dispatch(TriggerAnimationAction.create('node-spin', 'spin'));
+    }
 
-        if (!svg) {
-            console.error('SVG element not found');
-            return;
-        }
+    const glowBtn = document.getElementById('btn-glow');
+    if (glowBtn) {
+        glowBtn.onclick = () => dispatcher.dispatch(TriggerAnimationAction.create('node-glow', 'glow'));
+    }
 
-        // Use mousedown to capture the clicked node
-        svg.addEventListener('mousedown', (event) => {
-            const target = event.target as SVGElement;
-            const nodeElement = target.closest('.sprotty-node');
+    // State cycle button
+    const stateCycleBtn = document.getElementById('btn-cycle-state');
+    if (stateCycleBtn) {
+        const states: AnimationState[] = ['idle', 'active', 'loading', 'success', 'error'];
+        let currentStateIndex = 0; // Start at 'idle'
 
-            if (nodeElement) {
-                const nodeId = getNodeId(nodeElement);
-                lastClickedNode = nodeId;
-            }
-        }, true);
+        stateCycleBtn.onclick = () => {
+            // Move to next state
+            currentStateIndex = (currentStateIndex + 1) % states.length;
+            const nextState = states[currentStateIndex];
 
-        // Use mouseup to trigger animations
-        svg.addEventListener('mouseup', (event) => {
-            const mouseEvent = event as MouseEvent;
-            if (!lastClickedNode) return;
-
-            const nodeId = lastClickedNode;
-            lastClickedNode = null;
-
-            // Check if it's a state node - they always transition states on click
-            if (nodeId.startsWith('state-node')) {
-                // State transition - cycle to the next state
-                const states: AnimationState[] = ['idle', 'processing', 'complete', 'error'];
-
-                // Get the current state from our local tracking
-                const currentState = nodeStates[nodeId] || 'idle';
-
-                // Find next state in the cycle
-                const currentIndex = states.indexOf(currentState);
-                const nextState = states[(currentIndex + 1) % states.length];
-
-                // Update our local tracking
-                nodeStates[nodeId] = nextState;
-
-                // Dispatch with a duration for smooth transition (800ms)
-                dispatcher.dispatch(TransitionStateAction.create(nodeId, nextState, 800));
-            } else if (mouseEvent.shiftKey && nodeId === 'complex-node') {
-                // Complex animation for complex node
-                dispatcher.dispatch(StartComplexAnimationAction.create(nodeId, [
-                    { type: 'bounce', duration: 800 },
-                    { type: 'glow', delay: 200, duration: 1200 }
-                ]));
-            } else {
-                // Trigger node-specific animation
-                const animationType = nodeAnimations[nodeId];
-                if (animationType) {
-                    dispatcher.dispatch(TriggerAnimationAction.create(nodeId, animationType as any));
-                }
-            }
-        }, true);
-
-        // Edge click handler
-        svg.addEventListener('mouseup', (event) => {
-            const target = event.target as SVGElement;
-            const edgeElement = target.closest('.sprotty-edge');
-            const nodeElement = target.closest('.sprotty-node');
-
-            if (edgeElement && !nodeElement) {
-                const edgeId = getEdgeId(edgeElement);
-                if (edgeId) {
-                    dispatcher.dispatch(StartEdgeFlowAction.create(edgeId, 1, 'forward', 3000));
-                }
-            }
-        }, true);
-    }, 500); // Wait 500ms for SVG to be created
-}
-
-function startDemoAnimations(dispatcher: IActionDispatcher) {
-    // No automatic animations - user will trigger them by clicking
-    // This prevents the infinite render loop from edge flow animations
-}
-
-function setupPerformanceMonitoring(settings: AnimationSettings) {
-    // Monitor performance metrics
-    setInterval(() => {
-        const metrics = {
-            activeAnimations: settings.activeAnimations,
-            totalAnimations: settings.totalAnimations,
-            averageFps: settings.averageFps
+            // Dispatch state change action
+            dispatcher.dispatch(ChangeStateAction.create('node-state-cycle', nextState));
         };
+    }
 
-        // Update performance display
-        updatePerformanceDisplay(metrics);
+    // Composite animation button
+    const compositeBtn = document.getElementById('btn-composite');
+    if (compositeBtn) {
+        compositeBtn.onclick = () => dispatcher.dispatch(CompositeAnimationAction.create('node-composite'));
+    }
 
-        // Log performance warnings
-        if (settings.activeAnimations > 10) {
-            console.warn('High number of active animations:', settings.activeAnimations);
-        }
+    // Edge flow animation button
+    const flowBtn = document.getElementById('btn-flow');
+    if (flowBtn) {
+        flowBtn.onclick = () => dispatcher.dispatch(AnimateFlowAction.create('edge-flow'));
+    }
 
-        if (settings.averageFps < 30) {
-            console.warn('Low FPS detected:', settings.averageFps);
-        }
-    }, 1000);
-}
+    // Animate all button
+    const animateAllBtn = document.getElementById('btn-animate-all');
+    if (animateAllBtn) {
+        animateAllBtn.onclick = () => {
+            const animations = ['bounce', 'pulse', 'shake', 'spin', 'glow'] as const;
+            const nodes = ['node-bounce', 'node-pulse', 'node-shake', 'node-spin', 'node-glow'];
 
-function updatePerformanceDisplay(metrics: any) {
-    const display = document.getElementById('performance-metrics');
-    if (display) {
-        display.innerHTML = `
-            <div>Active Animations: ${metrics.activeAnimations}</div>
-            <div>Total Animations: ${metrics.totalAnimations}</div>
-            <div>Average FPS: ${metrics.averageFps.toFixed(1)}</div>
-        `;
+            nodes.forEach((nodeId, index) => {
+                setTimeout(() => {
+                    dispatcher.dispatch(TriggerAnimationAction.create(nodeId, animations[index]));
+                }, index * 200);
+            });
+        };
     }
 }
-
-function getNodeId(element: Element): string | null {
-    // Extract node ID from DOM element - remove the base div prefix if present
-    const id = element.id;
-    if (id) {
-        // Remove 'sprotty-animation_' prefix if present
-        return id.replace(/^sprotty-animation_/, '');
-    }
-    return null;
-}
-
-function getEdgeId(element: Element): string | null {
-    // Extract edge ID from DOM element
-    const className = (element as SVGElement).className;
-    const classStr = typeof className === 'string' ? className : (className as any).baseVal || '';
-    const match = classStr.match(/sprotty-edge-(\S+)/);
-    return match ? match[1] : element.id || null;
-}
-
-// Add keyboard shortcuts for animation controls
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        // Stop all animations
-        const container = createContainer();
-        const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-        dispatcher.dispatch(StopAnimationsAction.create());
-    }
-});
-
-// Export for use in HTML
-(window as any).runAnimationShowcase = runAnimationShowcase;

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 TypeFox and others.
+ * Copyright (c) 2025 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,69 +16,72 @@
 
 import { Container, ContainerModule } from 'inversify';
 import {
+    ConsoleLogger,
+    loadDefaultModules,
+    LocalModelSource,
+    LogLevel,
+    SEdgeImpl,
+    SGraphImpl,
+    SGraphView,
+    SLabelImpl,
+    SNodeImpl,
     TYPES,
-    configureModelElement, configureViewerOptions, configureActionHandler,
-    SGraphImpl, SLabelImpl, LocalModelSource, ConsoleLogger, LogLevel,
-    selectFeature, moveFeature, hoverFeedbackFeature, fadeFeature,
-    loadDefaultModules
+    configureModelElement,
+    configureCommand,
+    configureViewerOptions
 } from 'sprotty';
-import { AnimatableNode, AnimatableEdge, AnimatableLabel } from './model';
-import { AnimatedGraphView, AnimatedNodeView, AnimatedEdgeView, AnimatedLabelView } from './views';
-import { AnimationActionHandler } from './handlers';
+import {
+    selectFeature,
+    moveFeature,
+    hoverFeedbackFeature,
+    fadeFeature
+} from 'sprotty';
+import { AnimatedNodeView, AnimatedEdgeView, AnimatedLabelView } from './views';
+import {
+    TriggerAnimationCommand,
+    ChangeStateCommand,
+    AnimateFlowCommand,
+    CompositeAnimationCommand
+} from './handlers';
 
-export default () => {
-    require('sprotty/css/sprotty.css');
-    require('../css/diagram.css');
+const animationShowcaseModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const context = { bind, unbind, isBound, rebind };
 
-    const animationModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
-        rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+    // Configure logger
+    rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
+    rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
-        // Animation settings are managed via singleton pattern
+    // Model source
+    bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
 
-        const context = { bind, unbind, isBound, rebind };
+    // Register model elements with their views
+    configureModelElement(context, 'graph', SGraphImpl, SGraphView);
 
-        // Configure the root graph with animation support
-        configureModelElement(context, 'graph', SGraphImpl, AnimatedGraphView);
-
-        // Configure animatable nodes
-        configureModelElement(context, 'node:animatable', AnimatableNode, AnimatedNodeView, {
-            enable: [selectFeature, moveFeature, hoverFeedbackFeature, fadeFeature]
-        });
-
-        // Configure animatable edges
-        configureModelElement(context, 'edge:animatable', AnimatableEdge, AnimatedEdgeView, {
-            enable: [fadeFeature]
-        });
-
-        // Configure animatable labels
-        configureModelElement(context, 'label:animatable', AnimatableLabel, AnimatedLabelView, {
-            enable: [fadeFeature]
-        });
-
-        // Configure regular labels for comparison
-        configureModelElement(context, 'label:text', SLabelImpl, AnimatedLabelView);
-
-        // Configure action handlers
-        configureActionHandler(context, 'triggerAnimation', AnimationActionHandler);
-        configureActionHandler(context, 'transitionState', AnimationActionHandler);
-        configureActionHandler(context, 'startEdgeFlow', AnimationActionHandler);
-        configureActionHandler(context, 'startTypewriter', AnimationActionHandler);
-        configureActionHandler(context, 'configureAnimation', AnimationActionHandler);
-        configureActionHandler(context, 'startComplexAnimation', AnimationActionHandler);
-        configureActionHandler(context, 'stopAnimations', AnimationActionHandler);
-
-        configureViewerOptions(context, {
-            needsClientLayout: false,
-            needsServerLayout: false,
-            baseDiv: 'sprotty-animation',
-            hiddenDiv: 'sprotty-hidden-animation'
-        });
+    configureModelElement(context, 'node:animated', SNodeImpl, AnimatedNodeView, {
+        enable: [selectFeature, moveFeature, hoverFeedbackFeature, fadeFeature]
     });
 
+    configureModelElement(context, 'edge:animated', SEdgeImpl, AnimatedEdgeView);
+
+    configureModelElement(context, 'label:animated', SLabelImpl, AnimatedLabelView);
+
+    // Configure viewer options
+    configureViewerOptions(context, {
+        needsClientLayout: false,
+        baseDiv: 'sprotty'
+    });
+
+    // Register command handlers
+    configureCommand(context, TriggerAnimationCommand);
+    configureCommand(context, ChangeStateCommand);
+    configureCommand(context, AnimateFlowCommand);
+    configureCommand(context, CompositeAnimationCommand);
+});
+
+export default function createContainer(): Container {
     const container = new Container();
     loadDefaultModules(container);
-    container.load(animationModule);
+    container.load(animationShowcaseModule);
     return container;
-};
+}
+
