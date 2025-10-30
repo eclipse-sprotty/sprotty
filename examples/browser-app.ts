@@ -27,6 +27,7 @@ import runJsxample from "./jsxample/src/standalone";
 import runStylingShowcase from "./styling-showcase/src/standalone";
 import runMicroLayoutShowcase from "./micro-layout-showcase/src/standalone";
 import runCustomViewsShowcase from "./custom-views-showcase/src/standalone";
+import runLayoutStrategiesShowcase from "./layout-strategies-showcase/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -53,6 +54,8 @@ if (appDiv) {
         runMicroLayoutShowcase();
     else if (appMode === 'custom-views-showcase')
         runCustomViewsShowcase();
+    else if (appMode === 'layout-strategies-showcase')
+        runLayoutStrategiesShowcase();
     else
         throw new Error('Dunno what to do :-(');
 }
