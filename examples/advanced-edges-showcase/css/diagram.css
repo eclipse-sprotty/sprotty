@@ -1,0 +1,303 @@
+/********************************************************************************
+ * Copyright (c) 2024 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* Graph container */
+.sprotty {
+    width: 100%;
+    height: calc(100vh - 200px);
+    max-height: 680px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
+.sprotty svg {
+    width: 100%;
+    height: 100%;
+}
+
+.sprotty-graph {
+    width: 100%;
+    height: 100%;
+}
+
+/* ========================================
+   Nodes
+   ======================================== */
+
+/* Base node styling */
+.sprotty-node {
+    cursor: pointer;
+}
+
+.node-body {
+    fill: #f5f5f5;
+    stroke: #333;
+    stroke-width: 2;
+    transition: fill 0.2s, stroke 0.2s, stroke-width 0.2s;
+}
+
+.sprotty-node.selected .node-body {
+    fill: #e3f2fd;
+    stroke: #1976d2;
+    stroke-width: 3;
+}
+
+.sprotty-node.mouseover .node-body {
+    fill: #fff;
+    stroke: #1976d2;
+}
+
+/* Rectangle nodes */
+.node-rectangle .node-body {
+    rx: 4;
+    ry: 4;
+}
+
+/* Circle nodes */
+.node-circle .node-body {
+    fill: #fff3e0;
+    stroke: #ef6c00;
+}
+
+/* Hexagon nodes */
+.node-hexagon .node-body {
+    fill: #f3e5f5;
+    stroke: #7b1fa2;
+}
+
+/* Diamond nodes */
+.node-diamond .node-body {
+    fill: #e8f5e9;
+    stroke: #388e3c;
+}
+
+/* Node labels */
+.node-label {
+    fill: #333;
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* ========================================
+   Ports
+   ======================================== */
+
+.sprotty-port {
+    fill: #fff;
+    stroke: #333;
+    stroke-width: 2;
+}
+
+.sprotty-port:hover {
+    fill: #1976d2;
+    stroke: #0d47a1;
+}
+
+/* ========================================
+   Edges
+   ======================================== */
+
+/* Base edge styling */
+.sprotty-edge {
+    pointer-events: stroke;
+}
+
+.edge-path {
+    stroke: #666;
+    stroke-width: 2;
+    fill: none;
+    transition: stroke 0.2s, stroke-width 0.2s;
+}
+
+.sprotty-edge.edge-selected .edge-path,
+.sprotty-edge.edge-hover .edge-path {
+    stroke: #1976d2;
+    stroke-width: 3;
+}
+
+/* Stroke styles */
+.edge-path.stroke-dashed {
+    stroke-dasharray: 8, 4;
+}
+
+.edge-path.stroke-dotted {
+    stroke-dasharray: 2, 4;
+}
+
+/* Edge types with colors */
+.edge-type-dependency .edge-path {
+    stroke: #ff9800;
+    stroke-dasharray: 8, 4;
+}
+
+.edge-type-composition .edge-path {
+    stroke: #4caf50;
+    stroke-width: 2.5;
+}
+
+.edge-type-aggregation .edge-path {
+    stroke: #2196f3;
+}
+
+.edge-type-inheritance .edge-path {
+    stroke: #9c27b0;
+}
+
+.edge-type-association .edge-path {
+    stroke: #795548;
+    stroke-dasharray: 4, 4;
+}
+
+/* Arrow heads */
+.arrow-head {
+    transition: fill 0.2s, stroke 0.2s;
+}
+
+.sprotty-edge.edge-selected .arrow-head,
+.sprotty-edge.edge-hover .arrow-head {
+    fill: #1976d2;
+    stroke: #1976d2;
+}
+
+/* Specific arrow types already have appropriate fill/stroke from views */
+
+/* ========================================
+   Flow Animation
+   ======================================== */
+
+.edge-flowing .edge-path {
+    stroke-dasharray: 10, 5;
+    animation: dash-flow 2s linear infinite;
+}
+
+@keyframes dash-flow {
+    from {
+        stroke-dashoffset: 15;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* ========================================
+   Intersection Handling
+   ======================================== */
+
+.sprotty-junction circle {
+    fill: #ff5722;
+    stroke: #d84315;
+    stroke-width: 1;
+}
+
+/* ========================================
+   Routing Handles
+   ======================================== */
+
+.sprotty-routing-handle {
+    fill: #fff;
+    stroke: #1976d2;
+    stroke-width: 2;
+    cursor: move;
+    opacity: 0.8;
+    transition: opacity 0.2s, fill 0.2s;
+}
+
+.sprotty-routing-handle:hover {
+    opacity: 1;
+    fill: #e3f2fd;
+}
+
+.sprotty-routing-handle.selected {
+    fill: #1976d2;
+    stroke: #0d47a1;
+}
+
+/* ========================================
+   Dangling Edges
+   ======================================== */
+
+.sprotty-edge-dangling {
+    fill: #f44336;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* ========================================
+   Viewport and Hidden Elements
+   ======================================== */
+
+#sprotty-hidden {
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* ========================================
+   Selection and Hover Effects
+   ======================================== */
+
+.sprotty-node:hover,
+.sprotty-edge:hover {
+    opacity: 1;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+    .node-label {
+        font-size: 12px;
+    }
+
+    .edge-path {
+        stroke-width: 1.5;
+    }
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .edge-path,
+    .node-body,
+    .arrow-head {
+        transition: none;
+    }
+
+    .edge-flowing .edge-path {
+        animation: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .node-body {
+        stroke-width: 3;
+    }
+
+    .edge-path {
+        stroke-width: 3;
+    }
+}

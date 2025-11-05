@@ -31,6 +31,7 @@ import runLayoutStrategiesShowcase from "./layout-strategies-showcase/src/standa
 import runAdvancedInteractionsShowcase from "./advanced-interactions-showcase/src/standalone";
 import runCommunicationShowcase from "./communication-showcase/src/standalone";
 import runAnimationShowcase from "./animation-showcase/src/standalone";
+import runAdvancedEdgesShowcase from "./advanced-edges-showcase/src/standalone";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -65,6 +66,8 @@ if (appDiv) {
         runCommunicationShowcase();
     else if (appMode === 'animation-showcase')
         runAnimationShowcase();
+    else if (appMode === 'advanced-edges-showcase')
+        runAdvancedEdgesShowcase();
     else
         throw new Error('Dunno what to do :-(');
 }
