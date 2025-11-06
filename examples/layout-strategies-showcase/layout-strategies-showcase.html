@@ -24,22 +24,24 @@
 
         <div class="explanation">
             <h2>Layout Strategy Comparison</h2>
-            <p>Sprotty provides three main layout strategies that can be used independently or in combination:</p>
+            <p>Sprotty provides two main layout strategies that can be used independently or in combination:</p>
             <ul>
-                <li><strong>Client-Only Layout:</strong> All layout computation happens in the browser. Perfect for
+                <li><strong>Micro-Layout Only:</strong> All layout computation happens in the browser. Perfect for
                     content-heavy nodes with nested compartments, multiple sections, status indicators, and complex
-                    internal structures.</li>
-                <li><strong>Server-Only Layout:</strong> Layout is computed by sophisticated algorithms (like ELK).
+                    internal structures. Nodes are not positioned by the macro-layout engine but set to a fixed position
+                    in the model.</li>
+                <li><strong>Macro-Layout Only:</strong> Layout is computed by sophisticated algorithms (like ELK).
                     Ideal for complex network topologies and large diagrams requiring optimal node positioning.</li>
-                <li><strong>Hybrid Layout:</strong> Combines both approaches - server computes node positions while
-                    client handles internal content layout. Best for complex diagrams with rich content.</li>
+                <li><strong>Hybrid Layout:</strong> Combines both approaches - external layout engine computes node
+                    positions while
+                    the browser handles internal content layout. Best for complex diagrams with rich content.</li>
             </ul>
         </div>
 
         <div class="controls">
             <h3>Layout Strategy:</h3>
-            <button id="client-layout-btn" class="layout-btn active">Client Layout</button>
-            <button id="server-layout-btn" class="layout-btn">Server Layout</button>
+            <button id="client-layout-btn" class="layout-btn active">Micro-Layout</button>
+            <button id="server-layout-btn" class="layout-btn">Macro-Layout</button>
             <button id="hybrid-layout-btn" class="layout-btn">Hybrid Layout</button>
         </div>
 
