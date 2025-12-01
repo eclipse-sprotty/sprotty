@@ -1,0 +1,281 @@
+/********************************************************************************
+ * Copyright (c) 2025 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* Layout Strategies Diagram Styles - Performance Optimized */
+
+/* Client Layout Node Styles */
+.client-layout-node {
+    cursor: pointer;
+}
+
+/* Basic text styling for visibility */
+.sprotty-label {
+    fill: #333;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Edge styling */
+.sprotty-edge path.edge-path {
+    fill: none;
+    stroke: #1976d2;
+    stroke-width: 2;
+}
+
+.sprotty-edge.selected path.edge-path {
+    stroke: #0d47a1;
+    stroke-width: 3;
+}
+
+.sprotty-edge:hover path.edge-path {
+    stroke: #1565c0;
+    stroke-width: 2.5;
+}
+
+/* Arrow head styling */
+.sprotty-edge path.arrow-head {
+    fill: #1976d2;
+}
+
+.sprotty-edge.selected path.arrow-head {
+    fill: #0d47a1;
+}
+
+.sprotty-edge:hover path.arrow-head {
+    fill: #1565c0;
+}
+
+/* Node background styling */
+rect.sprotty-node.client-layout-node {
+    fill: #f8f9fa;
+    stroke: #dee2e6;
+    stroke-width: 2;
+}
+
+/* Selected state */
+.selected rect.sprotty-node.client-layout-node {
+    stroke: #1976d2 !important;
+    stroke-width: 3 !important;
+}
+
+/* Hover state */
+.client-layout-node:hover {
+    opacity: 0.8;
+}
+
+.client-layout-node.status-online .node-background {
+    fill: #e8f5e8;
+    stroke: #4caf50;
+}
+
+.client-layout-node.status-offline .node-background {
+    fill: #ffebee;
+    stroke: #f44336;
+}
+
+.client-layout-node.status-warning .node-background {
+    fill: #fff8e1;
+    stroke: #ff9800;
+}
+
+.client-layout-node.status-error .node-background {
+    fill: #ffebee;
+    stroke: #f44336;
+}
+
+/* Server Layout Node Styles */
+.server-layout-node {
+    cursor: pointer;
+}
+
+.server-layout-node .node-rect {
+    /* Colors are set dynamically by the view */
+}
+
+.server-layout-node.selected .node-rect {
+    stroke: #1976d2 !important;
+    stroke-width: 3 !important;
+}
+
+.server-layout-node.mouseover .node-rect {
+    opacity: 0.9;
+}
+
+.server-layout-node .node-icon {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+}
+
+.server-layout-node .node-label {
+    font-weight: bold;
+}
+
+.server-layout-node .node-category {
+    font-style: italic;
+}
+
+/* Hybrid Layout Node Styles */
+/* Note: Hybrid nodes use the same view as client nodes (simple container) */
+/* This demonstrates that hybrid = client content layout + server positioning */
+.hybrid-layout-node {
+    cursor: pointer;
+}
+
+rect.sprotty-node.hybrid-layout-node {
+    fill: #f8f9fa;
+    stroke: #dee2e6;
+    stroke-width: 2;
+}
+
+/* Selected state */
+.selected rect.sprotty-node.hybrid-layout-node {
+    stroke: #1976d2 !important;
+    stroke-width: 3 !important;
+}
+
+/* Hover state */
+.hybrid-layout-node:hover {
+    opacity: 0.8;
+}
+
+/* Layout Compartment Styles */
+.layout-compartment {
+    /* Compartments are usually invisible containers */
+}
+
+.layout-compartment.compartment-debug {
+    fill: rgba(255, 0, 0, 0.1);
+    stroke: red;
+    stroke-width: 1;
+    stroke-dasharray: 2, 2;
+}
+
+/* Layout Aware Label Styles */
+.layout-aware-label .label-text {
+    font-family: Arial, sans-serif;
+}
+
+.layout-aware-label.label-type-title .label-text {
+    font-size: 16px;
+    font-weight: bold;
+    fill: #1976d2;
+}
+
+.layout-aware-label.label-type-subtitle .label-text {
+    font-size: 14px;
+    font-weight: normal;
+    fill: #424242;
+}
+
+.layout-aware-label.label-type-property .label-text {
+    font-size: 12px;
+    font-weight: bold;
+    fill: #666;
+}
+
+.layout-aware-label.label-type-value .label-text {
+    font-size: 12px;
+    font-weight: normal;
+    fill: #333;
+}
+
+.layout-aware-label.label-type-caption .label-text {
+    font-size: 10px;
+    font-weight: light;
+    fill: #999;
+}
+
+/* Layout Edge Styles */
+.layout-edge {
+    cursor: pointer;
+}
+
+.layout-edge.selected .edge-path {
+    stroke-width: 3;
+}
+
+.layout-edge.mouseover .edge-path {
+    opacity: 0.8;
+}
+
+.layout-edge.edge-type-dependency .edge-path {
+    stroke: #1976d2;
+}
+
+.layout-edge.edge-type-communication .edge-path {
+    stroke: #388e3c;
+}
+
+.layout-edge.edge-type-inheritance .edge-path {
+    stroke: #7b1fa2;
+}
+
+.layout-edge.edge-type-association .edge-path {
+    stroke: #f57c00;
+}
+
+.layout-edge .arrow-head {
+    /* Arrow color is set dynamically */
+}
+
+/* Debug and Performance Styles */
+.debug-bounds {
+    stroke: red;
+    stroke-width: 1;
+    stroke-dasharray: 2, 2;
+    fill: none;
+    opacity: 0.5;
+}
+
+.performance-monitor {
+    pointer-events: none;
+}
+
+/* Node Type Specific Colors (for server layout) */
+.server-layout-node.node-type-service .node-rect {
+    fill: #e3f2fd;
+}
+
+.server-layout-node.node-type-database .node-rect {
+    fill: #f3e5f5;
+}
+
+.server-layout-node.node-type-client .node-rect {
+    fill: #e8f5e8;
+}
+
+.server-layout-node.node-type-router .node-rect {
+    fill: #fff3e0;
+}
+
+.server-layout-node.node-type-gateway .node-rect {
+    fill: #fce4ec;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .layout-aware-label.label-type-title .label-text {
+        font-size: 14px;
+    }
+
+    .layout-aware-label.label-type-subtitle .label-text {
+        font-size: 12px;
+    }
+
+    .layout-aware-label.label-type-property .label-text,
+    .layout-aware-label.label-type-value .label-text {
+        font-size: 11px;
+    }
+}
