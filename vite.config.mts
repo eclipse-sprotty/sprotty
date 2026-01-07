@@ -35,6 +35,7 @@ export default defineConfig({
             reporter: ['text', 'html'],
             include: ['packages/*'],
         },
-        include: ['**/*.spec.ts', '**/*.spec.tsx']
+        include: ['**/*.spec.ts', '**/*.spec.tsx'],
+        environment: 'happy-dom'
     }
 });

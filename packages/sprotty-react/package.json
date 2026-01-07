@@ -1,0 +1,61 @@
+{
+  "name": "sprotty-react",
+  "version": "1.4.0",
+  "description": "React integration for Sprotty diagrams",
+  "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
+  "keywords": [
+    "eclipse",
+    "graphics",
+    "diagram",
+    "modeling",
+    "visualization",
+    "svg",
+    "react"
+  ],
+  "homepage": "https://github.com/eclipse-sprotty/sprotty",
+  "bugs": "https://github.com/eclipse-sprotty/sprotty/issues",
+  "author": {
+    "name": "Eclipse Sprotty"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse-sprotty/sprotty",
+    "directory": "packages/sprotty-react"
+  },
+  "dependencies": {
+    "inversify": "^6.1.3",
+    "sprotty": "^1.4.0",
+    "sprotty-protocol": "^1.4.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.1.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "happy-dom": "^15.10.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "snabbdom-to-html": "^7.1.0"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "1.22.21"
+  },
+  "scripts": {
+    "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "vitest run --config ../../vite.config.mts"
+  },
+  "files": [
+    "lib",
+    "css",
+    "src"
+  ],
+  "main": "lib/index",
+  "types": "lib/index"
+}
+

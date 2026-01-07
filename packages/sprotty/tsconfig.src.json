@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "lib"
+    "outDir": "lib",
+    "types": [
+      "file-saver"
+    ]
   },
   "include": [
     "**/*.ts",
@@ -15,6 +18,8 @@
     "node_modules"
   ],
   "references": [
-    { "path": "../sprotty-protocol/tsconfig.src.json" }
+    {
+      "path": "../sprotty-protocol/tsconfig.src.json"
+    }
   ]
 }

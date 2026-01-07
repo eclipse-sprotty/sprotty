@@ -1,0 +1,429 @@
+Architectural Blueprint for the Modernization of Eclipse Sprotty: Native React Integration Strategy
+
+1. Executive Summary
+The Eclipse Sprotty framework stands as a premier solution for web-based diagramming, distinguishing itself through a client-server architecture that leverages the Language Server Protocol (LSP) to visualize complex models. Its reliance on Scalable Vector Graphics (SVG), combined with a lightweight, unidirectional data flow inspired by Flux, has made it the rendering engine of choice for tools like Eclipse Theia and various domain-specific language (DSL) editors. However, the ecosystem in which Sprotty operates has shifted dramatically since its inception. The dominance of component-based frontend frameworks—specifically React, Vue, and Angular—has created an "impedance mismatch" between Sprotty’s internal architecture (built on Snabbdom and InversifyJS) and the declarative, component-driven paradigms of modern web development.
+This report provides an exhaustive architectural analysis and a detailed implementation roadmap to resolve these friction points. The primary objective is to enable the rendering of native React components within the Sprotty diagram canvas, effectively replacing or augmenting standard SVG views. This capability is not merely a syntactic convenience; it represents a fundamental shift in the developer experience (DX), allowing adopters to leverage the vast ecosystem of React UI libraries (e.g., complex data grids, interactive forms, rich tooltips) directly within their diagrams.
+Our analysis identifies three critical technical barriers: the conflict between JSX compilation factories (Snabbdom vs. React), the isolation of dependency injection containers, and the divergence in event propagation mechanisms. To overcome these, this report proposes the development of a dedicated middleware package, tentatively titled sprotty-react. This package will implement a Hybrid Virtual DOM Bridge, utilizing React Portals injected into SVG foreignObject elements, managed by a synchronized registry that binds the lifecycle of Snabbdom VNodes to React’s reconciliation process.
+By adopting this strategy, the Sprotty maintenance team can decouple the diagramming core from the implementation details of the nodes, transforming Sprotty from a specialized visualization tool into a versatile canvas capable of hosting rich, interactive applications.
+2. Architectural Analysis of the Existing Sprotty Ecosystem
+To prescribe a robust integration strategy, it is imperative to first dissect the existing architectural decisions that currently inhibit seamless interoperability. Sprotty is not simply a drawing library; it is a comprehensive state management and rendering system that dictates a specific application structure.
+2.1 The Rendering Pipeline: Snabbdom as the Core Engine
+At the heart of Sprotty’s client architecture lies the Viewer component. This component is responsible for transforming the current state of the Graphical Model (GModel) into a visual representation in the DOM.1 Sprotty leverages Snabbdom, a lightweight virtual DOM (VDOM) library, to handle this rendering.
+The rendering process follows a strict cycle:
+Model Update: An UpdateModelAction is received (often from a server or local source).
+View Lookup: The Viewer iterates through the model elements. For each element (e.g., a node of type node:task), it resolves a registered implementation of the IView interface via the Dependency Injection (DI) container.1
+VNode Generation: The IView.render method is invoked. This method is expected to return a Snabbdom VNode.
+Patching: The Viewer takes the resulting tree of VNodes and uses Snabbdom’s patch function to update the actual DOM, minimizing reflows and repaints.3
+This architecture is highly efficient for SVG rendering because Snabbdom is unopinionated and extremely fast. However, it creates a "closed loop." The IView interface explicitly demands a Snabbdom VNode as a return type.2 A React component, when rendered, produces a React Element (a description of a UI), which is fundamentally incompatible with a Snabbdom VNode. They are data structures from two different "universes" with incompatible reconciliation algorithms. You cannot simply return <MyReactComponent /> from a Sprotty view because Snabbdom’s patch function does not know how to traverse or instantiate React fibers.
+2.2 The JSX Factory Conflict
+The most immediate friction point for developers attempting to mix Sprotty and React is the compilation environment. Both libraries use JSX syntax—the XML-like syntax extension for JavaScript—but they require different transformation functions (factories) to convert that syntax into JavaScript code.
+React expects JSX to be transformed into React.createElement(component, props,...children) (or the newer jsx runtime in React 17+).
+Sprotty/Snabbdom expects JSX to be transformed into h or a similar function (often provided by snabbdom-jsx as html or svg) that produces VNodes.1
+In a TypeScript environment, the compilerOptions in tsconfig.json allow for a single global jsxFactory setting.1 Setting this to React.createElement breaks Sprotty’s internal views (which are written in JSX but expect Snabbdom behavior). Setting it to Snabbdom’s factory breaks all standard React components in the application.
+While modern build tools allow for per-file overrides using pragma comments (e.g., /** @jsx svg */), this imposes a significant maintenance burden. It forces developers to understand the nuances of the transpiler configuration and strictly segregate their files. A new integration package must abstract this complexity away, providing a "zero-config" experience where the user writes standard React code and the library handles the bridging.
+2.3 Dependency Injection and InversifyJS
+Sprotty relies heavily on InversifyJS for dependency injection (DI).1 Every major component—from the model source to the logger, event listeners, and views—is wired together in a DI container. This promotes loose coupling and testability within the Sprotty ecosystem.
+React, conversely, relies on a component-tree-based context system (React.Context) to share dependencies (like Themes, Redux Stores, or User Authentication) down the hierarchy.6
+The structural mismatch is profound:
+Sprotty components are instantiated by the Inversify container, often as singletons or transient services outside the React component tree.
+React components are instantiated by the React Reconciler, living strictly within the Virtual DOM tree.
+If a developer manually instantiates a React component inside a Sprotty view, that component is "detached" from the main React application tree. It loses access to all Context Providers. A useTheme() hook inside a diagram node would fail because there is no ThemeProvider above it in the isolated hierarchy created by the separate instantiation. This necessitates a solution that renders diagram nodes physically inside the SVG (for layout) but logically inside the React tree (for context access).
+3. The Problem Space: Impedance Mismatch Analysis
+To formulate a solution, we must categorize the specific "impedance mismatches" that the sprotty-react package must resolve. These are the functional gaps between the "SVG/Snabbdom World" and the "HTML/React World."
+3.1 The DOM Hierarchy Mismatch
+SVG is strict about containment. <foreignObject> is the standard mechanism to embed HTML (and thus React components) inside an SVG.7 However, foreignObject introduces a boundary.
+Browser Layout: CSS flexbox and grid layouts work differently inside a foreignObject compared to a standard div.
+Z-Index: Stacking contexts in SVG are determined by document order. A React Popover or Tooltip triggered from inside a foreignObject might be clipped by the bounds of that object or obscured by subsequent SVG elements, unless it is rendered into a Portal outside the diagram entirely.
+3.2 The Event System Divergence
+Sprotty implements a centralized event handling mechanism. It registers global listeners (e.g., on the diagram container) via MouseTool and KeyTool.8 These tools capture raw DOM events, convert them into Sprotty Actions (e.g., SelectAction), and dispatch them.
+React uses a Synthetic Event system. Historically (React 16 and older), it attached a single event listener to the document and delegated events. In React 17/18, it attaches to the root container.9
+The Conflict: If a user clicks a button inside a React node to "Delete" it, the click event propagates up to the SVG. Sprotty’s MouseTool might intercept this click and interpret it as a "Select Node" action, effectively swallowing the button click or causing a race condition between the React handler and the Sprotty handler.10
+Requirement: The integration layer must explicitly manage event propagation (stopPropagation) to ensure that interactions intended for the React component are not "stolen" by Sprotty’s tools.
+3.3 Lifecycle Synchronization
+Sprotty elements come and go based on the model state. Filtering a graph might hide nodes; collapsing a group might destroy children.
+Sprotty Lifecycle: Controlled by Snabbdom’s insert, update, and destroy hooks on VNodes.11
+React Lifecycle: Controlled by mounting, updating, and unmounting of components.
+Requirement: We need a mechanism to explicitly link these. When Snabbdom destroys a VNode representing a node container, we must forcibly unmount the corresponding React component to prevent memory leaks and "zombie" components attempting to update state on unmounted elements.
+4. Architectural Proposal: The sprotty-react Middleware
+Based on the analysis, we propose the creation of sprotty-react, a library that acts as a bridge. This library does not replace Sprotty’s rendering engine but extends it using a Portal Registry Pattern.
+4.1 Core Concept: The Portal Registry
+Instead of attempting to force React to render into the Snabbdom VNode tree directly (which causes the context loss issue), we will use React Portals.
+The Host: A top-level React component (<SprottyDiagram>) renders the main Sprotty container.
+The Placeholder: Inside the Sprotty diagram, we register a generic ReactHostView. This view renders a standard SVG foreignObject with a specific id.
+The Registry: A unified state store (the Registry) keeps track of which React components need to be rendered and which DOM IDs they should be projected into.
+The Projection: The top-level <SprottyDiagram> reads from this Registry and renders a list of React Portals. Each Portal projects a user-defined component (e.g., <TaskNode />) into the corresponding foreignObject placeholder created by Sprotty.
+This architecture ensures that all node components exist as direct children of the <SprottyDiagram>, sharing its Context, while physically appearing inside the SVG diagram.
+4.2 High-Level Architecture Diagram (Description)
+Layer 1: The React Application Context
+Contains the Redux Store, Theme Provider, and the <SprottyDiagram> component.
+Layer 2: The Portal Bridge (Inside <SprottyDiagram>)
+A PortalManager component that listens to the ReactPortalService.
+It renders ReactDOM.createPortal(<UserComponent />, targetDomNode) for every active node in the diagram.
+Layer 3: The Sprotty Core (Snabbdom)
+The Viewer runs the render loop.
+It encounters a node of type react-node.
+It uses ReactHostView to render a <foreignObject><div id="node-123"></div></foreignObject>.
+It triggers a Snabbdom insert hook.
+Layer 4: The Glue (Services)
+The insert hook calls ReactPortalService.mount("node-123", UserComponent).
+This signals Layer 2 to create the portal.
+5. Detailed Technical Implementation: The Rendering Bridge
+This section outlines the specific implementation details for the ReactHostView and the registration mechanism, addressing the requirements for code analysis and specific class interactions.
+5.1 The ReactHostView Implementation
+The ReactHostView class is the generic adapter. It implements Sprotty's IView interface but is written to be reusable for any React component.
+Key Responsibilities:
+Render the Container: Create the <foreignObject> element with the correct dimensions from the model.
+Hook into Lifecycle: Use Snabbdom hooks to detect when the element is added to or removed from the real DOM.
+Delegate to Registry: Instead of rendering content, it notifies the registry.
+
+TypeScript
+
+// Conceptual Implementation of ReactHostView
+import { injectable, inject } from "inversify";
+import { IView, RenderingContext, SModelElement } from "sprotty";
+import { VNode } from "snabbdom";
+import { ReactPortalService } from "./react-portal-service";
+import { TYPES } from "./types";
+
+/** @jsx svg */
+import { svg } from "snabbdom-jsx"; // Uses Snabbdom's JSX factory locally
+
+@injectable()
+export class ReactHostView implements IView {
+
+    @inject(TYPES.ReactPortalService) protected portalService: ReactPortalService;
+
+    render(model: SModelElement, context: RenderingContext): VNode {
+        const size = (model as any).size |
+
+| { width: 100, height: 50 };
+
+        return <g>
+            <foreignObject width={size.width} height={size.height}>
+                <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    class={{ "sprotty-react-node": true }}
+                    hook={{
+                        insert: (vnode) => this.onInsert(vnode, model),
+                        update: (oldV, newV) => this.onUpdate(newV, model),
+                        destroy: (vnode) => this.onDestroy(vnode, model)
+                    }}
+                />
+            </foreignObject>
+        </g>;
+    }
+
+    protected onInsert(vnode: VNode, model: SModelElement): void {
+        if (vnode.elm) {
+            // Register this DOM element as a target for a React Portal
+            this.portalService.register(model.id, vnode.elm as HTMLElement, model);
+        }
+    }
+
+    protected onUpdate(vnode: VNode, model: SModelElement): void {
+        // Notify the portal that the model data has changed
+        this.portalService.update(model.id, model);
+    }
+
+    protected onDestroy(vnode: VNode, model: SModelElement): void {
+        // Cleanup: Tell React to unmount the portal
+        this.portalService.unregister(model.id);
+    }
+}
+
+5.2 The ReactPortalService (The Singleton Registry)
+This service acts as the event bus between the non-React Sprotty code (Inversify container) and the React component tree.
+Data Structure:
+It maintains a collection of PortalEntry objects:
+
+TypeScript
+
+interface PortalEntry {
+    id: string;
+    domNode: HTMLElement;
+    model: SModelElement;
+    componentType: React.ComponentType<any>; // The user's React component
+}
+
+Mechanism:
+It should use a lightweight subscription pattern (Observer) so the React root can subscribe to updates. When register is called, it emits a signal. The <SprottyDiagram> component receives this signal and updates its local state (e.g., useState), triggering a re-render that includes the new Portal.
+5.3 Resolving the Component Type
+How does ReactHostView know which React component to render?
+We leverage Sprotty’s DI system. We introduce a new binding convention.
+Users will bind their React components to a specific symbol in the DI container, keyed by the model type.
+In di.config.ts (User Code):
+
+TypeScript
+
+bind(TYPES.ReactComponent).toConstantValue(MyTaskNode).whenTargetNamed('node:task');
+
+The ReactHostView can then inject this component type using the model.type as the named tag.
+6. Detailed Technical Implementation: The Event Bridge
+Bridging the event systems is critical for interactivity. We need to support two directions of communication:
+React -> Sprotty: A button in the node triggers a diagram action (e.g., "Remove this node").
+Sprotty -> React: A diagram event (e.g., Selection) updates the React component's visual state.
+6.1 React to Sprotty: The useDispatcher Hook
+The IActionDispatcher is the entry point for changing the diagram.12 We must expose this to the React tree.
+The <SprottyDiagram> component will capture the IActionDispatcher from the Inversify container upon initialization and provide it via a custom React Context: SprottyDispatchContext.
+
+TypeScript
+
+// Context Definition
+export const SprottyDispatchContext = React.createContext<IActionDispatcher | null>(null);
+
+// Hook for User Components
+export const useSprottyDispatch = () => {
+    const dispatcher = useContext(SprottyDispatchContext);
+    if (!dispatcher) throw new Error("Sprotty Dispatcher not found!");
+    return dispatcher;
+};
+
+// Usage in User Component
+const MyTaskNode = ({ model }) => {
+    const dispatch = useSprottyDispatch();
+
+    const handleDelete = () => {
+        // Dispatch a standard Sprotty action
+        dispatch({ kind: 'elementDeleted', elementIds: [model.id] });
+    };
+
+    return <div className="node">
+        <span>{model.name}</span>
+        <button onClick={handleDelete}>Delete</button>
+    </div>;
+}
+
+6.2 The "ForeignObject" Event Trap
+As noted in the Problem Space, interactions inside the foreignObject bubble up. The ReactHostView must implement defensive programming to prevent conflicts.
+The Stop-Propagation Wrapper:
+We recommend wrapping the rendered React component in a "Trap" div within the ReactHostView logic or the Portal renderer. This trap explicitly stops the propagation of specific events (like mousedown, click, dblclick) unless they are intentionally allowed to pass through (e.g., for node selection).
+Specifically, for text inputs inside nodes:
+Problem: Dragging to select text in an <input> triggers Sprotty’s "Drag Node" behavior because the mousedown propagates.
+Solution: The wrapper should detect if the target is an interactive form element (INPUT, TEXTAREA, BUTTON) and call event.stopPropagation() immediately.
+6.3 Synchronizing Selection State
+Sprotty manages selection internally (SelectCommand). When a node is selected, its model property selected changes to true.
+Because the ReactHostView hooks into Snabbdom’s update hook 11, any change to the underlying SModelElement (including selection) triggers this.portalService.update().
+This pushes the updated model object into the React state. The user’s component re-renders with props.model.selected set to true, allowing them to apply CSS classes (e.g., a blue border) purely in React/CSS.
+7. Layout Synchronization Strategy
+A major challenge with <foreignObject> is that SVG requires explicit bounds (width, height), whereas HTML/React is content-driven (auto-height).
+7.1 The Feedback Loop
+If a user expands an accordion inside a React node, the node gets taller. Sprotty needs to know this to adjust the layout and move connected edges.
+Proposed Solution: ResizeObserver Integration
+Monitor: The ReactHostView attaches a ResizeObserver to the internal DOM node where the Portal is mounted.
+Detect: When the React component changes size (due to state change or prop update), the observer fires.
+Dispatch: The observer callback dispatches a ResizeAction (or a custom SetBoundsAction) to Sprotty.13
+Reaction: Sprotty’s Command Stack processes the bounds change. If ELK (Eclipse Layout Kernel) is integrated, a layout run is triggered.
+Update: Sprotty updates the GModel with new bounds and re-renders the ReactHostView with the new <foreignObject> dimensions, completing the loop.
+Optimization Note: To prevent infinite loops (Resize -> Layout -> Render -> Resize), strict equality checks must be applied. The action should only be dispatched if the pixel difference exceeds a small threshold (e.g., 1px).
+8. Build System & Tooling: Solving the JSX Conflict
+This is a critical "maintainer-facing" requirement. We cannot ask users to configure complex Webpack rules. The solution must be architectural.
+8.1 Strategy: Package Isolation (The Monorepo Approach)
+The most robust way to solve the React.createElement vs. h conflict is to isolate them into separate compilation contexts.
+We propose structuring the new sprotty-react library as two distinct sub-packages (or internal modules built separately):
+@sprotty-react/view: This contains the ReactHostView and the code interacting with Snabbdom. It is compiled with jsxFactory: "h" (or via snabbdom-jsx pragma). It exports the compiled JavaScript class.
+@sprotty-react/core: This contains the React components (SprottyDiagram, Context Providers). It is compiled with jsxFactory: "React.createElement".
+For the End User:
+The user imports ReactHostView from the library. Since it is already compiled to JavaScript, their own project’s tsconfig.json (set to React) does not conflict with it. The user treats it as a black box class.
+8.2 The "Zero-Config" DI Module
+To further reduce the learning curve, the package should export a specialized Inversify ContainerModule called reactModule.
+
+TypeScript
+
+// User's di.config.ts
+import { reactModule } from 'sprotty-react';
+
+const container = new Container();
+container.load(defaultModule, reactModule);
+// The reactModule automatically binds the ReactPortalService and generic handlers
+
+This satisfies the requirement to minimize the "new way to render" learning curve. The user simply loads the module and focuses on their React components.
+9. Performance Considerations and Scalability
+Rendering 500+ React Portals can be expensive if not managed correctly.
+9.1 Virtualization via isVisible
+Sprotty’s IView interface includes an isVisible(model, context) method.1
+The ReactHostView must implement this method. It should check if the node is currently within the viewport (using Sprotty’s viewport state).
+If not visible: Return undefined. No VNode is created. No insert hook fires. No React Portal is created.
+If visible: The Portal is created.
+This provides "Free" virtualization. As the user pans the diagram, Portals are created and destroyed dynamically, keeping the React DOM tree size manageable.
+9.2 React.memo and Referential Equality
+The ReactPortalService will frequently push updates. If the model object reference changes (even if data is identical), React will re-render.
+Mitigation: Implement a shouldComponentUpdate-like check in the Portal wrapper. Compare the model.revision or model.id plus specific data fields before forcing the user component to update.
+10. Future Proofing & Broader Framework Support
+The user requested "Modern web frameworks (React/Vue/Angular)". While the Portal approach is very specific to React, the Architecture (Bridge View + Registry + DOM Injection) is generic.
+10.1 Abstracting the Bridge
+The ReactHostView can be generalized into an abstract FrameworkHostView.
+Vue Support: A VueHostView would use the same Snabbdom hooks. In insert, instead of registering a Portal, it would createApp(UserVueComponent).mount(domNode).
+Angular Support: An AngularHostView would use ViewContainerRef and dynamic component loading to inject an Angular component into the domNode.
+While React Portals are the cleanest implementation (keeping Context), the other frameworks allow for "Micro-App" injection which achieves the same visual result, albeit with more complex Context sharing (often requiring a Bridge Pattern for state). By building sprotty-react first, the maintainers establish the pattern for sprotty-vue and sprotty-angular.
+11. Migration and Adoption Guide
+To ensure successful adoption, we define a clear path for existing Sprotty users and new users.
+11.1 The "Sprotty-React" Package Structure
+We recommend publishing a single npm package sprotty-react that exports:
+SprottyDiagram: The main component.
+useSprottyDispatch: Hook for actions.
+configureReactNode: Helper function for DI.
+SprottyReactView: The base class (implementation of ReactHostView).
+11.2 Example Usage (The "Happy Path")
+Step 1: Define the Model
+
+TypeScript
+
+interface TaskNode extends SNode {
+    status: string;
+    assignee: string;
+}
+
+Step 2: Create the React Component
+
+TypeScript
+
+const TaskComponent = ({ model }: { model: TaskNode }) => {
+    const dispatch = useSprottyDispatch();
+    return (
+        <div className={`task-card ${model.status}`}>
+            <h3>{model.id}</h3>
+            <p>Assigned to: {model.assignee}</p>
+            <button onClick={() => dispatch({ kind: 'advanceStatus',... })}>
+                Next Stage
+            </button>
+        </div>
+    );
+};
+
+Step 3: Configure DI
+
+TypeScript
+
+// di.config.ts
+import { configureReactNode } from 'sprotty-react';
+
+const myModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    configureReactNode(bind, 'task', TaskComponent);
+});
+
+Step 4: Render
+
+TypeScript
+
+// App.tsx
+const App = () => {
+    return (
+        <Provider store={store}>
+            <SprottyDiagram modelSource={mySource} />
+        </Provider>
+    );
+};
+
+1. Conclusion
+The integration of React into Eclipse Sprotty is a complex but solvable engineering challenge. The key lies in recognizing that Sprotty and React have fundamentally different lifecycles and rendering philosophies. We cannot simply mix them; we must bridge them.
+The Portal Registry Pattern proposed in this report offers the most robust solution. It preserves the integrity of Sprotty’s high-performance SVG rendering loop while unlocking the full power of React’s declarative component model and Context system. By isolating the JSX factory conflict into a pre-compiled library and abstracting the DI complexity behind simple helper functions, the sprotty-react package will significantly lower the barrier to entry.
+This strategy transforms Sprotty from a specialized tool requiring deep knowledge of Snabbdom and Inversify into a modern, developer-friendly diagramming canvas. It satisfies the user’s requirement for "React components in place of SVG elements" while adhering to the rigorous architectural standards of the Eclipse ecosystem. The resulting system will be scalable, maintainable, and ready for the demands of next-generation web IDEs.
+Summary of Recommendations
+Component
+Recommendation
+Reason
+Rendering
+React Portals via foreignObject
+Preserves React Context; keeps components in the main tree.
+Build
+Package Isolation
+Eliminates JSX factory conflicts (h vs createElement).
+State
+Context Bridge
+Allows generic actions to be dispatched from deep within nodes.
+Layout
+ResizeObserver Loop
+Enables auto-sizing nodes based on HTML content flow.
+Events
+Propagation Traps
+Prevents HTML interactions from triggering SVG navigation tools.
+
+End of Report.
+
+SHARING DATA BETWEEN APP AND NODES:
+
+Based on the architectural plan, managing state in a hybrid Sprotty/React environment requires a clear separation of concerns. You are effectively running two state management systems side-by-side: Sprotty's SModel (for topology, layout, and bounds) and React's State/Context (for business data and UI interactivity).
+Here is the strategy to share state effectively between them.
+
+1. Sharing Application State with Nodes (App → Nodes)
+Since the proposed architecture uses React Portals rendered by a top-level <SprottyDiagram> component, you gain a massive advantage: Context preservation.
+Unlike creating separate React roots for every node (which would sever the Context chain), Portals exist within the same React component tree as their parent.
+Strategy: Wrap your <SprottyDiagram> in your application's providers (Redux, Theme, UserContext).
+Result: Any React component rendered inside a diagram node (e.g., <TaskNode />) can standard hooks like useSelector, useContext, or useQuery immediately.
+Implementation:
+TypeScript
+
+// App.tsx
+<ReduxProvider store={store}>
+   <ThemeProvider theme={myTheme}>
+      {/*All nodes inside here can access Redux and Theme automatically*/}
+      <SprottyDiagram modelSource={source} />
+   </ThemeProvider>
+</ReduxProvider>
+
+1. Sharing Sprotty State with Nodes (Nodes → Sprotty)
+Nodes frequently need to tell the diagram engine to do something (e.g., "delete me", "select me", "resize me").
+Strategy: Expose the Sprotty IActionDispatcher via a custom React Context.
+Implementation: The sprotty-react middleware should initialize a SprottyDispatchContext. When the diagram starts, it pulls the dispatcher from the Inversify container and provides it to the React tree.
+TypeScript
+
+// Inside your custom Node component
+import { useSprottyDispatch } from 'sprotty-react';
+
+const MyNode = ({ model }) => {
+   const dispatch = useSprottyDispatch();
+
+   const handleRemove = () => {
+      // Dispatch a standard Sprotty action to the underlying system
+      dispatch({ kind: 'elementDeleted', elementIds: [model.id] });
+   };
+
+   return <button onClick={handleRemove}>Delete Node</button>;
+};
+
+1. Synchronizing Node-to-Node State
+There are two types of state to consider here: Graph State and Business State.
+A. Graph State (Topology, Connections)
+Mechanism: Single Source of Truth (SModel).
+Flow: Node A dispatches an action 1 -> Sprotty Command Stack updates SModel -> Sprotty triggers an update -> ReactPortalService pushes new props to Node B.
+Example: If Node A is "collapsed", Node B (its child) should disappear. Node A dispatches CollapseAction. Sprotty updates the model, hiding children. The Portal Registry removes Node B's portal.
+B. Business State (Form Data, API Status)
+Mechanism: Shared React State / External Store.
+Flow: Use your external state manager (Redux/Zustand).
+Example: If Node A and Node B both display the same "Server Status", they should both subscribe to the same Redux slice. When the slice updates, React re-renders both nodes without waking up the Sprotty layout engine.
+2. Critical Implementation Detail: Event Trapping
+A major "gotcha" in this integration is Event Bubbling. React Portals bubble events to their React parent, but foreignObject elements bubble events to their DOM parent (the SVG container).
+If a user clicks a "Save" button inside a Node, that click bubbles up to the SVG. Sprotty's MouseTool listens on the SVG background for selection clicks.
+The Conflict: Clicking "Save" might accidentally select/deselect the node or trigger a drag operation.
+The Fix: You must stop propagation at the portal root.
+TypeScript
+
+// Inside the React Portal Wrapper (provided by middleware)
+<div
+   onMouseDown={(e) => e.stopPropagation()}
+   onClick={(e) => e.stopPropagation()}
+>
+   {userComponent}
+</div>
+
+1. Summary Diagram of State Flow
+Direction
+Source
+Target
+Mechanism
+Down
+Application (Redux/Context)
+Diagram Node
+React Context (via Portal)
+Up
+Diagram Node
+Sprotty Engine
+IActionDispatcher (via Hook)
+Lateral
+Node A
+Node B (Data)
+External Store (Redux/Zustand)
+Lateral
+Node A
+Node B (Graph)
+Sprotty Action -> SModel Update

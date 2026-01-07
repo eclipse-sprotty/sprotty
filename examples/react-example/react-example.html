@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprotty React Example</title>
+    <link rel="stylesheet" href="css/page.css">
+    <link rel="stylesheet" href="css/diagram.css">
+    <link rel="stylesheet" href="../../packages/sprotty/css/sprotty.css">
+    <link rel="stylesheet" href="../../packages/sprotty-react/css/sprotty-react.css">
+</head>
+
+<body>
+    <div class="page-container">
+        <header class="page-header">
+            <h1>Sprotty React Integration Example</h1>
+            <p>Task board with React-rendered nodes demonstrating interactive components</p>
+        </header>
+        <main class="main-content">
+            <div id="sprotty-container" class="sprotty-diagram"></div>
+        </main>
+        <footer class="page-footer">
+            <p>Use mouse wheel to zoom, drag to pan. Click buttons inside nodes to interact.</p>
+        </footer>
+    </div>
+    <script src="../resources/bundle.js"></script>
+    <script>
+        reactExample.default();
+    </script>
+</body>
+
+</html>

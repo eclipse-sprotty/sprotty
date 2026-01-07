@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib",
+    "jsx": "react"
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "lib",
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../sprotty-protocol/tsconfig.src.json"
+    },
+    {
+      "path": "../sprotty/tsconfig.src.json"
+    }
+  ]
+}

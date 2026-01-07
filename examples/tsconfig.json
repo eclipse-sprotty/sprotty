@@ -2,7 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "."
+    "rootDir": ".",
+    "types": [],
+    "skipLibCheck": true
   },
   "include": [
     "**/src/**/*.ts",
@@ -12,11 +14,12 @@
   "exclude": [
     "lib",
     "node_modules",
-    "resources"
+    "resources",
+    "react-example"
   ],
   "references": [
     { "path": "../packages/sprotty-protocol/tsconfig.src.json" },
     { "path": "../packages/sprotty/tsconfig.src.json" },
-    { "path": "../packages/sprotty-elk/tsconfig.src.json" },
+    { "path": "../packages/sprotty-elk/tsconfig.src.json" }
   ]
 }

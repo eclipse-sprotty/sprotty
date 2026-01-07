@@ -1,0 +1,405 @@
+/********************************************************************************
+ * Copyright (c) 2024 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* ============================================
+   Theme Variables - Dark Theme (Default)
+   ============================================ */
+:root,
+[data-theme="dark"] {
+    /* Node colors */
+    --node-bg-start: #2a2a4a;
+    --node-bg-end: #1e1e3a;
+    --node-border: rgba(255, 255, 255, 0.1);
+    --node-shadow: rgba(0, 0, 0, 0.2);
+    --node-shadow-hover: rgba(0, 0, 0, 0.3);
+    --node-selected-border: #4fc3f7;
+    --node-selected-glow: rgba(79, 195, 247, 0.3);
+
+    /* Text colors */
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0c0;
+    --text-muted: #808090;
+
+    /* Status colors */
+    --status-todo: #ff9800;
+    --status-in-progress: #2196f3;
+    --status-done: #4caf50;
+
+    /* Button colors */
+    --btn-advance-bg: rgba(33, 150, 243, 0.2);
+    --btn-advance-bg-hover: rgba(33, 150, 243, 0.4);
+    --btn-advance-text: #4fc3f7;
+    --btn-delete-bg: rgba(244, 67, 54, 0.2);
+    --btn-delete-bg-hover: rgba(244, 67, 54, 0.4);
+    --btn-delete-text: #ef5350;
+    --btn-add-bg: rgba(76, 175, 80, 0.2);
+    --btn-add-bg-hover: rgba(76, 175, 80, 0.4);
+    --btn-add-text: #81c784;
+
+    /* Graph colors */
+    --graph-bg: #0f0f23;
+    --edge-stroke: #4a4a6a;
+}
+
+/* ============================================
+   Theme Variables - Light Theme
+   ============================================ */
+[data-theme="light"] {
+    /* Node colors */
+    --node-bg-start: #ffffff;
+    --node-bg-end: #f5f5f7;
+    --node-border: rgba(0, 0, 0, 0.1);
+    --node-shadow: rgba(0, 0, 0, 0.08);
+    --node-shadow-hover: rgba(0, 0, 0, 0.15);
+    --node-selected-border: #1976d2;
+    --node-selected-glow: rgba(25, 118, 210, 0.3);
+
+    /* Text colors */
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a5a;
+    --text-muted: #6a6a7a;
+
+    /* Status colors - slightly deeper for light bg */
+    --status-todo: #e65100;
+    --status-in-progress: #1565c0;
+    --status-done: #2e7d32;
+
+    /* Button colors */
+    --btn-advance-bg: rgba(25, 118, 210, 0.12);
+    --btn-advance-bg-hover: rgba(25, 118, 210, 0.25);
+    --btn-advance-text: #1565c0;
+    --btn-delete-bg: rgba(211, 47, 47, 0.12);
+    --btn-delete-bg-hover: rgba(211, 47, 47, 0.25);
+    --btn-delete-text: #c62828;
+    --btn-add-bg: rgba(46, 125, 50, 0.12);
+    --btn-add-bg-hover: rgba(46, 125, 50, 0.25);
+    --btn-add-text: #2e7d32;
+
+    /* Graph colors */
+    --graph-bg: #e8e8f0;
+    --edge-stroke: #9090a0;
+}
+
+/* ============================================
+   Task Node Styles
+   ============================================ */
+.task-node {
+    width: 100%;
+    min-height: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: linear-gradient(145deg, var(--node-bg-start), var(--node-bg-end));
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 12px var(--node-shadow);
+    border: 1px solid var(--node-border);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.3s, border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.task-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--node-shadow-hover);
+}
+
+.task-node.selected {
+    border-color: var(--node-selected-border);
+    box-shadow: 0 0 0 2px var(--node-selected-glow), 0 6px 20px var(--node-shadow-hover);
+}
+
+/* Status-based styling */
+.task-node.status-todo {
+    border-left: 4px solid var(--status-todo);
+}
+
+.task-node.status-in-progress {
+    border-left: 4px solid var(--status-in-progress);
+}
+
+.task-node.status-done {
+    border-left: 4px solid var(--status-done);
+}
+
+/* Task node header */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.task-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+    transition: color 0.3s;
+    cursor: text;
+}
+
+.task-title-input {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: transparent;
+    border: 1px solid var(--node-selected-border);
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    flex: 1;
+    min-width: 0;
+    outline: none;
+    font-family: inherit;
+}
+
+.task-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.task-badge.todo {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--status-todo);
+}
+
+.task-badge.in-progress {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--status-in-progress);
+}
+
+.task-badge.done {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--status-done);
+}
+
+[data-theme="light"] .task-badge.todo {
+    background: rgba(230, 81, 0, 0.15);
+}
+
+[data-theme="light"] .task-badge.in-progress {
+    background: rgba(21, 101, 192, 0.15);
+}
+
+[data-theme="light"] .task-badge.done {
+    background: rgba(46, 125, 50, 0.15);
+}
+
+/* Task description */
+.task-description {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    transition: color 0.3s;
+    cursor: text;
+    margin: 0;
+}
+
+.task-description-input {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--node-selected-border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    width: 100%;
+    min-height: 40px;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.4;
+    resize: none;
+    box-sizing: border-box;
+}
+
+/* Task footer */
+.task-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--node-border);
+    transition: border-color 0.3s;
+}
+
+.task-assignee-container {
+    position: relative;
+}
+
+.task-assignee {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.3s, background 0.2s;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.task-assignee:hover {
+    background: var(--node-border);
+}
+
+.task-assignee::before {
+    content: '👤';
+    font-size: 0.8rem;
+}
+
+.task-assignee::after {
+    content: '▼';
+    font-size: 0.5rem;
+    margin-left: 2px;
+    opacity: 0.6;
+}
+
+.task-assignee-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 4px;
+    background: linear-gradient(145deg, var(--node-bg-start), var(--node-bg-end));
+    border: 1px solid var(--node-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px var(--node-shadow);
+    min-width: 100px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.task-assignee-option {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.task-assignee-option:hover {
+    background: var(--btn-advance-bg);
+    color: var(--text-primary);
+}
+
+.task-assignee-option.selected {
+    background: var(--btn-advance-bg-hover);
+    color: var(--btn-advance-text);
+    font-weight: 500;
+}
+
+/* Task buttons */
+.task-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.task-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.task-btn-advance {
+    background: var(--btn-advance-bg);
+    color: var(--btn-advance-text);
+}
+
+.task-btn-advance:hover {
+    background: var(--btn-advance-bg-hover);
+}
+
+.task-btn-delete {
+    background: var(--btn-delete-bg);
+    color: var(--btn-delete-text);
+}
+
+.task-btn-delete:hover {
+    background: var(--btn-delete-bg-hover);
+}
+
+.task-btn-add {
+    background: var(--btn-add-bg);
+    color: var(--btn-add-text);
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 6px 8px;
+}
+
+.task-btn-add:hover {
+    background: var(--btn-add-bg-hover);
+}
+
+/* ============================================
+   Simplified Task Node (LOD Rendering)
+   ============================================ */
+.task-node-simple {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    box-sizing: border-box;
+    /* No transitions, shadows, or complex styling for performance */
+}
+
+.task-node-simple.status-todo {
+    background: var(--status-todo);
+}
+
+.task-node-simple.status-in-progress {
+    background: var(--status-in-progress);
+}
+
+.task-node-simple.status-done {
+    background: var(--status-done);
+}
+
+/* ============================================
+   Edge Styles
+   ============================================ */
+.sprotty-edge {
+    stroke: var(--edge-stroke);
+    stroke-width: 2;
+    fill: none;
+    transition: stroke 0.3s;
+}
+
+.sprotty-edge path {
+    stroke: var(--edge-stroke);
+    stroke-width: 2;
+    transition: stroke 0.3s;
+}
+
+/* ============================================
+   Graph Background
+   ============================================ */
+.sprotty-graph {
+    background-color: var(--graph-bg);
+    width: 100%;
+    height: 100%;
+    transition: background-color 0.3s;
+}

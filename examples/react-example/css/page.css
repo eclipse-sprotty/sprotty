@@ -1,0 +1,171 @@
+/********************************************************************************
+ * Copyright (c) 2024 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/* ============================================
+   Page Theme Variables - Dark Theme (Default)
+   ============================================ */
+:root,
+[data-theme="dark"] {
+    --page-bg-start: #1a1a2e;
+    --page-bg-end: #16213e;
+    --page-text: #e0e0e0;
+    --page-heading: #ffffff;
+    --page-subtext: #a0a0a0;
+    --page-footer: #808080;
+    --diagram-bg: #0f0f23;
+    --diagram-shadow: rgba(0, 0, 0, 0.3);
+
+    /* Toggle button */
+    --toggle-bg: rgba(255, 255, 255, 0.1);
+    --toggle-bg-hover: rgba(255, 255, 255, 0.2);
+    --toggle-border: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   Page Theme Variables - Light Theme
+   ============================================ */
+[data-theme="light"] {
+    --page-bg-start: #f0f2f5;
+    --page-bg-end: #e8eaed;
+    --page-text: #333333;
+    --page-heading: #1a1a2e;
+    --page-subtext: #666666;
+    --page-footer: #888888;
+    --diagram-bg: #e8e8f0;
+    --diagram-shadow: rgba(0, 0, 0, 0.15);
+
+    /* Toggle button */
+    --toggle-bg: rgba(0, 0, 0, 0.05);
+    --toggle-bg-hover: rgba(0, 0, 0, 0.1);
+    --toggle-border: rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
+    min-height: 100vh;
+    color: var(--page-text);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ============================================
+   Page Layout
+   ============================================ */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--page-heading);
+    margin-bottom: 8px;
+    transition: color 0.3s;
+}
+
+.page-header p {
+    font-size: 1rem;
+    color: var(--page-subtext);
+    transition: color 0.3s;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.sprotty-diagram {
+    width: 100%;
+    max-width: 1400px;
+    height: 600px;
+    background: var(--diagram-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px var(--diagram-shadow);
+    overflow: hidden;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.page-footer {
+    text-align: center;
+    padding: 16px;
+    color: var(--page-footer);
+    font-size: 0.875rem;
+    transition: color 0.3s;
+}
+
+/* ============================================
+   Theme Toggle Button
+   ============================================ */
+.theme-toggle-btn {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--toggle-border);
+    background: var(--toggle-bg);
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:hover {
+    background: var(--toggle-bg-hover);
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.theme-toggle-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--toggle-bg-hover), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   Theme Toggle Container (in header)
+   ============================================ */
+#theme-toggle-container {
+    position: absolute;
+    top: 0;
+    right: 20px;
+}

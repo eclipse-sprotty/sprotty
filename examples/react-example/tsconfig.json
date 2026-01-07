@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../lib/react-example",
+    "rootDir": ".",
+    "jsx": "react",
+    "types": [
+      "react",
+      "react-dom"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../../packages/sprotty-protocol/tsconfig.src.json"
+    },
+    {
+      "path": "../../packages/sprotty/tsconfig.src.json"
+    },
+    {
+      "path": "../../packages/sprotty-react/tsconfig.src.json"
+    }
+  ]
+}

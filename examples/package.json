@@ -10,6 +10,9 @@
     "sprotty": "^1.4.0",
     "sprotty-elk": "^1.4.0",
     "sprotty-library": "^1.4.0",
+    "sprotty-react": "^1.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {

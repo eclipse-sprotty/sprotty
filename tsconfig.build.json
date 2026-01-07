@@ -1,14 +1,41 @@
 {
     "files": [],
     "references": [
-        { "path": "./packages/sprotty-protocol/tsconfig.src.json" },
-        { "path": "./packages/sprotty-protocol/tsconfig.test.json" },
-        { "path": "./packages/sprotty/tsconfig.src.json" },
-        { "path": "./packages/sprotty/tsconfig.test.json" },
-        { "path": "./packages/sprotty-elk/tsconfig.src.json" },
-        { "path": "./packages/sprotty-elk/tsconfig.test.json" },
-        { "path": "./packages/generator-sprotty/tsconfig.json" },
-        { "path": "./packages/sprotty-library/tsconfig.src.json" },
-        { "path": "./examples/tsconfig.json" }
+        {
+            "path": "./packages/sprotty-protocol/tsconfig.src.json"
+        },
+        {
+            "path": "./packages/sprotty-protocol/tsconfig.test.json"
+        },
+        {
+            "path": "./packages/sprotty/tsconfig.src.json"
+        },
+        {
+            "path": "./packages/sprotty/tsconfig.test.json"
+        },
+        {
+            "path": "./packages/sprotty-elk/tsconfig.src.json"
+        },
+        {
+            "path": "./packages/sprotty-elk/tsconfig.test.json"
+        },
+        {
+            "path": "./packages/generator-sprotty/tsconfig.json"
+        },
+        {
+            "path": "./packages/sprotty-library/tsconfig.src.json"
+        },
+        {
+            "path": "./packages/sprotty-react/tsconfig.src.json"
+        },
+        {
+            "path": "./packages/sprotty-react/tsconfig.test.json"
+        },
+        {
+            "path": "./examples/tsconfig.json"
+        },
+        {
+            "path": "./examples/react-example/tsconfig.json"
+        }
     ]
 }

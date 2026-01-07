@@ -28,6 +28,10 @@ import runStylingShowcase from "./styling-showcase/src/standalone";
 import runMicroLayoutShowcase from "./micro-layout-showcase/src/standalone";
 import runCustomViewsShowcase from "./custom-views-showcase/src/standalone";
 import runLayoutStrategiesShowcase from "./layout-strategies-showcase/src/standalone";
+import * as reactExample from "./react-example/src/standalone";
+
+// Export reactExample for direct use from HTML
+(window as any).reactExample = reactExample;
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {
@@ -56,6 +60,8 @@ if (appDiv) {
         runCustomViewsShowcase();
     else if (appMode === 'layout-strategies-showcase')
         runLayoutStrategiesShowcase();
+    else if (appMode === 'react-example')
+        reactExample.default();
     else
         throw new Error('Dunno what to do :-(');
 }

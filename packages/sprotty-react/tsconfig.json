@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.src.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "lib",
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../sprotty-protocol/tsconfig.src.json"
+    },
+    {
+      "path": "../sprotty/tsconfig.src.json"
+    }
+  ]
+}

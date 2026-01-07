@@ -23,7 +23,12 @@ const config = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: ['ts-loader']
+                use: [{
+                    loader: 'ts-loader',
+                    options: {
+                        transpileOnly: true // Skip type checking (done separately by tsc)
+                    }
+                }]
             },
             {
                 test: /\.js$/,
