@@ -23,7 +23,7 @@ import { findParentByFeature } from '../../base/model/smodel-utils';
 import { TYPES } from '../../base/types';
 import { MouseListener } from '../../base/views/mouse-tool';
 import { ViewerOptions } from '../../base/views/viewer-options';
-import { getWindowScroll } from '../../utils/browser';
+import { getWindowScroll, isMac } from '../../utils/browser';
 import { isViewport } from './model';
 import { limit } from '../../utils/geometry';
 
@@ -61,7 +61,7 @@ export class ZoomMouseListener extends MouseListener {
     }
 
     protected processScroll(viewport: Viewport, event: WheelEvent): Viewport {
-        if (this.isShift(event)) {
+        if (this.isShift(event) && !isMac()) {
             return {
                 scroll: {
                     // when the user holds down the Shift key and uses the mouse side scroll wheel, the viewport also moves horizontally.
