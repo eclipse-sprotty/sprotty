@@ -75,7 +75,7 @@ export abstract class AbstractUIExtension implements IUIExtension {
     protected initialize(): boolean {
         const baseDiv = document.getElementById(this.options.baseDiv);
         if (!baseDiv) {
-            this.logger.warn(this, `Could not obtain sprotty base container for initializing UI extension ${this.id}`, this);
+            this.logger.warn(this, `Could not obtain sprotty base container for initializing UI extension ${this.id()}`, this);
             return false;
         }
         this.containerElement = this.getOrCreateContainer(baseDiv.id);
