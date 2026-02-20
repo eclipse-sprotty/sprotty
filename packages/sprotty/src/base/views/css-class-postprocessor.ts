@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { IVNodePostprocessor } from "./vnode-postprocessor";
-import { VNode } from "snabbdom";
-import { getSubType } from 'sprotty-protocol/lib/utils/model-utils';
-import { SModelElementImpl } from "../model/smodel";
-import { setClass } from "./vnode-utils";
 import { injectable } from "inversify";
+import { VNode } from "snabbdom";
+import { getSubType } from 'sprotty-protocol';
+import { SModelElementImpl } from "../model/smodel.js";
+import { IVNodePostprocessor } from "./vnode-postprocessor.js";
+import { setClass } from "./vnode-utils.js";
 
 @injectable()
 export class CssClassPostprocessor implements IVNodePostprocessor {

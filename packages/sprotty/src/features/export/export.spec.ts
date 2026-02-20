@@ -14,19 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { TYPES } from '../../base/types';
-import { ConsoleLogger } from '../../utils/logging';
-import { CommandExecutionContext } from '../../base/commands/command';
-import { SNodeImpl, SGraphImpl } from '../../graph/sgraph';
-import { ExportSvgCommand } from './export';
-import defaultModule from '../../base/di.config';
-import { RequestExportSvgAction } from 'sprotty-protocol/lib/actions';
-import { SNode } from 'sprotty-protocol/lib/model';
-import { IModelFactory } from '../../base/model/smodel-factory';
-import { registerModelElement } from '../../base/model/smodel-utils';
+import 'reflect-metadata';
+import { RequestExportSvgAction, SNode } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import { CommandExecutionContext } from '../../base/commands/command.js';
+import defaultModule from '../../base/di.config.js';
+import { IModelFactory } from '../../base/model/smodel-factory.js';
+import { registerModelElement } from '../../base/model/smodel-utils.js';
+import { TYPES } from '../../base/types.js';
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { ExportSvgCommand } from './export.js';
 
 describe('ExportSvgCommand', () => {
     const container = new Container();

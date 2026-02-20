@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable, multiInject, optional } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { InstanceRegistry } from "../../utils/registry";
-import { CommandExecutionContext, SystemCommand, CommandReturn } from "../commands/command";
-import { TYPES } from "../types";
-import { IUIExtension } from "./ui-extension";
+import { Action } from "sprotty-protocol";
+import { InstanceRegistry } from "../../utils/registry.js";
+import { CommandExecutionContext, CommandReturn, SystemCommand } from "../commands/command.js";
+import { TYPES } from "../types.js";
+import { IUIExtension } from "./ui-extension.js";
 
 /**
  * The registry maintaining UI extensions registered via `TYPES.IUIExtension`.

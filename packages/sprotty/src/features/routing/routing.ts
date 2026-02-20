@@ -15,15 +15,15 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional } from "inversify";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { SParentElementImpl } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { findArgValue, IViewArgs } from "../../base/views/view";
-import { InstanceRegistry } from "../../utils/registry";
-import { ResolvedHandleMove } from "../move/move";
-import { SRoutingHandleImpl } from "../routing/model";
-import { SConnectableElementImpl, SRoutableElementImpl } from "./model";
-import { PolylineEdgeRouter } from "./polyline-edge-router";
+import { Point } from "sprotty-protocol";
+import { SParentElementImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { findArgValue, IViewArgs } from "../../base/views/view.js";
+import { InstanceRegistry } from "../../utils/registry.js";
+import { ResolvedHandleMove } from "../move/move.js";
+import { SRoutingHandleImpl } from "../routing/model.js";
+import { SConnectableElementImpl, SRoutableElementImpl } from "./model.js";
+import { PolylineEdgeRouter } from "./polyline-edge-router.js";
 
 /**
  * A point describing the shape of an edge.

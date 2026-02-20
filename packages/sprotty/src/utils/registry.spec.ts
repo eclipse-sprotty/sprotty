@@ -16,7 +16,7 @@
 
 import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
-import { InstanceRegistry, ProviderRegistry } from "./registry";
+import { InstanceRegistry, ProviderRegistry } from "./registry.js";
 
 describe('ProviderRegistry', () => {
     function setup() {

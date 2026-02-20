@@ -17,20 +17,30 @@
 import { saveAs } from 'file-saver';
 import { inject, injectable, optional } from 'inversify';
 import {
-    Action, ComputedBoundsAction, ExportSvgAction, RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
-    SetModelAction, SetPopupModelAction, UpdateModelAction
-} from 'sprotty-protocol/lib/actions';
-import { SModelElement, SModelRoot, Viewport} from 'sprotty-protocol/lib/model';
-import { IModelLayoutEngine, GetViewportAction, ViewportResult, GetSelectionAction, SelectionResult } from 'sprotty-protocol';
-import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelIndex, findElement } from 'sprotty-protocol/lib/utils/model-utils';
-import { ILogger } from '../utils/logging';
-import { FluentIterable } from '../utils/iterable';
-import { TYPES } from '../base/types';
-import { ActionHandlerRegistry } from '../base/actions/action-handler';
-import { EMPTY_ROOT } from '../base/model/smodel-factory';
-import { applyMatches, Match } from '../features/update/model-matching';
-import { ModelSource, ComputedBoundsApplicator } from './model-source';
+    Action,
+    Bounds,
+    ComputedBoundsAction, ExportSvgAction,
+    findElement,
+    GetSelectionAction,
+    GetViewportAction,
+    IModelLayoutEngine,
+    RequestBoundsAction, RequestModelAction, RequestPopupModelAction,
+    SelectionResult,
+    SetModelAction, SetPopupModelAction,
+    SModelElement,
+    SModelIndex,
+    SModelRoot,
+    UpdateModelAction,
+    Viewport,
+    ViewportResult
+} from 'sprotty-protocol';
+import { ActionHandlerRegistry } from '../base/actions/action-handler.js';
+import { EMPTY_ROOT } from '../base/model/smodel-factory.js';
+import { TYPES } from '../base/types.js';
+import { applyMatches, Match } from '../features/update/model-matching.js';
+import { FluentIterable } from '../utils/iterable.js';
+import { ILogger } from '../utils/logging.js';
+import { ComputedBoundsApplicator, ModelSource } from './model-source.js';
 
 export interface IPopupModelProvider {
     getPopupModel(request: RequestPopupModelAction, element?: SModelElement): SModelRoot | undefined;

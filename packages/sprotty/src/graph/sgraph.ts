@@ -14,23 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { Alignable, EdgePlacement, Fadeable, Hoverable, Selectable } from 'sprotty-protocol/lib/model';
-import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel';
+import { Alignable, EdgePlacement, Fadeable, Hoverable, Point, Selectable } from 'sprotty-protocol';
+import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel.js';
 import {
-    alignFeature, InternalBoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    alignFeature,
+    boundsFeature,
+    InternalBoundsAware,
+    layoutableChildFeature, layoutContainerFeature,
     ModelLayoutOptions, SShapeElementImpl
-} from '../features/bounds/model';
-import { edgeLayoutFeature } from '../features/edge-layout/model';
-import { deletableFeature } from '../features/edit/delete';
-import { editFeature } from '../features/edit/model';
-import { fadeFeature } from '../features/fade/model';
-import { hoverFeedbackFeature, popupFeature } from '../features/hover/model';
-import { moveFeature } from '../features/move/model';
-import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model';
-import { selectFeature } from '../features/select/model';
-import { ViewportRootElementImpl } from '../features/viewport/viewport-root';
-import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
+} from '../features/bounds/model.js';
+import { edgeLayoutFeature } from '../features/edge-layout/model.js';
+import { deletableFeature } from '../features/edit/delete.js';
+import { editFeature } from '../features/edit/model.js';
+import { fadeFeature } from '../features/fade/model.js';
+import { hoverFeedbackFeature, popupFeature } from '../features/hover/model.js';
+import { moveFeature } from '../features/move/model.js';
+import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model.js';
+import { selectFeature } from '../features/select/model.js';
+import { ViewportRootElementImpl } from '../features/viewport/viewport-root.js';
+import { FluentIterable, FluentIterableImpl } from '../utils/iterable.js';
 
 /**
  * Root element for graph-like models.

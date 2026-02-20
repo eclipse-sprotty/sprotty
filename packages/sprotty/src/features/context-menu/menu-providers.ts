@@ -15,14 +15,13 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional } from 'inversify';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { MenuItem } from './context-menu-service';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { LabeledAction } from '../../base/actions/action';
-import { TYPES } from '../../base/types';
-import { isDeletable } from '../edit/delete';
-import { isSelected } from '../select/model';
-import { DeleteElementAction } from 'sprotty-protocol';
+import { DeleteElementAction, Point } from 'sprotty-protocol';
+import { LabeledAction } from '../../base/actions/action.js';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { isDeletable } from '../edit/delete.js';
+import { isSelected } from '../select/model.js';
+import { MenuItem } from './context-menu-service.js';
 
 export interface IContextMenuItemProvider {
     getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point): Promise<LabeledAction[]>;

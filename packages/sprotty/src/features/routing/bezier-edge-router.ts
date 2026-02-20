@@ -15,17 +15,16 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
-import { centerOfLine, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { ResolvedHandleMove } from '../move/move';
-import { SDanglingAnchorImpl, SRoutableElementImpl, SRoutingHandleImpl } from './model';
-import { SModelElementImpl } from '../../base/model/smodel';
-import { EdgeRouterRegistry, RoutedPoint } from './routing';
-import { AbstractEdgeRouter, LinearRouteOptions } from './abstract-edge-router';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { TYPES } from "../../base/types";
-import { SEdgeImpl } from '../../graph/sgraph';
+import { Action, centerOfLine, Point } from 'sprotty-protocol';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { SModelElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from "../../base/types.js";
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { SEdgeImpl } from '../../graph/sgraph.js';
+import { ResolvedHandleMove } from '../move/move.js';
+import { AbstractEdgeRouter, LinearRouteOptions } from './abstract-edge-router.js';
+import { SDanglingAnchorImpl, SRoutableElementImpl, SRoutingHandleImpl } from './model.js';
+import { EdgeRouterRegistry, RoutedPoint } from './routing.js';
 
 @injectable()
 export class BezierEdgeRouter extends AbstractEdgeRouter {

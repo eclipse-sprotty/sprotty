@@ -14,16 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { Action } from "sprotty-protocol/lib/actions";
-import { almostEquals, Bounds, Dimension } from "sprotty-protocol/lib/utils/geometry";
-import { TYPES } from "../types";
-import { IActionDispatcher } from '../actions/action-dispatcher';
-import { IVNodePostprocessor } from "../views/vnode-postprocessor";
-import { SModelElementImpl, SModelRootImpl } from "../model/smodel";
-import { SystemCommand, CommandExecutionContext, CommandReturn } from '../commands/command';
-import { getWindowScroll } from "../../utils/browser";
+import { Action, almostEquals, Bounds, Dimension } from "sprotty-protocol";
+import { getWindowScroll } from "../../utils/browser.js";
+import { IActionDispatcher } from '../actions/action-dispatcher.js';
+import { CommandExecutionContext, CommandReturn, SystemCommand } from '../commands/command.js';
+import { SModelElementImpl, SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { IVNodePostprocessor } from "../views/vnode-postprocessor.js";
 
 /**
  * Grabs the bounds from the root element in page coordinates and fires a

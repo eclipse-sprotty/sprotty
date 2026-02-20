@@ -17,15 +17,15 @@
 import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { TYPES } from '../../base/types';
-import { ConsoleLogger } from '../../utils/logging';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory';
-import { CommandExecutionContext } from '../../base/commands/command';
-import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
-import {  BringToFrontCommand } from './zorder';
-import defaultModule from '../../base/di.config';
-import { SNodeImpl } from '../../graph/sgraph';
+import { TYPES } from '../../base/types.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory.js';
+import { CommandExecutionContext } from '../../base/commands/command.js';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer.js';
+import {  BringToFrontCommand } from './zorder.js';
+import defaultModule from '../../base/di.config.js';
+import { SNodeImpl } from '../../graph/sgraph.js';
 import { BringToFrontAction } from 'sprotty-protocol';
 
 function getNode(nodeId: string, model: SModelRootImpl) {

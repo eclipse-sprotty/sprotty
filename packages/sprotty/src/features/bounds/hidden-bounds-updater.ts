@@ -16,16 +16,15 @@
 
 import { inject, injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Action, ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, RequestBoundsAction } from 'sprotty-protocol/lib/actions';
-import { almostEquals, Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { isSVGGraphicsElement } from '../../utils/browser';
-import { ILogger } from '../../utils/logging';
-import { IActionDispatcher } from '../../base/actions/action-dispatcher';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { TYPES } from '../../base/types';
-import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
-import { Layouter } from './layout';
-import { InternalBoundsAware, isAlignable, isLayoutContainer, isSizeable } from './model';
+import { Action, almostEquals, Bounds, ComputedBoundsAction, ElementAndAlignment, ElementAndBounds, Point, RequestBoundsAction } from 'sprotty-protocol';
+import { IActionDispatcher } from '../../base/actions/action-dispatcher.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor.js';
+import { isSVGGraphicsElement } from '../../utils/browser.js';
+import { ILogger } from '../../utils/logging.js';
+import { Layouter } from './layout.js';
+import { InternalBoundsAware, isAlignable, isLayoutContainer, isSizeable } from './model.js';
 
 export class BoundsData {
     vnode?: VNode;

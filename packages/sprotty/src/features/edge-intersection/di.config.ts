@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { IntersectionFinder } from "../edge-intersection/intersection-finder";
+import { TYPES } from "../../base/types.js";
+import { IntersectionFinder } from "../edge-intersection/intersection-finder.js";
 
 const edgeIntersectionModule = new ContainerModule(bind => {
     bind(IntersectionFinder).toSelf().inSingletonScope();

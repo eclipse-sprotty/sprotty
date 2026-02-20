@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { SModelRootImpl } from "../model/smodel";
-import { TYPES } from "../types";
-import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { IViewer } from "./viewer";
+import { Action } from "sprotty-protocol";
+import { AnimationFrameSyncer } from "../animations/animation-frame-syncer.js";
+import { SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { IViewer } from "./viewer.js";
 
 /**
  * Updating the view is rather expensive, and it doesn't make sense to calculate

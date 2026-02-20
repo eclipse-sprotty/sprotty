@@ -14,9 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
-import { SModelRootImpl, SModelElementImpl, isParent, IModelIndex } from '../../base/model/smodel';
-import { SModelIndex } from 'sprotty-protocol';
+import { SModelElement, SModelIndex, SModelRoot } from 'sprotty-protocol';
+import { IModelIndex, SModelElementImpl, SModelRootImpl, isParent } from '../../base/model/smodel.js';
 
 export interface Match {
     left?: SModelElement

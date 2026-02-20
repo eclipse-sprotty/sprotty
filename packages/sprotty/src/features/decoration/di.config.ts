@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { configureModelElement } from "../../base/views/view";
+import { configureModelElement } from "../../base/views/view.js";
 import { ContainerModule } from "inversify";
-import { SIssueMarkerImpl } from "./model";
-import { IssueMarkerView } from "./views";
-import { TYPES } from "../../base/types";
-import { DecorationPlacer } from "./decoration-placer";
+import { SIssueMarkerImpl } from "./model.js";
+import { IssueMarkerView } from "./views.js";
+import { TYPES } from "../../base/types.js";
+import { DecorationPlacer } from "./decoration-placer.js";
 
 const decorationModule = new ContainerModule((bind, _unbind, isBound)  => {
     configureModelElement({ bind, isBound }, 'marker', SIssueMarkerImpl, IssueMarkerView);

@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { interfaces } from "inversify";
-import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { TYPES } from "../types";
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from "./smodel";
-import { SModelElementRegistration, CustomFeatures } from "./smodel-factory";
+import { Bounds, Point } from "sprotty-protocol";
+import { TYPES } from "../types.js";
+import { CustomFeatures, SModelElementRegistration } from "./smodel-factory.js";
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from "./smodel.js";
 
 /**
  * Register a model element constructor for an element type.

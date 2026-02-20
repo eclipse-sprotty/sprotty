@@ -14,20 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { TYPES } from '../../base/types';
-import { ConsoleLogger } from '../../utils/logging';
-import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
-import { CommandExecutionContext } from '../../base/commands/command';
-import { SetViewportCommand } from './viewport';
-import { ViewportRootElementImpl } from './viewport-root';
-import defaultModule from '../../base/di.config';
+import 'reflect-metadata';
 import { SetViewportAction, Viewport, almostEquals } from 'sprotty-protocol';
-import { IModelFactory } from '../../base/model/smodel-factory';
-import { registerModelElement } from '../../base/model/smodel-utils';
-import { SGraphImpl, SNodeImpl } from '../../graph/sgraph';
+import { describe, expect, it } from 'vitest';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer.js';
+import { CommandExecutionContext } from '../../base/commands/command.js';
+import defaultModule from '../../base/di.config.js';
+import { IModelFactory } from '../../base/model/smodel-factory.js';
+import { registerModelElement } from '../../base/model/smodel-utils.js';
+import { TYPES } from '../../base/types.js';
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { ViewportRootElementImpl } from './viewport-root.js';
+import { SetViewportCommand } from './viewport.js';
 
 describe('BoundsAwareViewportCommand', () => {
     const container = new Container();

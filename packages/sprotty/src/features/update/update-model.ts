@@ -14,27 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject, optional } from 'inversify';
-import { UpdateModelAction } from 'sprotty-protocol/lib/actions';
-import { Fadeable } from 'sprotty-protocol/lib/model';
-import { almostEquals, Dimension } from 'sprotty-protocol/lib/utils/geometry';
-import { Animation, CompoundAnimation } from '../../base/animations/animation';
-import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
-import { FadeAnimation, ResolvedElementFade } from '../fade/fade';
-import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
-import { MoveAnimation, ResolvedElementMove, MorphEdgesAnimation } from '../move/move';
-import { isFadeable } from '../fade/model';
-import { isLocateable } from '../move/model';
-import { isSizeable } from '../bounds/model';
-import { ViewportRootElementImpl } from '../viewport/viewport-root';
-import { isSelectable } from '../select/model';
-import { MatchResult, ModelMatcher, Match, forEachMatch } from './model-matching';
-import { ResolvedElementResize, ResizeAnimation } from '../bounds/resize';
-import { TYPES } from '../../base/types';
-import { isViewport } from '../viewport/model';
-import { EdgeRouterRegistry, EdgeSnapshot, EdgeMemento } from '../routing/routing';
-import { SRoutableElementImpl } from '../routing/model';
-import { containsSome } from '../../base/model/smodel-utils';
+import { inject, injectable, optional } from 'inversify';
+import { almostEquals, Dimension, Fadeable, UpdateModelAction } from 'sprotty-protocol';
+import { Animation, CompoundAnimation } from '../../base/animations/animation.js';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { containsSome } from '../../base/model/smodel-utils.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { isSizeable } from '../bounds/model.js';
+import { ResizeAnimation, ResolvedElementResize } from '../bounds/resize.js';
+import { FadeAnimation, ResolvedElementFade } from '../fade/fade.js';
+import { isFadeable } from '../fade/model.js';
+import { isLocateable } from '../move/model.js';
+import { MorphEdgesAnimation, MoveAnimation, ResolvedElementMove } from '../move/move.js';
+import { SRoutableElementImpl } from '../routing/model.js';
+import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot } from '../routing/routing.js';
+import { isSelectable } from '../select/model.js';
+import { isViewport } from '../viewport/model.js';
+import { ViewportRootElementImpl } from '../viewport/viewport-root.js';
+import { forEachMatch, Match, MatchResult, ModelMatcher } from './model-matching.js';
 
 
 export interface UpdateAnimationData {

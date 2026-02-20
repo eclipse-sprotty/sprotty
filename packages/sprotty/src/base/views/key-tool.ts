@@ -16,12 +16,12 @@
 
 import { inject, injectable, multiInject, optional } from "inversify";
 import { VNode } from "snabbdom";
-import { Action } from "sprotty-protocol/lib/actions";
-import { TYPES } from "../types";
-import { IActionDispatcher } from "../actions/action-dispatcher";
-import { SModelElementImpl, SModelRootImpl } from "../model/smodel";
-import { IVNodePostprocessor } from "./vnode-postprocessor";
-import { on } from "./vnode-utils";
+import { Action } from "sprotty-protocol";
+import { IActionDispatcher } from "../actions/action-dispatcher.js";
+import { SModelElementImpl, SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { IVNodePostprocessor } from "./vnode-postprocessor.js";
+import { on } from "./vnode-utils.js";
 
 @injectable()
 export class KeyTool implements IVNodePostprocessor {

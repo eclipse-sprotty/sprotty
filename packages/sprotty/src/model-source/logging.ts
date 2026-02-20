@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from 'inversify';
-import { LoggingAction } from 'sprotty-protocol/lib/actions';
-import { ILogger, LogLevel } from '../utils/logging';
-import { TYPES } from '../base/types';
-import { ModelSource } from './model-source';
+import { inject, injectable } from 'inversify';
+import { LoggingAction } from 'sprotty-protocol';
+import { TYPES } from '../base/types.js';
+import { ILogger, LogLevel } from '../utils/logging.js';
+import { ModelSource } from './model-source.js';
 
 /**
  * A logger that forwards messages of type 'error', 'warn', and 'info' to the model source.

@@ -15,18 +15,18 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../lib/jsx';
+import { svg } from '../../lib/jsx.js';
 
 import { injectable, multiInject, optional, interfaces, inject } from 'inversify';
 import { VNode } from 'snabbdom';
-import { TYPES } from '../types';
-import { InstanceRegistry } from '../../utils/registry';
-import { isInjectable } from '../../utils/inversify';
-import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel';
-import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory';
-import { registerModelElement } from '../model/smodel-utils';
+import { TYPES } from '../types.js';
+import { InstanceRegistry } from '../../utils/registry.js';
+import { isInjectable } from '../../utils/inversify.js';
+import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel.js';
+import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory.js';
+import { registerModelElement } from '../model/smodel-utils.js';
 import { Point } from 'sprotty-protocol';
-import { ILogger } from '../../utils/logging';
+import { ILogger } from '../../utils/logging.js';
 
 /**
  * Arguments for `IView` rendering.

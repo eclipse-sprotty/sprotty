@@ -17,16 +17,16 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
 
-import { expect, describe, it } from 'vitest';
-import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
-import { CommandExecutionContext } from '../../base/commands/command';
-import defaultModule from '../../base/di.config';
-import { TYPES } from '../../base/types';
-import { SGraphImpl, SNodeImpl } from '../../graph/sgraph';
-import { ConsoleLogger } from '../../utils/logging';
-import { SetBoundsCommand } from '../bounds/bounds-manipulation';
 import { SNode, SetBoundsAction } from 'sprotty-protocol';
-import { IModelFactory } from '../../base/model/smodel-factory';
+import { describe, expect, it } from 'vitest';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer.js';
+import { CommandExecutionContext } from '../../base/commands/command.js';
+import defaultModule from '../../base/di.config.js';
+import { IModelFactory } from '../../base/model/smodel-factory.js';
+import { TYPES } from '../../base/types.js';
+import { SGraphImpl, SNodeImpl } from '../../graph/sgraph.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { SetBoundsCommand } from '../bounds/bounds-manipulation.js';
 
 describe('SetBoundsCommand', () => {
     const container = new Container();

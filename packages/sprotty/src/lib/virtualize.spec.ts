@@ -22,7 +22,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { VNode, h } from 'snabbdom';
-import virtualize from './virtualize';
+import virtualize from './virtualize.js';
 
 describe("virtualize (happy path)", () => {
     it("should convert a single node with no children", () => {

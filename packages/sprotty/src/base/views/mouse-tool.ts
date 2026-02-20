@@ -16,14 +16,13 @@
 
 import { inject, injectable, multiInject, optional } from "inversify";
 import { VNode } from "snabbdom";
-import { Action, isAction } from "sprotty-protocol/lib/actions";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { IActionDispatcher } from "../actions/action-dispatcher";
-import { SModelElementImpl, SModelRootImpl } from "../model/smodel";
-import { TYPES } from "../types";
-import { DOMHelper } from "./dom-helper";
-import { IVNodePostprocessor } from "./vnode-postprocessor";
-import { on } from "./vnode-utils";
+import { Action, isAction, Point } from "sprotty-protocol";
+import { IActionDispatcher } from "../actions/action-dispatcher.js";
+import { SModelElementImpl, SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { DOMHelper } from "./dom-helper.js";
+import { IVNodePostprocessor } from "./vnode-postprocessor.js";
+import { on } from "./vnode-utils.js";
 
 @injectable()
 export class MouseTool implements IVNodePostprocessor {

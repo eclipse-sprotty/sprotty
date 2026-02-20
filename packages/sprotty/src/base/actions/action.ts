@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action } from 'sprotty-protocol/lib/actions';
+import { Action } from 'sprotty-protocol';
 
 /**
  * A list of actions with a label.

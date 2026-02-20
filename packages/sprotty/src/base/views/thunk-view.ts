@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { h, VNode, VNodeData } from "snabbdom";
-import { SModelElementImpl } from "../model/smodel";
-import { RenderingContext, IView } from "./view";
+import { SModelElementImpl } from "../model/smodel.js";
+import { RenderingContext, IView } from "./view.js";
 import { injectable } from "inversify";
 
 /**

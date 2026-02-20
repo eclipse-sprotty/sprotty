@@ -14,16 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Container, inject, injectable } from "inversify";
 import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
-import { Container, injectable, inject } from "inversify";
-import { TYPES } from "../types";
-import { configureCommand, CommandActionHandlerInitializer } from "./command-registration";
-import { SetModelCommand } from "../features/set-model";
-import { ActionHandlerRegistry } from "../actions/action-handler";
-import { EMPTY_ROOT } from "../model/smodel-factory";
-import { Command, CommandResult } from "./command";
 import { SetModelAction } from "sprotty-protocol";
+import { describe, expect, it } from 'vitest';
+import { ActionHandlerRegistry } from "../actions/action-handler.js";
+import { SetModelCommand } from "../features/set-model.js";
+import { EMPTY_ROOT } from "../model/smodel-factory.js";
+import { TYPES } from "../types.js";
+import { CommandActionHandlerInitializer, configureCommand } from "./command-registration.js";
+import { Command, CommandResult } from "./command.js";
 
 const MySymbol = Symbol('MySymbol');
 

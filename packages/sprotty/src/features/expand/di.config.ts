@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { configureButtonHandler } from "../button/button-handler";
-import { ExpandButtonHandler } from "./expand";
+import { configureButtonHandler } from "../button/button-handler.js";
+import { ExpandButtonHandler } from "./expand.js";
 
 const expandModule = new ContainerModule((bind, _unbind, isBound) => {
     configureButtonHandler({bind, isBound}, ExpandButtonHandler.TYPE, ExpandButtonHandler);

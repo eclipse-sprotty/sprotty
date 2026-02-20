@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { expect, describe, it } from 'vitest';
-import { easeInOut } from "./easing";
+import { describe, expect, it } from 'vitest';
+import { easeInOut } from "./easing.js";
 
 describe('easing', () => {
     it('test in/out', () => {

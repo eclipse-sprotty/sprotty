@@ -15,14 +15,16 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElementImpl, SParentElementImpl } from "../../base/model/smodel";
-import { translateBounds, translatePoint } from "../../base/model/smodel-utils";
-import { ResolvedHandleMove } from "../move/move";
-import { RoutingHandleKind, SDanglingAnchorImpl, SRoutingHandleImpl, edgeInProgressID, edgeInProgressTargetHandleID } from "./model";
-import { AnchorComputerRegistry, IAnchorComputer } from "./anchor";
-import { SConnectableElementImpl, SRoutableElementImpl } from "./model";
-import { EdgeSnapshot, IEdgeRouter, RoutedPoint } from "./routing";
+import { Bounds, Point } from "sprotty-protocol";
+import { translateBounds, translatePoint } from "../../base/model/smodel-utils.js";
+import { SModelElementImpl, SParentElementImpl } from "../../base/model/smodel.js";
+import { ResolvedHandleMove } from "../move/move.js";
+import { AnchorComputerRegistry, IAnchorComputer } from "./anchor.js";
+import {
+    RoutingHandleKind, SConnectableElementImpl, SDanglingAnchorImpl, SRoutableElementImpl,
+    SRoutingHandleImpl, edgeInProgressID, edgeInProgressTargetHandleID
+} from "./model.js";
+import { EdgeSnapshot, IEdgeRouter, RoutedPoint } from "./routing.js";
 
 export interface LinearRouteOptions {
     minimalPointDistance: number
@@ -88,7 +90,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
 
     protected abstract getOptions(edge: SRoutableElementImpl): LinearRouteOptions;
 
-    findOrthogonalIntersection(edge: SRoutableElementImpl, point: Point): {point: Point, derivative: Point} {
+    findOrthogonalIntersection(edge: SRoutableElementImpl, point: Point): { point: Point, derivative: Point } {
         const calcOrthogonalIntersectionForSegment = (p1: Point, p2: Point) => {
             // Calculate the direction vector d of the edge and vector pq from p1 to point q
             const d: Point = Point.subtract(p2, p1);
@@ -120,7 +122,7 @@ export abstract class AbstractEdgeRouter implements IEdgeRouter {
             }
         }
         const derivative = Point.subtract(routedPoints[index + 1], routedPoints[index]);
-        return {point: intersectionPoint, derivative};
+        return { point: intersectionPoint, derivative };
     }
 
     pointAt(edge: SRoutableElementImpl, t: number): Point | undefined {

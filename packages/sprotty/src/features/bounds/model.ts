@@ -14,13 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Locateable } from 'sprotty-protocol/lib/model';
-import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { DOMHelper } from '../../base/views/dom-helper';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { getWindowScroll } from '../../utils/browser';
+import { Bounds, Dimension, isBounds, Locateable, Point } from 'sprotty-protocol';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { DOMHelper } from '../../base/views/dom-helper.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { getWindowScroll } from '../../utils/browser.js';
 
 export const boundsFeature = Symbol('boundsFeature');
 export const layoutContainerFeature = Symbol('layoutContainerFeature');

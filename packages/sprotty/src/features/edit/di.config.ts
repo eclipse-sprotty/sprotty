@@ -15,17 +15,17 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { configureCommand } from "../../base/commands/command-registration";
-import { configureActionHandler } from "../../base/actions/action-handler";
-import { configureModelElement } from "../../base/views/view";
-import { SDanglingAnchorImpl } from "../../features/routing/model";
-import { EmptyGroupView } from "../../lib/svg-views";
-import { DeleteElementCommand } from "./delete";
-import { EditLabelMouseListener, ApplyLabelEditCommand, EditLabelKeyListener, EditLabelAction } from "./edit-label";
-import { EditLabelUI, EditLabelActionHandler } from "./edit-label-ui";
-import { SwitchEditModeCommand } from "./edit-routing";
-import { ReconnectCommand } from "./reconnect";
+import { configureActionHandler } from "../../base/actions/action-handler.js";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { TYPES } from "../../base/types.js";
+import { configureModelElement } from "../../base/views/view.js";
+import { SDanglingAnchorImpl } from "../../features/routing/model.js";
+import { EmptyGroupView } from "../../lib/svg-views.js";
+import { DeleteElementCommand } from "./delete.js";
+import { EditLabelActionHandler, EditLabelUI } from "./edit-label-ui.js";
+import { ApplyLabelEditCommand, EditLabelAction, EditLabelKeyListener, EditLabelMouseListener } from "./edit-label.js";
+import { SwitchEditModeCommand } from "./edit-routing.js";
+import { ReconnectCommand } from "./reconnect.js";
 
 export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
     const context = { bind, isBound };

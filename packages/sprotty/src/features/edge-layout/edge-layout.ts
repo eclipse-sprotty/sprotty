@@ -14,21 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Bounds, Point, toDegrees } from 'sprotty-protocol/lib/utils/geometry';
-import { EdgeLayoutable, EdgePlacement } from 'sprotty-protocol/lib/model';
-import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
-import { setAttr } from '../../base/views/vnode-utils';
-import { SEdgeImpl } from '../../graph/sgraph';
-import { Orientation } from '../../utils/geometry';
-import { isAlignable, InternalBoundsAware } from '../bounds/model';
-import { DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable, checkEdgePlacement } from './model';
-import { EdgeRouterRegistry } from '../routing/routing';
-import { TYPES } from '../../base/types';
-import { ILogger } from '../../utils/logging';
-import { isMoveable } from '../move/model';
+import { Bounds, EdgeLayoutable, EdgePlacement, Point, toDegrees } from 'sprotty-protocol';
+import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor.js';
+import { setAttr } from '../../base/views/vnode-utils.js';
+import { SEdgeImpl } from '../../graph/sgraph.js';
+import { Orientation } from '../../utils/geometry.js';
+import { ILogger } from '../../utils/logging.js';
+import { InternalBoundsAware, isAlignable } from '../bounds/model.js';
+import { isMoveable } from '../move/model.js';
+import { EdgeRouterRegistry } from '../routing/routing.js';
+import { checkEdgePlacement, DEFAULT_EDGE_PLACEMENT, isEdgeLayoutable } from './model.js';
 
 @injectable()
 export class EdgeLayoutPostprocessor implements IVNodePostprocessor {

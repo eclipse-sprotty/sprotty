@@ -15,17 +15,22 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
+import { configureActionHandler } from "../../base/actions/action-handler.js";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { TYPES } from "../../base/types.js";
+import { MoveCommand } from "../move/move.js";
+import { CenterCommand, FitToScreenCommand } from "../viewport/center-fit.js";
+import { SetViewportCommand } from "../viewport/viewport.js";
 import {
-    HoverMouseListener, PopupHoverMouseListener, HoverFeedbackCommand, SetPopupModelCommand,
-    HoverKeyListener, HoverState, ClosePopupActionHandler
-} from "./hover";
-import { PopupPositionUpdater } from "./popup-position-updater";
-import { configureCommand } from "../../base/commands/command-registration";
-import { configureActionHandler } from "../../base/actions/action-handler";
-import { FitToScreenCommand, CenterCommand } from "../viewport/center-fit";
-import { SetViewportCommand } from "../viewport/viewport";
-import { MoveCommand } from "../move/move";
+    ClosePopupActionHandler,
+    HoverFeedbackCommand,
+    HoverKeyListener,
+    HoverMouseListener,
+    HoverState,
+    PopupHoverMouseListener,
+    SetPopupModelCommand
+} from "./hover.js";
+import { PopupPositionUpdater } from "./popup-position-updater.js";
 
 const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(PopupPositionUpdater).toSelf().inSingletonScope();

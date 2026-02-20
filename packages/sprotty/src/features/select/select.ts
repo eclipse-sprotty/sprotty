@@ -17,27 +17,27 @@
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
 import {
-    Action, BringToFrontAction, GetSelectionAction, ResponseAction, SelectAction, SelectAllAction, SelectionResult
-} from 'sprotty-protocol/lib/actions';
-import { Selectable } from 'sprotty-protocol/lib/model';
-import { Command, CommandExecutionContext } from '../../base/commands/command';
-import { ModelRequestCommand } from '../../base/commands/request-command';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { TYPES } from '../../base/types';
-import { KeyListener } from '../../base/views/key-tool';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { setClass } from '../../base/views/vnode-utils';
-import { isCtrlOrCmd } from '../../utils/browser';
-import { toArray } from '../../utils/iterable';
-import { matchesKeystroke } from '../../utils/keyboard';
-import { ButtonHandlerRegistry } from '../button/button-handler';
-import { SButtonImpl } from '../button/model';
-import { SwitchEditModeAction } from '../edit/edit-routing';
-import { SRoutingHandleImpl } from '../routing/model';
-import { SRoutableElementImpl } from '../routing/model';
-import { findViewportScrollbar } from '../viewport/scroll';
-import { isSelectable } from './model';
+    Action, BringToFrontAction, GetSelectionAction, ResponseAction,
+    Selectable,
+    SelectAction, SelectAllAction, SelectionResult
+} from 'sprotty-protocol';
+import { Command, CommandExecutionContext } from '../../base/commands/command.js';
+import { ModelRequestCommand } from '../../base/commands/request-command.js';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { KeyListener } from '../../base/views/key-tool.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { setClass } from '../../base/views/vnode-utils.js';
+import { isCtrlOrCmd } from '../../utils/browser.js';
+import { toArray } from '../../utils/iterable.js';
+import { matchesKeystroke } from '../../utils/keyboard.js';
+import { ButtonHandlerRegistry } from '../button/button-handler.js';
+import { SButtonImpl } from '../button/model.js';
+import { SwitchEditModeAction } from '../edit/edit-routing.js';
+import { SRoutableElementImpl, SRoutingHandleImpl } from '../routing/model.js';
+import { findViewportScrollbar } from '../viewport/scroll.js';
+import { isSelectable } from './model.js';
 
 @injectable()
 export class SelectCommand extends Command {

@@ -15,14 +15,13 @@
  ********************************************************************************/
 
 import { inject, injectable, multiInject, optional } from "inversify";
-import { CenterAction, SelectAction, SelectAllAction } from "sprotty-protocol/lib/actions";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { LabeledAction } from "../../base/actions/action";
-import { SModelRootImpl } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { toArray } from "../../utils/iterable";
-import { ILogger } from "../../utils/logging";
-import { isNameable, name } from "../nameable/model";
+import { CenterAction, Point, SelectAction, SelectAllAction } from "sprotty-protocol";
+import { LabeledAction } from "../../base/actions/action.js";
+import { SModelRootImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { toArray } from "../../utils/iterable.js";
+import { ILogger } from "../../utils/logging.js";
+import { isNameable, name } from "../nameable/model.js";
 
 export interface ICommandPaletteActionProvider {
     getActions(root: Readonly<SModelRootImpl>, text: string, lastMousePosition?: Point, index?: number): Promise<LabeledAction[]>;

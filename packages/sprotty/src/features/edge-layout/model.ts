@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import type { EdgePlacement as EdgePlacementSchema } from 'sprotty-protocol/lib/model';
-import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { InternalBoundsAware, isBoundsAware } from '../bounds/model';
-import { SRoutableElementImpl } from '../routing/model';
+import type { EdgePlacement as EdgePlacementSchema } from 'sprotty-protocol';
+import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel.js';
+import { InternalBoundsAware, isBoundsAware } from '../bounds/model.js';
+import { SRoutableElementImpl } from '../routing/model.js';
 
 export const edgeLayoutFeature = Symbol('edgeLayout');
 

@@ -15,14 +15,13 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command";
-import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
-import { TYPES } from "../../base/types";
-import { SRoutableElementImpl, SRoutingHandleImpl } from "../routing/model";
-import { EdgeRouterRegistry } from "../routing/routing";
-import { canEditRouting } from './model';
+import { Action, Point } from "sprotty-protocol";
+import { Command, CommandExecutionContext, CommandReturn } from "../../base/commands/command.js";
+import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from "../../base/types.js";
+import { SRoutableElementImpl, SRoutingHandleImpl } from "../routing/model.js";
+import { EdgeRouterRegistry } from "../routing/routing.js";
+import { canEditRouting } from './model.js';
 
 export interface SwitchEditModeAction extends Action {
     kind: typeof SwitchEditModeAction.KIND;

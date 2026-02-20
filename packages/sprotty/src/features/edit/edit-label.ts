@@ -15,16 +15,16 @@
  ********************************************************************************/
 
 import { inject } from 'inversify';
-import { Action, isAction, ApplyLabelEditAction } from 'sprotty-protocol/lib/actions';
-import { CommandExecutionContext, CommandReturn, Command } from '../../base/commands/command';
-import { SModelElementImpl } from '../../base/model/smodel';
-import { TYPES } from '../../base/types';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { KeyListener } from '../../base/views/key-tool';
-import { matchesKeystroke } from '../../utils/keyboard';
-import { isSelectable } from '../select/model';
-import { toArray } from '../../utils/iterable';
-import { EditableLabel, isEditableLabel, isWithEditableLabel } from './model';
+import { Action, ApplyLabelEditAction, isAction } from 'sprotty-protocol';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { SModelElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { KeyListener } from '../../base/views/key-tool.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { toArray } from '../../utils/iterable.js';
+import { matchesKeystroke } from '../../utils/keyboard.js';
+import { isSelectable } from '../select/model.js';
+import { EditableLabel, isEditableLabel, isWithEditableLabel } from './model.js';
 
 export interface EditLabelAction extends Action {
     kind: typeof EditLabelAction.KIND

@@ -16,17 +16,18 @@
 
 import { inject, injectable } from 'inversify';
 import {
-    Action, isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
+    Action,
+    Deferred,
+    isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
     ResponseAction, SetModelAction, setRequestContext, UndoAction
-} from 'sprotty-protocol/lib/actions';
-import { Deferred } from 'sprotty-protocol/lib/utils/async';
-import { TYPES } from '../types';
-import { ILogger } from '../../utils/logging';
-import { EMPTY_ROOT } from '../model/smodel-factory';
-import { ICommandStack } from '../commands/command-stack';
-import { AnimationFrameSyncer } from '../animations/animation-frame-syncer';
-import { ActionHandlerRegistry } from './action-handler';
-import { IDiagramLocker } from './diagram-locker';
+} from 'sprotty-protocol';
+import { ILogger } from '../../utils/logging.js';
+import { AnimationFrameSyncer } from '../animations/animation-frame-syncer.js';
+import { ICommandStack } from '../commands/command-stack.js';
+import { EMPTY_ROOT } from '../model/smodel-factory.js';
+import { TYPES } from '../types.js';
+import { ActionHandlerRegistry } from './action-handler.js';
+import { IDiagramLocker } from './diagram-locker.js';
 
 export interface IActionDispatcher {
     dispatch(action: Action): Promise<void>
