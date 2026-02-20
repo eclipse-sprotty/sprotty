@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Point, Dimension } from './utils/geometry';
-import { hasOwnProperty } from './utils/object';
+import { Bounds, Point, Dimension } from './utils/geometry.js';
+import { hasOwnProperty } from './utils/object.js';
 
 /**
  * Base type for all elements of the diagram model.

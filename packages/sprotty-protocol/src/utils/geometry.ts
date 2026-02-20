@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { hasOwnProperty } from "./object";
+import { hasOwnProperty } from "./object.js";
 
 /**
  * A Point is composed of the (x,y) coordinates of an object.
