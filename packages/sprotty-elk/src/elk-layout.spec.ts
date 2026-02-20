@@ -17,15 +17,15 @@
 import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import ElkConstructor from 'elkjs/lib/elk.bundled';
-import { SCompartment, SEdge, SGraph, SNode, SPort } from 'sprotty-protocol/lib/model';
-import { ElkFactory, ElkLayoutEngine, ILayoutPreprocessor, elkLayoutModule } from './inversify';
+import Elk from 'elkjs';
+import { SCompartment, SEdge, SGraph, SNode, SPort } from 'sprotty-protocol';
+import { ElkFactory, ElkLayoutEngine, ILayoutPreprocessor, elkLayoutModule } from './inversify.js';
 
 describe('ElkLayoutEngine', () => {
     function createContainer() {
         const container = new Container();
         container.load(elkLayoutModule);
-        container.bind(ElkFactory).toConstantValue(() => new ElkConstructor({
+        container.bind(ElkFactory).toConstantValue(() => new Elk.default({
             algorithms: ['layered']
         }));
         return container;

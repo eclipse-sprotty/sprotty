@@ -17,8 +17,8 @@
 import { Socket } from 'net';
 import {
     ELK, ElkLayoutAlgorithmDescription, ElkLayoutCategoryDescription, ElkLayoutOptionDescription, ElkNode
-} from 'elkjs/lib/elk-api';
-import { applyLayoutData, findObjectEnd, isError, LayoutData, ParseState } from './layout-data';
+} from 'elkjs/lib/elk-api.js';
+import { applyLayoutData, findObjectEnd, isError, LayoutData, ParseState } from './layout-data.js';
 
 const DEFAULT_PORT = 5008;
 const DEFAULT_TIMEOUT = 10_000;
@@ -70,7 +70,7 @@ export class SocketElkServer implements ELK {
                     socket.removeListener('close', closeCallback);
                     socket.removeListener('data', dataCallback);
                     try {
-                        const response = JSON.parse(Buffer.concat(buffers).toString()) as LayoutData | Error;
+                        const response = JSON.parse(Buffer.concat(buffers as Uint8Array[]).toString()) as LayoutData | Error;
                         if (isError(response)) {
                             // The layout server responded an error
                             reject(response);
