@@ -71,7 +71,7 @@ describe('ElkLayoutEngine', () => {
     function createContainer() {
         const container = new Container();
         container.load(elkLayoutModule);
-        container.bind(ElkFactory).toConstantValue(() => new ElkConstructor({
+        container.bind(ElkFactory).toConstantValue(() => new Elk.default({
             algorithms: ['layered']
         }));
         return container;

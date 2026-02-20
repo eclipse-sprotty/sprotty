@@ -20,7 +20,7 @@ import {
     DefaultLayoutConfigurator as DefaultLayoutConfiguratorPlain, ElkFactory as ElkFactoryPlain,
     IElementFilter as IElementFilterPlain, ILayoutConfigurator as ILayoutConfiguratorPlain,
     ILayoutPreprocessor as ILayoutPreprocessorPlain, ILayoutPostprocessor as ILayoutPostprocessorPlain
-} from './elk-layout';
+} from './elk-layout.js';
 
 export const ElkLayoutEngine: typeof ElkLayoutEnginePlain = injectable()(ElkLayoutEnginePlain);
 

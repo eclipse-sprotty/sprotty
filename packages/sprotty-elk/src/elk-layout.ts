@@ -15,12 +15,16 @@
  ********************************************************************************/
 
 import {
-    ELK, ElkNode, ElkLabel, ElkPort, ElkShape, ElkExtendedEdge, LayoutOptions, ElkPrimitiveEdge
-} from 'elkjs/lib/elk-api';
-import { IModelLayoutEngine } from 'sprotty-protocol/lib/diagram-services';
-import { SCompartment, SEdge, SGraph, SLabel, SModelElement, SNode, SPort, SShapeElement } from 'sprotty-protocol/lib/model';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { getBasicType, SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
+    ELK,
+    ElkExtendedEdge,
+    ElkLabel,
+    ElkNode,
+    ElkPort,
+    ElkPrimitiveEdge,
+    ElkShape,
+    LayoutOptions
+} from 'elkjs';
+import { getBasicType, IModelLayoutEngine, Point, SCompartment, SEdge, SGraph, SLabel, SModelElement, SModelIndex, SNode, SPort, SShapeElement } from 'sprotty-protocol';
 
 /**
  * Layout engine that delegates to ELK by transforming the Sprotty graph into an ELK graph.

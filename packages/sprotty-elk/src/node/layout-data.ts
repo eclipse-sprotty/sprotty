@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ElkExtendedEdge, ElkNode, ElkPrimitiveEdge, ElkShape } from 'elkjs/lib/elk-api';
+import { ElkExtendedEdge, ElkNode, ElkPrimitiveEdge, ElkShape } from 'elkjs';
 import { Dimension, Point } from 'sprotty-protocol';
 
 /**
