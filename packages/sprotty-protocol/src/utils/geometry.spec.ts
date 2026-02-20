@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { expect, describe, it } from 'vitest';
-import { almostEquals, Bounds, angleBetweenPoints, Point } from "./geometry";
+import { almostEquals, Bounds, angleBetweenPoints, Point } from "./geometry.js";
 
 describe('almostEquals', () => {
     it('returns false for clearly different values', () => {
