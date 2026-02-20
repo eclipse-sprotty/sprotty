@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { translatePoint } from "../../base/model/smodel-utils";
-import { ResolvedHandleMove } from "../move/move";
-import { DefaultAnchors, AbstractEdgeRouter, LinearRouteOptions, Side } from "./abstract-edge-router";
-import { SRoutableElementImpl, RoutingHandleKind, SRoutingHandleImpl } from "./model";
-import { RoutedPoint } from "./routing";
+import { almostEquals, Bounds, Point } from "sprotty-protocol";
+import { translatePoint } from "../../base/model/smodel-utils.js";
+import { ResolvedHandleMove } from "../move/move.js";
+import { AbstractEdgeRouter, DefaultAnchors, LinearRouteOptions, Side } from "./abstract-edge-router.js";
+import { RoutingHandleKind, SRoutableElementImpl, SRoutingHandleImpl } from "./model.js";
+import { RoutedPoint } from "./routing.js";
 
 export interface ManhattanRouterOptions extends LinearRouteOptions {
     standardDistance: number;

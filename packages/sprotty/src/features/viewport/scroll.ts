@@ -15,21 +15,19 @@
  ********************************************************************************/
 
 import { inject } from 'inversify';
-import { Viewport } from 'sprotty-protocol/lib/model';
-import { Action, CenterAction, SetViewportAction } from 'sprotty-protocol/lib/actions';
-import { almostEquals, Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { isViewport } from './model';
-import { isMoveable } from '../move/model';
-import { SRoutingHandleImpl } from '../routing/model';
-import { getModelBounds } from '../projection/model';
-import { getWindowScroll, hitsMouseEvent } from '../../utils/browser';
-import { TYPES } from '../../base/types';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { ITouchListener } from '../../base/views/touch-tool';
-import { limit } from '../../utils/geometry';
+import { Action, almostEquals, Bounds, CenterAction, Point, SetViewportAction, Viewport } from 'sprotty-protocol';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { ITouchListener } from '../../base/views/touch-tool.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { getWindowScroll, hitsMouseEvent } from '../../utils/browser.js';
+import { limit } from '../../utils/geometry.js';
+import { isMoveable } from '../move/model.js';
+import { getModelBounds } from '../projection/model.js';
+import { SRoutingHandleImpl } from '../routing/model.js';
+import { isViewport } from './model.js';
 
 export class ScrollMouseListener extends MouseListener implements ITouchListener {
 

@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 import { inject, injectable, interfaces, multiInject, optional } from "inversify";
-import { Bounds } from "sprotty-protocol/lib/utils/geometry";
-import { TYPES } from "../../base/types";
-import { ILogger } from '../../utils/logging';
-import { InstanceRegistry } from "../../utils/registry";
-import { SParentElementImpl, SModelElementImpl } from "../../base/model/smodel";
-import { isLayoutContainer, InternalLayoutContainer } from "./model";
-import { BoundsData } from "./hidden-bounds-updater";
-import { isInjectable } from "../../utils/inversify";
+import { Bounds } from "sprotty-protocol";
+import { SModelElementImpl, SParentElementImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { isInjectable } from "../../utils/inversify.js";
+import { ILogger } from '../../utils/logging.js';
+import { InstanceRegistry } from "../../utils/registry.js";
+import { BoundsData } from "./hidden-bounds-updater.js";
+import { InternalLayoutContainer, isLayoutContainer } from "./model.js";
 
 @injectable()
 export class LayoutRegistry extends InstanceRegistry<ILayout> {

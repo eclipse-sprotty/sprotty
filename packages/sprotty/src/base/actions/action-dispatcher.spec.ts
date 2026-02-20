@@ -14,19 +14,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';;
 import { Container, injectable, interfaces } from "inversify";
-import { Action, RedoAction, RejectAction, RequestModelAction, SetModelAction, UndoAction } from 'sprotty-protocol/lib/actions';
-import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
-import { TYPES } from "../types";
-import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
-import { Command, CommandExecutionContext, CommandReturn, ICommand } from '../commands/command';
-import { ICommandStack } from "../commands/command-stack";
-import { ActionDispatcher } from "./action-dispatcher";
-import defaultModule from "../di.config";
-import { EMPTY_ROOT } from '../model/smodel-factory';
-import { IActionHandler, configureActionHandler } from './action-handler';
+import 'reflect-metadata';
+import { Action, Bounds, RedoAction, RejectAction, RequestModelAction, SetModelAction, UndoAction } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import { ICommandStack } from "../commands/command-stack.js";
+import { Command, CommandExecutionContext, CommandReturn, ICommand } from '../commands/command.js';
+import defaultModule from "../di.config.js";
+import { InitializeCanvasBoundsAction } from '../features/initialize-canvas.js';
+import { EMPTY_ROOT } from '../model/smodel-factory.js';
+import { TYPES } from "../types.js";
+import { ActionDispatcher } from "./action-dispatcher.js";
+import { IActionHandler, configureActionHandler } from './action-handler.js';
+;
 
 describe('ActionDispatcher', () => {
     @injectable()

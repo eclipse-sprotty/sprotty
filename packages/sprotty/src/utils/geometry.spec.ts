@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { expect, describe, it } from 'vitest';
-import { almostEquals } from 'sprotty-protocol/lib/utils/geometry';
-import { PointToPointLine } from "./geometry";
+import { almostEquals } from 'sprotty-protocol';
+import { PointToPointLine } from "./geometry.js";
 
 describe('PointToPointLine', () => {
     describe('angle', () => {

@@ -17,19 +17,25 @@
 import { saveAs } from 'file-saver';
 import { inject, injectable } from 'inversify';
 import {
-    Action, OpenAction, ActionMessage, isActionMessage, CollapseExpandAction, CollapseExpandAllAction,
-    ComputedBoundsAction, RequestModelAction, RequestPopupModelAction, SetModelAction, UpdateModelAction,
-    ExportSvgAction
-} from 'sprotty-protocol/lib/actions';
-import { SModelRoot } from 'sprotty-protocol/lib/model';
-import { ActionHandlerRegistry } from '../base/actions/action-handler';
-import { ICommand } from '../base/commands/command';
-import { SetModelCommand } from '../base/features/set-model';
-import { TYPES } from '../base/types';
-import { RequestBoundsCommand } from '../features/bounds/bounds-manipulation';
-import { UpdateModelCommand } from '../features/update/update-model';
-import { ILogger } from '../utils/logging';
-import { ComputedBoundsApplicator, ModelSource } from './model-source';
+    Action,
+    ActionMessage,
+    CollapseExpandAction, CollapseExpandAllAction,
+    ComputedBoundsAction,
+    ExportSvgAction,
+    isActionMessage,
+    OpenAction,
+    RequestModelAction, RequestPopupModelAction, SetModelAction,
+    SModelRoot,
+    UpdateModelAction
+} from 'sprotty-protocol';
+import { ActionHandlerRegistry } from '../base/actions/action-handler.js';
+import { ICommand } from '../base/commands/command.js';
+import { SetModelCommand } from '../base/features/set-model.js';
+import { TYPES } from '../base/types.js';
+import { RequestBoundsCommand } from '../features/bounds/bounds-manipulation.js';
+import { UpdateModelCommand } from '../features/update/update-model.js';
+import { ILogger } from '../utils/logging.js';
+import { ComputedBoundsApplicator, ModelSource } from './model-source.js';
 
 /**
  * Sent by the external server when to signal a state change.
@@ -111,7 +117,7 @@ export abstract class DiagramServerProxy extends ModelSource {
      * Called when a message is received from the remote diagram server.
      */
     protected messageReceived(data: any): void {
-        const object = typeof(data) === 'string' ? JSON.parse(data) : data;
+        const object = typeof (data) === 'string' ? JSON.parse(data) : data;
         if (isActionMessage(object) && object.action) {
             if (!object.clientId || object.clientId === this.clientId) {
                 (object.action as any)[receivedFromServerProperty] = true;

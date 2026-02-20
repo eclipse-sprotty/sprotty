@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
-import { Line, PointToPointLine, intersection } from "../../utils/geometry";
-import { RECTANGULAR_ANCHOR_KIND, IAnchorComputer, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from "./anchor";
-import { ManhattanEdgeRouter } from "./manhattan-edge-router";
-import { SConnectableElementImpl } from "./model";
 import { injectable } from "inversify";
+import { Bounds, Point } from "sprotty-protocol";
+import { Line, PointToPointLine, intersection } from "../../utils/geometry.js";
+import { DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND, IAnchorComputer, RECTANGULAR_ANCHOR_KIND } from "./anchor.js";
+import { ManhattanEdgeRouter } from "./manhattan-edge-router.js";
+import { SConnectableElementImpl } from "./model.js";
 
 @injectable()
 export class ManhattanRectangularAnchor implements IAnchorComputer {

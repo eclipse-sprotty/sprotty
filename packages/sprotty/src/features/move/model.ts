@@ -14,9 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElementImpl } from '../../base/model/smodel';
+import { hasOwnProperty, Point } from 'sprotty-protocol';
+import { SModelElementImpl } from '../../base/model/smodel.js';
 
 export const moveFeature = Symbol('moveFeature');
 

@@ -15,15 +15,12 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action, ComputedBoundsAction, ExportSvgAction, RequestModelAction } from 'sprotty-protocol/lib/actions';
-import { SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
-import { Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelIndex } from 'sprotty-protocol/lib/utils/model-utils';
-import { IActionDispatcher } from '../base/actions/action-dispatcher';
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from '../base/actions/action-handler';
-import { ICommand } from '../base/commands/command';
-import { TYPES } from '../base/types';
-import { ViewerOptions } from '../base/views/viewer-options';
+import { Action, ComputedBoundsAction, Dimension, ExportSvgAction, Point, RequestModelAction, SModelElement, SModelIndex, SModelRoot } from 'sprotty-protocol';
+import { IActionDispatcher } from '../base/actions/action-dispatcher.js';
+import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from '../base/actions/action-handler.js';
+import { ICommand } from '../base/commands/command.js';
+import { TYPES } from '../base/types.js';
+import { ViewerOptions } from '../base/views/viewer-options.js';
 
 /**
  * A model source is serving the model to the event cycle. It represents

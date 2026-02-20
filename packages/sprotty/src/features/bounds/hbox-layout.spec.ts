@@ -17,17 +17,17 @@
 import 'reflect-metadata';
 
 import { expect, describe, it } from 'vitest';
-import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
-import { createFeatureSet } from '../../base/model/smodel-factory';
-import { SNodeImpl, SLabelImpl } from '../../graph/sgraph';
-import { StatefulLayouter, LayoutRegistry } from './layout';
-import { BoundsData } from './hidden-bounds-updater';
-import { ConsoleLogger } from '../../utils/logging';
-import { layoutableChildFeature } from './model';
-import { TYPES } from '../../base/types';
+import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { createFeatureSet } from '../../base/model/smodel-factory.js';
+import { SNodeImpl, SLabelImpl } from '../../graph/sgraph.js';
+import { StatefulLayouter, LayoutRegistry } from './layout.js';
+import { BoundsData } from './hidden-bounds-updater.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { layoutableChildFeature } from './model.js';
+import { TYPES } from '../../base/types.js';
 import { Container } from 'inversify';
-import boundsModule from './di.config';
-import defaultModule from '../../base/di.config';
+import boundsModule from './di.config.js';
+import defaultModule from '../../base/di.config.js';
 import { Dimension } from 'sprotty-protocol';
 
 describe('HBoxLayouter', () => {

@@ -14,17 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { Action, HoverFeedbackAction } from 'sprotty-protocol/lib/actions';
-import { Hoverable } from 'sprotty-protocol/lib/model';
-import { TYPES } from '../../base/types';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { HoverMouseListener } from './hover';
-import { hoverFeedbackFeature, popupFeature } from './model';
-import defaultModule from '../../base/di.config';
-import hoverModule from './di.config';
+import 'reflect-metadata';
+import { Action, Hoverable, HoverFeedbackAction } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import defaultModule from '../../base/di.config.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import hoverModule from './di.config.js';
+import { HoverMouseListener } from './hover.js';
+import { hoverFeedbackFeature, popupFeature } from './model.js';
 
 describe('hover', () => {
     class HoverListenerMock extends HoverMouseListener {

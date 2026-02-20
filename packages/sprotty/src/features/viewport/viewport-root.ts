@@ -14,12 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Viewport } from 'sprotty-protocol/lib/model';
-import { Bounds, Dimension, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelRootImpl, ModelIndexImpl } from '../../base/model/smodel';
-import { viewportFeature } from "./model";
-import { exportFeature } from "../export/model";
-import { InternalBoundsAware } from "../bounds/model";
+import { Bounds, Dimension, isBounds, Point, Viewport } from 'sprotty-protocol';
+import { ModelIndexImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { InternalBoundsAware } from "../bounds/model.js";
+import { exportFeature } from "../export/model.js";
+import { viewportFeature } from "./model.js";
 
 /**
  * Model root element that defines a viewport, so it transforms the coordinate system with

@@ -14,18 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { TYPES } from '../types';
-import { SModelElementImpl } from '../model/smodel';
-import { EMPTY_ROOT, IModelFactory } from '../model/smodel-factory';
-import { CommandExecutionContext } from '../commands/command';
-import { ConsoleLogger } from '../../utils/logging';
-import { AnimationFrameSyncer } from '../animations/animation-frame-syncer';
-import {  SetModelCommand } from './set-model';
-import defaultModule from '../di.config';
+import 'reflect-metadata';
 import { SModelElement, SModelRoot, SetModelAction } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { AnimationFrameSyncer } from '../animations/animation-frame-syncer.js';
+import { CommandExecutionContext } from '../commands/command.js';
+import defaultModule from '../di.config.js';
+import { EMPTY_ROOT, IModelFactory } from '../model/smodel-factory.js';
+import { SModelElementImpl } from '../model/smodel.js';
+import { TYPES } from '../types.js';
+import { SetModelCommand } from './set-model.js';
 
 function compare(expected: SModelElement, actual: SModelElementImpl) {
     for (const p in expected) {

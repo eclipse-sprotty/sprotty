@@ -15,26 +15,26 @@
  ********************************************************************************/
 
  /** @jsx svg */
-import { svg } from '../lib/jsx';
+import { svg } from '../lib/jsx.js';
 
 import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
 import { VNode } from 'snabbdom';
-import { TYPES } from '../base/types';
-import { IVNodePostprocessor } from '../base/views/vnode-postprocessor';
-import { CircularNodeView, RectangularNodeView } from '../lib/svg-views';
-import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
-import { RenderingContext, ViewRegistry, configureModelElement } from '../base/views/view';
-import { ModelRendererFactory } from '../base/views/viewer';
-import { PolylineEdgeView, SGraphView } from './views';
-import { SModelElementImpl, SParentElementImpl } from '../base/model/smodel';
-import { IModelFactory } from '../base/model/smodel-factory';
-import defaultModule from '../base/di.config';
-import selectModule from '../features/select/di.config';
-import moveModule from '../features/move/di.config';
-import { SEdgeImpl, SGraphImpl, SNodeImpl, SPortImpl } from './sgraph';
-import routingModule from '../features/routing/di.config';
+import { TYPES } from '../base/types.js';
+import { IVNodePostprocessor } from '../base/views/vnode-postprocessor.js';
+import { CircularNodeView, RectangularNodeView } from '../lib/svg-views.js';
+import { CircularNode, RectangularNode, RectangularPort } from '../lib/model.js';
+import { RenderingContext, ViewRegistry, configureModelElement } from '../base/views/view.js';
+import { ModelRendererFactory } from '../base/views/viewer.js';
+import { PolylineEdgeView, SGraphView } from './views.js';
+import { SModelElementImpl, SParentElementImpl } from '../base/model/smodel.js';
+import { IModelFactory } from '../base/model/smodel-factory.js';
+import defaultModule from '../base/di.config.js';
+import selectModule from '../features/select/di.config.js';
+import moveModule from '../features/move/di.config.js';
+import { SEdgeImpl, SGraphImpl, SNodeImpl, SPortImpl } from './sgraph.js';
+import routingModule from '../features/routing/di.config.js';
 
 import toHTML from 'snabbdom-to-html';
 import { SEdge, SNode, SPort } from 'sprotty-protocol';
@@ -74,7 +74,10 @@ describe('graph views', () => {
         const graph = graphFactory.createRoot(schema) as SGraphImpl;
         const view = viewRegistry.get(graph.type);
         const vnode = view.render(graph, context);
-        expect(toHTML(vnode)).to.be.equal('<svg class="sprotty-graph"><g transform="scale(1) translate(0,0)"></g></svg>');
+        expect(vnode).not.toBeUndefined();
+        if (vnode) {
+            expect(toHTML(vnode)).to.be.equal('<svg class="sprotty-graph"><g transform="scale(1) translate(0,0)"></g></svg>');
+        }
     });
 
     function createModel() {
@@ -90,15 +93,21 @@ describe('graph views', () => {
 
         const view = viewRegistry.get('edge:straight');
         const vnode = view.render(graph.index.getById('edge0') as SEdgeImpl, context);
-        expect(toHTML(vnode)).to.be.equal(
-            '<g class="sprotty-edge"><path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" /></g>');
+        expect(vnode).not.toBeUndefined();
+        if (vnode) {
+            expect(toHTML(vnode)).to.be.equal(
+                '<g class="sprotty-edge"><path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" /></g>');
+        }
     });
 
     it('render a circle node', () => {
         const graph = createModel();
         const view = viewRegistry.get('node:circle');
         const vnode = view.render(graph.index.getById('node0') as SNodeImpl, context);
-        expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
+        expect(vnode).not.toBeUndefined();
+        if (vnode) {
+            expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
+        }
     });
 
     it('render a whole graph', () => {
@@ -117,7 +126,10 @@ describe('graph views', () => {
             +   '</g>'
             + '</g>'
             + '</svg>';
-        expect(toHTML(vnode)).to.be.equal(expectation);
+        expect(vnode).not.toBeUndefined();
+        if (vnode) {
+            expect(toHTML(vnode)).to.be.equal(expectation);
+        }
     });
 });
 
@@ -190,12 +202,18 @@ describe('PolylineEdgeView', () => {
     it('correctly translates edge source and target position', () => {
         const edge = model.index.getById('edge1') as SEdgeImpl;
         const vnode = edgeView.render(edge, context);
-        expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M 10,4 L 18,14" /></g>');
+        expect(vnode).not.toBeUndefined();
+        if (vnode) {
+            expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M 10,4 L 18,14" /></g>');
+        }
     });
 
     it('correctly translates edge target and source position', () => {
         const edge = model.index.getById('edge2') as SEdgeImpl;
         const vnode = edgeView.render(edge, context);
-        expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M -10,-6 L -2,4" /></g>');
+        expect(vnode).not.toBeUndefined();
+        if (vnode) {
+            expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M -10,-6 L -2,4" /></g>');
+        }
     });
 });

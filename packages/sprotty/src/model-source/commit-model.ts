@@ -15,12 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action } from 'sprotty-protocol/lib/actions';
-import { SModelRoot } from 'sprotty-protocol/lib/model';
-import { CommandExecutionContext, CommandReturn, SystemCommand } from '../base/commands/command';
-import { SModelRootImpl } from '../base/model/smodel';
-import { TYPES } from '../base/types';
-import { ModelSource } from './model-source';
+import { Action, SModelRoot } from 'sprotty-protocol';
+import { CommandExecutionContext, CommandReturn, SystemCommand } from '../base/commands/command.js';
+import { SModelRootImpl } from '../base/model/smodel.js';
+import { TYPES } from '../base/types.js';
+import { ModelSource } from './model-source.js';
 
 /**
  * Commit the current SModel back to the model source.

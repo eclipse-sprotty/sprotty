@@ -15,17 +15,15 @@
  ********************************************************************************/
 
 import { inject } from 'inversify';
-import { Action, SetViewportAction } from 'sprotty-protocol/lib/actions';
-import { Viewport } from 'sprotty-protocol/lib/model';
-import { almostEquals, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { TYPES } from '../../base/types';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { getWindowScroll, isMac } from '../../utils/browser';
-import { isViewport } from './model';
-import { limit } from '../../utils/geometry';
+import { Action, almostEquals, Point, SetViewportAction, Viewport } from 'sprotty-protocol';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { getWindowScroll, isMac } from '../../utils/browser.js';
+import { limit } from '../../utils/geometry.js';
+import { isViewport } from './model.js';
 
 export function getZoom(label: SModelElementImpl) {
     let zoom = 1;

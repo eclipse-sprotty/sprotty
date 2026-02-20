@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
-import { EdgeRouting } from "../routing/routing";
-import { IntersectionFinder } from "./intersection-finder";
+import { describe, expect, it } from 'vitest';
+import { EdgeRouting } from "../routing/routing.js";
+import { IntersectionFinder } from "./intersection-finder.js";
 
 describe('IntersectionFinder', () => {
 

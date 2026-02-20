@@ -15,12 +15,12 @@
  ********************************************************************************/
 
  /** @jsx svg */
-import { svg } from '../../lib/jsx';
+import { svg } from '../../lib/jsx.js';
 
 import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
-import { CssClassPostprocessor } from './css-class-postprocessor';
-import { SModelElementImpl } from '../model/smodel';
+import { describe, expect, it } from 'vitest';
+import { SModelElementImpl } from '../model/smodel.js';
+import { CssClassPostprocessor } from './css-class-postprocessor.js';
 
 describe('CssClassPostprocessor', () => {
     it('classes are not overwritten', () => {

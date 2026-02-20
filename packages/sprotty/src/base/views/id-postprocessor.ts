@@ -16,12 +16,12 @@
 
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { TYPES } from "../types";
-import { ILogger } from "../../utils/logging";
-import { SModelElementImpl } from "../model/smodel";
-import { IVNodePostprocessor } from "./vnode-postprocessor";
-import { DOMHelper } from "./dom-helper";
-import { getAttrs } from "./vnode-utils";
+import { ILogger } from "../../utils/logging.js";
+import { SModelElementImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { DOMHelper } from "./dom-helper.js";
+import { IVNodePostprocessor } from "./vnode-postprocessor.js";
+import { getAttrs } from "./vnode-utils.js";
 
 @injectable()
 export class IdPostprocessor implements IVNodePostprocessor {

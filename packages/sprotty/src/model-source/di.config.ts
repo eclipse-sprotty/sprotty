@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { configureCommand } from "../base/commands/command-registration";
-import { TYPES } from "../base/types";
-import { CommitModelCommand } from "./commit-model";
-import { ComputedBoundsApplicator, ModelSource } from "./model-source";
+import { configureCommand } from "../base/commands/command-registration.js";
+import { TYPES } from "../base/types.js";
+import { CommitModelCommand } from "./commit-model.js";
+import { ComputedBoundsApplicator, ModelSource } from "./model-source.js";
 
 /**
  * This container module does NOT provide any binding for TYPES.ModelSource because that needs to be

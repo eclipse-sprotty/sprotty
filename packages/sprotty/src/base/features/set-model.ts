@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { Action, SetModelAction } from "sprotty-protocol/lib/actions";
-import { CommandExecutionContext, ResetCommand } from "../commands/command";
-import { SModelRootImpl } from "../model/smodel";
-import { TYPES } from "../types";
-import { InitializeCanvasBoundsCommand } from './initialize-canvas';
+import { Action, SetModelAction } from "sprotty-protocol";
+import { CommandExecutionContext, ResetCommand } from "../commands/command.js";
+import { SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { InitializeCanvasBoundsCommand } from './initialize-canvas.js';
 
 @injectable()
 export class SetModelCommand extends ResetCommand {

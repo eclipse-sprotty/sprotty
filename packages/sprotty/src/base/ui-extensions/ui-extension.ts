@@ -15,10 +15,10 @@
  ********************************************************************************/
 import { inject, injectable } from "inversify";
 import { hasOwnProperty } from "sprotty-protocol";
-import { ILogger } from "../../utils/logging";
-import { SModelRootImpl } from "../model/smodel";
-import { TYPES } from "../types";
-import { ViewerOptions } from "../views/viewer-options";
+import { ILogger } from "../../utils/logging.js";
+import { SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { ViewerOptions } from "../views/viewer-options.js";
 
 /**
  * A UI extension displaying additional UI elements on top of a sprotty diagram.

@@ -16,9 +16,9 @@
 
 import { injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { Action } from "sprotty-protocol/lib/actions";
-import { SModelElementImpl } from "../model/smodel";
-import { setAttr } from "./vnode-utils";
+import { Action } from "sprotty-protocol";
+import { SModelElementImpl } from "../model/smodel.js";
+import { setAttr } from "./vnode-utils.js";
 
 /**
  * Manipulates a created VNode after it has been created.

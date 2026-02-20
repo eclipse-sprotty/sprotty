@@ -15,22 +15,22 @@
  ********************************************************************************/
 
 import { inject, injectable, optional } from 'inversify';
-import { Action, ApplyLabelEditAction } from 'sprotty-protocol/lib/actions';
-import { IActionDispatcherProvider } from '../../base/actions/action-dispatcher';
-import { IActionHandler } from '../../base/actions/action-handler';
-import { ICommand } from '../../base/commands/command';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { TYPES } from '../../base/types';
-import { AbstractUIExtension } from '../../base/ui-extensions/ui-extension';
-import { SetUIExtensionVisibilityAction } from '../../base/ui-extensions/ui-extension-registry';
-import { DOMHelper } from '../../base/views/dom-helper';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { CommitModelAction } from '../../model-source/commit-model';
-import { matchesKeystroke, KeyCode, KeyboardModifier } from '../../utils/keyboard';
-import { getAbsoluteClientBounds } from '../bounds/model';
-import { getZoom } from '../viewport/zoom';
-import { EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity } from './edit-label';
-import { EditableLabel, isEditableLabel } from './model';
+import { Action, ApplyLabelEditAction } from 'sprotty-protocol';
+import { IActionDispatcherProvider } from '../../base/actions/action-dispatcher.js';
+import { IActionHandler } from '../../base/actions/action-handler.js';
+import { ICommand } from '../../base/commands/command.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { SetUIExtensionVisibilityAction } from '../../base/ui-extensions/ui-extension-registry.js';
+import { AbstractUIExtension } from '../../base/ui-extensions/ui-extension.js';
+import { DOMHelper } from '../../base/views/dom-helper.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { CommitModelAction } from '../../model-source/commit-model.js';
+import { KeyboardModifier, KeyCode, matchesKeystroke } from '../../utils/keyboard.js';
+import { getAbsoluteClientBounds } from '../bounds/model.js';
+import { getZoom } from '../viewport/zoom.js';
+import { EditLabelValidationResult, IEditLabelValidator, isEditLabelAction, Severity } from './edit-label.js';
+import { EditableLabel, isEditableLabel } from './model.js';
 
 /** Shows a UI extension for editing a label on emitted `EditLabelAction`s. */
 @injectable()

@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from './jsx';
+import { svg } from './jsx.js';
 
 import { expect, describe, it } from 'vitest';
 import { h } from 'snabbdom';

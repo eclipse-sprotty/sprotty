@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import { SParentElementImpl } from "../../base/model/smodel";
-import { SEdgeImpl } from "../../graph/sgraph";
-import { EdgeRouting, IEdgeRoutePostprocessor, RoutedPoint } from "../routing/routing";
+import { SParentElementImpl } from "../../base/model/smodel.js";
+import { SEdgeImpl } from "../../graph/sgraph.js";
+import { EdgeRouting, IEdgeRoutePostprocessor, RoutedPoint } from "../routing/routing.js";
 
 /**
  * Finds junction points in the edge routes. A junction point is a point where two or more edges split.

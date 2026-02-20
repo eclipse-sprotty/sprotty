@@ -16,12 +16,12 @@
 
 import 'reflect-metadata';
 
-import { expect, describe, it } from 'vitest';
-import { IViewArgs, RenderingContext } from '../../base/views/view';
-import { ViewportRootElementImpl } from '../viewport/viewport-root';
-import { SShapeElementImpl } from './model';
-import { ShapeView } from './views';
 import { VNode } from 'snabbdom';
+import { describe, expect, it } from 'vitest';
+import { IViewArgs, RenderingContext } from '../../base/views/view.js';
+import { ViewportRootElementImpl } from '../viewport/viewport-root.js';
+import { SShapeElementImpl } from './model.js';
+import { ShapeView } from './views.js';
 
 describe('ShapeView.isVisible', () => {
 

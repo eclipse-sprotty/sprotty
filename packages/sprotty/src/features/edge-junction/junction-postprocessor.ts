@@ -17,11 +17,11 @@
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
 import { Action, RequestBoundsAction, SModelRoot } from "sprotty-protocol";
-import { SModelElementImpl } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { ViewerOptions } from "../../base/views/viewer-options";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { ModelSource } from "../../model-source/model-source";
+import { SModelElementImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { ViewerOptions } from "../../base/views/viewer-options.js";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor.js";
+import { ModelSource } from "../../model-source/model-source.js";
 
 /**
  * Finds all junction points in the first SVG group element (diagram root level) and moves them to the end of the SVG.

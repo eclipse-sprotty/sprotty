@@ -17,8 +17,8 @@
 import 'reflect-metadata';
 
 import { expect, describe, it } from 'vitest';
-import { ContextMenuProviderRegistry } from "./menu-providers";
-import { SModelRootImpl } from "../../base/model/smodel";
+import { ContextMenuProviderRegistry } from "./menu-providers.js";
+import { SModelRootImpl } from "../../base/model/smodel.js";
 
 describe('ContextMenuProviderRegistry', () => {
 

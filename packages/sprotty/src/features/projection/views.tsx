@@ -15,15 +15,15 @@
  ********************************************************************************/
 
 /** @jsx html */
-import { html } from '../../lib/jsx';
+import { html } from '../../lib/jsx.js';
 
 import { injectable } from 'inversify';
-import { VNode, VNodeStyle, h } from 'snabbdom';
-import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
-import { IView, IViewArgs, RenderingContext } from '../../base/views/view';
-import { setAttr, setClass } from '../../base/views/vnode-utils';
-import { ViewportRootElementImpl } from '../viewport/viewport-root';
-import { getModelBounds, getProjections, ViewProjection } from './model';
+import { h, VNode, VNodeStyle } from 'snabbdom';
+import { Bounds } from 'sprotty-protocol';
+import { IView, IViewArgs, RenderingContext } from '../../base/views/view.js';
+import { setAttr, setClass } from '../../base/views/vnode-utils.js';
+import { ViewportRootElementImpl } from '../viewport/viewport-root.js';
+import { getModelBounds, getProjections, ViewProjection } from './model.js';
 
 /**
  * Special viewport root view that renders horizontal and vertical projection bars for quick navigation.

@@ -15,11 +15,11 @@
  ********************************************************************************/
 // Based on the sweepline implementation at https://github.com/rowanwins/sweepline-intersections
 // which is published under the terms of MIT, but has been adapted to the use case of sprotty.
+import { Point } from "sprotty-protocol";
 import TinyQueue from "tinyqueue";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { PointToPointLine } from "../../utils/geometry";
-import { Intersection } from "./intersection-finder";
-import { RoutedPoint } from "../routing/routing";
+import { PointToPointLine } from "../../utils/geometry.js";
+import { RoutedPoint } from "../routing/routing.js";
+import { Intersection } from "./intersection-finder.js";
 
 /*
  * The algorithm implemented in this module is loosely based on the Bentley-Ottmann algorithm for
@@ -42,7 +42,7 @@ import { RoutedPoint } from "../routing/routing";
  * @param route the route as array of points.
  * @param queue the queue to add the route to.
  */
-export function addRoute(routeId: string, route: RoutedPoint[], queue: TinyQueue<SweepEvent>) {
+export function addRoute(routeId: string, route: RoutedPoint[], queue: TinyQueue.default<SweepEvent>) {
     if (route.length < 1) return;
     let currentPoint = route[0];
     let nextPoint = undefined;
@@ -122,9 +122,9 @@ export class Segment {
  * @param eventQueue the event queue.
  * @returns the identified intersections.
  */
-export function runSweep(eventQueue: TinyQueue<SweepEvent>): Intersection[] {
+export function runSweep(eventQueue: TinyQueue.default<SweepEvent>): Intersection[] {
     const intersectionPoints: Intersection[] = [];
-    const outQueue = new TinyQueue<Segment>([], checkWhichSegmentHasRightEndpointFirst);
+    const outQueue = new TinyQueue.default<Segment>([], checkWhichSegmentHasRightEndpointFirst);
     while (eventQueue.length) {
         const event = eventQueue.pop();
         if (event?.isLeftEndpoint) {

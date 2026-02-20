@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
 import { SModelElement } from 'sprotty-protocol';
-import { ModelMatcher } from "./model-matching";
+import { describe, expect, it } from 'vitest';
+import { ModelMatcher } from "./model-matching.js";
 
 describe('ModelMatcher', () => {
     it('finds new elements', () => {

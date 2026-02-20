@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { SModelElementImpl } from "../../base/model/smodel";
-import { isBoundsAware } from "../bounds/model";
+import { Point } from "sprotty-protocol";
+import { SModelElementImpl } from "../../base/model/smodel.js";
+import { isBoundsAware } from "../bounds/model.js";
 
 /**
  * A snapper helps to align nodes and routing handles.

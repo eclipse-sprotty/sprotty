@@ -18,7 +18,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { VNode, h } from 'snabbdom';
-import virtualize from './virtualize';
+import virtualize from './virtualize.js';
 
 /**
  * @vitest-environment happy-dom

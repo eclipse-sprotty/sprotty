@@ -17,20 +17,20 @@
 /** @jsx html */
 import { inject, injectable, multiInject, optional } from 'inversify';
 import { attributesModule, classModule, eventListenersModule, init, Module, propsModule, styleModule, VNode } from 'snabbdom';
-import { Action } from 'sprotty-protocol/lib/actions';
-import { html } from '../../lib/jsx'; // must be html here, as we're creating a div
-import { getWindowScroll } from '../../utils/browser';
-import { ILogger } from '../../utils/logging';
-import { IActionDispatcher } from '../actions/action-dispatcher';
-import { InitializeCanvasBoundsAction } from '../features/initialize-canvas';
-import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel';
-import { EMPTY_ROOT } from '../model/smodel-factory';
-import { TYPES } from '../types';
-import { isThunk } from './thunk-view';
-import { IViewArgs, RenderingContext, RenderingTargetKind, ViewRegistry } from './view';
-import { ViewerOptions } from './viewer-options';
-import { IVNodePostprocessor } from './vnode-postprocessor';
-import { copyClassesFromElement, copyClassesFromVNode, setAttr, setClass } from './vnode-utils';
+import { Action } from 'sprotty-protocol';
+import { html } from '../../lib/jsx.js'; // must be html here, as we're creating a div
+import { getWindowScroll } from '../../utils/browser.js';
+import { ILogger } from '../../utils/logging.js';
+import { IActionDispatcher } from '../actions/action-dispatcher.js';
+import { InitializeCanvasBoundsAction } from '../features/initialize-canvas.js';
+import { EMPTY_ROOT } from '../model/smodel-factory.js';
+import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel.js';
+import { TYPES } from '../types.js';
+import { isThunk } from './thunk-view.js';
+import { IViewArgs, RenderingContext, RenderingTargetKind, ViewRegistry } from './view.js';
+import { ViewerOptions } from './viewer-options.js';
+import { IVNodePostprocessor } from './vnode-postprocessor.js';
+import { copyClassesFromElement, copyClassesFromVNode, setAttr, setClass } from './vnode-utils.js';
 
 
 export interface IViewer {
