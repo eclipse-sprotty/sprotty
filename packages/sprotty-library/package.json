@@ -1,6 +1,7 @@
 {
     "name": "sprotty-library",
     "version": "1.4.0",
+    "type": "module",
     "description": "Views and elements library for Sprotty",
     "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
     "keywords": [
@@ -40,6 +41,12 @@
         "css",
         "src"
     ],
-    "main": "lib/index",
-    "types": "lib/index"
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "import": "./lib/index.js"
+        }
+    }
 }
