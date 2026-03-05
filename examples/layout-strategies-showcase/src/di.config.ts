@@ -44,7 +44,7 @@ import {
 } from 'sprotty-elk';
 import { LayoutOptions } from 'elkjs';
 import { SGraph, SModelIndex, SNode } from 'sprotty-protocol';
-import ElkConstructor from 'elkjs';
+import ElkConstructor from 'elkjs/lib/elk.bundled.js';
 import {
     ServerLayoutNode,
     LayoutEdge

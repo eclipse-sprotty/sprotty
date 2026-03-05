@@ -48,6 +48,7 @@
     ".": {
       "types": "./lib/index.d.ts",
       "import": "./lib/index.js"
-    }
+    },
+    "./lib/*": "./lib/*"
   }
 }

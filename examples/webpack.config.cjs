@@ -21,11 +21,6 @@ const config = {
             '.js': ['.ts', '.tsx', '.js'],
             '.jsx': ['.tsx', '.jsx'],
         },
-        fallback: {
-            'net': false,
-            'child_process': false,
-            'web-worker': false,
-        },
     },
     module: {
         rules: [

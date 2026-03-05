@@ -16,7 +16,9 @@
 
 import express from 'express';
 import * as path from 'path';
-import { ElkFactory, ElkLayoutEngine, SocketElkServer } from 'sprotty-elk';
+import { fileURLToPath } from 'url';
+import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk';
+import { SocketElkServer } from 'sprotty-elk/lib/node/index.js';
 import { Action, ActionMessage, DiagramServer, DiagramServices } from 'sprotty-protocol';
 import { WebSocketServer } from 'ws';
 import { RandomGraphGenerator } from './random-graph-generator.js';
@@ -54,6 +56,7 @@ wsServer.on('connection', socket => {
     });
 });
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 serverApp.use(express.static(path.join(__dirname, '../..')));
 
 const server = serverApp.listen(8080, () => {
