@@ -42,7 +42,7 @@ import { Intersection } from "./intersection-finder.js";
  * @param route the route as array of points.
  * @param queue the queue to add the route to.
  */
-export function addRoute(routeId: string, route: RoutedPoint[], queue: TinyQueue.default<SweepEvent>) {
+export function addRoute(routeId: string, route: RoutedPoint[], queue: TinyQueue<SweepEvent>) {
     if (route.length < 1) return;
     let currentPoint = route[0];
     let nextPoint = undefined;
@@ -122,9 +122,9 @@ export class Segment {
  * @param eventQueue the event queue.
  * @returns the identified intersections.
  */
-export function runSweep(eventQueue: TinyQueue.default<SweepEvent>): Intersection[] {
+export function runSweep(eventQueue: TinyQueue<SweepEvent>): Intersection[] {
     const intersectionPoints: Intersection[] = [];
-    const outQueue = new TinyQueue.default<Segment>([], checkWhichSegmentHasRightEndpointFirst);
+    const outQueue = new TinyQueue<Segment>([], checkWhichSegmentHasRightEndpointFirst);
     while (eventQueue.length) {
         const event = eventQueue.pop();
         if (event?.isLeftEndpoint) {

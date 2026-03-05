@@ -22,7 +22,7 @@ import { IView, RenderingContext, IViewArgs, PolylineEdgeView, ShapeView } from 
 import {
     ServerLayoutNode,
     LayoutEdge
-} from './model';
+} from './model.js';
 
 /**
  * Client Layout Node View - Rich content with micro-layout

@@ -15,9 +15,17 @@ const config = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'resources')
     },
-
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js'],
+        extensionAlias: {
+            '.js': ['.ts', '.tsx', '.js'],
+            '.jsx': ['.tsx', '.jsx'],
+        },
+        fallback: {
+            'net': false,
+            'child_process': false,
+            'web-worker': false,
+        },
     },
     module: {
         rules: [

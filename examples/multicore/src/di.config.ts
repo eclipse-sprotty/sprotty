@@ -20,8 +20,8 @@ import {
     loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, SvgExporter,
     configureModelElement, PreRenderedElementImpl, HtmlRootImpl, SLabelImpl, SCompartmentImpl
 } from 'sprotty';
-import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from './views';
-import { Channel, Core, Crossbar, Processor } from './chipmodel';
+import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from './views.js';
+import { Channel, Core, Crossbar, Processor } from './chipmodel.js';
 
 class FilteringSvgExporter extends SvgExporter {
     isExported(styleSheet: CSSStyleSheet): boolean {

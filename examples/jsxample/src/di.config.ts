@@ -28,7 +28,7 @@ import {
     configureModelElement,
     configureViewerOptions,
     loadDefaultModules} from "sprotty";
-import { ExampleNodeView } from "./views";
+import { ExampleNodeView } from "./views.js";
 
 export default (containerId: string) => {
     require('../css/diagram.css');

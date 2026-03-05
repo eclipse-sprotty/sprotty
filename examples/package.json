@@ -2,6 +2,7 @@
   "name": "sprotty-examples",
   "version": "1.4.0",
   "private": "true",
+  "type": "module",
   "dependencies": {
     "@vscode/codicons": "^0.0.33",
     "express": "^4.18.2",
@@ -33,7 +34,7 @@
     "prepare": "yarn run build",
     "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "build": "webpack && npm run compile",
+    "build": "webpack --config webpack.config.cjs && npm run compile",
     "watch": "yarn run watch:browser",
     "watch:browser": "webpack --watch",
     "watch:server": "tsc -w",

@@ -19,7 +19,8 @@
         "name": "Eclipse Sprotty"
     },
     "dependencies": {
-        "sprotty": "^1.4.0"
+        "sprotty": "^1.4.0",
+        "sprotty-protocol": "^1.4.0"
     },
     "repository": {
         "type": "git",

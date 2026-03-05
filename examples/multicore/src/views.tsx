@@ -15,12 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from 'sprotty/lib/lib/jsx';
-
-import { VNode } from "snabbdom";
-import { IView, RenderingContext, setAttr, ThunkView, RGBColor, toSVG, rgb, ShapeView, IViewArgs } from 'sprotty';
-import { CORE_DISTANCE, CORE_WIDTH, Channel, Core, Crossbar, Direction, Processor } from './chipmodel';
 import { injectable } from 'inversify';
+import { VNode } from "snabbdom";
+import { IView, IViewArgs, RenderingContext, rgb, RGBColor, setAttr, ShapeView, svg, ThunkView, toSVG } from 'sprotty';
+import { Channel, Core, CORE_DISTANCE, CORE_WIDTH, Crossbar, Direction, Processor } from './chipmodel.js';
 
 @injectable()
 export class ProcessorView implements IView {

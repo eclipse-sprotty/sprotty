@@ -17,3 +17,4 @@
 // By default we export the Inversify-ready version. If you want to use the plain
 // version, import from `sprotty-elk/lib/elk-layout`.
 export * from './inversify.js';
+export * from './node/index.js';

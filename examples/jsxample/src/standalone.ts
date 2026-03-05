@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { LocalModelSource, TYPES } from 'sprotty';
-import createContainer from './di.config';
+import createContainer from './di.config.js';
 
 export default async function runJsxample() {
     const container = createContainer('sprotty');

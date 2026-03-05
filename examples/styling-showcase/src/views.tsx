@@ -15,10 +15,9 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from 'sprotty/lib/lib/jsx';
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { RenderingContext, ShapeView } from 'sprotty';
+import { RenderingContext, ShapeView, svg } from 'sprotty';
 /**
  * Custom view for load monitoring node that demonstrates conditional styling.
  * CSS classes are applied based on the load percentage value.
