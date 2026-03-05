@@ -32,8 +32,8 @@ import {
     layoutableChildFeature,
     loadDefaultModules
 } from 'sprotty';
-import { InteractiveCardNode } from './model';
-import { ComponentView, DemoCardView, InteractiveCardView } from './views';
+import { InteractiveCardNode } from './model.js';
+import { ComponentView, DemoCardView, InteractiveCardView } from './views.js';
 
 export default () => {
     require('sprotty/css/sprotty.css');

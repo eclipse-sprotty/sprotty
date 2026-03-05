@@ -25,13 +25,13 @@ import {
 import {
     BasicShapeNode, EnhancedNode, ComplexNode, StatefulNode,
     StyledEdge, CustomLabel
-} from './model';
+} from './model.js';
 
 // Import our custom view classes
 import {
     BasicShapeView, EnhancedNodeView, ComplexNodeView, StatefulNodeView,
     StyledEdgeView, CustomLabelView
-} from './views';
+} from './views.js';
 
 export default () => {
     require('sprotty/css/sprotty.css');

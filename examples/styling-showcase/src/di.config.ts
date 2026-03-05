@@ -21,7 +21,7 @@ import {
     configureModelElement, SGraphImpl, SNodeImpl, SEdgeImpl, SLabelImpl, SLabelView,
     selectFeature, hoverFeedbackFeature
 } from 'sprotty';
-import { LoadMonitorNodeView } from './views';
+import { LoadMonitorNodeView } from './views.js';
 
 export default () => {
     require('sprotty/css/sprotty.css');

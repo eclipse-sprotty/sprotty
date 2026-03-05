@@ -19,7 +19,7 @@ import {
     TYPES, IModelFactory, IPopupModelProvider
 } from 'sprotty';
 import { PreRenderedElement, RequestPopupModelAction, SModelElement, SModelRoot } from 'sprotty-protocol';
-import { ClassNode } from './model';
+import { ClassNode } from './model.js';
 
 @injectable()
 export class PopupModelProvider implements IPopupModelProvider {

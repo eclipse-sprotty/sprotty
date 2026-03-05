@@ -16,18 +16,18 @@
 
 import "reflect-metadata";
 
-import runCircleGraph from "./circlegraph/src/standalone";
-import runClassDiagram from "./classdiagram/src/standalone";
-import runRandomGraph from "./random-graph/src/standalone";
-import runRandomGraphDistributed from "./random-graph-distributed/src/standalone";
-import runSvgPreRendered from "./svg/src/standalone";
-import runMulticore from "./multicore/src/multicore";
-import runFlowchart from "./flowchart/src/standalone";
-import runJsxample from "./jsxample/src/standalone";
-import runStylingShowcase from "./styling-showcase/src/standalone";
-import runMicroLayoutShowcase from "./micro-layout-showcase/src/standalone";
-import runCustomViewsShowcase from "./custom-views-showcase/src/standalone";
-import runLayoutStrategiesShowcase from "./layout-strategies-showcase/src/standalone";
+import runCircleGraph from "./circlegraph/src/standalone.js";
+import runClassDiagram from "./classdiagram/src/standalone.js";
+import runRandomGraph from "./random-graph/src/standalone.js";
+import runRandomGraphDistributed from "./random-graph-distributed/src/standalone.js";
+import runSvgPreRendered from "./svg/src/standalone.js";
+import runMulticore from "./multicore/src/multicore.js";
+import runFlowchart from "./flowchart/src/standalone.js";
+import runJsxample from "./jsxample/src/standalone.js";
+import runStylingShowcase from "./styling-showcase/src/standalone.js";
+import runMicroLayoutShowcase from "./micro-layout-showcase/src/standalone.js";
+import runCustomViewsShowcase from "./custom-views-showcase/src/standalone.js";
+import runLayoutStrategiesShowcase from "./layout-strategies-showcase/src/standalone.js";
 
 const appDiv = document.getElementById('sprotty-app');
 if (appDiv) {

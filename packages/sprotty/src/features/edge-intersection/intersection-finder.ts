@@ -88,7 +88,7 @@ export class IntersectionFinder implements IEdgeRoutePostprocessor {
      * @returns the identified intersections.
      */
     find(routing: EdgeRouting): Intersection[] {
-        const eventQueue = new TinyQueue.default<SweepEvent>(undefined, checkWhichEventIsLeft);
+        const eventQueue = new TinyQueue<SweepEvent>(undefined, checkWhichEventIsLeft);
         routing.routes.forEach((route, routeId) => {
             if (this.isSupportedRoute(route)) {
                 addRoute(routeId, route, eventQueue);
