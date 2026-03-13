@@ -19,7 +19,7 @@ import { SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
 import { InternalBoundsAware, isBoundsAware } from '../bounds/model';
 import { SRoutableElementImpl } from '../routing/model';
 
-export const edgeLayoutFeature = Symbol('edgeLayout');
+export const edgeLayoutFeature = Symbol.for('edgeLayout');
 
 /**
  * @deprecated Use EdgeLayoutable from sprotty-protocol instead

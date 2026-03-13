@@ -52,7 +52,7 @@ export abstract class SRoutableElementImpl extends SChildElementImpl {
     }
 }
 
-export const connectableFeature = Symbol('connectableFeature');
+export const connectableFeature = Symbol.for('connectableFeature');
 
 /**
  * Feature extension interface for {@link connectableFeature}.

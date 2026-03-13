@@ -19,7 +19,7 @@ import { SModelElementImpl } from '../../base/model/smodel';
 import { SShapeElementImpl, boundsFeature } from '../bounds/model';
 import { hoverFeedbackFeature, popupFeature } from '../hover/model';
 
-export const decorationFeature = Symbol('decorationFeature');
+export const decorationFeature = Symbol.for('decorationFeature');
 
 /**
  * Feature extension interface for {@link decorationFeature}.

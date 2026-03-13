@@ -25,21 +25,21 @@ import {
 export const ElkLayoutEngine: typeof ElkLayoutEnginePlain = injectable()(ElkLayoutEnginePlain);
 
 export type ElkFactory = ElkFactoryPlain;
-export const ElkFactory = Symbol('ElkFactory');
+export const ElkFactory = Symbol.for('ElkFactory');
 
 export type IElementFilter = IElementFilterPlain;
-export const IElementFilter = Symbol('IElementFilter');
+export const IElementFilter = Symbol.for('IElementFilter');
 export const DefaultElementFilter: typeof DefaultElementFilterPlain = injectable()(DefaultElementFilterPlain);
 
 export type ILayoutConfigurator = ILayoutConfiguratorPlain;
-export const ILayoutConfigurator = Symbol('ILayoutConfigurator');
+export const ILayoutConfigurator = Symbol.for('ILayoutConfigurator');
 export const DefaultLayoutConfigurator: typeof DefaultLayoutConfiguratorPlain = injectable()(DefaultLayoutConfiguratorPlain);
 
 export type ILayoutPreprocessor = ILayoutPreprocessorPlain;
-export const ILayoutPreprocessor = Symbol('ILayoutPreprocessor');
+export const ILayoutPreprocessor = Symbol.for('ILayoutPreprocessor');
 
 export type ILayoutPostprocessor = ILayoutPostprocessorPlain;
-export const ILayoutPostprocessor = Symbol('ILayoutPostprocessor');
+export const ILayoutPostprocessor = Symbol.for('ILayoutPostprocessor');
 
 /**
  * This dependency injection module adds the default bindings for the frontend integration of ELK.

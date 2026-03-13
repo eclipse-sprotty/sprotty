@@ -16,7 +16,7 @@
 
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const hoverFeedbackFeature = Symbol('hoverFeedbackFeature');
+export const hoverFeedbackFeature = Symbol.for('hoverFeedbackFeature');
 
 /**
  * Feature extension interface for {@link hoverFeedbackFeature}.
@@ -30,7 +30,7 @@ export function isHoverable(element: SModelElementImpl): element is SModelElemen
     return element.hasFeature(hoverFeedbackFeature);
 }
 
-export const popupFeature = Symbol('popupFeature');
+export const popupFeature = Symbol.for('popupFeature');
 
 export function hasPopupFeature(element: SModelElementImpl): boolean {
     return element.hasFeature(popupFeature);

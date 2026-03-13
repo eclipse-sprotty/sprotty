@@ -18,7 +18,7 @@ import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
 import { Point } from 'sprotty-protocol/lib/utils/geometry';
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const moveFeature = Symbol('moveFeature');
+export const moveFeature = Symbol.for('moveFeature');
 
 /**
  * An element that can be placed at a specific location using its position property.

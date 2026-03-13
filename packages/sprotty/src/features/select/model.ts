@@ -16,7 +16,7 @@
 
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const selectFeature = Symbol('selectFeature');
+export const selectFeature = Symbol.for('selectFeature');
 
 /**
  * Feature extension interface for {@link selectFeature}.

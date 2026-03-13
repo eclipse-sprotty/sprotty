@@ -16,7 +16,7 @@
 
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const openFeature = Symbol('openFeature');
+export const openFeature = Symbol.for('openFeature');
 
 export function isOpenable(element: SModelElementImpl): element is SModelElementImpl  {
     return element.hasFeature(openFeature);

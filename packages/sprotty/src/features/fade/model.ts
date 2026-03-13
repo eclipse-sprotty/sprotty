@@ -16,7 +16,7 @@
 
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const fadeFeature = Symbol('fadeFeature');
+export const fadeFeature = Symbol.for('fadeFeature');
 
 /**
  * Feature extension interface for {@link fadeFeature}.

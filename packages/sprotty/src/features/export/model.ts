@@ -16,7 +16,7 @@
 
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const exportFeature = Symbol('exportFeature');
+export const exportFeature = Symbol.for('exportFeature');
 
 export function isExportable(element: SModelElementImpl): boolean {
      return element.hasFeature(exportFeature);

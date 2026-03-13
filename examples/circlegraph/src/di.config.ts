@@ -23,7 +23,7 @@ import {
 import { Action, Point } from 'sprotty-protocol';
 import { CircleNodeView } from './views';
 
-const NodeCreator = Symbol('NodeCreator');
+const NodeCreator = Symbol.for('NodeCreator');
 
 export default (nodeCreator: (point?: Point) => void) => {
     require('sprotty/css/sprotty.css');

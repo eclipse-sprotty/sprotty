@@ -16,7 +16,7 @@
 
 import { SModelElementImpl } from '../../base/model/smodel';
 
-export const expandFeature = Symbol('expandFeature');
+export const expandFeature = Symbol.for('expandFeature');
 
 /**
  * Feature extension interface for {@link expandFeature}.

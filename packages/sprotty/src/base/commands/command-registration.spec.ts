@@ -25,7 +25,7 @@ import { EMPTY_ROOT } from "../model/smodel-factory";
 import { Command, CommandResult } from "./command";
 import { SetModelAction } from "sprotty-protocol";
 
-const MySymbol = Symbol('MySymbol');
+const MySymbol = Symbol.for('MySymbol');
 
 class MyAction {
     kind = MyCommand.KIND;
