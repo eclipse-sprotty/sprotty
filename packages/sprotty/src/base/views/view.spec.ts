@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container } from 'inversify';
-import 'reflect-metadata';
 import toHTML from 'snabbdom-to-html';
 import { describe, expect, it } from 'vitest';
 import { SNodeImpl } from "../../graph/sgraph.js";

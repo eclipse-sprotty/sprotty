@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container } from 'inversify';
-import 'reflect-metadata';
 import { RequestExportSvgAction, SNode } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import { CommandExecutionContext } from '../../base/commands/command.js';

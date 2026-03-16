@@ -16,7 +16,7 @@
 
 import Generator from 'yeoman-generator';
 import chalk from 'chalk';
-import path from 'path';
+import path from 'node:path';
 
 const TEMPLATE_DIR = '../sprotty-local-template';
 const USER_DIR = '.';

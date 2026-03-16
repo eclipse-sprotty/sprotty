@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import 'reflect-metadata';
 import { Action, hasOwnProperty } from "sprotty-protocol";
 import { ILogger } from "../../utils/logging.js";
 import { AnimationFrameSyncer } from "../animations/animation-frame-syncer.js";

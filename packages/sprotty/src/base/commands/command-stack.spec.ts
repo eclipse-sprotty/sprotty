@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container, injectable } from "inversify";
-import "reflect-metadata";
 import { describe, expect, it } from 'vitest';
 import defaultModule from "../di.config.js";
 import { TYPES } from "../types.js";

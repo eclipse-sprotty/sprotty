@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container } from 'inversify';
-import 'reflect-metadata';
 import { Dimension } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import defaultModule from '../../base/di.config.js';

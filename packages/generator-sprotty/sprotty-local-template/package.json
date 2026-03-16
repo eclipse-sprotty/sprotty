@@ -7,7 +7,7 @@
       "sprotty": "^1.0.0"
     },
     "devDependencies": {
-      "typescript": "~5.2.2",
+      "typescript": "~5.9.3",
       "esbuild": "^0.19.4"
     },
     "scripts": {

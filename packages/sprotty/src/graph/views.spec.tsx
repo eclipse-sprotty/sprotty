@@ -14,10 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
- /** @jsx svg */
+/** @jsx svg */
 import { svg } from '../lib/jsx.js';
-
-import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
 import { VNode } from 'snabbdom';
@@ -44,8 +42,8 @@ describe('graph views', () => {
         override render(node: SNodeImpl, renderContext: RenderingContext): VNode {
             const radius = this.getRadius(node);
             return <g>
-                    <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius} />
-                </g>;
+                <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius} />
+            </g>;
         }
         protected override getRadius(node: SNodeImpl) {
             return 40;
@@ -74,10 +72,8 @@ describe('graph views', () => {
         const graph = graphFactory.createRoot(schema) as SGraphImpl;
         const view = viewRegistry.get(graph.type);
         const vnode = view.render(graph, context);
-        expect(vnode).not.toBeUndefined();
-        if (vnode) {
-            expect(toHTML(vnode)).to.be.equal('<svg class="sprotty-graph"><g transform="scale(1) translate(0,0)"></g></svg>');
-        }
+
+        expect(toHTML(vnode)).to.be.equal('<svg class="sprotty-graph"><g transform="scale(1) translate(0,0)"></g></svg>');
     });
 
     function createModel() {
@@ -93,21 +89,16 @@ describe('graph views', () => {
 
         const view = viewRegistry.get('edge:straight');
         const vnode = view.render(graph.index.getById('edge0') as SEdgeImpl, context);
-        expect(vnode).not.toBeUndefined();
-        if (vnode) {
-            expect(toHTML(vnode)).to.be.equal(
-                '<g class="sprotty-edge"><path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" /></g>');
-        }
+        expect(toHTML(vnode)).to.be.equal(
+            '<g class="sprotty-edge"><path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" /></g>');
     });
 
     it('render a circle node', () => {
         const graph = createModel();
         const view = viewRegistry.get('node:circle');
         const vnode = view.render(graph.index.getById('node0') as SNodeImpl, context);
-        expect(vnode).not.toBeUndefined();
-        if (vnode) {
-            expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
-        }
+
+        expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
     });
 
     it('render a whole graph', () => {
@@ -115,21 +106,19 @@ describe('graph views', () => {
         const vnode = context.renderElement(graph);
         const expectation = '<svg id="sprotty_graph" class="sprotty-graph" tabindex="0">'
             + '<g transform="scale(1) translate(0,0)">'
-            +   '<g id="sprotty_node0" class="circle" transform="translate(100, 100)">'
-            +     '<circle class="sprotty-node" r="40" cx="40" cy="40" />'
-            +   '</g>'
-            +   '<g id="sprotty_node1" class="circle selected" transform="translate(200, 150)">'
-            +     '<circle class="sprotty-node selected" r="40" cx="40" cy="40" />'
-            +   '</g>'
-            +   '<g id="sprotty_edge0" class="sprotty-edge straight">'
-            +     '<path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" />'
-            +   '</g>'
+            + '<g id="sprotty_node0" class="circle" transform="translate(100, 100)">'
+            + '<circle class="sprotty-node" r="40" cx="40" cy="40" />'
+            + '</g>'
+            + '<g id="sprotty_node1" class="circle selected" transform="translate(200, 150)">'
+            + '<circle class="sprotty-node selected" r="40" cx="40" cy="40" />'
+            + '</g>'
+            + '<g id="sprotty_edge0" class="sprotty-edge straight">'
+            + '<path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" />'
+            + '</g>'
             + '</g>'
             + '</svg>';
-        expect(vnode).not.toBeUndefined();
-        if (vnode) {
-            expect(toHTML(vnode)).to.be.equal(expectation);
-        }
+
+        expect(toHTML(vnode)).to.be.equal(expectation);
     });
 });
 
@@ -194,26 +183,20 @@ describe('PolylineEdgeView', () => {
     const context = {
         targetKind: 'hidden',
         viewRegistry,
-        decorate: function(vnode: VNode, element: SModelElementImpl): VNode { return vnode; },
-        renderElement: function(element: SModelElementImpl): VNode { return <g></g>; },
-        renderChildren: function(element: SParentElementImpl): VNode[] { return []; }
+        decorate: function (vnode: VNode, element: SModelElementImpl): VNode { return vnode; },
+        renderElement: function (element: SModelElementImpl): VNode { return <g></g>; },
+        renderChildren: function (element: SParentElementImpl): VNode[] { return []; }
     } as RenderingContext;
 
     it('correctly translates edge source and target position', () => {
         const edge = model.index.getById('edge1') as SEdgeImpl;
         const vnode = edgeView.render(edge, context);
-        expect(vnode).not.toBeUndefined();
-        if (vnode) {
-            expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M 10,4 L 18,14" /></g>');
-        }
+        expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M 10,4 L 18,14" /></g>');
     });
 
     it('correctly translates edge target and source position', () => {
         const edge = model.index.getById('edge2') as SEdgeImpl;
         const vnode = edgeView.render(edge, context);
-        expect(vnode).not.toBeUndefined();
-        if (vnode) {
-            expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M -10,-6 L -2,4" /></g>');
-        }
+        expect(toHTML(vnode)).to.equal('<g class="sprotty-edge"><path d="M -10,-6 L -2,4" /></g>');
     });
 });

@@ -14,8 +14,6 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
 import { VNode } from 'snabbdom';
 import { describe, expect, it } from 'vitest';
 import { IViewArgs, RenderingContext } from '../../base/views/view.js';
