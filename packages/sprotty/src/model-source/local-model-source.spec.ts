@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container, injectable } from "inversify";
-import "reflect-metadata";
 import {
     Action,
     ComputedBoundsAction,

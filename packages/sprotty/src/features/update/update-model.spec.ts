@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container } from 'inversify';
-import 'reflect-metadata';
 import { Point, SEdge, SGraph, SModelElement, SModelRoot, SNode, UpdateModelAction } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer.js';

@@ -16,9 +16,7 @@
 
 import { inject, injectable } from 'inversify';
 import {
-    Action,
-    Deferred,
-    isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
+    Action, Deferred, isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
     ResponseAction, SetModelAction, setRequestContext, UndoAction
 } from 'sprotty-protocol';
 import { ILogger } from '../../utils/logging.js';
@@ -112,10 +110,10 @@ export class ActionDispatcher implements IActionDispatcher {
 
     protected handleAction(action: Action): Promise<void> {
         if (action.kind === UndoAction.KIND) {
-            return this.commandStack.undo().then(() => {});
+            return this.commandStack.undo().then(() => { });
         }
         if (action.kind === RedoAction.KIND) {
-            return this.commandStack.redo().then(() => {});
+            return this.commandStack.redo().then(() => { });
         }
         if (isResponseAction(action)) {
             const deferred = this.requests.get(action.responseId);
@@ -125,7 +123,7 @@ export class ActionDispatcher implements IActionDispatcher {
                     const rejectAction = action as RejectAction;
                     deferred.reject(new Error(rejectAction.message));
                     this.logger.warn(this, `Request with id ${action.responseId} failed.`,
-                            rejectAction.message, rejectAction.detail);
+                        rejectAction.message, rejectAction.detail);
                 } else {
                     deferred.resolve(action);
                 }

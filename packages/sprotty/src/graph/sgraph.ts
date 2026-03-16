@@ -54,7 +54,7 @@ export class SNodeImpl extends SConnectableElementImpl implements Selectable, Fa
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
 
-    override children: SChildElementImpl[];
+    declare children: SChildElementImpl[];
     layout?: string;
     selected: boolean = false;
     hoverFeedback: boolean = false;
@@ -153,9 +153,9 @@ export class SCompartmentImpl extends SShapeElementImpl implements Fadeable {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature,
         fadeFeature];
 
-    override children: SChildElementImpl[];
+    declare children: SChildElementImpl[];
     layout?: string;
-    override layoutOptions?: {[key: string]: string | number | boolean};
+    declare layoutOptions?: {[key: string]: string | number | boolean};
     opacity = 1;
 
 }

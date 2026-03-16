@@ -1,7 +1,7 @@
 //@ts-check
 
 const webpack = require('webpack');
-const path = require('path');
+const path = require('node:path');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 /** @type {import('webpack').Configuration} */
@@ -13,7 +13,7 @@ const config = {
     entry: './browser-app.ts',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'resources')
+        path: path.resolve(__dirname, 'resources'),
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],

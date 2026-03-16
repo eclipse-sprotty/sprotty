@@ -17,7 +17,6 @@
  /** @jsx svg */
 import { svg } from '../../lib/jsx.js';
 
-import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 import { SModelElementImpl } from '../model/smodel.js';
 import { CssClassPostprocessor } from './css-class-postprocessor.js';

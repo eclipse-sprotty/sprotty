@@ -1,11 +1,11 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
-        "target": "ES2017",
-        "module": "Node16",
-        "moduleResolution": "Node16",
+        "target": "ES2022",
+        "module": "Node20",
+        "moduleResolution": "NodeNext",
         "lib": [
-            "ES2017",
+            "ES2022",
             "DOM"
         ],
         "sourceMap": true,
@@ -21,7 +21,8 @@
         "emitDecoratorMetadata": true,
         "esModuleInterop": true,
         "jsx": "react",
-        "composite": true
+        "composite": true,
+        "skipLibCheck": true
     },
     "include": [
         "**/src/**/*.ts",
@@ -30,5 +31,6 @@
     "exclude": [
         "lib/**/*",
         "node_modules/**/*"
+
     ]
 }

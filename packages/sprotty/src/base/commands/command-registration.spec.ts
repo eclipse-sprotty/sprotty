@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container, inject, injectable } from "inversify";
-import "reflect-metadata";
 import { SetModelAction } from "sprotty-protocol";
 import { describe, expect, it } from 'vitest';
 import { ActionHandlerRegistry } from "../actions/action-handler.js";

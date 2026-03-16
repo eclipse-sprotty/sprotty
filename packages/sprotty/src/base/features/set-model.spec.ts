@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container } from 'inversify';
-import 'reflect-metadata';
 import { SModelElement, SModelRoot, SetModelAction } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import { ConsoleLogger } from '../../utils/logging.js';

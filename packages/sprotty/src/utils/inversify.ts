@@ -13,7 +13,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import {interfaces} from "inversify";
+
+import 'reflect-metadata';
+
+import { interfaces } from "inversify";
 
 export function isInjectable(constr: interfaces.Newable<unknown>| Function ): boolean {
     return Reflect.getMetadata('inversify:paramtypes', constr) !== undefined;

@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container } from 'inversify';
-import 'reflect-metadata';
 import { Selectable, SModelElement } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import { boundsFeature } from '../../features/bounds/model.js';

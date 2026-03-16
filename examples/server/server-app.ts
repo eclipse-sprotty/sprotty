@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import express from 'express';
-import * as path from 'path';
+import * as path from 'node:path';
 import { fileURLToPath } from 'url';
 import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk';
 import { SocketElkServer } from 'sprotty-elk/lib/node/index.js';

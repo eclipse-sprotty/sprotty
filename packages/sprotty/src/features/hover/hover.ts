@@ -142,7 +142,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 
     protected lastHoverFeedbackElementId?: string;
 
-    @inject(TYPES.ViewerOptions) protected override options: ViewerOptions;
+    @inject(TYPES.ViewerOptions) protected declare options: ViewerOptions;
 
     protected computePopupBounds(target: SModelElementImpl, mousePosition: Point): Bounds {
         // Default position: below the mouse cursor

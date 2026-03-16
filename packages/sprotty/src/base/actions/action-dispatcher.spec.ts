@@ -15,7 +15,6 @@
  ********************************************************************************/
 
 import { Container, injectable, interfaces } from "inversify";
-import 'reflect-metadata';
 import { Action, Bounds, RedoAction, RejectAction, RequestModelAction, SetModelAction, UndoAction } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import { ICommandStack } from "../commands/command-stack.js";
@@ -26,7 +25,6 @@ import { EMPTY_ROOT } from '../model/smodel-factory.js';
 import { TYPES } from "../types.js";
 import { ActionDispatcher } from "./action-dispatcher.js";
 import { IActionHandler, configureActionHandler } from './action-handler.js';
-;
 
 describe('ActionDispatcher', () => {
     @injectable()
