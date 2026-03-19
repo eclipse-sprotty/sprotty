@@ -137,10 +137,18 @@ export class ViewportAnimation extends Animation {
         const interimZoomDiff = 1 - oldZoom / tweenZoom;
         const zoomDiff = 1 - oldZoom / newZoom;
 
-        this.element.scroll = {
-            x: oldX + (interimZoomDiff * (newX - oldX)) / zoomDiff,
-            y: oldY + (interimZoomDiff * (newY - oldY)) / zoomDiff,
-        };
+        if (zoomDiff === 0) {
+            // No zoom diff: avoid calculation of 0/0 and use linear formula
+            this.element.scroll = {
+                x: (1 - t) * oldX + t * newX,
+                y: (1 - t) * oldY + t * newY,
+            };
+        } else {
+            this.element.scroll = {
+                x: oldX + (interimZoomDiff * (newX - oldX)) / zoomDiff,
+                y: oldY + (interimZoomDiff * (newY - oldY)) / zoomDiff,
+            };
+        }
         return context.root;
     }
 }
