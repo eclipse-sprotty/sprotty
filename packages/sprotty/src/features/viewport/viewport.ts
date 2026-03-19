@@ -106,6 +106,7 @@ export class GetViewportCommand extends ModelRequestCommand {
 
 export class ViewportAnimation extends Animation {
 
+    /** @deprecated Use `Math.log(newViewport.zoom / oldViewport.zoom)` instead. */
     protected zoomFactor: number;
 
     constructor(protected element: SModelElementImpl & Viewport,
