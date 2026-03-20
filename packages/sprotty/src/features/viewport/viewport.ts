@@ -106,6 +106,7 @@ export class GetViewportCommand extends ModelRequestCommand {
 
 export class ViewportAnimation extends Animation {
 
+    /** @deprecated Use `Math.log(newViewport.zoom / oldViewport.zoom)` instead. */
     protected zoomFactor: number;
 
     constructor(protected element: SModelElementImpl & Viewport,
@@ -117,11 +118,37 @@ export class ViewportAnimation extends Animation {
     }
 
     tween(t: number, context: CommandExecutionContext): SModelRootImpl {
-        this.element.scroll = {
-            x: (1 - t) * this.oldViewport.scroll.x + t * this.newViewport.scroll.x,
-            y: (1 - t) * this.oldViewport.scroll.y + t * this.newViewport.scroll.y
-        };
-        this.element.zoom = this.oldViewport.zoom * Math.exp(t * this.zoomFactor);
+        const newZoom = this.newViewport.zoom;
+        const oldZoom = this.oldViewport.zoom;
+        const oldX = this.oldViewport.scroll.x;
+        const oldY = this.oldViewport.scroll.y;
+        const newX = this.newViewport.scroll.x;
+        const newY = this.newViewport.scroll.y;
+
+        const tweenZoom = oldZoom * (newZoom / oldZoom) ** t;
+        this.element.zoom = tweenZoom;
+
+        // The between scroll values need to satisfy this equation for a smooth zoom:
+        // offset_left_tween / offset_left_total = offset_right_tween / offset_right_total
+        // where the total offset is the offset between the old and new viewport, and the tween offset is the goal offset to be calculated for the between value.
+        // A similar equation holds for the top/bottom offsets.
+        // Given the exponential behavior of the zoom between values, the actual width and height of the viewport, which we do not have available here,
+        // cancel out when simplifying and solving the equation by the between value for x and y. This results in this calculation.
+        const interimZoomDiff = 1 - oldZoom / tweenZoom;
+        const zoomDiff = 1 - oldZoom / newZoom;
+
+        if (zoomDiff === 0) {
+            // No zoom diff: avoid calculation of 0/0 and use linear formula
+            this.element.scroll = {
+                x: (1 - t) * oldX + t * newX,
+                y: (1 - t) * oldY + t * newY,
+            };
+        } else {
+            this.element.scroll = {
+                x: oldX + (interimZoomDiff * (newX - oldX)) / zoomDiff,
+                y: oldY + (interimZoomDiff * (newY - oldY)) / zoomDiff,
+            };
+        }
         return context.root;
     }
 }
