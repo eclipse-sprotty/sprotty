@@ -79,7 +79,8 @@ export function isBoundsAware(element: SModelElementImpl): element is SModelElem
 export function isLayoutContainer(element: SModelElementImpl): element is SParentElementImpl & InternalLayoutContainer {
     return isBoundsAware(element)
         && element.hasFeature(layoutContainerFeature)
-        && 'layout' in element;
+        && 'layout' in element
+        && element.layout !== undefined;
 }
 
 export function isLayoutableChild(element: SModelElementImpl): element is SChildElementImpl & InternalLayoutableChild {
