@@ -38,7 +38,7 @@ import { FluentIterable, FluentIterableImpl } from '../utils/iterable.js';
  * Root element for graph-like models.
  */
 export class SGraphImpl extends ViewportRootElementImpl {
-    layoutOptions?: ModelLayoutOptions;
+    declare layoutOptions?: ModelLayoutOptions;
 
     constructor(index = new SGraphIndex()) {
         super(index);
@@ -55,7 +55,7 @@ export class SNodeImpl extends SConnectableElementImpl implements Selectable, Fa
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
 
     declare children: SChildElementImpl[];
-    layout?: string;
+    declare layout?: string;
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
@@ -141,7 +141,7 @@ export class SLabelImpl extends SShapeElementImpl implements Selectable, Alignab
     selected: boolean = false;
     alignment: Point = Point.ORIGIN;
     opacity = 1;
-    edgePlacement?: EdgePlacement;
+    declare edgePlacement?: EdgePlacement;
 
 }
 
@@ -154,7 +154,7 @@ export class SCompartmentImpl extends SShapeElementImpl implements Fadeable {
         fadeFeature];
 
     declare children: SChildElementImpl[];
-    layout?: string;
+    declare layout?: string;
     declare layoutOptions?: {[key: string]: string | number | boolean};
     opacity = 1;
 

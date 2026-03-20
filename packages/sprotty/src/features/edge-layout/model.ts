@@ -37,7 +37,7 @@ export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): eleme
 }
 
 export function checkEdgePlacement(element: SChildElementImpl): element is SChildElementImpl & EdgeLayoutable {
-    return 'edgePlacement' in element;
+    return 'edgePlacement' in element && element.edgePlacement !== undefined;
 }
 
 /**
