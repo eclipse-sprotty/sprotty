@@ -16,30 +16,28 @@
 
 import { inject, injectable, optional } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Locateable } from 'sprotty-protocol/lib/model';
-import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { Action, DeleteElementAction, ReconnectAction, SelectAction, SelectAllAction, MoveAction } from 'sprotty-protocol/lib/actions';
-import { Animation, CompoundAnimation } from '../../base/animations/animation';
-import { CommandExecutionContext, ICommand, MergeableCommand, CommandReturn, IStoppableCommand } from '../../base/commands/command';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl, isParent } from '../../base/model/smodel';
-import { findParentByFeature, translatePoint } from '../../base/model/smodel-utils';
-import { TYPES } from '../../base/types';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
-import { setAttr } from '../../base/views/vnode-utils';
-import { SEdgeImpl } from '../../graph/sgraph';
-import { CommitModelAction } from '../../model-source/commit-model';
-import { findChildrenAtPosition, isAlignable } from '../bounds/model';
-import { CreatingOnDrag, isCreatingOnDrag } from '../edit/create-on-drag';
-import { SwitchEditModeAction } from '../edit/edit-routing';
-import { ReconnectCommand } from '../edit/reconnect';
-import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SConnectableElementImpl, SRoutableElementImpl, SRoutingHandleImpl } from '../routing/model';
-import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from '../routing/routing';
-import { isEdgeLayoutable } from '../edge-layout/model';
-import { isSelectable } from '../select/model';
-import { isViewport } from '../viewport/model';
-import { isLocateable, isMoveable } from './model';
-import { ISnapper } from './snap';
+import { Action, Bounds, DeleteElementAction, Locateable, MoveAction, Point, ReconnectAction, SelectAction, SelectAllAction } from 'sprotty-protocol';
+import { Animation, CompoundAnimation } from '../../base/animations/animation.js';
+import { CommandExecutionContext, CommandReturn, ICommand, IStoppableCommand, MergeableCommand } from '../../base/commands/command.js';
+import { findParentByFeature, translatePoint } from '../../base/model/smodel-utils.js';
+import { isParent, SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor.js';
+import { setAttr } from '../../base/views/vnode-utils.js';
+import { SEdgeImpl } from '../../graph/sgraph.js';
+import { CommitModelAction } from '../../model-source/commit-model.js';
+import { findChildrenAtPosition, isAlignable } from '../bounds/model.js';
+import { isEdgeLayoutable } from '../edge-layout/model.js';
+import { CreatingOnDrag, isCreatingOnDrag } from '../edit/create-on-drag.js';
+import { SwitchEditModeAction } from '../edit/edit-routing.js';
+import { ReconnectCommand } from '../edit/reconnect.js';
+import { edgeInProgressID, edgeInProgressTargetHandleID, isConnectable, SConnectableElementImpl, SRoutableElementImpl, SRoutingHandleImpl } from '../routing/model.js';
+import { EdgeMemento, EdgeRouterRegistry, EdgeSnapshot, RoutedPoint } from '../routing/routing.js';
+import { isSelectable } from '../select/model.js';
+import { isViewport } from '../viewport/model.js';
+import { isLocateable, isMoveable } from './model.js';
+import { ISnapper } from './snap.js';
 
 export interface ElementMove {
     elementId: string

@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { LocalModelSource, TYPES } from 'sprotty';
-import { ILayoutConfigurator } from 'sprotty-elk/lib/inversify';
+import { ILayoutConfigurator } from 'sprotty-elk';
 import { SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol';
-import createContainer, { RandomGraphLayoutConfigurator } from './di.config';
+import createContainer, { RandomGraphLayoutConfigurator } from './di.config.js';
 
 export default function runRandomGraph() {
     const container = createContainer('sprotty');

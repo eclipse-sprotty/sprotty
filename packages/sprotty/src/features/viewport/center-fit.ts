@@ -14,21 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action, CenterAction, FitToScreenAction } from 'sprotty-protocol/lib/actions';
-import { Viewport } from 'sprotty-protocol/lib/model';
-import { almostEquals, Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
-import { matchesKeystroke } from '../../utils/keyboard';
-import { SChildElementImpl } from '../../base/model/smodel';
-import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { KeyListener } from '../../base/views/key-tool';
-import { isBoundsAware } from '../bounds/model';
-import { isSelectable } from '../select/model';
-import { ViewportAnimation } from './viewport';
-import { isViewport, limitViewport } from './model';
-import { injectable, inject } from 'inversify';
-import { TYPES } from '../../base/types';
-import { ViewerOptions } from '../../base/views/viewer-options';
+import { inject, injectable } from 'inversify';
+import { Action, almostEquals, Bounds, CenterAction, Dimension, FitToScreenAction, Viewport } from 'sprotty-protocol';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { KeyListener } from '../../base/views/key-tool.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { matchesKeystroke } from '../../utils/keyboard.js';
+import { isBoundsAware } from '../bounds/model.js';
+import { isSelectable } from '../select/model.js';
+import { isViewport, limitViewport } from './model.js';
+import { ViewportAnimation } from './viewport.js';
 
 @injectable()
 export abstract class BoundsAwareViewportCommand extends Command {

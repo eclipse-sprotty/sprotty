@@ -14,28 +14,27 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { TYPES } from '../../base/types';
-import { ConsoleLogger } from '../../utils/logging';
-import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { CommandExecutionContext } from '../../base/commands/command';
-import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer';
-import { CompoundAnimation, Animation } from '../../base/animations/animation';
-import {  SEdgeImpl, SGraphImpl, SNodeImpl } from '../../graph/sgraph';
-import { FadeAnimation } from '../../features/fade/fade';
-import { MoveAnimation, MorphEdgesAnimation } from '../../features/move/move';
-import { UpdateModelCommand } from './update-model';
-import { ModelMatcher } from './model-matching';
-import { ManhattanEdgeRouter } from '../routing/manhattan-edge-router';
-import defaultModule from '../../base/di.config';
-import { EdgeRouterRegistry } from '../routing/routing';
-import { AnchorComputerRegistry } from '../routing/anchor';
-import { ManhattanRectangularAnchor } from '../routing/manhattan-anchors';
-import { Point, SEdge, SGraph, SModelElement, SModelRoot,SNode, UpdateModelAction } from 'sprotty-protocol';
-import { registerModelElement } from '../../base/model/smodel-utils';
+import { Point, SEdge, SGraph, SModelElement, SModelRoot, SNode, UpdateModelAction } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import { AnimationFrameSyncer } from '../../base/animations/animation-frame-syncer.js';
+import { Animation, CompoundAnimation } from '../../base/animations/animation.js';
+import { CommandExecutionContext } from '../../base/commands/command.js';
+import defaultModule from '../../base/di.config.js';
+import { EMPTY_ROOT, IModelFactory } from '../../base/model/smodel-factory.js';
+import { registerModelElement } from '../../base/model/smodel-utils.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { FadeAnimation } from '../../features/fade/fade.js';
+import { MorphEdgesAnimation, MoveAnimation } from '../../features/move/move.js';
+import { SEdgeImpl, SGraphImpl, SNodeImpl } from '../../graph/sgraph.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import { AnchorComputerRegistry } from '../routing/anchor.js';
+import { ManhattanRectangularAnchor } from '../routing/manhattan-anchors.js';
+import { ManhattanEdgeRouter } from '../routing/manhattan-edge-router.js';
+import { EdgeRouterRegistry } from '../routing/routing.js';
+import { ModelMatcher } from './model-matching.js';
+import { UpdateModelCommand } from './update-model.js';
 
 function compare(expected: SModelElement, actual: SModelElementImpl) {
     for (const p in expected) {

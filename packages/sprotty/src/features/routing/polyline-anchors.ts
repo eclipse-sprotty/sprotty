@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { IAnchorComputer, ELLIPTIC_ANCHOR_KIND, RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND } from "./anchor";
-import { SConnectableElementImpl } from "./model";
-import { PointToPointLine, Diamond, intersection } from "../../utils/geometry";
 import { injectable } from "inversify";
-import { PolylineEdgeRouter } from "./polyline-edge-router";
-import { almostEquals, Bounds, Point } from "sprotty-protocol/lib/utils/geometry";
+import { almostEquals, Bounds, Point } from "sprotty-protocol";
+import { Diamond, intersection, PointToPointLine } from "../../utils/geometry.js";
+import { DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND, IAnchorComputer, RECTANGULAR_ANCHOR_KIND } from "./anchor.js";
+import { SConnectableElementImpl } from "./model.js";
+import { PolylineEdgeRouter } from "./polyline-edge-router.js";
 
 @injectable()
 export class EllipseAnchor implements IAnchorComputer {

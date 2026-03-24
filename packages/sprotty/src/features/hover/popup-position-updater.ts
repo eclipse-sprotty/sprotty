@@ -16,10 +16,10 @@
 
 import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { TYPES } from "../../base/types";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { ViewerOptions } from "../../base/views/viewer-options";
-import { SModelElementImpl } from "../../base/model/smodel";
+import { SModelElementImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { ViewerOptions } from "../../base/views/viewer-options.js";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor.js";
 
 @injectable()
 export class PopupPositionUpdater implements IVNodePostprocessor {

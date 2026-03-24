@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { TYPES, LocalModelSource } from 'sprotty';
-import createContainer from './di.config';
+import createContainer from './di.config.js';
 import {
     ForeignObjectElement, SShapeElement, ShapedPreRenderedElement, ViewportRootElement, Projectable
 } from 'sprotty-protocol';

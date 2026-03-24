@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { Container, interfaces } from 'inversify';
-import { safeAssign } from 'sprotty-protocol/lib/utils/object';
-import { Limits } from '../../utils/geometry';
-import { TYPES } from '../types';
+import { safeAssign } from 'sprotty-protocol';
+import { Limits } from '../../utils/geometry.js';
+import { TYPES } from '../types.js';
 
 export interface ViewerOptions {
     /** ID of the HTML element into which the visible diagram is rendered. */

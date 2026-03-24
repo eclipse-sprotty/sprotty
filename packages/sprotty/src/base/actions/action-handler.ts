@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { injectable, multiInject, optional, interfaces } from "inversify";
-import { TYPES } from "../types";
-import { MultiInstanceRegistry } from "../../utils/registry";
-import { isInjectable } from "../../utils/inversify";
-import { ICommand } from "../commands/command";
+import { TYPES } from "../types.js";
+import { MultiInstanceRegistry } from "../../utils/registry.js";
+import { isInjectable } from "../../utils/inversify.js";
+import { ICommand } from "../commands/command.js";
 import { Action } from "sprotty-protocol";
 
 /**

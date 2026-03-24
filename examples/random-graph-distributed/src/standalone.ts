@@ -16,7 +16,7 @@
 
 import { IActionDispatcher, TYPES, WebSocketDiagramServerProxy } from 'sprotty';
 import { RequestModelAction, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config';
+import createContainer from './di.config.js';
 
 export default function runRandomGraphDistributed() {
     const container = createContainer('sprotty');

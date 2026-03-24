@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from '../../base/types';
-import { ExportSvgPostprocessor, ExportSvgKeyListener, ExportSvgCommand } from './export';
-import { SvgExporter } from './svg-exporter';
-import { configureCommand } from "../../base/commands/command-registration";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { TYPES } from '../../base/types.js';
+import { ExportSvgCommand, ExportSvgKeyListener, ExportSvgPostprocessor } from './export.js';
+import { SvgExporter } from './svg-exporter.js';
 
 const exportSvgModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(ExportSvgKeyListener).toSelf().inSingletonScope();

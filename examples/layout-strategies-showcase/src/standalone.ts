@@ -16,7 +16,7 @@
 
 import { TYPES, LocalModelSource } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, SCompartment, FitToScreenAction } from 'sprotty-protocol';
-import { createLayoutContainer } from './di.config';
+import { createLayoutContainer } from './di.config.js';
 // Global variables for the demo
 let currentContainer: any;
 let currentModelSource: LocalModelSource;

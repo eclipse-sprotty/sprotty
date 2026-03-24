@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from 'sprotty/lib/lib/jsx';
+import { svg } from 'sprotty';
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
 import { RenderingContext, ShapeView } from 'sprotty';
-import { InteractiveCardNode } from './model';
+import { InteractiveCardNode } from './model.js';
 
 /**
  * Custom view for the interactive card that shows layout effects.

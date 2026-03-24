@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SIssue as SIssueSchema } from 'sprotty-protocol/lib/model';
-import { SModelElementImpl } from '../../base/model/smodel';
-import { SShapeElementImpl, boundsFeature } from '../bounds/model';
-import { hoverFeedbackFeature, popupFeature } from '../hover/model';
+import { SIssue as SIssueSchema } from 'sprotty-protocol';
+import { SModelElementImpl } from '../../base/model/smodel.js';
+import { SShapeElementImpl, boundsFeature } from '../bounds/model.js';
+import { hoverFeedbackFeature, popupFeature } from '../hover/model.js';
 
 export const decorationFeature = Symbol('decorationFeature');
 

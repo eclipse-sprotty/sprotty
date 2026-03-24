@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { expect, describe, it } from 'vitest';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { SShapeElementImpl, getAbsoluteBounds } from './model';
+import { describe, expect, it } from 'vitest';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { SShapeElementImpl, getAbsoluteBounds } from './model.js';
 
 describe('getAbsoluteBounds', () => {
     function createModel(): SModelRootImpl {

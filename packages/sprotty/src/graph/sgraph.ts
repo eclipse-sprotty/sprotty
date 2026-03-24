@@ -14,29 +14,31 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { Alignable, EdgePlacement, Fadeable, Hoverable, Selectable } from 'sprotty-protocol/lib/model';
-import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel';
+import { Alignable, EdgePlacement, Fadeable, Hoverable, Point, Selectable } from 'sprotty-protocol';
+import { ModelIndexImpl, SChildElementImpl, SModelElementImpl } from '../base/model/smodel.js';
 import {
-    alignFeature, InternalBoundsAware, boundsFeature, layoutableChildFeature, layoutContainerFeature,
+    alignFeature,
+    boundsFeature,
+    InternalBoundsAware,
+    layoutableChildFeature, layoutContainerFeature,
     ModelLayoutOptions, SShapeElementImpl
-} from '../features/bounds/model';
-import { edgeLayoutFeature } from '../features/edge-layout/model';
-import { deletableFeature } from '../features/edit/delete';
-import { editFeature } from '../features/edit/model';
-import { fadeFeature } from '../features/fade/model';
-import { hoverFeedbackFeature, popupFeature } from '../features/hover/model';
-import { moveFeature } from '../features/move/model';
-import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model';
-import { selectFeature } from '../features/select/model';
-import { ViewportRootElementImpl } from '../features/viewport/viewport-root';
-import { FluentIterable, FluentIterableImpl } from '../utils/iterable';
+} from '../features/bounds/model.js';
+import { edgeLayoutFeature } from '../features/edge-layout/model.js';
+import { deletableFeature } from '../features/edit/delete.js';
+import { editFeature } from '../features/edit/model.js';
+import { fadeFeature } from '../features/fade/model.js';
+import { hoverFeedbackFeature, popupFeature } from '../features/hover/model.js';
+import { moveFeature } from '../features/move/model.js';
+import { connectableFeature, SConnectableElementImpl, SRoutableElementImpl } from '../features/routing/model.js';
+import { selectFeature } from '../features/select/model.js';
+import { ViewportRootElementImpl } from '../features/viewport/viewport-root.js';
+import { FluentIterable, FluentIterableImpl } from '../utils/iterable.js';
 
 /**
  * Root element for graph-like models.
  */
 export class SGraphImpl extends ViewportRootElementImpl {
-    layoutOptions?: ModelLayoutOptions;
+    declare layoutOptions?: ModelLayoutOptions;
 
     constructor(index = new SGraphIndex()) {
         super(index);
@@ -52,8 +54,8 @@ export class SNodeImpl extends SConnectableElementImpl implements Selectable, Fa
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature];
 
-    override children: SChildElementImpl[];
-    layout?: string;
+    declare children: SChildElementImpl[];
+    declare layout?: string;
     selected: boolean = false;
     hoverFeedback: boolean = false;
     opacity: number = 1;
@@ -139,7 +141,7 @@ export class SLabelImpl extends SShapeElementImpl implements Selectable, Alignab
     selected: boolean = false;
     alignment: Point = Point.ORIGIN;
     opacity = 1;
-    edgePlacement?: EdgePlacement;
+    declare edgePlacement?: EdgePlacement;
 
 }
 
@@ -151,9 +153,9 @@ export class SCompartmentImpl extends SShapeElementImpl implements Fadeable {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature,
         fadeFeature];
 
-    override children: SChildElementImpl[];
-    layout?: string;
-    override layoutOptions?: {[key: string]: string | number | boolean};
+    declare children: SChildElementImpl[];
+    declare layout?: string;
+    declare layoutOptions?: {[key: string]: string | number | boolean};
     opacity = 1;
 
 }

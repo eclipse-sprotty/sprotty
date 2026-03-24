@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { expect, describe, it } from 'vitest';
-import { SModelRoot } from './model';
-import { SModelIndex } from './utils/model-utils';
+import { SModelRoot } from './model.js';
+import { SModelIndex } from './utils/model-utils.js';
 
 describe('SModelIndex', () => {
     it('returns the parent element for an external model', () => {

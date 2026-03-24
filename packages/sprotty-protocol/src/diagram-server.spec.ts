@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { expect, describe, it } from 'vitest';
-import { Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, SetModelAction } from './actions';
-import { DiagramServer } from './diagram-server';
-import { BoundsAware, SModelRoot } from './model';
-import { ServerActionHandler, ServerActionHandlerRegistry } from './action-handler';
+import { Action, ComputedBoundsAction, RequestBoundsAction, RequestModelAction, SetModelAction } from './actions.js';
+import { DiagramServer } from './diagram-server.js';
+import { BoundsAware, SModelRoot } from './model.js';
+import { ServerActionHandler, ServerActionHandlerRegistry } from './action-handler.js';
 
 declare function setImmediate(callback: () => void): void;
 

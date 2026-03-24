@@ -14,20 +14,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
-import { expect, describe, it } from 'vitest';
-import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
-import { createFeatureSet } from '../../base/model/smodel-factory';
-import { SNodeImpl, SLabelImpl } from '../../graph/sgraph';
-import { StatefulLayouter, LayoutRegistry } from './layout';
-import { BoundsData } from './hidden-bounds-updater';
-import { ConsoleLogger } from '../../utils/logging';
-import boundsModule from './di.config';
 import { Container } from 'inversify';
-import { TYPES } from '../../base/types';
-import defaultModule from '../../base/di.config';
 import { Dimension } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import defaultModule from '../../base/di.config.js';
+import { createFeatureSet } from '../../base/model/smodel-factory.js';
+import { SModelElementImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { SLabelImpl, SNodeImpl } from '../../graph/sgraph.js';
+import { ConsoleLogger } from '../../utils/logging.js';
+import boundsModule from './di.config.js';
+import { BoundsData } from './hidden-bounds-updater.js';
+import { LayoutRegistry, StatefulLayouter } from './layout.js';
 
 describe('StackLayouter', () => {
 

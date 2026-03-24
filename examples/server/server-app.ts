@@ -15,12 +15,13 @@
  ********************************************************************************/
 
 import express from 'express';
-import * as path from 'path';
-import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk/lib/elk-layout';
-import { SocketElkServer } from 'sprotty-elk/lib/node';
+import * as path from 'node:path';
+import { fileURLToPath } from 'url';
+import { ElkFactory, ElkLayoutEngine } from 'sprotty-elk';
+import { SocketElkServer } from 'sprotty-elk/lib/node/index.js';
 import { Action, ActionMessage, DiagramServer, DiagramServices } from 'sprotty-protocol';
-import { RandomGraphGenerator } from './random-graph-generator';
-import { Server } from 'ws';
+import { WebSocketServer } from 'ws';
+import { RandomGraphGenerator } from './random-graph-generator.js';
 
 const serverApp = express();
 serverApp.use(express.json());
@@ -33,7 +34,7 @@ const services: DiagramServices = {
 
 // Create a WebSocket Server
 // This is called from the `random-graph-distributed` example by `WebSocketDiagramServerProxy`
-const wsServer = new Server({ noServer: true });
+const wsServer = new WebSocketServer({ noServer: true });
 wsServer.on('connection', socket => {
 
     let clientId: string | undefined;
@@ -55,6 +56,7 @@ wsServer.on('connection', socket => {
     });
 });
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 serverApp.use(express.static(path.join(__dirname, '../..')));
 
 const server = serverApp.listen(8080, () => {

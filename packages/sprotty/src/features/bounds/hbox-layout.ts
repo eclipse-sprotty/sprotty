@@ -15,14 +15,13 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SParentElementImpl, SChildElementImpl } from "../../base/model/smodel";
-import { AbstractLayout } from './abstract-layout';
-import { AbstractLayoutOptions } from './layout-options';
-import { BoundsData } from './hidden-bounds-updater';
-import { InternalLayoutContainer, isLayoutableChild } from './model';
-import { StatefulLayouter } from './layout';
-import { VAlignment } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension, Point, VAlignment } from 'sprotty-protocol';
+import { SChildElementImpl, SParentElementImpl } from "../../base/model/smodel.js";
+import { AbstractLayout } from './abstract-layout.js';
+import { BoundsData } from './hidden-bounds-updater.js';
+import { AbstractLayoutOptions } from './layout-options.js';
+import { StatefulLayouter } from './layout.js';
+import { InternalLayoutContainer, isLayoutableChild } from './model.js';
 
 export interface HBoxLayoutOptions extends AbstractLayoutOptions {
     hGap: number

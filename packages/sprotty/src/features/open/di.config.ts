@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { OpenMouseListener } from "./open";
+import { TYPES } from "../../base/types.js";
+import { OpenMouseListener } from "./open.js";
 
 const openModule = new ContainerModule(bind => {
     bind(OpenMouseListener).toSelf().inSingletonScope();

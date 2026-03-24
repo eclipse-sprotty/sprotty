@@ -16,21 +16,49 @@
 import '@vscode/codicons/dist/codicon.css';
 import { Container, ContainerModule } from 'inversify';
 import {
-    TYPES, configureViewerOptions, SGraphView, SLabelView, SCompartmentView, JumpingPolylineEdgeView,
-    ConsoleLogger, LogLevel, loadDefaultModules, HtmlRootView, PreRenderedView, ExpandButtonView,
-    SRoutingHandleView, PreRenderedElementImpl, HtmlRootImpl, SGraphImpl, configureModelElement, SLabelImpl,
-    SCompartmentImpl, SEdgeImpl, SButtonImpl, SRoutingHandleImpl, RevealNamedElementActionProvider,
-    CenterGridSnapper, expandFeature, nameFeature, withEditLabelFeature, editLabelFeature,
-    RectangularNode, BezierCurveEdgeView, SBezierCreateHandleView, SBezierControlHandleView, moveFeature, selectFeature
+    BezierCurveEdgeView,
+    BezierMouseListener,
+    CenterGridSnapper,
+    ConsoleLogger,
+    ExpandButtonView,
+    HtmlRootImpl,
+    HtmlRootView,
+    JumpingPolylineEdgeView,
+    LogLevel,
+    PreRenderedElementImpl,
+    PreRenderedView,
+    RectangularNode,
+    RevealNamedElementActionProvider,
+    SBezierControlHandleView,
+    SBezierCreateHandleView,
+    SButtonImpl,
+    SCompartmentImpl,
+    SCompartmentView,
+    SEdgeImpl,
+    SGraphImpl,
+    SGraphView,
+    SLabelImpl,
+    SLabelView,
+    SRoutingHandleImpl,
+    SRoutingHandleView,
+    TYPES,
+    configureModelElement,
+    configureViewerOptions,
+    edgeIntersectionModule,
+    editLabelFeature,
+    expandFeature,
+    loadDefaultModules,
+    moveFeature,
+    nameFeature,
+    selectFeature,
+    withEditLabelFeature
 } from 'sprotty';
-import edgeIntersectionModule from 'sprotty/lib/features/edge-intersection/di.config';
-import { BezierMouseListener } from 'sprotty/lib/features/routing/bezier-edge-router';
-import { ClassDiagramLabelValidationDecorator, ClassDiagramLabelValidator } from './label-validation';
-import { ClassContextMenuItemProvider, ClassContextMenuService } from './menu';
-import { ClassLabel, ClassNode, Icon, PropertyLabel } from './model';
-import { ClassDiagramModelSource } from './model-source';
-import { PopupModelProvider } from './popup';
-import { IconView, NodeView } from './views';
+import { ClassDiagramLabelValidationDecorator, ClassDiagramLabelValidator } from './label-validation.js';
+import { ClassContextMenuItemProvider, ClassContextMenuService } from './menu.js';
+import { ClassLabel, ClassNode, Icon, PropertyLabel } from './model.js';
+import { ClassDiagramModelSource } from './model-source.js';
+import { PopupModelProvider } from './popup.js';
+import { IconView, NodeView } from './views.js';
 
 export default (containerId: string) => {
     require('sprotty/css/sprotty.css');

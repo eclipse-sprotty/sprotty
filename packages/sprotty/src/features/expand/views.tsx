@@ -15,14 +15,14 @@
  ********************************************************************************/
 
  /** @jsx svg */
-import { svg } from '../../lib/jsx';
+import { svg } from '../../lib/jsx.js';
 
-import { VNode } from 'snabbdom';
-import { IView, RenderingContext } from '../../base/views/view';
-import { isExpandable } from './model';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { SButtonImpl } from '../button/model';
 import { injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { IView, RenderingContext } from '../../base/views/view.js';
+import { SButtonImpl } from '../button/model.js';
+import { isExpandable } from './model.js';
 
 @injectable()
 export class ExpandButtonView implements IView {

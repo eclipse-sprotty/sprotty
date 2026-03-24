@@ -15,15 +15,15 @@
  ********************************************************************************/
 
 import { inject } from "inversify";
-import { Action, SelectAction } from "sprotty-protocol/lib/actions";
-import { IActionDispatcher } from "../../base/actions/action-dispatcher";
-import { SModelElementImpl } from "../../base/model/smodel";
-import { findParentByFeature } from "../../base/model/smodel-utils";
-import { TYPES } from "../../base/types";
-import { MouseListener } from "../../base/views/mouse-tool";
-import { isSelectable, isSelected } from "../select/model";
-import { IContextMenuService, IContextMenuServiceProvider } from "./context-menu-service";
-import { ContextMenuProviderRegistry } from "./menu-providers";
+import { Action, SelectAction } from "sprotty-protocol";
+import { IActionDispatcher } from "../../base/actions/action-dispatcher.js";
+import { findParentByFeature } from "../../base/model/smodel-utils.js";
+import { SModelElementImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { MouseListener } from "../../base/views/mouse-tool.js";
+import { isSelectable, isSelected } from "../select/model.js";
+import { IContextMenuService, IContextMenuServiceProvider } from "./context-menu-service.js";
+import { ContextMenuProviderRegistry } from "./menu-providers.js";
 
 export class ContextMenuMouseListener extends MouseListener {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;

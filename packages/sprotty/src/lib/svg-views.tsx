@@ -15,19 +15,18 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from './jsx';
+import { svg } from './jsx.js';
 
-import { VNode } from 'snabbdom';
-import { Hoverable, Selectable } from 'sprotty-protocol/lib/model';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { IView, IViewArgs, RenderingContext } from '../base/views/view';
-import { SNodeImpl, SPortImpl } from '../graph/sgraph';
-import { ViewportRootElementImpl } from '../features/viewport/viewport-root';
-import { SShapeElementImpl } from '../features/bounds/model';
-import { ShapeView } from '../features/bounds/views';
-import { Diamond } from '../utils/geometry';
-import { SModelElementImpl } from '../base/model/smodel';
 import { injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { Hoverable, Point, Selectable } from 'sprotty-protocol';
+import { SModelElementImpl } from '../base/model/smodel.js';
+import { IView, IViewArgs, RenderingContext } from '../base/views/view.js';
+import { SShapeElementImpl } from '../features/bounds/model.js';
+import { ShapeView } from '../features/bounds/views.js';
+import { ViewportRootElementImpl } from '../features/viewport/viewport-root.js';
+import { SNodeImpl, SPortImpl } from '../graph/sgraph.js';
+import { Diamond } from '../utils/geometry.js';
 
 @injectable()
 export class SvgViewportView implements IView {

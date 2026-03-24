@@ -14,19 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
 import { expect, describe, it } from 'vitest';
-import { SRoutingHandleImpl } from '../features/routing/model';
-import { RectangularNode, RectangularPort } from '../lib/model';
-import { SNodeImpl, SEdgeImpl, SGraphImpl, SPortImpl } from './sgraph';
-import { RoutedPoint } from "../features/routing/routing";
-import { PolylineEdgeRouter } from "../features/routing/polyline-edge-router";
+import { SRoutingHandleImpl } from '../features/routing/model.js';
+import { RectangularNode, RectangularPort } from '../lib/model.js';
+import { SNodeImpl, SEdgeImpl, SGraphImpl, SPortImpl } from './sgraph.js';
+import { RoutedPoint } from "../features/routing/routing.js";
+import { PolylineEdgeRouter } from "../features/routing/polyline-edge-router.js";
 import { Container } from "inversify";
-import { AnchorComputerRegistry } from "../features/routing/anchor";
-import { RectangleAnchor } from "../features/routing/polyline-anchors";
-import { TYPES } from "../base/types";
-import routingModule from "../features/routing/di.config";
+import { AnchorComputerRegistry } from "../features/routing/anchor.js";
+import { RectangleAnchor } from "../features/routing/polyline-anchors.js";
+import { TYPES } from "../base/types.js";
+import routingModule from "../features/routing/di.config.js";
 
 describe('SEdgeImpl', () => {
     const graph = new SGraphImpl();

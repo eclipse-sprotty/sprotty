@@ -14,20 +14,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Action, ExportSvgAction, generateRequestId, RequestAction } from 'sprotty-protocol/lib/actions';
-import { CommandExecutionContext, HiddenCommand, CommandResult } from '../../base/commands/command';
-import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
-import { isSelectable } from '../select/model';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { KeyListener } from '../../base/views/key-tool';
-import { matchesKeystroke } from '../../utils/keyboard';
-import { isExportable } from './model';
-import { SvgExporter } from './svg-exporter';
-import { isViewport } from '../viewport/model';
-import { isHoverable } from '../hover/model';
-import { TYPES } from '../../base/types';
+import { Action, ExportSvgAction, generateRequestId, RequestAction } from 'sprotty-protocol';
+import { CommandExecutionContext, CommandResult, HiddenCommand } from '../../base/commands/command.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { KeyListener } from '../../base/views/key-tool.js';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor.js';
+import { matchesKeystroke } from '../../utils/keyboard.js';
+import { isHoverable } from '../hover/model.js';
+import { isSelectable } from '../select/model.js';
+import { isViewport } from '../viewport/model.js';
+import { isExportable } from './model.js';
+import { SvgExporter } from './svg-exporter.js';
 
 @injectable()
 export class ExportSvgKeyListener extends KeyListener {

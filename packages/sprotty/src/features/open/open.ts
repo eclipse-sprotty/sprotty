@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Action, OpenAction } from 'sprotty-protocol/lib/actions';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { SModelElementImpl } from '../../base/model/smodel';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { isOpenable } from './model';
+import { Action, OpenAction } from 'sprotty-protocol';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { SModelElementImpl } from '../../base/model/smodel.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { isOpenable } from './model.js';
 
 
 export class OpenMouseListener extends MouseListener {

@@ -14,17 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { TYPES } from '../types';
-import { EMPTY_ROOT, SModelFactory } from '../model/smodel-factory';
-import { SNodeImpl } from "../../graph/sgraph";
-import { EmptyView, findArgValue, MissingView } from "./view";
-import { ModelRenderer } from "./viewer";
-import defaultModule from "../di.config";
-
-const toHTML = require('snabbdom-to-html');
+import toHTML from 'snabbdom-to-html';
+import { describe, expect, it } from 'vitest';
+import { SNodeImpl } from "../../graph/sgraph.js";
+import defaultModule from "../di.config.js";
+import { EMPTY_ROOT, SModelFactory } from '../model/smodel-factory.js';
+import { TYPES } from '../types.js';
+import { EmptyView, findArgValue, MissingView } from "./view.js";
+import { ModelRenderer } from "./viewer.js";
 
 describe('base views', () => {
     const container = new Container();

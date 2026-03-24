@@ -15,14 +15,14 @@
  ********************************************************************************/
 
  /** @jsx svg */
-import { svg } from '../../lib/jsx';
+import { svg } from '../../lib/jsx.js';
 
-import { expect, describe, it } from 'vitest';
 import { init } from "snabbdom";
-import { SModelElementImpl } from "../model/smodel";
-import { ModelRenderer } from './viewer';
-import { ThunkView } from './thunk-view';
 import toHTML from 'snabbdom-to-html';
+import { describe, expect, it } from 'vitest';
+import { SModelElementImpl } from "../model/smodel.js";
+import { ThunkView } from './thunk-view.js';
+import { ModelRenderer } from './viewer.js';
 
 /**
  * @vitest-environment happy-dom

@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional, inject } from 'inversify';
-import { SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
-import { TYPES } from "../types";
-import { FactoryRegistry } from '../../utils/registry';
-import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl, isParent, FeatureSet } from './smodel';
+import { inject, injectable, multiInject, optional } from 'inversify';
+import { SModelElement, SModelRoot } from 'sprotty-protocol';
+import { FactoryRegistry } from '../../utils/registry.js';
+import { TYPES } from "../types.js";
+import { FeatureSet, SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl, isParent } from './smodel.js';
 
 /**
  * Model element classes registered here are considered automatically when constructring a model from its schema.

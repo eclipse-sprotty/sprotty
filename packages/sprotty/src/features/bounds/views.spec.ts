@@ -14,14 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
-import { expect, describe, it } from 'vitest';
-import { IViewArgs, RenderingContext } from '../../base/views/view';
-import { ViewportRootElementImpl } from '../viewport/viewport-root';
-import { SShapeElementImpl } from './model';
-import { ShapeView } from './views';
 import { VNode } from 'snabbdom';
+import { describe, expect, it } from 'vitest';
+import { IViewArgs, RenderingContext } from '../../base/views/view.js';
+import { ViewportRootElementImpl } from '../viewport/viewport-root.js';
+import { SShapeElementImpl } from './model.js';
+import { ShapeView } from './views.js';
 
 describe('ShapeView.isVisible', () => {
 

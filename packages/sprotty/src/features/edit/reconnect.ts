@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { ReconnectAction } from 'sprotty-protocol/lib/actions';
-import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { TYPES } from '../../base/types';
-import { SRoutableElementImpl } from '../routing/model';
-import { EdgeMemento, EdgeRouterRegistry } from '../routing/routing';
+import { ReconnectAction } from 'sprotty-protocol';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { TYPES } from '../../base/types.js';
+import { SRoutableElementImpl } from '../routing/model.js';
+import { EdgeMemento, EdgeRouterRegistry } from '../routing/routing.js';
 
 @injectable()
 export class ReconnectCommand extends Command {

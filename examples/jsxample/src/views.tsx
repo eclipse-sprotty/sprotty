@@ -14,11 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 /** @jsx svg */
-import { SLabelImpl, svg } from 'sprotty';
-
 import { injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { IViewArgs, RenderingContext, SShapeElementImpl, ShapeView } from "sprotty";
+import { IViewArgs, RenderingContext, SLabelImpl, SShapeElementImpl, ShapeView, svg } from 'sprotty';
 
 @injectable()
 export class ExampleNodeView extends ShapeView {

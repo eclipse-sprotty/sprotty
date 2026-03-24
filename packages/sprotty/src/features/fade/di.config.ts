@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { ElementFader } from "./fade";
+import { TYPES } from "../../base/types.js";
+import { ElementFader } from "./fade.js";
 
 const fadeModule = new ContainerModule(bind => {
     bind(ElementFader).toSelf().inSingletonScope();

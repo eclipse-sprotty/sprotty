@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-export * from './container';
-export * from './model';
-export * from './views';
+export * from './container.js';
+export * from './model.js';
+export * from './views.js';
+

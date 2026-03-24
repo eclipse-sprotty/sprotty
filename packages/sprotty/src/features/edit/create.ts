@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { CreateElementAction } from 'sprotty-protocol/lib/actions';
-import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { TYPES } from '../../base/types';
+import { CreateElementAction } from 'sprotty-protocol';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { SChildElementImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
 
 @injectable()
 export class CreateElementCommand extends Command {

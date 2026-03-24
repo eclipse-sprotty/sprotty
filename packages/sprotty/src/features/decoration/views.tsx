@@ -15,13 +15,13 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../lib/jsx';
+import { svg } from '../../lib/jsx.js';
 
-import { VNode } from 'snabbdom';
-import { IView, RenderingContext } from '../../base/views/view';
-import { SIssueMarkerImpl, SIssueSeverity } from './model';
-import { setClass } from '../../base/views/vnode-utils';
 import { injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { IView, RenderingContext } from '../../base/views/view.js';
+import { setClass } from '../../base/views/vnode-utils.js';
+import { SIssueMarkerImpl, SIssueSeverity } from './model.js';
 
 @injectable()
 export class IssueMarkerView implements IView {

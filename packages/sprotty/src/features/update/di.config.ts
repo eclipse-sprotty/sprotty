@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { configureCommand } from "../../base/commands/command-registration";
-import { UpdateModelCommand } from "./update-model";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { UpdateModelCommand } from "./update-model.js";
 
 const updateModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, UpdateModelCommand);

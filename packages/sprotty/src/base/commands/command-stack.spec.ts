@@ -14,16 +14,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
 import { Container, injectable } from "inversify";
-import { TYPES } from "../types";
-import defaultModule from "../di.config";
-import { IViewerProvider } from "../views/viewer";
+import { describe, expect, it } from 'vitest';
+import defaultModule from "../di.config.js";
+import { TYPES } from "../types.js";
+import { IViewerProvider } from "../views/viewer.js";
+import { ICommandStack } from "./command-stack.js";
 import {
-    Command, HiddenCommand, SystemCommand, CommandExecutionContext, CommandReturn, MergeableCommand, PopupCommand
-} from './command';
-import { ICommandStack } from "./command-stack";
+    Command,
+    CommandExecutionContext, CommandReturn,
+    HiddenCommand,
+    MergeableCommand, PopupCommand,
+    SystemCommand
+} from './command.js';
 
 let operations: string[] = [];
 

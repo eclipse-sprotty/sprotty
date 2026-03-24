@@ -40,7 +40,7 @@ export class ClientLayoutNode extends SNodeImpl {
 
     // Layout configuration
     override layout: string = 'vbox';
-    override layoutOptions?: {
+    declare layoutOptions?: {
         paddingTop?: number;
         paddingBottom?: number;
         paddingLeft?: number;
@@ -75,7 +75,7 @@ export class ServerLayoutNode extends SNodeImpl {
     nodeType?: 'service' | 'database' | 'client' | 'router' | 'gateway';
 
     // Layout constraints for server algorithms
-    override layoutOptions?: {
+    declare layoutOptions?: {
         'elk.portConstraints'?: string;
         'elk.nodeLabels.placement'?: string;
         'elk.priority'?: number;
@@ -101,7 +101,7 @@ export class HybridLayoutNode extends SNodeImpl {
 
     // Client layout for internal content
     override layout: string = 'vbox';
-    override layoutOptions?: {
+    declare layoutOptions?: {
         paddingTop?: number;
         paddingBottom?: number;
         paddingLeft?: number;

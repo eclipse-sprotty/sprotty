@@ -15,11 +15,11 @@
  ********************************************************************************/
 // Based on the sweepline implementation at https://github.com/rowanwins/sweepline-intersections
 // which is published under the terms of MIT, but has been adapted to the use case of sprotty.
+import { Point } from "sprotty-protocol";
 import TinyQueue from "tinyqueue";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { PointToPointLine } from "../../utils/geometry";
-import { Intersection } from "./intersection-finder";
-import { RoutedPoint } from "../routing/routing";
+import { PointToPointLine } from "../../utils/geometry.js";
+import { RoutedPoint } from "../routing/routing.js";
+import { Intersection } from "./intersection-finder.js";
 
 /*
  * The algorithm implemented in this module is loosely based on the Bentley-Ottmann algorithm for

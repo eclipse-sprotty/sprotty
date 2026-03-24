@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { CommandPaletteActionProviderRegistry } from "./action-providers";
-import { CommandPalette, CommandPaletteKeyListener } from "./command-palette";
+import { TYPES } from "../../base/types.js";
+import { CommandPaletteActionProviderRegistry } from "./action-providers.js";
+import { CommandPalette, CommandPaletteKeyListener } from "./command-palette.js";
 
 const commandPaletteModule = new ContainerModule((bind) => {
     bind(CommandPalette).toSelf().inSingletonScope();

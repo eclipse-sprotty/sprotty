@@ -14,14 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Alignable, Locateable, Selectable, SModelElement, SModelRoot } from 'sprotty-protocol/lib/model';
-import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelRootImpl, SChildElementImpl } from '../base/model/smodel';
-import { InternalBoundsAware, boundsFeature, alignFeature, isBoundsAware } from '../features/bounds/model';
-import { moveFeature } from '../features/move/model';
-import { selectFeature } from '../features/select/model';
-import { SNodeImpl, SPortImpl } from '../graph/sgraph';
-import { RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND } from '../features/routing/anchor';
+import { Alignable, Bounds, Dimension, Locateable, Point, Selectable, SModelElement, SModelRoot } from 'sprotty-protocol';
+import { SChildElementImpl, SModelRootImpl } from '../base/model/smodel.js';
+import { alignFeature, boundsFeature, InternalBoundsAware, isBoundsAware } from '../features/bounds/model.js';
+import { moveFeature } from '../features/move/model.js';
+import { DIAMOND_ANCHOR_KIND, ELLIPTIC_ANCHOR_KIND, RECTANGULAR_ANCHOR_KIND } from '../features/routing/anchor.js';
+import { selectFeature } from '../features/select/model.js';
+import { SNodeImpl, SPortImpl } from '../graph/sgraph.js';
 
 /**
  * A node that is represented by a circle.

@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ServerActionHandlerRegistry } from './action-handler';
-import { SModelRoot } from './model';
-import { JsonMap } from './utils/json';
-import { SModelIndex } from './utils/model-utils';
+import { ServerActionHandlerRegistry } from './action-handler.js';
+import { SModelRoot } from './model.js';
+import { JsonMap } from './utils/json.js';
+import { SModelIndex } from './utils/model-utils.js';
 
 export type DiagramOptions = JsonMap;
 

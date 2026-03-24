@@ -14,9 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelElement } from 'sprotty-protocol/lib/model';
-import { Bounds, isBounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { FluentIterable, mapIterable } from '../../utils/iterable';
+import { Bounds, isBounds, Point, SModelElement } from 'sprotty-protocol';
+import { FluentIterable, mapIterable } from '../../utils/iterable.js';
 
 /**
  * Base class for all elements of the internal diagram model.

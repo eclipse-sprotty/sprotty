@@ -16,9 +16,9 @@
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
-import { SRoutableElementImpl, getAbsoluteRouteBounds } from './model';
+import { Point } from 'sprotty-protocol';
+import { IView, IViewArgs, RenderingContext } from '../../base/views/view.js';
+import { SRoutableElementImpl, getAbsoluteRouteBounds } from './model.js';
 
 @injectable()
 export abstract class RoutableView implements IView {

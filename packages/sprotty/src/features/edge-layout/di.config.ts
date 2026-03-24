@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { EdgeLayoutPostprocessor } from "./edge-layout";
+import { TYPES } from "../../base/types.js";
+import { EdgeLayoutPostprocessor } from "./edge-layout.js";
 
 const edgeLayoutModule = new ContainerModule(bind => {
     bind(EdgeLayoutPostprocessor).toSelf().inSingletonScope();

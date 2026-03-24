@@ -16,7 +16,7 @@
 
 import { TYPES, LocalModelSource, IActionDispatcher } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config';
+import createContainer from './di.config.js';
 
 export default async function runCustomViewsShowcase() {
     console.log('Starting Custom Views Showcase...');

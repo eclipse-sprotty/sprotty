@@ -14,19 +14,26 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
 import { Container, injectable } from "inversify";
-// eslint-disable-next-line max-len
-import { Action, ComputedBoundsAction, isResponseAction, RequestAction, RequestBoundsAction, ResponseAction, SetModelAction, UpdateModelAction } from 'sprotty-protocol/lib/actions';
-import { Deferred } from 'sprotty-protocol/lib/utils/async';
-import { TYPES } from "../base/types";
-import { ViewerOptions, overrideViewerOptions } from "../base/views/viewer-options";
-import { IActionDispatcher } from "../base/actions/action-dispatcher";
-import { LocalModelSource } from "./local-model-source";
-import { ComputedBoundsApplicator } from "./model-source";
-import defaultContainerModule from "../base/di.config";
-import { SModelElement } from "sprotty-protocol";
+import {
+    Action,
+    ComputedBoundsAction,
+    Deferred,
+    isResponseAction,
+    RequestAction,
+    RequestBoundsAction,
+    ResponseAction,
+    SetModelAction,
+    SModelElement,
+    UpdateModelAction
+} from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import { IActionDispatcher } from "../base/actions/action-dispatcher.js";
+import defaultContainerModule from "../base/di.config.js";
+import { TYPES } from "../base/types.js";
+import { overrideViewerOptions, ViewerOptions } from "../base/views/viewer-options.js";
+import { LocalModelSource } from "./local-model-source.js";
+import { ComputedBoundsApplicator } from "./model-source.js";
 
 describe('LocalModelSource', () => {
 
@@ -200,8 +207,8 @@ describe('LocalModelSource', () => {
             id: 'root',
             children: [
                 {
-                type: 'node',
-                id: 'child1'
+                    type: 'node',
+                    id: 'child1'
                 },
                 {
                     type: 'node',
@@ -289,7 +296,7 @@ describe('LocalModelSource', () => {
                 elementId: 'child1',
                 newPosition: { x: 10, y: 10 },
                 newSize: { width: 20, height: 20 }
-             }
+            }
         ], { requestId: dispatcher.requests[0].requestId }));
         await promise1;
 
