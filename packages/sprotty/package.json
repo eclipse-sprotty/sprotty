@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5",
-    "happy-dom": "^15.10.2",
+    "happy-dom": "^20.8.8",
     "snabbdom-to-html": "^7.1.0"
   },
   "volta": {
