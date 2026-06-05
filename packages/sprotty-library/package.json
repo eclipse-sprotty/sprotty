@@ -27,10 +27,6 @@
         "url": "https://github.com/eclipse-sprotty/sprotty",
         "directory": "packages/sprotty-library"
     },
-    "volta": {
-        "node": "18.19.0",
-        "yarn": "1.22.21"
-    },
     "scripts": {
         "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
         "build": "tsc",

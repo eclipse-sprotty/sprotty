@@ -6,7 +6,7 @@
         {
             "label": "Build Sprotty",
             "type": "shell",
-            "command": "yarn",
+            "command": "npm install",
             "group": "build",
             "presentation": {
                 "focus": false,
@@ -22,7 +22,7 @@
         {
             "label": "Watch Sprotty",
             "type": "shell",
-            "command": "yarn watch",
+            "command": "npm run watch",
             "group": "none",
             "presentation": {
                 "focus": false,
