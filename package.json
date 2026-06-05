@@ -15,11 +15,11 @@
     "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
   },
   "devDependencies": {
-    "@types/node": "~18.19.3",
-    "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@typescript-eslint/parser": "^6.10.0",
+    "@types/node": "~24.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-v8": "~1.0.2",
-    "eslint": "^8.53.0",
+    "eslint": "^8.56.0",
     "concurrently": "~8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-header": "^3.1.1",
@@ -28,12 +28,12 @@
     "reflect-metadata": "~0.1.14",
     "semver": "^7.5.4",
     "shx": "^0.3.4",
-    "typescript": "~5.2.2",
+    "typescript": "~5.9.2",
     "vite": "~6.4.2",
     "vitest": "~1.6.1"
   },
   "volta": {
-    "node": "18.19.0",
+    "node": "24",
     "yarn": "1.22.21"
   },
   "workspaces": [

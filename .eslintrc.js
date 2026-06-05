@@ -35,11 +35,10 @@ module.exports = {
             }
         ],
         '@typescript-eslint/no-unused-expressions': 'off',
-        '@typescript-eslint/semi': [
+        'semi': [
             'error',
             'always'
         ],
-        '@typescript-eslint/type-annotation-spacing': 'warn',
         'header/header': ['error', 'block', [{'pattern': '[\n\r]+ \\* Copyright \\([cC]\\) \\d{4}(-\\d{4})? .*[\n\r]+'}]],
         'brace-style': [
             'warn',
