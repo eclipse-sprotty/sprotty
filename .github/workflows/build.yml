@@ -22,8 +22,12 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '24'
-    - name: Build
+    - name: Install
       run: yarn
+      env:
+        NODE_ENV: development
+    - name: Build
+      run: yarn build
     - name: Lint
       run: yarn lint
     - name: Test
