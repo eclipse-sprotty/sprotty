@@ -73,43 +73,53 @@ export class HiddenBoundsUpdater implements IVNodePostprocessor {
     }
 
     postUpdate(cause?: Action) {
-        if (cause === undefined || cause.kind !== RequestBoundsAction.KIND) {
-            return;
-        }
-        const request = cause as RequestBoundsAction;
-        this.getBoundsFromDOM();
-        this.layouter.layout(this.element2boundsData);
-        const resizes: ElementAndBounds[] = [];
-        const alignments: ElementAndAlignment[] = [];
-        this.element2boundsData.forEach(
-            (boundsData, element) => {
-                if (boundsData.boundsChanged && boundsData.bounds !== undefined) {
-                    const resize: ElementAndBounds = {
-                        elementId: element.id,
-                        newSize: {
-                            width: boundsData.bounds.width,
-                            height: boundsData.bounds.height
-                        }
-                    };
-                    // don't copy position if the element is layouted by the server
-                    if (element instanceof SChildElementImpl && isLayoutContainer(element.parent)) {
-                        resize.newPosition = {
-                            x: boundsData.bounds.x,
-                            y: boundsData.bounds.y,
+        try {
+            if (cause === undefined || cause.kind !== RequestBoundsAction.KIND) {
+                return;
+            }
+            const request = cause as RequestBoundsAction;
+            this.getBoundsFromDOM();
+            this.layouter.layout(this.element2boundsData);
+            const resizes: ElementAndBounds[] = [];
+            const alignments: ElementAndAlignment[] = [];
+            this.element2boundsData.forEach(
+                (boundsData, element) => {
+                    if (boundsData.boundsChanged && boundsData.bounds !== undefined) {
+                        const resize: ElementAndBounds = {
+                            elementId: element.id,
+                            newSize: {
+                                width: boundsData.bounds.width,
+                                height: boundsData.bounds.height
+                            }
                         };
+                        // don't copy position if the element is layouted by the server
+                        if (element instanceof SChildElementImpl && isLayoutContainer(element.parent)) {
+                            resize.newPosition = {
+                                x: boundsData.bounds.x,
+                                y: boundsData.bounds.y,
+                            };
+                        }
+                        resizes.push(resize);
                     }
-                    resizes.push(resize);
-                }
-                if (boundsData.alignmentChanged && boundsData.alignment !== undefined) {
-                    alignments.push({
-                        elementId: element.id,
-                        newAlignment: boundsData.alignment
-                    });
-                }
-            });
-        const revision = (this.root !== undefined) ? this.root.revision : undefined;
-        this.actionDispatcher.dispatch(ComputedBoundsAction.create(resizes, { revision, alignments, requestId: request.requestId }));
+                    if (boundsData.alignmentChanged && boundsData.alignment !== undefined) {
+                        alignments.push({
+                            elementId: element.id,
+                            newAlignment: boundsData.alignment
+                        });
+                    }
+                });
+            const revision = (this.root !== undefined) ? this.root.revision : undefined;
+            this.actionDispatcher.dispatch(ComputedBoundsAction.create(resizes, { revision, alignments, requestId: request.requestId }));
+        } finally {
+            // always reset the collected data so hidden renderings with other causes (e.g. exports)
+            // or failures during the bounds computation do not leak into the next run
+            this.cleanUp();
+        }
+    }
+
+    protected cleanUp(): void {
         this.element2boundsData.clear();
+        this.root = undefined;
     }
 
     protected getBoundsFromDOM() {
