@@ -79,34 +79,29 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
                                 this.logger.error({}, 'No moveMode set for edge label. Skipping edge placement.');
                                 break;
                         }
-                        if (derivativeOnEdge) {
-                            const angle = toDegrees(Math.atan2(derivativeOnEdge.y, derivativeOnEdge.x));
-                            if (placement.rotate) {
-                                let flippedAngle = angle;
-                                // Flip angle if it exceeds 90 degrees
-                                if (Math.abs(angle) > 90) {
-                                    if (angle < 0)
-                                        flippedAngle += 180;
-                                    else if (angle > 0)
-                                        flippedAngle -= 180;
-                                }
-                                transform += ` rotate(${flippedAngle})`;
-                                // Get rotated alignment based on flipped angle
-                                const alignment = this.getRotatedAlignment(element, placement, flippedAngle !== angle);
-                                transform += ` translate(${alignment.x}, ${alignment.y})`;
-                            } else {
-                                // Get alignment based on angle
-                                const alignment = this.getAlignment(element, placement, angle);
-                                transform += ` translate(${alignment.x}, ${alignment.y})`;
-                            }
-                        }
+
+                        transform += this.applyRotationAndAlignment(derivativeOnEdge, placement, element);
                     } else {
                         // if the element is moveable and no placement is specified, the label is freely movable (i.e. moveMode = 'free').
                         // Otherwise it is fixed to its position (i.e. moveMode = 'none').
                         if (isMoveable(element)) {
-                            transform += `translate(${(pointOnEdge?.x ?? 0) + actualBounds.x}, ${(pointOnEdge?.y ?? 0) + actualBounds.y})`;;
+                            transform += ` translate(${(pointOnEdge?.x ?? 0) + actualBounds.x}, ${(pointOnEdge?.y ?? 0) + actualBounds.y})`;;
                         } else {
-                            transform += `translate(${pointOnEdge.x}, ${pointOnEdge.y})`;
+                            const hasAbsolutePosition = actualBounds.x !== 0 || actualBounds.y !== 0;
+                            if (hasAbsolutePosition) {
+                                const center = {
+                                    x: actualBounds.x + actualBounds.width / 2,
+                                    y: actualBounds.y + actualBounds.height / 2
+                                };
+                                const orthogonal = router.findOrthogonalIntersection(edge, center);
+                                if (orthogonal) {
+                                    transform += ` translate(${orthogonal.point.x}, ${orthogonal.point.y})`;
+                                    derivativeOnEdge = orthogonal.derivative;
+                                }
+                                transform += this.applyRotationAndAlignment(derivativeOnEdge, placement, element);
+                            } else {
+                                transform += ` translate(${pointOnEdge.x}, ${pointOnEdge.y})`;
+                            }
                         }
                     }
                 }
@@ -260,6 +255,33 @@ export class EdgeLayoutPostprocessor implements IVNodePostprocessor {
 
     protected linearFlip(p0: Point, p1: Point, p2: Point, p3: Point, position: number) {
         return position < 0.5 ? Point.linear(p0, p1, 2 * position) : Point.linear(p2, p3, 2 * position - 1);
+    }
+
+    protected applyRotationAndAlignment(derivativeOnEdge: Point | undefined, placement: EdgePlacement, element: EdgeLayoutable & SModelElementImpl & InternalBoundsAware): string  {
+        let transform: string = "";
+        if (!derivativeOnEdge) {
+            return transform;
+        }
+        const angle = toDegrees(Math.atan2(derivativeOnEdge.y, derivativeOnEdge.x));
+        if (placement.rotate) {
+            let flippedAngle = angle;
+            // Flip angle if it exceeds 90 degrees
+            if (Math.abs(angle) > 90) {
+                if (angle < 0)
+                    flippedAngle += 180;
+                else if (angle > 0)
+                    flippedAngle -= 180;
+            }
+            transform += ` rotate(${flippedAngle})`;
+            // Get rotated alignment based on flipped angle
+            const alignment = this.getRotatedAlignment(element, placement, flippedAngle !== angle);
+            transform += ` translate(${alignment.x}, ${alignment.y})`;
+        } else {
+            // Get alignment based on angle
+            const alignment = this.getAlignment(element, placement, angle);
+            transform += ` translate(${alignment.x}, ${alignment.y})`;
+        }
+        return transform;
     }
 
     postUpdate(): void {}
