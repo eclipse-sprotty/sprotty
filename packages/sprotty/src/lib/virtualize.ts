@@ -212,7 +212,8 @@ export default function virtualizeString(html?: string) {
 
     const doc = parser.parseFromString(html, "application/xml");
 
-    if (doc?.firstChild?.nodeName === 'parsererror') {
+    const rootName = doc?.firstChild?.nodeName;
+    if (rootName === 'parsererror' || rootName === 'HTML') {
         const error = `${doc?.firstChild?.textContent}`;
         return h('parsererror', [error]);
     }

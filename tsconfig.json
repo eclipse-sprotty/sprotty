@@ -20,7 +20,8 @@
         "emitDecoratorMetadata": true,
         "esModuleInterop": true,
         "jsx": "react",
-        "composite": true
+        "composite": true,
+        "skipLibCheck": true
     },
     "include": [
         "**/src/**/*.ts",
