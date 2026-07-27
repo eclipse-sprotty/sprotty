@@ -88,8 +88,8 @@ export class SvgExporter {
         const svgElementNew = docCopy.querySelector('svg')!;
         svgElementNew.removeAttribute('opacity');
         if (!options?.skipCopyStyles) {
-            // inline-size copied from sprotty-hidden svg shrinks the svg so it is not visible.
-            this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size']);
+            // Logical sizes copied from sprotty-hidden svg shrink the svg so it is not visible.
+            this.copyStyles(svgElementOrig, svgElementNew, ['width', 'height', 'opacity', 'inline-size', 'block-size']);
         }
         svgElementNew.setAttribute('version', '1.1');
         const bounds = this.getBounds(root, docCopy);
