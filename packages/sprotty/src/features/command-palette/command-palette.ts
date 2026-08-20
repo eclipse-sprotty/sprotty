@@ -172,21 +172,46 @@ export class CommandPalette extends AbstractUIExtension {
 
     protected renderLabeledActionSuggestion(item: LabeledAction, value: string) {
         const itemElement = document.createElement("div");
-        const wordMatcher = espaceForRegExp(value).split(" ").join("|");
-        const regex = new RegExp(wordMatcher, "gi");
         if (item.icon) {
             this.renderIcon(itemElement, item.icon);
         }
-        if (value.length > 0) {
-            itemElement.innerHTML += item.label.replace(regex, (match) => "<em>" + match + "</em>").replace(/ /g, '&nbsp;');
-        } else {
-            itemElement.innerHTML += item.label.replace(/ /g, '&nbsp;');
+
+        const label = item.label.replace(/ /g, '\u00A0');
+        if (!value.length) {
+            itemElement.append(label);
+            return itemElement;
         }
+
+        const wordMatcher = espaceForRegExp(value).split(" ").join("|");
+        this.appendHighlightedText(itemElement, label, new RegExp(wordMatcher, "gi"));
         return itemElement;
     }
 
+    protected appendHighlightedText(
+        element: HTMLElement,
+        text: string,
+        regex: RegExp
+    ) {
+        let lastIndex = 0;
+
+        for (const match of text.matchAll(regex)) {
+            const start = match.index!;
+            const end = start + match[0].length;
+            element.append(text.slice(lastIndex, start));
+            const emEl = document.createElement("em");
+            emEl.textContent = match[0];
+            element.appendChild(emEl);
+
+            lastIndex = end;
+        }
+
+        element.append(text.slice(lastIndex));
+    }
+
     protected renderIcon(itemElement: HTMLDivElement, iconId: string) {
-        itemElement.innerHTML += `<span class="icon ${this.getCodicon(iconId)}"></span>`;
+        const spanEl = document.createElement("span");
+        spanEl.className = `icon ${this.getCodicon(iconId)}`;
+        itemElement.appendChild(spanEl);
     }
 
     protected getFontAwesomeIcon(iconId: string) {
