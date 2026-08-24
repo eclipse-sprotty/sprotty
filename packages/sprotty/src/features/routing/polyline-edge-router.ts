@@ -15,13 +15,12 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { angleBetweenPoints, Bounds, centerOfLine, Point } from "sprotty-protocol/lib/utils/geometry";
-import { SRoutingHandleImpl } from "./model";
-import { ResolvedHandleMove } from "../move/move";
-import { AnchorComputerRegistry } from "./anchor";
-import { AbstractEdgeRouter, LinearRouteOptions } from "./abstract-edge-router";
-import { SRoutableElementImpl } from "./model";
-import { RoutedPoint } from "./routing";
+import { angleBetweenPoints, Bounds, centerOfLine, Point } from "sprotty-protocol";
+import { ResolvedHandleMove } from "../move/move.js";
+import { AbstractEdgeRouter, LinearRouteOptions } from "./abstract-edge-router.js";
+import { AnchorComputerRegistry } from "./anchor.js";
+import { SRoutableElementImpl, SRoutingHandleImpl } from "./model.js";
+import { RoutedPoint } from "./routing.js";
 
 export interface PolylineRouteOptions extends LinearRouteOptions {
     /** The angle in radians below which a routing handle is removed. */
@@ -31,7 +30,7 @@ export interface PolylineRouteOptions extends LinearRouteOptions {
 @injectable()
 export class PolylineEdgeRouter extends AbstractEdgeRouter {
 
-    @inject(AnchorComputerRegistry) override anchorRegistry: AnchorComputerRegistry;
+    @inject(AnchorComputerRegistry) declare anchorRegistry: AnchorComputerRegistry;
 
     static readonly KIND = 'polyline';
 

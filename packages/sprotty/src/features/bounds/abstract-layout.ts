@@ -14,14 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Dimension, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SParentElementImpl, SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { isLayoutContainer, isLayoutableChild, InternalLayoutContainer, isBoundsAware } from './model';
-import { ILayout, StatefulLayouter } from './layout';
-import { AbstractLayoutOptions } from './layout-options';
-import { BoundsData } from './hidden-bounds-updater';
 import { injectable } from 'inversify';
-import { HAlignment, VAlignment } from 'sprotty-protocol/lib/model';
+import { Bounds, Dimension, HAlignment, Point, VAlignment } from 'sprotty-protocol';
+import { SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { BoundsData } from './hidden-bounds-updater.js';
+import { AbstractLayoutOptions } from './layout-options.js';
+import { ILayout, StatefulLayouter } from './layout.js';
+import { InternalLayoutContainer, isBoundsAware, isLayoutContainer, isLayoutableChild } from './model.js';
 
 @injectable()
 export abstract class AbstractLayout<T extends AbstractLayoutOptions> implements ILayout {

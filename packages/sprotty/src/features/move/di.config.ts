@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from '../../base/types';
-import { MoveCommand, MoveMouseListener, LocationPostprocessor } from './move';
-import { configureCommand } from "../../base/commands/command-registration";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { TYPES } from '../../base/types.js';
+import { LocationPostprocessor, MoveCommand, MoveMouseListener } from './move.js';
 
 const moveModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(MoveMouseListener).toSelf().inSingletonScope();

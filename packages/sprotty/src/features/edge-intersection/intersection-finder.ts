@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
+import { Point } from "sprotty-protocol";
 import TinyQueue from "tinyqueue";
-import { EdgeRouting, IEdgeRoutePostprocessor, RoutedPoint } from "../routing/routing";
-import { addRoute, checkWhichEventIsLeft, runSweep, SweepEvent } from "./sweepline";
+import { EdgeRouting, IEdgeRoutePostprocessor, RoutedPoint } from "../routing/routing.js";
+import { addRoute, checkWhichEventIsLeft, runSweep, SweepEvent } from "./sweepline.js";
 
 export interface Intersection {
     readonly routable1: string;

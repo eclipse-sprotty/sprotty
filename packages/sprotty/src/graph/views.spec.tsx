@@ -14,27 +14,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
- /** @jsx svg */
-import { svg } from '../lib/jsx';
-
-import 'reflect-metadata';
+/** @jsx svg */
+import { svg } from '../lib/jsx.js';
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
 import { VNode } from 'snabbdom';
-import { TYPES } from '../base/types';
-import { IVNodePostprocessor } from '../base/views/vnode-postprocessor';
-import { CircularNodeView, RectangularNodeView } from '../lib/svg-views';
-import { CircularNode, RectangularNode, RectangularPort } from '../lib/model';
-import { RenderingContext, ViewRegistry, configureModelElement } from '../base/views/view';
-import { ModelRendererFactory } from '../base/views/viewer';
-import { PolylineEdgeView, SGraphView } from './views';
-import { SModelElementImpl, SParentElementImpl } from '../base/model/smodel';
-import { IModelFactory } from '../base/model/smodel-factory';
-import defaultModule from '../base/di.config';
-import selectModule from '../features/select/di.config';
-import moveModule from '../features/move/di.config';
-import { SEdgeImpl, SGraphImpl, SNodeImpl, SPortImpl } from './sgraph';
-import routingModule from '../features/routing/di.config';
+import { TYPES } from '../base/types.js';
+import { IVNodePostprocessor } from '../base/views/vnode-postprocessor.js';
+import { CircularNodeView, RectangularNodeView } from '../lib/svg-views.js';
+import { CircularNode, RectangularNode, RectangularPort } from '../lib/model.js';
+import { RenderingContext, ViewRegistry, configureModelElement } from '../base/views/view.js';
+import { ModelRendererFactory } from '../base/views/viewer.js';
+import { PolylineEdgeView, SGraphView } from './views.js';
+import { SModelElementImpl, SParentElementImpl } from '../base/model/smodel.js';
+import { IModelFactory } from '../base/model/smodel-factory.js';
+import defaultModule from '../base/di.config.js';
+import selectModule from '../features/select/di.config.js';
+import moveModule from '../features/move/di.config.js';
+import { SEdgeImpl, SGraphImpl, SNodeImpl, SPortImpl } from './sgraph.js';
+import routingModule from '../features/routing/di.config.js';
 
 import toHTML from 'snabbdom-to-html';
 import { SEdge, SNode, SPort } from 'sprotty-protocol';
@@ -44,8 +42,8 @@ describe('graph views', () => {
         override render(node: SNodeImpl, renderContext: RenderingContext): VNode {
             const radius = this.getRadius(node);
             return <g>
-                    <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius} />
-                </g>;
+                <circle class-sprotty-node={true} class-selected={node.selected} r={radius} cx={radius} cy={radius} />
+            </g>;
         }
         protected override getRadius(node: SNodeImpl) {
             return 40;
@@ -74,6 +72,7 @@ describe('graph views', () => {
         const graph = graphFactory.createRoot(schema) as SGraphImpl;
         const view = viewRegistry.get(graph.type);
         const vnode = view.render(graph, context);
+
         expect(toHTML(vnode)).to.be.equal('<svg class="sprotty-graph"><g transform="scale(1) translate(0,0)"></g></svg>');
     });
 
@@ -98,6 +97,7 @@ describe('graph views', () => {
         const graph = createModel();
         const view = viewRegistry.get('node:circle');
         const vnode = view.render(graph.index.getById('node0') as SNodeImpl, context);
+
         expect(toHTML(vnode)).to.be.equal('<g><circle class="sprotty-node" r="40" cx="40" cy="40" /></g>');
     });
 
@@ -106,17 +106,18 @@ describe('graph views', () => {
         const vnode = context.renderElement(graph);
         const expectation = '<svg id="sprotty_graph" class="sprotty-graph" tabindex="0">'
             + '<g transform="scale(1) translate(0,0)">'
-            +   '<g id="sprotty_node0" class="circle" transform="translate(100, 100)">'
-            +     '<circle class="sprotty-node" r="40" cx="40" cy="40" />'
-            +   '</g>'
-            +   '<g id="sprotty_node1" class="circle selected" transform="translate(200, 150)">'
-            +     '<circle class="sprotty-node selected" r="40" cx="40" cy="40" />'
-            +   '</g>'
-            +   '<g id="sprotty_edge0" class="sprotty-edge straight">'
-            +     '<path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" />'
-            +   '</g>'
+            + '<g id="sprotty_node0" class="circle" transform="translate(100, 100)">'
+            + '<circle class="sprotty-node" r="40" cx="40" cy="40" />'
+            + '</g>'
+            + '<g id="sprotty_node1" class="circle selected" transform="translate(200, 150)">'
+            + '<circle class="sprotty-node selected" r="40" cx="40" cy="40" />'
+            + '</g>'
+            + '<g id="sprotty_edge0" class="sprotty-edge straight">'
+            + '<path d="M 175.77708763999664,157.88854381999832 L 204.22291236000336,172.11145618000168" />'
+            + '</g>'
             + '</g>'
             + '</svg>';
+
         expect(toHTML(vnode)).to.be.equal(expectation);
     });
 });
@@ -182,9 +183,9 @@ describe('PolylineEdgeView', () => {
     const context = {
         targetKind: 'hidden',
         viewRegistry,
-        decorate: function(vnode: VNode, element: SModelElementImpl): VNode { return vnode; },
-        renderElement: function(element: SModelElementImpl): VNode { return <g></g>; },
-        renderChildren: function(element: SParentElementImpl): VNode[] { return []; }
+        decorate: function (vnode: VNode, element: SModelElementImpl): VNode { return vnode; },
+        renderElement: function (element: SModelElementImpl): VNode { return <g></g>; },
+        renderChildren: function (element: SParentElementImpl): VNode[] { return []; }
     } as RenderingContext;
 
     it('correctly translates edge source and target position', () => {

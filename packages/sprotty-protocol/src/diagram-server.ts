@@ -14,15 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ServerActionHandlerRegistry } from './action-handler';
+import { ServerActionHandlerRegistry } from './action-handler.js';
 import {
     Action, isResponseAction, ResponseAction, RequestModelAction, ComputedBoundsAction, LayoutAction, RequestBoundsAction,
     RequestAction, generateRequestId, SetModelAction, UpdateModelAction, RejectAction, isRequestAction
-} from './actions';
-import { DiagramServices, DiagramState, IDiagramGenerator, IModelLayoutEngine } from './diagram-services';
-import { SModelRoot } from './model';
-import { Deferred } from './utils/async';
-import { applyBounds, cloneModel } from './utils/model-utils';
+} from './actions.js';
+import { DiagramServices, DiagramState, IDiagramGenerator, IModelLayoutEngine } from './diagram-services.js';
+import { SModelRoot } from './model.js';
+import { Deferred } from './utils/async.js';
+import { applyBounds, cloneModel } from './utils/model-utils.js';
 
 /**
  * An instance of this class is responsible for handling a single diagram client. It holds the current

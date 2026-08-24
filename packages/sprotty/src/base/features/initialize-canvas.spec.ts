@@ -14,12 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
-import { CommandExecutionContext } from '../commands/command';
-import { InitializeCanvasBoundsAction, InitializeCanvasBoundsCommand } from './initialize-canvas';
-import { SModelRootImpl } from "../model/smodel";
 import { Bounds } from "sprotty-protocol";
+import { describe, expect, it } from 'vitest';
+import { CommandExecutionContext } from '../commands/command.js';
+import { SModelRootImpl } from "../model/smodel.js";
+import { InitializeCanvasBoundsAction, InitializeCanvasBoundsCommand } from './initialize-canvas.js';
 
 describe('InitializeCanvasBoundsCommand', () => {
 

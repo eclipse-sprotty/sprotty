@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { configureCommand } from "../../base/commands/command-registration";
-import { BringToFrontCommand } from './zorder';
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { BringToFrontCommand } from './zorder.js';
 
 const zorderModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, BringToFrontCommand);

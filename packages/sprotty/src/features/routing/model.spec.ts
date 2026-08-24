@@ -14,13 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
-import { expect, describe, it } from 'vitest';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { SShapeElementImpl } from '../bounds/model';
-import { SRoutableElementImpl, getAbsoluteRouteBounds } from './model';
-import { SEdgeImpl, SGraphImpl, SNodeImpl } from '../../graph/sgraph';
+import { describe, expect, it } from 'vitest';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { SEdgeImpl, SGraphImpl, SNodeImpl } from '../../graph/sgraph.js';
+import { SShapeElementImpl } from '../bounds/model.js';
+import { SRoutableElementImpl, getAbsoluteRouteBounds } from './model.js';
 
 describe('getAbsoluteRouteBounds', () => {
     function createModel(): SModelRootImpl {

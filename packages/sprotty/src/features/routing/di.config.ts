@@ -15,16 +15,16 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { ManhattanEdgeRouter } from "./manhattan-edge-router";
-import { PolylineEdgeRouter } from "./polyline-edge-router";
-import { ManhattanRectangularAnchor, ManhattanEllipticAnchor, ManhattanDiamondAnchor } from "./manhattan-anchors";
-import { RectangleAnchor, EllipseAnchor, DiamondAnchor } from "./polyline-anchors";
-import { AnchorComputerRegistry } from "./anchor";
-import { EdgeRouterRegistry } from "./routing";
-import { AddRemoveBezierSegmentCommand, BezierEdgeRouter } from './bezier-edge-router';
-import { BezierDiamondAnchor, BezierEllipseAnchor, BezierRectangleAnchor } from './bezier-anchors';
-import { configureCommand } from "../../base/commands/command-registration";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { TYPES } from "../../base/types.js";
+import { AnchorComputerRegistry } from "./anchor.js";
+import { BezierDiamondAnchor, BezierEllipseAnchor, BezierRectangleAnchor } from './bezier-anchors.js';
+import { AddRemoveBezierSegmentCommand, BezierEdgeRouter } from './bezier-edge-router.js';
+import { ManhattanDiamondAnchor, ManhattanEllipticAnchor, ManhattanRectangularAnchor } from "./manhattan-anchors.js";
+import { ManhattanEdgeRouter } from "./manhattan-edge-router.js";
+import { DiamondAnchor, EllipseAnchor, RectangleAnchor } from "./polyline-anchors.js";
+import { PolylineEdgeRouter } from "./polyline-edge-router.js";
+import { EdgeRouterRegistry } from "./routing.js";
 
 const routingModule = new ContainerModule((bind, _unbind, isBound) => {
     bind(EdgeRouterRegistry).toSelf().inSingletonScope();

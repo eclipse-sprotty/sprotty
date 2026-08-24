@@ -16,7 +16,7 @@
 
 import { TYPES, LocalModelSource, IActionDispatcher } from 'sprotty';
 import { SGraph, SNode, SLabel, SCompartment, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config';
+import createContainer from './di.config.js';
 
 export default async function runMicroLayoutShowcase() {
     const container = createContainer();

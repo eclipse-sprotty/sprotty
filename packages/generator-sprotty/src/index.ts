@@ -16,7 +16,7 @@
 
 import Generator from 'yeoman-generator';
 import chalk from 'chalk';
-import path from 'path';
+import path from 'node:path';
 
 const TEMPLATE_DIR = '../sprotty-local-template';
 const USER_DIR = '.';
@@ -48,9 +48,9 @@ class SprottyGenerator extends Generator {
                 this.templatePath(file),
                 this._projectPath(file),
                 {
-                    process: content =>
+                    process: (content: Buffer) =>
                         this._replaceTemplateWords(content),
-                    processDestinationPath: destPath =>
+                    processDestinationPath: (destPath: string) =>
                         this._replaceTemplateNames(destPath),
                 }
             );
@@ -61,9 +61,9 @@ class SprottyGenerator extends Generator {
                 this.templatePath('static'),
                 this._projectPath('static'),
                 {
-                    process: content =>
+                    process: (content: Buffer) =>
                         this._replaceTemplateWords(content),
-                    processDestinationPath: destPath =>
+                    processDestinationPath: (destPath: string) =>
                         this._replaceTemplateNames(destPath),
                 }
             );

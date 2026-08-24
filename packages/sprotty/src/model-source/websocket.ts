@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { ActionMessage } from 'sprotty-protocol/lib/actions';
-import { DiagramServerProxy } from './diagram-server';
+import { ActionMessage } from 'sprotty-protocol';
+import { DiagramServerProxy } from './diagram-server.js';
 
 /**
  * An external ModelSource that connects to the model provider using a websocket.

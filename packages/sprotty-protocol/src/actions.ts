@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SModelRoot, SModelElement, Viewport } from './model';
-import { Bounds, Point, Dimension } from './utils/geometry';
-import { JsonAny, JsonMap } from './utils/json';
-import { hasOwnProperty } from './utils/object';
+import { SModelRoot, SModelElement, Viewport } from './model.js';
+import { Bounds, Point, Dimension } from './utils/geometry.js';
+import { JsonAny, JsonMap } from './utils/json.js';
+import { hasOwnProperty } from './utils/object.js';
 
 /**
  * Wrapper for actions when transferring them between client and server.

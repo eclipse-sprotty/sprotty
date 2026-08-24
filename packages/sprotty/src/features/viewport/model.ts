@@ -14,10 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Bounds, Dimension } from 'sprotty-protocol';
-import { Viewport } from 'sprotty-protocol/lib/model';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { limit, Limits } from '../../utils/geometry';
+import { Bounds, Dimension, Viewport } from 'sprotty-protocol';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { limit, Limits } from '../../utils/geometry.js';
 
 export const viewportFeature = Symbol('viewportFeature');
 

@@ -15,12 +15,12 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { CenterCommand, CenterKeyboardListener, FitToScreenCommand } from "./center-fit";
-import { SetViewportCommand, GetViewportCommand } from "./viewport";
-import { ScrollMouseListener } from "./scroll";
-import { ZoomMouseListener } from "./zoom";
-import { configureCommand } from "../../base/commands/command-registration";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { TYPES } from "../../base/types.js";
+import { CenterCommand, CenterKeyboardListener, FitToScreenCommand } from "./center-fit.js";
+import { ScrollMouseListener } from "./scroll.js";
+import { GetViewportCommand, SetViewportCommand } from "./viewport.js";
+import { ZoomMouseListener } from "./zoom.js";
 
 const viewportModule = new ContainerModule((bind , _unbind, isBound) => {
     configureCommand({ bind, isBound }, CenterCommand);

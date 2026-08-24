@@ -17,8 +17,8 @@
 import { spawn, ChildProcess } from 'child_process';
 import {
     ELK, ElkLayoutAlgorithmDescription, ElkLayoutCategoryDescription, ElkLayoutOptionDescription, ElkNode
-} from 'elkjs/lib/elk-api';
-import { applyLayoutData, findObjectEnd, isError, LayoutData, ParseState } from './layout-data';
+} from 'elkjs';
+import { applyLayoutData, findObjectEnd, isError, LayoutData, ParseState } from './layout-data.js';
 
 const DEFAULT_TIMEOUT = 10_000;
 
@@ -79,7 +79,7 @@ export class StdioElkServer implements ELK {
                     process.stdout?.removeListener('data', dataCallback);
                     process.stdin?.removeListener('error', reject);
                     try {
-                        const response = JSON.parse(Buffer.concat(buffers).toString()) as LayoutData | Error;
+                        const response = JSON.parse(Buffer.concat(buffers as Uint8Array[]).toString()) as LayoutData | Error;
                         if (isError(response)) {
                             // The layout server responded an error
                             reject(response);

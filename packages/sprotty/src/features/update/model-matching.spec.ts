@@ -14,10 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
 import { SModelElement } from 'sprotty-protocol';
-import { ModelMatcher } from "./model-matching";
+import { describe, expect, it } from 'vitest';
+import { ModelMatcher } from "./model-matching.js";
 
 describe('ModelMatcher', () => {
     it('finds new elements', () => {

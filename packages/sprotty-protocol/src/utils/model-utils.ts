@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Alignable, BoundsAware, SModelElement, SModelRoot } from '../model';
-import { ComputedBoundsAction } from '../actions';
+import { Alignable, BoundsAware, SModelElement, SModelRoot } from '../model.js';
+import { ComputedBoundsAction } from '../actions.js';
 
 /**
  * Clone a given model. This function requires that the model is serializable, so it's

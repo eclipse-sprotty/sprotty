@@ -16,13 +16,13 @@
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Fadeable } from 'sprotty-protocol/lib/model';
-import { Animation } from '../../base/animations/animation';
-import { CommandExecutionContext } from '../../base/commands/command';
-import { SModelRootImpl, SModelElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor';
-import { setAttr } from '../../base/views/vnode-utils';
-import { isFadeable } from './model';
+import { Fadeable } from 'sprotty-protocol';
+import { Animation } from '../../base/animations/animation.js';
+import { CommandExecutionContext } from '../../base/commands/command.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { IVNodePostprocessor } from '../../base/views/vnode-postprocessor.js';
+import { setAttr } from '../../base/views/vnode-utils.js';
+import { isFadeable } from './model.js';
 
 export interface ResolvedElementFade {
     element: SModelElementImpl & Fadeable

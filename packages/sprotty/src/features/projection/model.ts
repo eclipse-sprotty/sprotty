@@ -14,12 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Projectable as ProjectableSchema, Viewport } from 'sprotty-protocol/lib/model';
-import { Bounds, Dimension } from 'sprotty-protocol/lib/utils/geometry';
-import { hasOwnProperty } from 'sprotty-protocol/lib/utils/object';
-import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel';
-import { transformToRootBounds } from '../../base/model/smodel-utils';
-import { isBoundsAware } from '../bounds/model';
+import { Bounds, Dimension, hasOwnProperty, Projectable as ProjectableSchema, Viewport } from 'sprotty-protocol';
+import { transformToRootBounds } from '../../base/model/smodel-utils.js';
+import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { isBoundsAware } from '../bounds/model.js';
 
 /**
  * Model elements implementing this interface can be displayed on a projection bar.

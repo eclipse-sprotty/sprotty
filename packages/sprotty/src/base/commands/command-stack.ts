@@ -15,18 +15,23 @@
  ********************************************************************************/
 
 import { inject, injectable, postConstruct } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { TYPES } from "../types";
-import { ILogger } from "../../utils/logging";
-import { EMPTY_ROOT, IModelFactory } from "../model/smodel-factory";
-import { SModelRootImpl } from "../model/smodel";
-import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { IViewer, IViewerProvider } from "../views/viewer";
-import { CommandStackOptions } from './command-stack-options';
+import { Action } from "sprotty-protocol";
+import { ILogger } from "../../utils/logging.js";
+import { AnimationFrameSyncer } from "../animations/animation-frame-syncer.js";
+import { EMPTY_ROOT, IModelFactory } from "../model/smodel-factory.js";
+import { SModelRootImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { IViewer, IViewerProvider } from "../views/viewer.js";
+import { CommandStackOptions } from './command-stack-options.js';
 import {
-    HiddenCommand, ICommand, CommandExecutionContext, CommandReturn, SystemCommand,
-    MergeableCommand, PopupCommand, ResetCommand, CommandResult, isStoppableCommand, IStoppableCommand
-} from './command';
+    CommandExecutionContext,
+    CommandResult,
+    CommandReturn,
+    HiddenCommand, ICommand,
+    isStoppableCommand, IStoppableCommand,
+    MergeableCommand, PopupCommand, ResetCommand,
+    SystemCommand
+} from './command.js';
 
 /**
  * The component that holds the current model and applies the commands

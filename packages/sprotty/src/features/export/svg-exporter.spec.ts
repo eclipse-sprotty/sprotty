@@ -19,8 +19,8 @@
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { SvgExporter } from './svg-exporter';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { SvgExporter } from './svg-exporter.js';
 
 class TestSvgExporter extends SvgExporter {
     createSvgForTest(svgElement: SVGSVGElement): string {

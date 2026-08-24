@@ -17,6 +17,11 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+    oxc: {
+        jsx: {
+            development: false
+        }
+    },
     optimizeDeps: {
         esbuildOptions: {
             tsconfig: 'tsconfig.json'

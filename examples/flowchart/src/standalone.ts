@@ -16,8 +16,8 @@
 
 import { LocalModelSource, TYPES } from 'sprotty';
 import { BringToFrontAction, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config';
-import { initializeModel } from './data';
+import createContainer from './di.config.js';
+import { initializeModel } from './data.js';
 
 export default async function runFlowchart() {
     const container = createContainer('sprotty');

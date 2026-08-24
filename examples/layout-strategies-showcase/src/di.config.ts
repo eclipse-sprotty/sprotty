@@ -41,25 +41,25 @@ import {
     ElkFactory,
     ElkLayoutEngine,
     ILayoutConfigurator
-} from 'sprotty-elk/lib/inversify';
-import { LayoutOptions } from 'elkjs/lib/elk-api';
+} from 'sprotty-elk';
+import { LayoutOptions } from 'elkjs';
 import { SGraph, SModelIndex, SNode } from 'sprotty-protocol';
-import ElkConstructor from 'elkjs/lib/elk.bundled';
+import ElkConstructor from 'elkjs/lib/elk.bundled.js';
 import {
     ServerLayoutNode,
     LayoutEdge
-} from './model';
+} from './model.js';
 import {
     ClientLayoutNodeView,
     ServerLayoutNodeView,
     HybridLayoutNodeView,
     LayoutEdgeView
-} from './views';
+} from './views.js';
 
 /**
  * ELK factory for creating ELK layout instances
  */
-const elkFactory: ElkFactory = () => new ElkConstructor({
+const elkFactory: ElkFactory = () => new ElkConstructor.default({
     algorithms: ['layered']
 });
 

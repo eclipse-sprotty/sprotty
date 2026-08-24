@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { SShapeElement } from 'sprotty-protocol';
-import { boundsFeature, layoutableChildFeature, SShapeElementImpl } from '../bounds/model';
-import { fadeFeature } from '../fade/model';
+import { boundsFeature, layoutableChildFeature, SShapeElementImpl } from '../bounds/model.js';
+import { fadeFeature } from '../fade/model.js';
 
 /**
  * @deprecated Use SButton from `sprotty-protocol` instead.

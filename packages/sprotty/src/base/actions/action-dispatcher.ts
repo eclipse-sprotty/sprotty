@@ -16,17 +16,16 @@
 
 import { inject, injectable } from 'inversify';
 import {
-    Action, isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
+    Action, Deferred, isAction, isRequestAction, isResponseAction, RedoAction, RejectAction, RequestAction,
     ResponseAction, SetModelAction, setRequestContext, UndoAction
-} from 'sprotty-protocol/lib/actions';
-import { Deferred } from 'sprotty-protocol/lib/utils/async';
-import { TYPES } from '../types';
-import { ILogger } from '../../utils/logging';
-import { EMPTY_ROOT } from '../model/smodel-factory';
-import { ICommandStack } from '../commands/command-stack';
-import { AnimationFrameSyncer } from '../animations/animation-frame-syncer';
-import { ActionHandlerRegistry } from './action-handler';
-import { IDiagramLocker } from './diagram-locker';
+} from 'sprotty-protocol';
+import { ILogger } from '../../utils/logging.js';
+import { AnimationFrameSyncer } from '../animations/animation-frame-syncer.js';
+import { ICommandStack } from '../commands/command-stack.js';
+import { EMPTY_ROOT } from '../model/smodel-factory.js';
+import { TYPES } from '../types.js';
+import { ActionHandlerRegistry } from './action-handler.js';
+import { IDiagramLocker } from './diagram-locker.js';
 
 export interface IActionDispatcher {
     dispatch(action: Action): Promise<void>
@@ -111,10 +110,10 @@ export class ActionDispatcher implements IActionDispatcher {
 
     protected handleAction(action: Action): Promise<void> {
         if (action.kind === UndoAction.KIND) {
-            return this.commandStack.undo().then(() => {});
+            return this.commandStack.undo().then(() => { });
         }
         if (action.kind === RedoAction.KIND) {
-            return this.commandStack.redo().then(() => {});
+            return this.commandStack.redo().then(() => { });
         }
         if (isResponseAction(action)) {
             const deferred = this.requests.get(action.responseId);
@@ -124,7 +123,7 @@ export class ActionDispatcher implements IActionDispatcher {
                     const rejectAction = action as RejectAction;
                     deferred.reject(new Error(rejectAction.message));
                     this.logger.warn(this, `Request with id ${action.responseId} failed.`,
-                            rejectAction.message, rejectAction.detail);
+                        rejectAction.message, rejectAction.detail);
                 } else {
                     deferred.resolve(action);
                 }

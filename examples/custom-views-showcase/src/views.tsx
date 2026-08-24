@@ -15,11 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from 'sprotty';
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { IView, RenderingContext, IViewArgs, RectangularNodeView, PolylineEdgeView } from 'sprotty';
-import { BasicShapeNode, EnhancedNode, ComplexNode, StatefulNode, StyledEdge, CustomLabel } from './model';
+import { IView, IViewArgs, PolylineEdgeView, RectangularNodeView, RenderingContext, svg } from 'sprotty';
+import { BasicShapeNode, ComplexNode, CustomLabel, EnhancedNode, StatefulNode, StyledEdge } from './model.js';
 
 /**
  * Basic Shape View - demonstrates simple custom view creation

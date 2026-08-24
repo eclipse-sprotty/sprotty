@@ -15,27 +15,27 @@
  ********************************************************************************/
 
 import { Container, ContainerModule } from 'inversify';
-import defaultModule from '../base/di.config';
-import modelSourceModule from '../model-source/di.config';
-import boundsModule from '../features/bounds/di.config';
-import buttonModule from '../features/button/di.config';
-import commandPaletteModule from '../features/command-palette/di.config';
-import contextMenuModule from '../features/context-menu/di.config';
-import decorationModule from '../features/decoration/di.config';
-import edgeLayoutModule from '../features/edge-layout/di.config';
-import { edgeEditModule, labelEditModule, labelEditUiModule } from '../features/edit/di.config';
-import expandModule from '../features/expand/di.config';
-import exportModule from '../features/export/di.config';
-import fadeModule from '../features/fade/di.config';
-import hoverModule from '../features/hover/di.config';
-import moveModule from '../features/move/di.config';
-import openModule from '../features/open/di.config';
-import routingModule from '../features/routing/di.config';
-import selectModule from '../features/select/di.config';
-import undoRedoModule from '../features/undo-redo/di.config';
-import updateModule from '../features/update/di.config';
-import viewportModule from '../features/viewport/di.config';
-import zorderModule from '../features/zorder/di.config';
+import defaultModule from '../base/di.config.js';
+import modelSourceModule from '../model-source/di.config.js';
+import boundsModule from '../features/bounds/di.config.js';
+import buttonModule from '../features/button/di.config.js';
+import commandPaletteModule from '../features/command-palette/di.config.js';
+import contextMenuModule from '../features/context-menu/di.config.js';
+import decorationModule from '../features/decoration/di.config.js';
+import edgeLayoutModule from '../features/edge-layout/di.config.js';
+import { edgeEditModule, labelEditModule, labelEditUiModule } from '../features/edit/di.config.js';
+import expandModule from '../features/expand/di.config.js';
+import exportModule from '../features/export/di.config.js';
+import fadeModule from '../features/fade/di.config.js';
+import hoverModule from '../features/hover/di.config.js';
+import moveModule from '../features/move/di.config.js';
+import openModule from '../features/open/di.config.js';
+import routingModule from '../features/routing/di.config.js';
+import selectModule from '../features/select/di.config.js';
+import undoRedoModule from '../features/undo-redo/di.config.js';
+import updateModule from '../features/update/di.config.js';
+import viewportModule from '../features/viewport/di.config.js';
+import zorderModule from '../features/zorder/di.config.js';
 
 export interface LoadModuleOptions {
     exclude?: ContainerModule[]

@@ -21,7 +21,7 @@ import {
     PolylineEdgeView, MouseListener, SModelElementImpl
 } from 'sprotty';
 import { Action, Point } from 'sprotty-protocol';
-import { CircleNodeView } from './views';
+import { CircleNodeView } from './views.js';
 
 const NodeCreator = Symbol('NodeCreator');
 

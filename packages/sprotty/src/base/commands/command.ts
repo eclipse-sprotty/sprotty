@@ -14,15 +14,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
 import { injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { ILogger } from "../../utils/logging";
-import { AnimationFrameSyncer } from "../animations/animation-frame-syncer";
-import { SModelRootImpl } from "../model/smodel";
-import { IModelFactory } from "../model/smodel-factory";
-import { IViewer } from "../views/viewer";
-import { hasOwnProperty } from 'sprotty-protocol';
+import { Action, hasOwnProperty } from "sprotty-protocol";
+import { ILogger } from "../../utils/logging.js";
+import { AnimationFrameSyncer } from "../animations/animation-frame-syncer.js";
+import { IModelFactory } from "../model/smodel-factory.js";
+import { SModelRootImpl } from "../model/smodel.js";
+import { IViewer } from "../views/viewer.js";
 
 /**
  * A command holds the behaviour of an action.

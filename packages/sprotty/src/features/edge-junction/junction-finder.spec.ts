@@ -14,13 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
 import { Point } from 'sprotty-protocol';
 import { assert, describe, expect, it } from 'vitest';
-import { SEdgeImpl, SGraphImpl } from '../../graph/sgraph';
-import { EdgeRouting, RoutedPoint } from '../routing/routing';
-import { JunctionFinder } from './junction-finder';
+import { SEdgeImpl, SGraphImpl } from '../../graph/sgraph.js';
+import { EdgeRouting, RoutedPoint } from '../routing/routing.js';
+import { JunctionFinder } from './junction-finder.js';
 
 
 describe('JunctionFinder', () => {

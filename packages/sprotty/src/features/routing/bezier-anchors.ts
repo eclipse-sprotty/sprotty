@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ELLIPTIC_ANCHOR_KIND, RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND } from "./anchor";
+import { ELLIPTIC_ANCHOR_KIND, RECTANGULAR_ANCHOR_KIND, DIAMOND_ANCHOR_KIND } from "./anchor.js";
 import { injectable } from "inversify";
-import { DiamondAnchor, EllipseAnchor, RectangleAnchor } from './polyline-anchors';
-import { BezierEdgeRouter } from './bezier-edge-router';
+import { DiamondAnchor, EllipseAnchor, RectangleAnchor } from './polyline-anchors.js';
+import { BezierEdgeRouter } from './bezier-edge-router.js';
 
 @injectable()
 export class BezierEllipseAnchor extends EllipseAnchor {

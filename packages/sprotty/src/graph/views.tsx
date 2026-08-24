@@ -17,11 +17,10 @@
 /** @jsx svg */
 import { inject, injectable } from 'inversify';
 import { VNode } from "snabbdom";
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { getSubType } from 'sprotty-protocol/lib/utils/model-utils';
-import { IView, IViewArgs, RenderingContext } from "../base/views/view";
-import { setAttr } from '../base/views/vnode-utils';
-import { ShapeView } from '../features/bounds/views';
+import { getSubType, Point } from 'sprotty-protocol';
+import { IView, IViewArgs, RenderingContext } from "../base/views/view.js";
+import { setAttr } from '../base/views/vnode-utils.js';
+import { ShapeView } from '../features/bounds/views.js';
 import {
     BY_DESCENDING_X_THEN_DESCENDING_Y,
     BY_DESCENDING_X_THEN_Y,
@@ -30,14 +29,14 @@ import {
     IntersectingRoutedPoint,
     Intersection,
     isIntersectingRoutedPoint
-} from '../features/edge-intersection/intersection-finder';
-import { isEdgeLayoutable } from '../features/edge-layout/model';
-import { SRoutableElementImpl, SRoutingHandleImpl } from '../features/routing/model';
-import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing';
-import { RoutableView } from '../features/routing/views';
-import { svg } from '../lib/jsx';
-import { PointToPointLine } from '../utils/geometry';
-import { SCompartmentImpl, SEdgeImpl, SGraphImpl, SLabelImpl } from "./sgraph";
+} from '../features/edge-intersection/intersection-finder.js';
+import { isEdgeLayoutable } from '../features/edge-layout/model.js';
+import { SRoutableElementImpl, SRoutingHandleImpl } from '../features/routing/model.js';
+import { EdgeRouterRegistry, RoutedPoint } from '../features/routing/routing.js';
+import { RoutableView } from '../features/routing/views.js';
+import { svg } from '../lib/jsx.js';
+import { PointToPointLine } from '../utils/geometry.js';
+import { SCompartmentImpl, SEdgeImpl, SGraphImpl, SLabelImpl } from "./sgraph.js";
 
 /**
  * IView component that turns an SGraph element and its children into a tree of virtual DOM elements.

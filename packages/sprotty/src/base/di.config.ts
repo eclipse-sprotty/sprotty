@@ -15,31 +15,31 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "./types";
-import { CanvasBoundsInitializer, InitializeCanvasBoundsCommand } from './features/initialize-canvas';
-import { LogLevel, NullLogger } from "../utils/logging";
-import { ActionDispatcher, IActionDispatcher } from "./actions/action-dispatcher";
-import { ActionHandlerRegistry } from "./actions/action-handler";
-import { CommandStack, ICommandStack } from "./commands/command-stack";
-import { CommandStackOptions, defaultCommandStackOptions } from "./commands/command-stack-options";
-import { SModelFactory, SModelRegistry } from './model/smodel-factory';
-import { AnimationFrameSyncer } from "./animations/animation-frame-syncer";
-import { IViewer, ModelViewer, HiddenModelViewer, PopupModelViewer, ModelRenderer, PatcherProvider } from "./views/viewer";
-import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options";
-import { MouseTool, PopupMouseTool, MousePositionTracker } from "./views/mouse-tool";
-import { KeyTool } from "./views/key-tool";
-import { FocusFixPostprocessor, IVNodePostprocessor } from "./views/vnode-postprocessor";
-import { ViewRegistry, RenderingTargetKind, IViewArgs } from "./views/view";
-import { ViewerCache } from "./views/viewer-cache";
-import { DOMHelper } from "./views/dom-helper";
-import { IdPostprocessor } from "./views/id-postprocessor";
-import { configureCommand, CommandActionHandlerInitializer } from "./commands/command-registration";
-import { CssClassPostprocessor } from "./views/css-class-postprocessor";
-import { SetModelCommand } from "./features/set-model";
-import { UIExtensionRegistry, SetUIExtensionVisibilityCommand } from "./ui-extensions/ui-extension-registry";
-import { DefaultDiagramLocker } from "./actions/diagram-locker";
-import { TouchTool } from "./views/touch-tool";
-import { PointerTool } from "./views/pointer-tool";
+import { LogLevel, NullLogger } from "../utils/logging.js";
+import { ActionDispatcher, IActionDispatcher } from "./actions/action-dispatcher.js";
+import { ActionHandlerRegistry } from "./actions/action-handler.js";
+import { DefaultDiagramLocker } from "./actions/diagram-locker.js";
+import { AnimationFrameSyncer } from "./animations/animation-frame-syncer.js";
+import { CommandActionHandlerInitializer, configureCommand } from "./commands/command-registration.js";
+import { CommandStackOptions, defaultCommandStackOptions } from "./commands/command-stack-options.js";
+import { CommandStack, ICommandStack } from "./commands/command-stack.js";
+import { CanvasBoundsInitializer, InitializeCanvasBoundsCommand } from './features/initialize-canvas.js';
+import { SetModelCommand } from "./features/set-model.js";
+import { SModelFactory, SModelRegistry } from './model/smodel-factory.js';
+import { TYPES } from "./types.js";
+import { SetUIExtensionVisibilityCommand, UIExtensionRegistry } from "./ui-extensions/ui-extension-registry.js";
+import { CssClassPostprocessor } from "./views/css-class-postprocessor.js";
+import { DOMHelper } from "./views/dom-helper.js";
+import { IdPostprocessor } from "./views/id-postprocessor.js";
+import { KeyTool } from "./views/key-tool.js";
+import { MousePositionTracker, MouseTool, PopupMouseTool } from "./views/mouse-tool.js";
+import { PointerTool } from "./views/pointer-tool.js";
+import { TouchTool } from "./views/touch-tool.js";
+import { IViewArgs, RenderingTargetKind, ViewRegistry } from "./views/view.js";
+import { ViewerCache } from "./views/viewer-cache.js";
+import { ViewerOptions, defaultViewerOptions } from "./views/viewer-options.js";
+import { HiddenModelViewer, IViewer, ModelRenderer, ModelViewer, PatcherProvider, PopupModelViewer } from "./views/viewer.js";
+import { FocusFixPostprocessor, IVNodePostprocessor } from "./views/vnode-postprocessor.js";
 
 const defaultContainerModule = new ContainerModule((bind, _unbind, isBound) => {
     // Logging ---------------------------------------------

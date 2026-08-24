@@ -14,18 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import { Selectable } from 'sprotty-protocol/lib/model';
-import { TYPES } from '../types';
-import { ModelIndexImpl, SChildElementImpl } from './smodel';
-import { SModelFactory } from './smodel-factory';
-import { registerModelElement } from './smodel-utils';
-import { selectFeature } from '../../features/select/model';
-import { boundsFeature } from '../../features/bounds/model';
-import defaultModule from '../di.config';
-import { SModelElement } from 'sprotty-protocol';
+import { Selectable, SModelElement } from 'sprotty-protocol';
+import { describe, expect, it } from 'vitest';
+import { boundsFeature } from '../../features/bounds/model.js';
+import { selectFeature } from '../../features/select/model.js';
+import defaultModule from '../di.config.js';
+import { SModelFactory } from './smodel-factory.js';
+import { registerModelElement } from './smodel-utils.js';
+import { ModelIndexImpl, SChildElementImpl } from './smodel.js';
+import { TYPES } from '../types.js';
 
 describe('model factory', () => {
 

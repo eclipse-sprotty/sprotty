@@ -14,16 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom";
-import { SModelElementImpl, SChildElementImpl } from "../../base/model/smodel";
-import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor";
-import { isDecoration, Decoration } from "./model";
-import { setAttr } from "../../base/views/vnode-utils";
-import { isSizeable } from "../bounds/model";
-import { SRoutableElementImpl } from "../routing/model";
-import { EdgeRouterRegistry } from "../routing/routing";
 import { Point } from "sprotty-protocol";
+import { SChildElementImpl, SModelElementImpl } from "../../base/model/smodel.js";
+import { IVNodePostprocessor } from "../../base/views/vnode-postprocessor.js";
+import { setAttr } from "../../base/views/vnode-utils.js";
+import { isSizeable } from "../bounds/model.js";
+import { SRoutableElementImpl } from "../routing/model.js";
+import { EdgeRouterRegistry } from "../routing/routing.js";
+import { Decoration, isDecoration } from "./model.js";
 
 @injectable()
 export class DecorationPlacer implements IVNodePostprocessor {

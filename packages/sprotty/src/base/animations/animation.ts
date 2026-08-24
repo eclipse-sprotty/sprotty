@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { CommandExecutionContext } from "../commands/command";
-import { SModelRootImpl } from "../model/smodel";
-import { easeInOut } from "./easing";
+import { CommandExecutionContext } from "../commands/command.js";
+import { SModelRootImpl } from "../model/smodel.js";
+import { easeInOut } from "./easing.js";
 
 /**
  * An animation uses the rendering loop of the browser to smoothly

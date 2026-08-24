@@ -15,20 +15,19 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { Action, RequestPopupModelAction, SetPopupModelAction, HoverFeedbackAction } from 'sprotty-protocol/lib/actions';
-import { Bounds, Point } from 'sprotty-protocol/lib/utils/geometry';
-import { matchesKeystroke } from '../../utils/keyboard';
-import { TYPES } from '../../base/types';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { MouseListener } from '../../base/views/mouse-tool';
-import { CommandExecutionContext, PopupCommand, SystemCommand, CommandReturn, ICommand } from '../../base/commands/command';
-import { IActionHandler } from '../../base/actions/action-handler';
-import { EMPTY_ROOT } from '../../base/model/smodel-factory';
-import { KeyListener } from '../../base/views/key-tool';
-import { findParentByFeature, findParent } from '../../base/model/smodel-utils';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { getAbsoluteBounds } from '../bounds/model';
-import { hasPopupFeature, isHoverable } from './model';
+import { Action, Bounds, HoverFeedbackAction, Point, RequestPopupModelAction, SetPopupModelAction } from 'sprotty-protocol';
+import { IActionHandler } from '../../base/actions/action-handler.js';
+import { CommandExecutionContext, CommandReturn, ICommand, PopupCommand, SystemCommand } from '../../base/commands/command.js';
+import { EMPTY_ROOT } from '../../base/model/smodel-factory.js';
+import { findParent, findParentByFeature } from '../../base/model/smodel-utils.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { KeyListener } from '../../base/views/key-tool.js';
+import { MouseListener } from '../../base/views/mouse-tool.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { matchesKeystroke } from '../../utils/keyboard.js';
+import { getAbsoluteBounds } from '../bounds/model.js';
+import { hasPopupFeature, isHoverable } from './model.js';
 
 
 @injectable()
@@ -143,7 +142,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 
     protected lastHoverFeedbackElementId?: string;
 
-    @inject(TYPES.ViewerOptions) protected override options: ViewerOptions;
+    @inject(TYPES.ViewerOptions) protected declare options: ViewerOptions;
 
     protected computePopupBounds(target: SModelElementImpl, mousePosition: Point): Bounds {
         // Default position: below the mouse cursor

@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from 'inversify';
-import { BringToFrontAction } from 'sprotty-protocol/lib/actions';
-import { TYPES } from '../../base/types';
-import { SModelRootImpl, SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel';
-import { Command, CommandExecutionContext } from '../../base/commands/command';
-import { SRoutableElementImpl, SConnectableElementImpl } from '../routing/model';
+import { inject, injectable } from 'inversify';
+import { BringToFrontAction } from 'sprotty-protocol';
+import { Command, CommandExecutionContext } from '../../base/commands/command.js';
+import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { SConnectableElementImpl, SRoutableElementImpl } from '../routing/model.js';
 
 export type ZOrderElement = {
     element: SChildElementImpl

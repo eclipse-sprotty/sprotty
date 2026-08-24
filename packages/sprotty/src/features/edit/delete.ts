@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { inject, injectable } from 'inversify';
-import { DeleteElementAction } from 'sprotty-protocol/lib/actions';
-import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { SModelElementImpl, SParentElementImpl, SChildElementImpl } from '../../base/model/smodel';
-import { TYPES } from '../../base/types';
+import { DeleteElementAction } from 'sprotty-protocol';
+import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
+import { SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
 
 export const deletableFeature = Symbol('deletableFeature');
 

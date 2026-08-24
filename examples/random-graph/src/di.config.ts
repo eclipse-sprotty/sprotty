@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LayoutOptions } from 'elkjs/lib/elk-api';
-import ElkConstructor from 'elkjs/lib/elk.bundled';
+import { LayoutOptions } from 'elkjs';
+import ElkConstructor from 'elkjs/lib/elk.bundled.js';
 import { Container, ContainerModule } from 'inversify';
 import {
     Animation, CommandExecutionContext, configureModelElement, configureViewerOptions, ConsoleLogger,
@@ -25,15 +25,15 @@ import {
 } from 'sprotty';
 import {
     DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, elkLayoutModule, ILayoutConfigurator
-} from 'sprotty-elk/lib/inversify';
+} from 'sprotty-elk';
 import { Point, SGraph, SModelIndex, SNode, SPort } from 'sprotty-protocol';
-import { PortViewWithExternalLabel } from './views';
+import { PortViewWithExternalLabel } from './views.js';
 
 export default (containerId: string) => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
-    const elkFactory: ElkFactory = () => new ElkConstructor({
+    const elkFactory: ElkFactory = () => new ElkConstructor.default({
         algorithms: ['layered']
     });
 

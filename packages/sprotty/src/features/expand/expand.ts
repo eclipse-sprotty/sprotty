@@ -15,11 +15,11 @@
  ********************************************************************************/
 
 import { injectable } from 'inversify';
-import { Action, CollapseExpandAction } from 'sprotty-protocol/lib/actions';
-import { SButtonImpl } from '../button/model';
-import { findParentByFeature } from '../../base/model/smodel-utils';
-import { isExpandable } from './model';
-import { IButtonHandler } from '../button/button-handler';
+import { Action, CollapseExpandAction } from 'sprotty-protocol';
+import { findParentByFeature } from '../../base/model/smodel-utils.js';
+import { IButtonHandler } from '../button/button-handler.js';
+import { SButtonImpl } from '../button/model.js';
+import { isExpandable } from './model.js';
 
 @injectable()
 export class ExpandButtonHandler implements IButtonHandler {

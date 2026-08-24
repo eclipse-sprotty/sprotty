@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { injectable } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
+import { Action } from "sprotty-protocol";
 
 /**
  * Allows to lock the diagram by preventing certain actions from being

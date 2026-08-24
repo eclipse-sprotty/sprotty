@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from './jsx';
+import { svg } from './jsx.js';
 import { injectable } from "inversify";
-import virtualize from "./virtualize";
+import virtualize from "./virtualize.js";
 import { VNode } from "snabbdom";
-import { IView, RenderingContext } from "../base/views/view";
-import { setNamespace, setAttr } from "../base/views/vnode-utils";
-import { ShapeView } from "../features/bounds/views";
-import { ForeignObjectElementImpl, PreRenderedElementImpl, ShapedPreRenderedElementImpl } from "./model";
+import { IView, RenderingContext } from "../base/views/view.js";
+import { setNamespace, setAttr } from "../base/views/vnode-utils.js";
+import { ShapeView } from "../features/bounds/views.js";
+import { ForeignObjectElementImpl, PreRenderedElementImpl, ShapedPreRenderedElementImpl } from "./model.js";
 
 @injectable()
 export class PreRenderedView extends ShapeView {

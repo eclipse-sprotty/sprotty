@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from "inversify";
-import { ResponseAction } from "sprotty-protocol/lib/actions";
-import { TYPES } from "../types";
-import { SystemCommand, CommandExecutionContext, CommandReturn } from "./command";
-import { IActionDispatcher } from "../actions/action-dispatcher";
+import { inject, injectable } from "inversify";
+import { ResponseAction } from "sprotty-protocol";
+import { IActionDispatcher } from "../actions/action-dispatcher.js";
+import { TYPES } from "../types.js";
+import { CommandExecutionContext, CommandReturn, SystemCommand } from "./command.js";
 
 /**
  * A command that does not modify the internal model, but retrieves information

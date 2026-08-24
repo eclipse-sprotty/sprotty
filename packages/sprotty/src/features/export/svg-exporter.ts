@@ -15,15 +15,14 @@
  ********************************************************************************/
 
 import { inject, injectable, multiInject, optional } from 'inversify';
-import { Action, ExportSvgOptions, RequestExportSvgAction, ResponseAction } from 'sprotty-protocol/lib/actions';
-import { Bounds } from 'sprotty-protocol/lib/utils/geometry';
-import { ActionDispatcher } from '../../base/actions/action-dispatcher';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { TYPES } from '../../base/types';
-import { ViewerOptions } from '../../base/views/viewer-options';
-import { ILogger } from '../../utils/logging';
-import { isBoundsAware } from '../bounds/model';
-import { ISvgExportPostProcessor } from './svg-export-postprocessor';
+import { Action, Bounds, ExportSvgOptions, RequestExportSvgAction, ResponseAction } from 'sprotty-protocol';
+import { ActionDispatcher } from '../../base/actions/action-dispatcher.js';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { ILogger } from '../../utils/logging.js';
+import { isBoundsAware } from '../bounds/model.js';
+import { ISvgExportPostProcessor } from './svg-export-postprocessor.js';
 
 /**
  * @deprecated Use the definition from `sprotty-protocol` instead.

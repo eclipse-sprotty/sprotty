@@ -14,11 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
-
 import { expect, describe, it } from 'vitest';
-import { ContextMenuProviderRegistry } from "./menu-providers";
-import { SModelRootImpl } from "../../base/model/smodel";
+import { ContextMenuProviderRegistry } from "./menu-providers.js";
+import { SModelRootImpl } from "../../base/model/smodel.js";
 
 describe('ContextMenuProviderRegistry', () => {
 

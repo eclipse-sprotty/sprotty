@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { JunctionFinder } from "./junction-finder";
-import { JunctionPostProcessor } from "./junction-postprocessor";
+import { TYPES } from "../../base/types.js";
+import { JunctionFinder } from "./junction-finder.js";
+import { JunctionPostProcessor } from "./junction-postprocessor.js";
 
 const edgeJunctionModule = new ContainerModule(bind => {
     bind(JunctionFinder).toSelf().inSingletonScope();

@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Dimension } from "sprotty-protocol/lib/utils/geometry";
-import { Animation } from "../../base/animations/animation";
-import { SModelRootImpl, SModelElementImpl } from "../../base/model/smodel";
-import { CommandExecutionContext } from "../../base/commands/command";
-import { InternalBoundsAware } from './model';
+import { Dimension } from "sprotty-protocol";
+import { Animation } from "../../base/animations/animation.js";
+import { CommandExecutionContext } from "../../base/commands/command.js";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel.js";
+import { InternalBoundsAware } from './model.js';
 
 export interface ResolvedElementResize {
     element: SModelElementImpl & InternalBoundsAware

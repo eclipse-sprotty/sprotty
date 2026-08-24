@@ -14,17 +14,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, inject } from 'inversify';
-import { GetViewportAction, ResponseAction, SetViewportAction, ViewportResult } from 'sprotty-protocol/lib/actions';
-import { Viewport } from 'sprotty-protocol/lib/model';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel';
-import { MergeableCommand, ICommand, CommandExecutionContext, CommandReturn } from '../../base/commands/command';
-import { Animation } from '../../base/animations/animation';
-import { isViewport, limitViewport } from './model';
-import { TYPES } from '../../base/types';
-import { ModelRequestCommand } from '../../base/commands/request-command';
-import { ViewerOptions } from '../../base/views/viewer-options';
+import { inject, injectable } from 'inversify';
+import { GetViewportAction, Point, ResponseAction, SetViewportAction, Viewport, ViewportResult } from 'sprotty-protocol';
+import { Animation } from '../../base/animations/animation.js';
+import { CommandExecutionContext, CommandReturn, ICommand, MergeableCommand } from '../../base/commands/command.js';
+import { ModelRequestCommand } from '../../base/commands/request-command.js';
+import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
+import { TYPES } from '../../base/types.js';
+import { ViewerOptions } from '../../base/views/viewer-options.js';
+import { isViewport, limitViewport } from './model.js';
 
 @injectable()
 export class SetViewportCommand extends MergeableCommand {

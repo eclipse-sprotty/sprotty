@@ -13,26 +13,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { AutocompleteResult, AutocompleteSettings } from "autocompleter";
+import configureAutocomplete, { AutocompleteResult, AutocompleteSettings } from "autocompleter";
 import { inject, injectable } from "inversify";
-import { Action, isAction } from 'sprotty-protocol/lib/actions';
-import { LabeledAction, isLabeledAction } from "../../base/actions/action";
-import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher";
-import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel";
-import { TYPES } from "../../base/types";
-import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension";
-import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry";
-import { DOMHelper } from "../../base/views/dom-helper";
-import { KeyListener } from "../../base/views/key-tool";
-import { ViewerOptions } from "../../base/views/viewer-options";
-import { codiconCSSClasses, codiconCSSString } from "../../utils/codicon";
-import { toArray } from "../../utils/iterable";
-import { matchesKeystroke } from "../../utils/keyboard";
-import { getAbsoluteClientBounds } from "../bounds/model";
-import { isSelectable } from "../select/model";
-import { CommandPaletteActionProviderRegistry } from "./action-providers";
-import { MousePositionTracker } from "../../base/views/mouse-tool";
-import configureAutocomplete from "autocompleter";
+import { Action, isAction } from 'sprotty-protocol';
+import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher.js";
+import { LabeledAction, isLabeledAction } from "../../base/actions/action.js";
+import { SModelElementImpl, SModelRootImpl } from "../../base/model/smodel.js";
+import { TYPES } from "../../base/types.js";
+import { SetUIExtensionVisibilityAction } from "../../base/ui-extensions/ui-extension-registry.js";
+import { AbstractUIExtension } from "../../base/ui-extensions/ui-extension.js";
+import { DOMHelper } from "../../base/views/dom-helper.js";
+import { KeyListener } from "../../base/views/key-tool.js";
+import { MousePositionTracker } from "../../base/views/mouse-tool.js";
+import { ViewerOptions } from "../../base/views/viewer-options.js";
+import { codiconCSSClasses, codiconCSSString } from "../../utils/codicon.js";
+import { toArray } from "../../utils/iterable.js";
+import { matchesKeystroke } from "../../utils/keyboard.js";
+import { getAbsoluteClientBounds } from "../bounds/model.js";
+import { isSelectable } from "../select/model.js";
+import { CommandPaletteActionProviderRegistry } from "./action-providers.js";
 
 @injectable()
 export class CommandPalette extends AbstractUIExtension {
@@ -66,7 +65,7 @@ export class CommandPalette extends AbstractUIExtension {
         this.paletteIndex = 0;
         this.contextActions = undefined;
         this.inputElement!.value = "";
-        this.autoCompleteResult = configureAutocomplete(this.autocompleteSettings(root));
+        this.autoCompleteResult = configureAutocomplete.default(this.autocompleteSettings(root));
         this.inputElement.focus();
     }
 

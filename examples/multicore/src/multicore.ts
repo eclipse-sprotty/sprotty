@@ -20,8 +20,8 @@ import {
     CORE_DISTANCE,
     CORE_WIDTH,
     ChannelSchema, CoreSchema, CrossbarSchema, Direction, ProcessorSchema
-} from './chipmodel';
-import createContainer from './di.config';
+} from './chipmodel.js';
+import createContainer from './di.config.js';
 
 export default function runMulticore() {
     const container = createContainer();

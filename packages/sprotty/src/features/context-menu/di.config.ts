@@ -15,10 +15,10 @@
  ********************************************************************************/
 import { ContainerModule } from "inversify";
 
-import { IContextMenuService } from "./context-menu-service";
-import { ContextMenuProviderRegistry } from "./menu-providers";
-import { ContextMenuMouseListener } from "./mouse-listener";
-import { TYPES } from "../../base/types";
+import { TYPES } from "../../base/types.js";
+import { IContextMenuService } from "./context-menu-service.js";
+import { ContextMenuProviderRegistry } from "./menu-providers.js";
+import { ContextMenuMouseListener } from "./mouse-listener.js";
 
 const contextMenuModule = new ContainerModule(bind => {
     bind(TYPES.IContextMenuServiceProvider).toProvider<IContextMenuService>(ctx => {

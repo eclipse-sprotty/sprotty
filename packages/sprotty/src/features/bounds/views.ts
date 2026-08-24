@@ -16,10 +16,10 @@
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Dimension } from 'sprotty-protocol/lib/utils/geometry';
-import { IViewArgs, IView, RenderingContext } from '../../base/views/view';
-import { getAbsoluteBounds, InternalBoundsAware } from './model';
-import { SChildElementImpl } from '../../base/model/smodel';
+import { Dimension } from 'sprotty-protocol';
+import { SChildElementImpl } from '../../base/model/smodel.js';
+import { IView, IViewArgs, RenderingContext } from '../../base/views/view.js';
+import { getAbsoluteBounds, InternalBoundsAware } from './model.js';
 
 @injectable()
 export abstract class ShapeView implements IView {

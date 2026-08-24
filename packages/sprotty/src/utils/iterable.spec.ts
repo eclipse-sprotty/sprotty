@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { expect, describe, it } from 'vitest';
-import { FluentIterable, FluentIterableImpl, DONE_RESULT } from './iterable';
+import { FluentIterable, FluentIterableImpl, DONE_RESULT } from './iterable.js';
 
 describe('FluentIterableImpl', () => {
     const iterable: FluentIterable<number> = new FluentIterableImpl(() => ({ n: 1 }), state => {

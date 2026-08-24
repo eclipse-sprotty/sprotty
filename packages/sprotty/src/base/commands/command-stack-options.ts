@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { Container, interfaces } from 'inversify';
-import { safeAssign } from 'sprotty-protocol/lib/utils/object';
-import { TYPES } from '../types';
+import { safeAssign } from 'sprotty-protocol';
+import { TYPES } from '../types.js';
 
 /**
  * Options for the command execution

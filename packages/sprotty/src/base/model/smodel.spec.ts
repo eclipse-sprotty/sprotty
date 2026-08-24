@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { expect, describe, it } from 'vitest';
-import { SChildElementImpl, ModelIndexImpl, SModelRootImpl } from './smodel';
+import { describe, expect, it } from 'vitest';
+import { ModelIndexImpl, SChildElementImpl, SModelRootImpl } from './smodel.js';
 
 describe('SModelRootImpl', () => {
     function setup() {

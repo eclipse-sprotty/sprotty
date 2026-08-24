@@ -15,14 +15,14 @@
  ********************************************************************************/
 
 import { ContainerModule } from "inversify";
-import { TYPES } from "../../base/types";
-import { SetBoundsCommand, RequestBoundsCommand } from "./bounds-manipulation";
-import { HiddenBoundsUpdater } from './hidden-bounds-updater';
-import { configureLayout, Layouter, LayoutRegistry } from "./layout";
-import { configureCommand } from "../../base/commands/command-registration";
-import { HBoxLayouter } from "./hbox-layout";
-import { VBoxLayouter } from "./vbox-layout";
-import { StackLayouter} from "./stack-layout";
+import { TYPES } from "../../base/types.js";
+import { SetBoundsCommand, RequestBoundsCommand } from "./bounds-manipulation.js";
+import { HiddenBoundsUpdater } from './hidden-bounds-updater.js';
+import { configureLayout, Layouter, LayoutRegistry } from "./layout.js";
+import { configureCommand } from "../../base/commands/command-registration.js";
+import { HBoxLayouter } from "./hbox-layout.js";
+import { VBoxLayouter } from "./vbox-layout.js";
+import { StackLayouter} from "./stack-layout.js";
 
 const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SetBoundsCommand);

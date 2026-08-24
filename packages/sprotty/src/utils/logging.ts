@@ -15,8 +15,8 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { TYPES } from "../base/types";
-import { ViewerOptions } from "../base/views/viewer-options";
+import { TYPES } from "../base/types.js";
+import { ViewerOptions } from "../base/views/viewer-options.js";
 
 export interface ILogger {
     logLevel: LogLevel

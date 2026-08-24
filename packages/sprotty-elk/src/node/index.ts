@@ -14,6 +14,6 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-export * from './layout-data';
-export * from './socket-server';
-export * from './stdio-server';
+export * from './layout-data.js';
+export * from './socket-server.js';
+export * from './stdio-server.js';

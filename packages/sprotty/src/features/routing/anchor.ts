@@ -15,10 +15,10 @@
  ********************************************************************************/
 
 import { injectable, multiInject } from "inversify";
-import { Point } from "sprotty-protocol/lib/utils/geometry";
-import { TYPES } from "../../base/types";
-import { InstanceRegistry } from "../../utils/registry";
-import { SConnectableElementImpl } from "./model";
+import { Point } from "sprotty-protocol";
+import { TYPES } from "../../base/types.js";
+import { InstanceRegistry } from "../../utils/registry.js";
+import { SConnectableElementImpl } from "./model.js";
 
 export const DIAMOND_ANCHOR_KIND = 'diamond';
 export const ELLIPTIC_ANCHOR_KIND = 'elliptic';

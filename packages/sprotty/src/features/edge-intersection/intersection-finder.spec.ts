@@ -14,10 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import "reflect-metadata";
-import { expect, describe, it } from 'vitest';
-import { EdgeRouting } from "../routing/routing";
-import { IntersectionFinder } from "./intersection-finder";
+import { describe, expect, it } from 'vitest';
+import { EdgeRouting } from "../routing/routing.js";
+import { IntersectionFinder } from "./intersection-finder.js";
 
 describe('IntersectionFinder', () => {
 

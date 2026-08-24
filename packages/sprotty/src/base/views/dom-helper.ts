@@ -15,9 +15,9 @@
  ********************************************************************************/
 
 import { inject, injectable } from "inversify";
-import { ViewerOptions } from "./viewer-options";
-import { TYPES } from "../types";
-import { SModelElementImpl } from "../model/smodel";
+import { SModelElementImpl } from "../model/smodel.js";
+import { TYPES } from "../types.js";
+import { ViewerOptions } from "./viewer-options.js";
 
 @injectable()
 export class DOMHelper {

@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional, interfaces, Container } from "inversify";
-import { Action } from "sprotty-protocol/lib/actions";
-import { isInjectable } from "../../utils/inversify";
-import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler";
-import { ICommand } from "./command";
-import { TYPES } from "../types";
+import { Container, injectable, interfaces, multiInject, optional } from "inversify";
+import { Action } from "sprotty-protocol";
+import { isInjectable } from "../../utils/inversify.js";
+import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler.js";
+import { TYPES } from "../types.js";
+import { ICommand } from "./command.js";
 
 export class CommandActionHandler implements IActionHandler {
     constructor(private commandRegistration: CommandRegistration) {

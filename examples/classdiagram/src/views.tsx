@@ -15,12 +15,10 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from 'sprotty/lib/lib/jsx';
-
-import { RenderingContext, IView, RectangularNodeView, SNodeImpl, IViewArgs } from 'sprotty';
-import { VNode } from 'snabbdom';
-import { Icon } from './model';
 import { injectable } from 'inversify';
+import { VNode } from 'snabbdom';
+import { IView, IViewArgs, RectangularNodeView, RenderingContext, SNodeImpl, svg } from 'sprotty';
+import { Icon } from './model.js';
 
 @injectable()
 export class NodeView extends RectangularNodeView {

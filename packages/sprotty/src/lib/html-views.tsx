@@ -15,13 +15,13 @@
  ********************************************************************************/
 
  /** @jsx html */
-import { html } from './jsx';
+import { html } from './jsx.js';
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { IView, RenderingContext } from '../base/views/view';
-import { setClass } from '../base/views/vnode-utils';
-import { HtmlRootImpl } from './model';
+import { IView, RenderingContext } from '../base/views/view.js';
+import { setClass } from '../base/views/vnode-utils.js';
+import { HtmlRootImpl } from './model.js';
 
 /**
  * View for `HtmlRoot` elements. Typically this is used in hover popup boxes.
