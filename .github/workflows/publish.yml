@@ -32,13 +32,13 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          yarn
-          yarn build
+          npm install
+          npm run build
 
       - name: Test
         if: success() || failure()
         shell: bash
-        run: yarn test
+        run: npm run test
 
       - name: Publish
         uses: TypeFox/gh-publish-npm@7183224bef010236e419a2367208633ff284337a # v0.5.0
