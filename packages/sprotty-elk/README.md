@@ -5,7 +5,7 @@ Integration of the [Eclipse Layout Kernel (ELK)](https://www.eclipse.org/elk/) w
 ## Build
 
 ```bash
-yarn
+npm install
 ```
 
 The project is built on [ci.eclipse.org/sprotty](https://ci.eclipse.org/sprotty/).

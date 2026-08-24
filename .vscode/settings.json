@@ -1,5 +1,5 @@
 {
-    "eslint.packageManager": "yarn",
+    "eslint.packageManager": "npm",
     "search.exclude": {
         "**/node_modules": true,
         "**/lib": true,

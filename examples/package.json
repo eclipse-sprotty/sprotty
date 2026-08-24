@@ -26,16 +26,11 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },
-  "volta": {
-    "node": "18.19.0",
-    "yarn": "1.22.21"
-  },
   "scripts": {
-    "prepare": "yarn run build",
     "clean": "shx rm -fr lib artifacts *.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "build": "webpack --config webpack.config.cjs && npm run compile",
-    "watch": "yarn run watch:browser",
+    "build": "webpack && npm run compile",
+    "watch": "npm run watch:browser",
     "watch:browser": "webpack --watch",
     "watch:server": "tsc -w",
     "start": "node ./lib/server/server-app"
