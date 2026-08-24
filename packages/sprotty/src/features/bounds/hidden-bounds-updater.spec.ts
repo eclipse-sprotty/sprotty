@@ -16,14 +16,14 @@ import 'reflect-metadata';
 
 import { Container } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Action, ComputedBoundsAction, RequestBoundsAction, RequestExportSvgAction } from 'sprotty-protocol/lib/actions';
+import { Action, ComputedBoundsAction, RequestBoundsAction, RequestExportSvgAction } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
-import defaultModule from '../../base/di.config';
-import { SModelRootImpl } from '../../base/model/smodel';
-import { createFeatureSet } from '../../base/model/smodel-factory';
-import { SNodeImpl } from '../../graph/sgraph';
-import boundsModule from './di.config';
-import { HiddenBoundsUpdater } from './hidden-bounds-updater';
+import defaultModule from '../../base/di.config.js';
+import { SModelRootImpl } from '../../base/model/smodel.js';
+import { createFeatureSet } from '../../base/model/smodel-factory.js';
+import { SNodeImpl } from '../../graph/sgraph.js';
+import boundsModule from './di.config.js';
+import { HiddenBoundsUpdater } from './hidden-bounds-updater.js';
 
 describe('HiddenBoundsUpdater', () => {
 

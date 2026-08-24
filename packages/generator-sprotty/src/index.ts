@@ -48,9 +48,9 @@ class SprottyGenerator extends Generator {
                 this.templatePath(file),
                 this._projectPath(file),
                 {
-                    process: content =>
+                    process: (content: Buffer) =>
                         this._replaceTemplateWords(content),
-                    processDestinationPath: destPath =>
+                    processDestinationPath: (destPath: string) =>
                         this._replaceTemplateNames(destPath),
                 }
             );
@@ -61,9 +61,9 @@ class SprottyGenerator extends Generator {
                 this.templatePath('static'),
                 this._projectPath('static'),
                 {
-                    process: content =>
+                    process: (content: Buffer) =>
                         this._replaceTemplateWords(content),
-                    processDestinationPath: destPath =>
+                    processDestinationPath: (destPath: string) =>
                         this._replaceTemplateNames(destPath),
                 }
             );

@@ -15,16 +15,16 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { svg } from '../../lib/jsx';
+import { svg } from '../../lib/jsx.js';
 
 import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { VNode } from 'snabbdom';
-import { Bounds, Point, toDegrees } from 'sprotty-protocol/lib/utils/geometry';
-import { createFeatureSet } from '../../base/model/smodel-factory';
-import { SEdgeImpl, SGraphImpl, SLabelImpl } from '../../graph/sgraph';
-import { moveFeature } from '../move/model';
-import { EdgeLayoutPostprocessor } from './edge-layout';
+import { Bounds, Point, toDegrees } from 'sprotty-protocol';
+import { createFeatureSet } from '../../base/model/smodel-factory.js';
+import { SEdgeImpl, SGraphImpl, SLabelImpl } from '../../graph/sgraph.js';
+import { moveFeature } from '../move/model.js';
+import { EdgeLayoutPostprocessor } from './edge-layout.js';
 
 /**
  * A minimal stand-in for an edge router. The real routers are covered by their own specs;

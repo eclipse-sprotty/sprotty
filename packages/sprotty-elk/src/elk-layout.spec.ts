@@ -16,11 +16,11 @@
 
 import { expect, describe, it } from 'vitest';
 import { Container } from 'inversify';
-import ElkConstructor from 'elkjs/lib/elk.bundled';
-import { LayoutOptions } from 'elkjs/lib/elk-api';
-import { SCompartment, SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol/lib/model';
-import { Point } from 'sprotty-protocol/lib/utils/geometry';
-import { DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, ILayoutConfigurator, ILayoutPreprocessor, elkLayoutModule } from './inversify';
+import ElkConstructor from 'elkjs';
+import { LayoutOptions } from 'elkjs';
+import { SCompartment, SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol';
+import { Point } from 'sprotty-protocol';
+import { DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, ILayoutConfigurator, ILayoutPreprocessor, elkLayoutModule } from './inversify.js';
 
 /**
  * A layout configurator that enables cross-hierarchy edge routing, so an edge can connect a
@@ -70,7 +70,7 @@ describe('ElkLayoutEngine', () => {
     function createContainer() {
         const container = new Container();
         container.load(elkLayoutModule);
-        container.bind(ElkFactory).toConstantValue(() => new Elk.default({
+        container.bind(ElkFactory).toConstantValue(() => new ElkConstructor.default({
             algorithms: ['layered']
         }));
         return container;
@@ -318,7 +318,7 @@ describe('ElkLayoutEngine', () => {
 
         const container = new Container();
         container.load(elkLayoutModule);
-        container.bind(ElkFactory).toConstantValue(() => new ElkConstructor({ algorithms: ['layered'] }));
+        container.bind(ElkFactory).toConstantValue(() => new ElkConstructor.default({ algorithms: ['layered'] }));
         container.rebind(ILayoutConfigurator).to(NestedLayoutConfigurator).inSingletonScope();
         const elkEngine = container.get(ElkLayoutEngine);
         const result = await elkEngine.layout(graph) as SGraph;
