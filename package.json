@@ -1,18 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "npm run clean && npm run build",
-    "clean": "lerna run clean",
+    "clean": "npm run clean --workspaces",
     "build": "tsc --build tsconfig.build.json && npm run build -w examples",
     "watch:tsc": "tsc --build --watch tsconfig.build.json",
     "watch": "concurrently -n sprotty,examples -c blue,green, \"npm run watch -w examples\" \"npm run watch:tsc\"",
     "lint": "eslint {**/src/**/*.ts,**/src/**/*.tsx}",
     "lint:fix": "eslint {**/src/**/*.ts,**/src/**/*.tsx} --fix",
     "test": "vitest run --config vite.config.mts",
-    "coverage": "vitest run --coverage --config vite.config.mts",
-    "publish:prepare": "lerna version --ignore-scripts --yes --no-push",
-    "publish:latest": "lerna publish from-git --yes --no-push",
-    "publish:next": "SHA=$(git rev-parse --short HEAD) && lerna publish preminor --exact --canary --preid next.${SHA} --dist-tag next --no-git-reset --no-git-tag-version --no-push --ignore-scripts --yes --no-verify-access"
+    "coverage": "vitest run --coverage --config vite.config.mts"
   },
   "devDependencies": {
     "@types/node": "~24.0.0",
