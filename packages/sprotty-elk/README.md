@@ -8,7 +8,7 @@ Integration of the [Eclipse Layout Kernel (ELK)](https://www.eclipse.org/elk/) w
 npm install
 ```
 
-The project is built on [ci.eclipse.org/sprotty](https://ci.eclipse.org/sprotty/).
+The project is built with [GitHub Actions](https://github.com/eclipse-sprotty/sprotty/actions).
 
 Pre-built npm packages available from [npmjs](https://www.npmjs.com/package/sprotty-elk).
 

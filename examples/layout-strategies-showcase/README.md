@@ -1,6 +1,6 @@
 # Sprotty Layout Strategies Showcase
 
-This example demonstrates the three layout strategies available in Sprotty and how to configure them effectively. It serves as a companion to the [Layout Strategies Recipe](../../hugo/content/docs/recipes/layout-strategies.md) in the documentation.
+This example demonstrates the three layout strategies available in Sprotty and how to configure them effectively. It serves as a companion to the [Layout Strategies Recipe](https://sprotty.org/docs/recipes/layout-strategies/) in the documentation.
 
 ## What This Example Demonstrates
 
@@ -47,11 +47,11 @@ After exploring this example, you should understand:
 2. **Start the development server:**
 
    ```bash
-   npm run serve
+   npm start -w examples
    ```
 
 3. **Open in browser:**
-   Navigate to `http://localhost:8080/examples/layout-strategies-showcase.html`
+   Navigate to `http://localhost:8080/layout-strategies-showcase/layout-strategies-showcase.html`
 
 ## Interactive Features
 
@@ -200,7 +200,7 @@ After exploring this example:
 
 ## Related Documentation
 
-- [Layout Strategies Recipe](../../hugo/content/docs/recipes/layout-strategies.md) - Complete guide to layout configuration
-- [Micro-Layout Recipe](../../hugo/content/docs/recipes/micro-layout.md) - Deep dive into client layout
-- [Custom Views Recipe](../../hugo/content/docs/recipes/custom-views.md) - Creating views for your nodes
+- [Layout Strategies Recipe](https://sprotty.org/docs/recipes/layout-strategies/) - Complete guide to layout configuration
+- [Micro-Layout Recipe](https://sprotty.org/docs/recipes/micro-layout/) - Deep dive into client layout
+- [Custom Views Recipe](https://sprotty.org/docs/recipes/custom-views/) - Creating views for your nodes
 - [Eclipse Layout Kernel](https://www.eclipse.org/elk/reference.html) - ELK algorithm documentation

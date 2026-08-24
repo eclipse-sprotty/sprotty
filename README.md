@@ -28,7 +28,7 @@ The Sprotty project spans across four GitHub repositories.
 * [sprotty-theia](https://github.com/eclipse-sprotty/sprotty-theia) contains the glue code to integrate Sprotty views in the Theia IDE.
 * [sprotty-vscode](https://github.com/eclipse-sprotty/sprotty-vscode) contains the glue code to integrate Sprotty views in VS Code.
 
-The project is built on [ci.eclipse.org/sprotty](https://ci.eclipse.org/sprotty/).
+The project is built with [GitHub Actions](https://github.com/eclipse-sprotty/sprotty/actions).
 
 ## Docs
 

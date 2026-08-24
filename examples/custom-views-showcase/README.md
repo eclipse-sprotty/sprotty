@@ -1,6 +1,6 @@
 # Custom Views Showcase
 
-This example demonstrates various patterns for creating custom views in Sprotty. It serves as a companion to the [Custom Views Recipe](../../hugo/content/docs/recipes/custom-views.md) in the documentation.
+This example demonstrates various patterns for creating custom views in Sprotty. It serves as a companion to the [Custom Views Recipe](https://sprotty.org/docs/recipes/custom-views/) in the documentation.
 
 ## What This Example Demonstrates
 
@@ -63,7 +63,7 @@ After exploring this example, you should understand:
 2. **Start the development server:**
 
    ```bash
-   npm run serve
+   npm start -w examples
    ```
 
 3. **Open in browser:**
@@ -86,9 +86,10 @@ src/
 └── standalone.ts     # Application setup and sample data
 
 css/
-└── styles.css        # Comprehensive styling for all views
+├── diagram.css       # Diagram styling (loaded from di.config.ts)
+└── page.css          # Page chrome (linked from the HTML)
 
-index.html            # Demo page with documentation
+custom-views-showcase.html   # Demo page with documentation
 ```
 
 ## View Implementation Highlights
@@ -159,7 +160,6 @@ After exploring this example:
 
 ## Related Documentation
 
-- [Custom Views Recipe](../../hugo/content/docs/recipes/custom-views.md) - Complete guide to custom view creation
-- [Styling Recipe](../../hugo/content/docs/recipes/styling.md) - Advanced CSS techniques
-- [Micro-layout Recipe](../../hugo/content/docs/recipes/micro-layout.md) - Child element organization
-- [TSX Syntax Guide](../../hugo/content/docs/concepts/tsx-syntax.md) - Deep dive into Sprotty's JSX usage
+- [Custom Views Recipe](https://sprotty.org/docs/recipes/custom-views/) - Complete guide to custom view creation
+- [Styling Recipe](https://sprotty.org/docs/recipes/styling/) - Advanced CSS techniques
+- [Micro-layout Recipe](https://sprotty.org/docs/recipes/micro-layout/) - Child element organization

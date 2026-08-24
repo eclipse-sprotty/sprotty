@@ -6,7 +6,7 @@
         {
             "label": "Build Sprotty",
             "type": "shell",
-            "command": "npm install",
+            "command": "npm run build",
             "group": "build",
             "presentation": {
                 "focus": false,
