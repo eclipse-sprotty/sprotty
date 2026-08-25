@@ -42,4 +42,6 @@ Further promises:
 - https://sprotty.org/docs/recipes/actions-and-protocols/ — the user-facing narrative with sequence diagrams
 - https://sprotty.org/docs/ref/sprotty-protocol/ — generated API reference
 - `docs/adr/0002-sprotty-protocol-package-split.md` — why the contract lives in its own package
+- `docs/design-docs/view-model-doctrine.md` — the semantic-model/view-model doctrine behind the #177/#306 adjudications
+- Over LSP (sprotty-vscode), the whole protocol is tunneled through the single notification `diagram/accept` carrying an `ActionMessage` — a deliberate choice so applications extend by adding action kinds, never new RPC methods (defined in [eclipse-sprotty/sprotty-vscode, lsp/protocol.ts](https://github.com/eclipse-sprotty/sprotty-vscode/blob/master/packages/sprotty-vscode/src/lsp/protocol.ts))
 - Working reference: `examples/random-graph-distributed/` + `examples/server/`

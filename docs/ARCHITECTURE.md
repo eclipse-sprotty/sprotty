@@ -17,7 +17,7 @@ sprotty-protocol   (leaf — zero runtime deps; browser + Node)
  examples          (private workspace; depends on sprotty, sprotty-elk, sprotty-library)
 ```
 
-Build order is fixed by TypeScript project references in `tsconfig.build.json`. Each package has `tsconfig.src.json` (emits to `lib/`, excludes specs) and `tsconfig.test.json` (`noEmit`, specs only); the plain `tsconfig.json` exists for editor support.
+Build order is fixed by TypeScript project references in `tsconfig.build.json`. The four library packages have `tsconfig.src.json` (emits to `lib/`, excludes specs) and — except `sprotty-library`, which has no tests — `tsconfig.test.json` (`noEmit`, specs only); `generator-sprotty` has neither. Every package's plain `tsconfig.json` exists for editor support.
 
 ## The runtime cycle
 
@@ -29,15 +29,17 @@ Everything is driven by **actions** (plain serializable data). The cycle, all in
 4. Each slot is pushed to its viewer: `ModelViewer` (patches `#sprotty` via snabbdom), `HiddenModelViewer` (`#sprotty-hidden`, invisible, used for measuring), `PopupModelViewer` (`#sprotty-popup`). Viewers render by looking up each element's `IView` in the `ViewRegistry` by `element.type`, then run the `IVNodePostprocessor` chain.
 5. Rendering and listeners produce new actions; the cycle repeats.
 
+*Why a unidirectional cycle*: MVC was deliberately rejected — direct component wiring produces micro-events and feedback loops ("you zoom in and it zooms in to infinity"); the Flux/React-inspired circular flow keeps the components near-stateless and unit-testable without a browser (EclipseCon France 2018 talk). Flicker-free animated transitions are a founding promise — undo even replays a recorded motion backwards (`MoveCommand.undo`) — which is why command execution is asynchronous everywhere, and why snabbdom was chosen over React: every animation frame pushes a freshly interpolated model through the whole viewer cycle, so views and postprocessors run per frame and must stay cheap. Design history: `docs/design-docs/rendering-and-performance.md`.
+
 Command base classes in `commands/command.ts` encode the semantics: `Command` (undoable), `MergeableCommand` (consecutive commands collapse into one undo step), `HiddenCommand` (renders to the hidden viewer only), `PopupCommand`, `SystemCommand` (transparent to user undo/redo), `ResetCommand` (clears all stacks), `ModelRequestCommand` (responds without changing the model).
 
 **The bounds round-trip** is the most distinctive flow: `RequestBoundsAction` → `RequestBoundsCommand` (a `HiddenCommand` with `blockUntil: ComputedBoundsAction`) → hidden render → `HiddenBoundsUpdater` reads `getBBox()` from the live hidden SVG, runs micro-layout (`Layouter`), dispatches `ComputedBoundsAction`. Client/server layout negotiation happens via `needsClientLayout` / `needsServerLayout`, which are set in `ViewerOptions` but travel to the server inside `RequestModelAction.options`.
 
-*Why measure by rendering*: rendering to the DOM is the only way to get the real bounds of SVG content (text especially), and rendering visibly first causes flicker — hence the dedicated hidden viewer; a `revision` on `ComputedBoundsAction` guards against stale bounds from overlapping round-trips (design history: theia-ide/sprotty#48 and #171 — the pre-Eclipse tracker, rescued here because that repo is outside the org's control).
+*Why measure by rendering*: rendering to the DOM is the only way to get the real bounds of SVG content (text especially), and rendering visibly first causes flicker — hence the dedicated hidden viewer. The hidden div is hidden by zero size, deliberately *not* `display: none` (`.sprotty-hidden` in `css/sprotty.css`): the browser must actually render it or `getBBox()` has nothing to measure; a `revision` on `ComputedBoundsAction` guards against stale bounds from overlapping round-trips (design history: theia-ide/sprotty#48 and #171 — the pre-Eclipse tracker, rescued here because that repo is outside the org's control).
 
-*Why layout is split micro/macro*: micro-layout (the `bounds` feature) arranges contents *within* nodes on the client, because SVG has no layout primitives (historically not even portable vertical text centering). Macro layout — placing nodes, routing edges — is delegated to graph layout engines (`sprotty-elk` → ELK): graph layout is an academic domain of mostly NP-hard optimization problems, which is why few libraries exist (elkjs is cross-compiled from the Java ELK project, rooted in academic work at Kiel University started around 2008). The engine/client boundary is configurable via layout options but gets complicated at node sizes, port positions, and label positions — label layout in particular is a per-application choice between the engine and client micro-layout (maintainer, 2026-08-25; "We stick with the ELK / client layout separation as is" — theia-ide/sprotty#180). Behaviour contract: `docs/product-specs/micro-layout.md`.
+*Why layout is split micro/macro*: micro-layout (the `bounds` feature) arranges contents *within* nodes on the client, because SVG has no layout primitives (historically not even portable vertical text centering). Macro layout — placing nodes, routing edges — is delegated to graph layout engines (`sprotty-elk` → ELK): graph layout is an academic domain of mostly NP-hard optimization problems, which is why few libraries exist (elkjs is cross-compiled from the Java ELK project, rooted in academic work at Kiel University started around 2008). ELK specifically was picked for ports with position constraints, nested graphs, and hyperedges; for large graphs the engine can run out of process (`SocketElkServer`/`StdioElkServer` → [TypeFox/elk-server](https://github.com/TypeFox/elk-server)) — see `docs/design-docs/rendering-and-performance.md`. The engine/client boundary is configurable via layout options but gets complicated at node sizes, port positions, and label positions — label layout in particular is a per-application choice between the engine and client micro-layout (maintainer, 2026-08-25; "We stick with the ELK / client layout separation as is" — theia-ide/sprotty#180). Behaviour contract: `docs/product-specs/micro-layout.md`.
 
-*Performance principle*: the bottleneck is DOM size and DOM patching, not virtual-DOM computation. That is why default views return early for elements outside the viewport (`ShapeView`/`RoutableView.isVisible` — the origin of the convention in `AGENTS.md`) and why thunk views exist (skip re-patching unchanged elements); SVG export renders through the hidden context and must **not** skip invisible elements. Level-of-detail rendering was deliberately scoped out. (Established in PR #182.)
+*Performance principle*: SVG rendering is a founding decision (DOM events give interaction for free, snapshot export is trivial; canvas/WebGL rejected), so the bottleneck is DOM size and DOM patching, not virtual-DOM computation. That is why default views return early for elements outside the viewport (`ShapeView`/`RoutableView.isVisible` — the origin of the convention in `AGENTS.md`; edge culling deliberately tests only the route's bounding box, an approximation chosen for speed) and why thunk views exist (skip re-patching unchanged elements); SVG export renders through the hidden context and must **not** skip invisible elements. Level-of-detail rendering was deliberately scoped out of the *framework* (PR #182) — zoom-dependent rendering inside application views is the recommended idiom; the full large-model toolkit (culling, LOD, filtering, nested lazy loading) is in `docs/design-docs/rendering-and-performance.md`.
 
 *Input tools* are deliberately parallel: `MouseTool`, `TouchTool` (PR #475), and `PointerTool` (PR #488), all in `base/views/`. Touch gets its own `ITouchListener` interface so one listener class can implement both `IMouseListener` and `ITouchListener` and register for both; `PointerTool` is groundwork for pointer capture — the actual mouse→pointer listener switch is a breaking change deferred to v2.0 (`docs/exec-plans/active/v2-release.md`).
 
@@ -57,6 +59,7 @@ Conversion is done by `SModelFactory` (`base/model/smodel-factory.ts`) via refle
 
 ## Dependency injection
 
+- The scope of a container is **one diagram instance** — several diagrams on one page mean several containers, so "singleton" always means singleton-per-diagram, and state shared across diagrams must be passed in explicitly.
 - All DI symbols live in the single `TYPES` object, `packages/sprotty/src/base/types.ts`.
 - Every framework feature exports a `ContainerModule` from its `di.config.ts`. `loadDefaultModules(container)` (`src/lib/modules.ts`) loads the default set — **`edgeIntersectionModule` and `edgeJunctionModule` are deliberately not in it**, and `projection`/`nameable` have no DI module at all.
 - Ordering matters: `loadDefaultModules` first, then extra sprotty modules, then the app module last — app modules use `rebind` and `overrideModelElement`, which throw if the default binding isn't there yet. Double registration throws `Key is already registered`.
@@ -96,16 +99,29 @@ One line per module in `packages/sprotty/src/features/` — purpose and the symb
 
 ## Client–server
 
+The split is consciously modeled on LSP's smart-server/dumb-client pattern: the client holds only the *view model* of the current diagram, all semantic knowledge (and the bulk of the data) stays behind the model source or server — the SModel is a computed projection, never the source of truth. The doctrine and its consequences (no bidirectional sync, no SModel persistence, manual reconciliation) are in `docs/design-docs/view-model-doctrine.md`.
+
 Both halves are called "diagram server" — keep them apart:
 
 - **Server side**: `DiagramServer` (`packages/sprotty-protocol/src/diagram-server.ts`), one instance per client, constructed with `(dispatch, services)` where `DiagramServices` supplies `DiagramGenerator`, optional `ModelLayoutEngine`, optional `ServerActionHandlerRegistry`.
 - **Client side**: `ModelSource` implementations in `packages/sprotty/src/model-source/` — `LocalModelSource` (imperative facade, no server) and `DiagramServerProxy` / `WebSocketDiagramServerProxy` (forwards a fixed set of actions, marks inbound ones with `__receivedFromServer` to avoid echo).
 - `modelSourceModule` deliberately does **not** bind `TYPES.ModelSource` — every app must choose one.
 
+## Ecosystem and scope
+
+Sprotty is deliberately *viewer-first*: read-only, generated diagrams are a first-class use case, and the layers around it set its scope boundaries — changes to the protocol or the DI wiring propagate into all of them:
+
+- **Eclipse GLSP** — the graphics-first diagram *editing* framework, built on Sprotty's view model and rendering. Full editing tooling (palettes, edit-operation frameworks) is deliberately GLSP's ground; don't scope-creep it into sprotty core.
+- **sprotty-vscode** — the maintained IDE integration: the diagram runs in a webview (an isolated iframe), the extension relays JSON messages between webview and (optional) language server. Over LSP the whole protocol travels through the single notification `diagram/accept` carrying an `ActionMessage` — extension means new action kinds, never new RPC methods. The direct Theia integration (sprotty-theia) died when Theia deprecated `@theia/languages` in v1.4.0 (2020); VS Code extensions run in Theia too, so this is also the Theia path.
+- **langium-sprotty** — embeds `DiagramServer` *inside* the language-server process; one reason `sprotty-protocol` must stay dependency-free and Node-safe.
+- **Java servers** — the original Sprotty server was Java/Xtend (pre-Eclipse era; Sprotty started at TypeFox in 2017 and moved to the Eclipse Foundation in 2018), and Java peers still speak the wire format — protocol changes must not assume a TypeScript-only counterpart.
+
+For language-server scenarios the editing doctrine is text-first — the diagram is derived from the text, never the reverse: `docs/design-docs/view-model-doctrine.md`.
+
 ## How to add things
 
 **A new action, end to end:**
-1. `packages/sprotty-protocol/src/actions.ts` — `interface` + namespace with `KIND`/`create()` (only if it crosses the wire; purely client-side actions live next to their command in `sprotty`).
+1. `packages/sprotty-protocol/src/actions.ts` — `interface` + namespace with `KIND`/`create()` (only if it crosses the wire; purely client-side actions live next to their command in `sprotty`). Actions model coarse-grained semantic operations (set a model, apply a layout) — not per-property mutations.
 2. The command or handler in `packages/sprotty/src/features/<feature>/` — commands need `static readonly KIND`, `@injectable()`, and `@inject(TYPES.Action)` in the constructor.
 3. `configureCommand` / `configureActionHandler` in that feature's `di.config.ts`.
 4. Re-export from `packages/sprotty/src/index.ts`; add the module to `loadDefaultModules` if it should be on by default.

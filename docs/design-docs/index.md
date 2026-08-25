@@ -5,3 +5,5 @@ Point-in-time design rationale: for one design, the strategy chosen, the trade-o
 | Doc | Date | Trust |
 |---|---|---|
 | [Edge routing architecture](edge-routing.md) | 2026-08-25 (rescued from 2019–2024 threads) | verified 2026-08-25 |
+| [The semantic-model / view-model doctrine](view-model-doctrine.md) | 2026-08-25 (rescued from 2017–2026 talks & posts) | verified 2026-08-25 |
+| [Rendering stack & performance strategy](rendering-and-performance.md) | 2026-08-25 (rescued from 2018–2023 talks & posts) | verified 2026-08-25 |
