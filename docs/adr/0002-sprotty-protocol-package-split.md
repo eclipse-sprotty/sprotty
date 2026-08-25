@@ -26,5 +26,9 @@ Option 2: `sprotty-protocol` was created in the monorepo restructuring (commit `
 - Node servers (and any backend) consume `sprotty-protocol` without browser code; the package must stay free of runtime dependencies.
 - The parallel type hierarchies (`SNode` vs `SNodeImpl`, duplicated mixin interfaces) are the standing cost — the biggest newcomer/agent confusion in the codebase (see `docs/ARCHITECTURE.md`, "External vs internal model").
 - Actions are plain data forever: `interface` + namespace with `KIND`/`create()`, never classes; wire consumers must not use `instanceof`.
-- The deprecate-in-place → remove-at-major migration pattern established here became the repo's general API-evolution policy.
+- The deprecate-in-place → remove-at-major migration pattern established here became the repo's general API-evolution policy (later recorded as ADR-0003).
 - Request-id collisions between client and server contexts later required namespacing (`setRequestContext`, [#385](https://github.com/eclipse-sprotty/sprotty/pull/385)).
+
+## Addendum (2026-08-25, decision unchanged)
+
+The naming half of this split was completed in [#355](https://github.com/eclipse-sprotty/sprotty/pull/355) (v0.14.0), which also states which of the two type systems wins in ambiguous cases: "Historically, the external model interfaces had a `Schema` suffix to disambiguate, but I removed that during the move to the `sprotty-protocol` package. **I now regard the external model as the primary interface.** The internal model is used primarily at the diagram configuration with InversifyJS (`configureModelElement`) and as arguments to custom services such as views."

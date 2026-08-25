@@ -33,6 +33,14 @@ Command base classes in `commands/command.ts` encode the semantics: `Command` (u
 
 **The bounds round-trip** is the most distinctive flow: `RequestBoundsAction` → `RequestBoundsCommand` (a `HiddenCommand` with `blockUntil: ComputedBoundsAction`) → hidden render → `HiddenBoundsUpdater` reads `getBBox()` from the live hidden SVG, runs micro-layout (`Layouter`), dispatches `ComputedBoundsAction`. Client/server layout negotiation happens via `needsClientLayout` / `needsServerLayout`, which are set in `ViewerOptions` but travel to the server inside `RequestModelAction.options`.
 
+*Why measure by rendering*: rendering to the DOM is the only way to get the real bounds of SVG content (text especially), and rendering visibly first causes flicker — hence the dedicated hidden viewer; a `revision` on `ComputedBoundsAction` guards against stale bounds from overlapping round-trips (design history: theia-ide/sprotty#48 and #171 — the pre-Eclipse tracker, rescued here because that repo is outside the org's control).
+
+*Why layout is split micro/macro*: micro-layout (the `bounds` feature) arranges contents *within* nodes on the client, because SVG has no layout primitives (historically not even portable vertical text centering). Macro layout — placing nodes, routing edges — is delegated to graph layout engines (`sprotty-elk` → ELK): graph layout is an academic domain of mostly NP-hard optimization problems, which is why few libraries exist (elkjs is cross-compiled from the Java ELK project, rooted in academic work at Kiel University started around 2008). The engine/client boundary is configurable via layout options but gets complicated at node sizes, port positions, and label positions — label layout in particular is a per-application choice between the engine and client micro-layout (maintainer, 2026-08-25; "We stick with the ELK / client layout separation as is" — theia-ide/sprotty#180). Behaviour contract: `docs/product-specs/micro-layout.md`.
+
+*Performance principle*: the bottleneck is DOM size and DOM patching, not virtual-DOM computation. That is why default views return early for elements outside the viewport (`ShapeView`/`RoutableView.isVisible` — the origin of the convention in `AGENTS.md`) and why thunk views exist (skip re-patching unchanged elements); SVG export renders through the hidden context and must **not** skip invisible elements. Level-of-detail rendering was deliberately scoped out. (Established in PR #182.)
+
+*Input tools* are deliberately parallel: `MouseTool`, `TouchTool` (PR #475), and `PointerTool` (PR #488), all in `base/views/`. Touch gets its own `ITouchListener` interface so one listener class can implement both `IMouseListener` and `ITouchListener` and register for both; `PointerTool` is groundwork for pointer capture — the actual mouse→pointer listener switch is a breaking change deferred to v2.0 (`docs/exec-plans/active/v2-release.md`).
+
 ## External vs internal model
 
 Two deliberate parallel hierarchies — the single biggest source of confusion:
@@ -115,6 +123,10 @@ Both halves are called "diagram server" — keep them apart:
 - `sprotty-elk`: `src/index.ts` exports the Inversify wrapper, but inversify is only an `optionalDependency` — plain-Node consumers import `sprotty-elk/lib/elk-layout.js`. Node backends (`SocketElkServer`, `StdioElkServer`) live under `sprotty-elk/lib/node/`.
 - ESLint bans importing `..`/`../index` (barrel back-imports) to prevent cycles; webpack's `CircularDependencyPlugin` (examples build, `failOnError: true`) is the only cycle detector, and it only sees code reachable from `examples/browser-app.ts`.
 - CSS ships as source (`packages/sprotty/css/`, exposed via the `./css/*` export); consumers import it through their bundler. `getComputedStyle`-based inlining happens only in `SvgExporter`.
+- Feature modules have implicit dependencies with no mechanical check (#50): e.g. excluding the edit modules breaks selection with `Missing handler for action 'switchEditMode'` (#127). When excluding default modules, check which of their handlers other features' listeners dispatch to.
+- The JSX layer (`src/lib/jsx.ts`) is a thin in-house wrapper over snabbdom's own JSX that maps attribute prefixes to snabbdom data keys. snabbdom is pinned to `~3.5.1` because 3.6 went pure-ESM while sprotty was CommonJS (#418) — that reason lapsed with the ESM migration (ADR-0006); the pin awaits re-evaluation (v2.0 exec plan).
+- ES2022 class-field emission: fields declared without initializer exist with value `undefined`, so `'prop' in element` feature checks are unreliable — check the value, not key presence (this bit `isLayoutContainer` during the ESM migration, PR #515).
+- `ProjectedViewportView` wraps the `svg` in a `div`, which has repeatedly broken sibling features assuming the root DOM node is the `svg` (keyboard #299, SVG export #407, selection #302) — when touching root-level DOM behaviour, test both root shapes.
 
 ## Public documentation map (sprotty.org)
 

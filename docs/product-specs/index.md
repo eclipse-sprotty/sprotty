@@ -5,3 +5,6 @@ Current intended behaviour, one file per capability. A change to intended behavi
 | Capability | Spec |
 |---|---|
 | Client–server protocol & layout negotiation | `client-server-protocol.md` |
+| Viewport (zoom, scroll, center, fit) | `viewport.md` |
+| Edge routing, anchors & routing handles | `edge-routing.md` |
+| Micro-layout & bounds measurement | `micro-layout.md` |

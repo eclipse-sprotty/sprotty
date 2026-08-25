@@ -17,12 +17,17 @@ Further promises:
 - `LocalModelSource` honours the same negotiation without a server (fixed vs. dynamic bounds mode) — enforced by `packages/sprotty/src/model-source/local-model-source.spec.ts`.
 - Custom server behaviour registers through `ServerActionHandlerRegistry`; action kinds without a registered handler fall back to the built-in handling — enforced by `packages/sprotty-protocol/src/diagram-server.spec.ts` ("calls a registered action handler" / "does not call an unregistered action handler").
 - Actions crossing the wire are plain JSON objects discriminated by `kind`; consumers never need `instanceof` (see ADR-0002) — (unverified)
-- Request/response actions correlate via `requestId`, namespaced per context (`setRequestContext`) so client- and server-generated ids cannot collide — (unverified)
+- Request/response actions correlate via `requestId`, namespaced per context (`setRequestContext`) so client- and server-generated ids cannot collide (see ADR-0001) — (unverified)
 - A server discards stale layout results by comparing the model `revision` — (unverified)
+- Only action kinds registered for forwarding are sent to the server; applications with custom server-bound actions must register them (adjudicated in [#289](https://github.com/eclipse-sprotty/sprotty/issues/289); the how-to is in `docs/ARCHITECTURE.md`) — (unverified)
+- `CommitModelAction` (fired e.g. when a move ends) replaces the external model held by the model source with a reduced copy of the internal model — the external model is not preserved by identity (adjudicated intended in [#177](https://github.com/eclipse-sprotty/sprotty/issues/177), which also lists the sanctioned workarounds) — (unverified)
+- When the server regenerates the model (e.g. after a text edit), client-side manual changes such as user-moved positions are erased; persisting them is the application's responsibility (adjudicated intended in [#306](https://github.com/eclipse-sprotty/sprotty/issues/306)) — (unverified)
+- Responses to *server-initiated* requests are forwarded back to the server — intended behaviour per the maintainer statement in [#445](https://github.com/eclipse-sprotty/sprotty/issues/445), currently not reliably implemented (open)
 
 ## Deliberately not promised
 
 - Internals of the exchange: the `__receivedFromServer` marker, the request-id string format, and `DiagramServer`'s internal dispatch order may change in any release.
+- Delivery of oversized messages: WebSocket transports may silently drop large messages (e.g. bounds payloads of big diagrams); chunking is the application's concern — tolerated limitation, [#102](https://github.com/eclipse-sprotty/sprotty/issues/102) (open since 2019).
 - Behaviour not described in the sprotty.org documentation (actions-and-protocols recipe, API reference) or in this spec is not part of the compatibility contract and may change in minor releases (maintainer decision, 2026-08-25).
 
 ## Surface

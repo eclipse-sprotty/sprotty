@@ -4,7 +4,7 @@ date: 2026-08-24
 superseded-by:
 ---
 
-# ADR-0001: Publish via GitHub Actions with npm trusted publishing; retire Lerna and Jenkins
+# ADR-0005: Publish via GitHub Actions with npm trusted publishing; retire Lerna and Jenkins
 
 ## Context
 

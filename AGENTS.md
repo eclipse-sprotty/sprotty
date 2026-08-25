@@ -56,6 +56,7 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - `docs/ARCHITECTURE.md` — package topology, runtime cycle, extension points, gotchas.
 - `examples/AGENTS.md` — how examples are built, run, and added.
 - `docs/adr/` — decision records; do not contradict accepted ADRs.
+- `docs/design-docs/index.md` — point-in-time design rationale (trade-offs, rejected alternatives), indexed with trust labels; check before refactoring a deliberate design away.
 - `docs/product-specs/index.md` — behaviour contracts per capability; bug-vs-intended is adjudicated there.
 - `docs/exec-plans/` — multi-session work gets a plan in `active/`; move it to `completed/` when done.
 - https://sprotty.org/docs/ — the public documentation (concepts live there, not in this repo).
