@@ -56,6 +56,36 @@ Conversion is done by `SModelFactory` (`base/model/smodel-factory.ts`) via refle
 - The event cycle (dispatcher ↔ command stack ↔ viewer) is only breakable via providers: `TYPES.IActionDispatcherProvider`, `ICommandStackProvider`, `ActionHandlerRegistryProvider`, `ModelSourceProvider`, `IViewerProvider`. Injecting these directly instead of via provider recreates the cycle.
 - Configuration helpers (all take a `context = { bind, unbind, isBound, rebind }`): `configureModelElement`, `overrideModelElement`, `configureView`, `registerModelElement` (`base/views/view.tsx`, `base/model/smodel-utils.ts`), `configureCommand` (`base/commands/command-registration.ts`), `configureActionHandler` / `onAction` (`base/actions/action-handler.ts`), `configureLayout`, `configureButtonHandler`, `configureViewerOptions`.
 
+## Feature module index
+
+One line per module in `packages/sprotty/src/features/` — purpose and the symbols to search for. All are in `loadDefaultModules` unless marked otherwise.
+
+| Module | What it does | Key symbols |
+|---|---|---|
+| `bounds` | micro-layout + bounds measurement | `SetBoundsCommand`, `RequestBoundsCommand`, `HiddenBoundsUpdater`, `Layouter`, `VBoxLayouter`/`HBoxLayouter`/`StackLayouter`, `SShapeElementImpl`, `ShapeView` |
+| `button` | clickable buttons on elements | `SButtonImpl`, `ButtonHandlerRegistry`, `configureButtonHandler` |
+| `command-palette` | searchable action UI overlay | `CommandPalette`, `ICommandPaletteActionProvider`, `RevealNamedElementActionProvider` |
+| `context-menu` | context menus | `IContextMenuService`, `IContextMenuItemProvider`, `ContextMenuMouseListener` |
+| `decoration` | issue markers on elements | `SIssueMarkerImpl`, `IssueMarkerView`, `DecorationPlacer` |
+| `edge-intersection` | edge-crossing detection (sweepline) | `IntersectionFinder` — **not in defaults** |
+| `edge-junction` | junction dots where edges share segments | `JunctionFinder`, `JunctionPostProcessor` — **not in defaults** |
+| `edge-layout` | placing labels on/along edges | `EdgePlacement`, `EdgeLayoutPostprocessor` |
+| `edit` | label editing, element create/delete, edge reconnect | three modules: `edgeEditModule`, `labelEditModule`, `labelEditUiModule`; `EditLabelUI`, `ApplyLabelEditCommand`, `DeleteElementCommand`, `ReconnectCommand`, `SwitchEditModeCommand` |
+| `expand` | collapse/expand buttons | `ExpandButtonHandler`, `ExpandButtonView` |
+| `export` | SVG export via hidden rendering | `SvgExporter`, `ExportSvgCommand`, `ISvgExportPostprocessor` |
+| `fade` | fade animations on model updates | `FadeAnimation`, `ElementFader` |
+| `hover` | hover feedback + popups | `HoverMouseListener`, `SetPopupModelCommand`, `PopupPositionUpdater` |
+| `move` | dragging with snapping + move animations | `MoveCommand` (mergeable), `MoveMouseListener`, `ISnapper`/`CenterGridSnapper`, `MorphEdgesAnimation` |
+| `nameable` | the `nameFeature` symbol only | model.ts only — **no DI module** |
+| `open` | double-click → `OpenAction` | `OpenMouseListener` |
+| `projection` | projection bars (scrollbar-style viewport overview) | `ProjectedViewportView` — **no DI module**, wire manually |
+| `routing` | edge routers, anchors, routing handles | `PolylineEdgeRouter`/`ManhattanEdgeRouter`/`BezierEdgeRouter`, `EdgeRouterRegistry`, `AnchorComputerRegistry`, `SConnectableElementImpl`, `SRoutingHandleImpl` |
+| `select` | selection state + interaction | `SelectCommand`, `SelectMouseListener`, `GetSelectionCommand` |
+| `undo-redo` | keyboard bindings for undo/redo | `UndoRedoKeyListener` (the stacks live in `CommandStack`) |
+| `update` | model diffing + animated transitions | `UpdateModelCommand`, `ModelMatcher` |
+| `viewport` | scroll, zoom, center, fit-to-screen | `CenterCommand`, `FitToScreenCommand`, `SetViewportCommand`, `ViewportAnimation`, `ViewportRootElementImpl` |
+| `zorder` | bring-to-front | `BringToFrontCommand` |
+
 ## Client–server
 
 Both halves are called "diagram server" — keep them apart:

@@ -43,6 +43,7 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - Do not edit `CHANGELOG.md` files per change; they are batched by maintainers at release time.
 - Done means: `npm run build`, `npm run lint` (0 errors), and `npm test` all pass locally, output shown.
 - A bugfix includes a co-located regression spec (`*.spec.ts` next to the fixed file).
+- Behaviour documented on sprotty.org or promised in `docs/product-specs/` is a compatibility contract: changing it is a breaking change even when signatures stay the same. A change to intended behaviour updates the capability's spec in the same change.
 - If reality contradicts this file or `docs/`, fix the doc as part of the change — never silently work around it.
 
 ## PR conventions
@@ -55,5 +56,6 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - `docs/ARCHITECTURE.md` — package topology, runtime cycle, extension points, gotchas.
 - `examples/AGENTS.md` — how examples are built, run, and added.
 - `docs/adr/` — decision records; do not contradict accepted ADRs.
+- `docs/product-specs/index.md` — behaviour contracts per capability; bug-vs-intended is adjudicated there.
 - `docs/exec-plans/` — multi-session work gets a plan in `active/`; move it to `completed/` when done.
 - https://sprotty.org/docs/ — the public documentation (concepts live there, not in this repo).
