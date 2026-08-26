@@ -17,7 +17,7 @@
 import { hasOwnProperty, Locateable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
-export const moveFeature = Symbol('moveFeature');
+export const moveFeature = Symbol.for('moveFeature');
 
 export function isLocateable(element: SModelElementImpl): element is SModelElementImpl & Locateable {
     return hasOwnProperty(element, 'position');

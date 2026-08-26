@@ -19,7 +19,7 @@ import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel.js
 import { InternalBoundsAware, isBoundsAware } from '../bounds/model.js';
 import { SRoutableElementImpl } from '../routing/model.js';
 
-export const edgeLayoutFeature = Symbol('edgeLayout');
+export const edgeLayoutFeature = Symbol.for('edgeLayout');
 
 export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): element is T & SChildElementImpl & InternalBoundsAware & EdgeLayoutable {
     return element instanceof SChildElementImpl

@@ -17,7 +17,7 @@
 import { Selectable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
-export const selectFeature = Symbol('selectFeature');
+export const selectFeature = Symbol.for('selectFeature');
 
 export function isSelectable(element: SModelElementImpl): element is SModelElementImpl & Selectable {
     return element.hasFeature(selectFeature);

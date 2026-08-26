@@ -18,7 +18,7 @@ import { Bounds, Dimension, Viewport } from 'sprotty-protocol';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
 import { limit, Limits } from '../../utils/geometry.js';
 
-export const viewportFeature = Symbol('viewportFeature');
+export const viewportFeature = Symbol.for('viewportFeature');
 
 /**
  * Determine whether the given model element has a viewport.

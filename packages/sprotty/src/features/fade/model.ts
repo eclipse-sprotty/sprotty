@@ -17,7 +17,7 @@
 import { Fadeable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
-export const fadeFeature = Symbol('fadeFeature');
+export const fadeFeature = Symbol.for('fadeFeature');
 
 export function isFadeable(element: SModelElementImpl): element is SModelElementImpl & Fadeable {
     return element.hasFeature(fadeFeature) && (element as any)['opacity'] !== undefined;
