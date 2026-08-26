@@ -17,11 +17,11 @@
 /** @jsx svg */
 import { svg } from '../../lib/jsx.js';
 
-import { injectable, multiInject, optional, interfaces, inject } from 'inversify';
+import { injectable, multiInject, optional, inject, Bind, IsBound, ServiceIdentifier } from 'inversify';
 import { VNode } from 'snabbdom';
 import { TYPES } from '../types.js';
 import { InstanceRegistry } from '../../utils/registry.js';
-import { isInjectable } from '../../utils/inversify.js';
+import { bindInjectable } from '../../utils/inversify.js';
 import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel.js';
 import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory.js';
 import { registerModelElement } from '../model/smodel-utils.js';
@@ -125,14 +125,14 @@ export class ViewRegistry extends InstanceRegistry<IView> {
 /**
  * Combines `registerModelElement` and `configureView`.
  */
-export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, modelConstr: new () => SModelElementImpl, viewConstr: interfaces.ServiceIdentifier<IView>,
+export function configureModelElement(context: { bind: Bind, isBound: IsBound },
+        type: string, modelConstr: new () => SModelElementImpl, viewConstr: ServiceIdentifier<IView>,
         features?: CustomFeatures): void {
     registerModelElement(context, type, modelConstr, features);
     configureView(context, type, viewConstr);
 }
-export function overrideModelElement(context: {bind: interfaces.Bind, isBound: interfaces.IsBound},
-        type: string, modelConstr: new () => SModelElementImpl, viewConstr: interfaces.ServiceIdentifier<IView>,
+export function overrideModelElement(context: {bind: Bind, isBound: IsBound},
+        type: string, modelConstr: new () => SModelElementImpl, viewConstr: ServiceIdentifier<IView>,
         features?: CustomFeatures): void {
     registerModelElement(context, type, modelConstr, features, true);
     configureView(context, type, viewConstr, true);
@@ -143,19 +143,12 @@ export function overrideModelElement(context: {bind: interfaces.Bind, isBound: i
 /**
  * Utility function to register a view for a model element type.
  */
-export function configureView(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        type: string, constr: interfaces.ServiceIdentifier<IView>, isOverride?: boolean): void {
-    if (typeof constr === 'function') {
-        if (!isInjectable(constr)) {
-            throw new Error(`Views should be @injectable: ${constr.name}`);
-        }
-        if (!context.isBound(constr)) {
-            context.bind(constr).toSelf();
-        }
-    }
+export function configureView(context: { bind: Bind, isBound: IsBound },
+        type: string, constr: ServiceIdentifier<IView>, isOverride?: boolean): void {
+    bindInjectable(context, constr, 'Views');
     context.bind(TYPES.ViewRegistration).toDynamicValue(ctx => ({
         type,
-        factory: () => ctx.container.get(constr),
+        factory: () => ctx.get(constr),
         isOverride
     }));
 }

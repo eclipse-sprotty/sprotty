@@ -19,7 +19,7 @@ import { configureCommand } from "../../base/commands/command-registration.js";
 import { TYPES } from "../../base/types.js";
 import { GetSelectionCommand, SelectAllCommand, SelectCommand, SelectKeyboardListener, SelectMouseListener } from "./select.js";
 
-const selectModule = new ContainerModule((bind, _unbind, isBound) => {
+const selectModule = new ContainerModule(({bind, isBound}) => {
     configureCommand({ bind, isBound }, SelectCommand);
     configureCommand({ bind, isBound }, SelectAllCommand);
     configureCommand({ bind, isBound }, GetSelectionCommand);

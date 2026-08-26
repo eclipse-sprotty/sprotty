@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from 'inversify';
+import { Container, ContainerModule, injectable, injectFromBase } from 'inversify';
 import {
     SCompartmentView, SLabelView, TYPES, configureViewerOptions, ConsoleLogger, LogLevel,
     loadDefaultModules, LocalModelSource, HtmlRootView, PreRenderedView, SvgExporter,
@@ -23,6 +23,8 @@ import {
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from './views.js';
 import { Channel, Core, Crossbar, Processor } from './chipmodel.js';
 
+@injectFromBase()
+@injectable()
 class FilteringSvgExporter extends SvgExporter {
     isExported(styleSheet: CSSStyleSheet): boolean {
         return styleSheet.href !== null && (
@@ -37,7 +39,7 @@ export default () => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
-    const multicoreModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const multicoreModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

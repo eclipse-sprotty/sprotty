@@ -17,7 +17,7 @@
 import { ContainerModule } from "inversify";
 import { ButtonHandlerRegistry } from './button-handler.js';
 
-const buttonModule = new ContainerModule(bind => {
+const buttonModule = new ContainerModule(({bind}) => {
     bind(ButtonHandlerRegistry).toSelf().inSingletonScope();
 });
 

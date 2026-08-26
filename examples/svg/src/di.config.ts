@@ -28,7 +28,7 @@ export default () => {
     require('sprotty/css/edit-label.css');
     require('../css/diagram.css');
 
-    const svgModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const svgModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();

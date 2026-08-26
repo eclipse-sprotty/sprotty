@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { saveAs } from 'file-saver';
-import { inject, injectable, optional } from 'inversify';
+import { inject, injectable, injectFromBase, optional } from 'inversify';
 import {
     Action,
     Bounds,
@@ -51,6 +51,7 @@ export interface IPopupModelProvider {
  * This class can be used as a facade over the action-based API of sprotty. It handles
  * actions for bounds calculation and model updates.
  */
+@injectFromBase()
 @injectable()
 export class LocalModelSource extends ModelSource {
 

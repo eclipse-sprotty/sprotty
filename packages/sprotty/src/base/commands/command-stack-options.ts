@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, interfaces } from 'inversify';
+import { Bind, Container, IsBound, RebindSync } from 'inversify';
 import { safeAssign } from 'sprotty-protocol';
 import { TYPES } from '../types.js';
 
@@ -46,7 +46,7 @@ export const defaultCommandStackOptions: () => CommandStackOptions = () => ({
  * Utility function to partially set command stack options. Default values (from `defaultViewerOptions`) are used for
  * options that are not specified.
  */
-export function configureCommandStackOptions(context: { bind: interfaces.Bind, isBound: interfaces.IsBound, rebind: interfaces.Rebind },
+export function configureCommandStackOptions(context: { bind: Bind, isBound: IsBound, rebind: RebindSync },
         options: Partial<CommandStackOptions>): void {
     const opt: CommandStackOptions = {
         ...defaultCommandStackOptions(),

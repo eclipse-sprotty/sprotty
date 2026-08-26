@@ -18,7 +18,7 @@ import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types.js";
 import { UndoRedoKeyListener } from "./undo-redo.js";
 
-const undoRedoModule = new ContainerModule(bind => {
+const undoRedoModule = new ContainerModule(({bind}) => {
     bind(UndoRedoKeyListener).toSelf().inSingletonScope();
     bind(TYPES.KeyListener).toService(UndoRedoKeyListener);
 });

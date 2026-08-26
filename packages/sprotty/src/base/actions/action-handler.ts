@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, multiInject, optional, interfaces } from "inversify";
+import { Bind, injectable, IsBound, multiInject, optional, ServiceIdentifier } from "inversify";
 import { TYPES } from "../types.js";
 import { MultiInstanceRegistry } from "../../utils/registry.js";
-import { isInjectable } from "../../utils/inversify.js";
+import { bindInjectable } from "../../utils/inversify.js";
 import { ICommand } from "../commands/command.js";
 import { Action } from "sprotty-protocol";
 
@@ -70,26 +70,19 @@ export class ActionHandlerRegistry extends MultiInstanceRegistry<IActionHandler>
 /**
  * Utility function to register an action handler for an action kind.
  */
-export function configureActionHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-        kind: string, constr: interfaces.ServiceIdentifier<IActionHandler>): void {
-    if (typeof constr === 'function') {
-        if (!isInjectable(constr)) {
-            throw new Error(`Action handlers should be @injectable: ${constr.name}`);
-        }
-        if (!context.isBound(constr)) {
-            context.bind(constr).toSelf();
-        }
-    }
+export function configureActionHandler(context: { bind: Bind, isBound: IsBound },
+        kind: string, constr: ServiceIdentifier<IActionHandler>): void {
+    bindInjectable(context, constr, 'Action handlers');
     context.bind(TYPES.ActionHandlerRegistration).toDynamicValue(ctx => ({
         actionKind: kind,
-        factory: () => ctx.container.get(constr)
+        factory: () => ctx.get(constr)
     }));
 }
 
 /**
  * Utility function to register an action handler for an action kind.
  */
-export function onAction(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function onAction(context: { bind: Bind, isBound: IsBound },
         kind: string, handle: (action: Action) => ICommand | Action | void): void {
     context.bind(TYPES.ActionHandlerRegistration).toConstantValue({
         actionKind: kind,

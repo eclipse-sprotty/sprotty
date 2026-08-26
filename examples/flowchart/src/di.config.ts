@@ -28,7 +28,7 @@ import { Flowchart } from 'sprotty-library';
 export default (containerId: string) => {
     require('../css/diagram.css');
 
-    const module = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const module = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

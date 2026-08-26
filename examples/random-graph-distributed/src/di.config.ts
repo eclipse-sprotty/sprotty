@@ -25,7 +25,7 @@ export default (containerId: string) => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
-    const randomGraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const randomGraphModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(WebSocketDiagramServerProxy).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

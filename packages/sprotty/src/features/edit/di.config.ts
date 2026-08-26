@@ -27,7 +27,7 @@ import { ApplyLabelEditCommand, EditLabelAction, EditLabelKeyListener, EditLabel
 import { SwitchEditModeCommand } from "./edit-routing.js";
 import { ReconnectCommand } from "./reconnect.js";
 
-export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
+export const edgeEditModule = new ContainerModule(({bind,isBound}) => {
     const context = { bind, isBound };
     configureCommand(context, SwitchEditModeCommand);
     configureCommand(context, ReconnectCommand);
@@ -35,7 +35,7 @@ export const edgeEditModule = new ContainerModule((bind, _unbind, isBound) => {
     configureModelElement(context, 'dangling-anchor', SDanglingAnchorImpl, EmptyGroupView);
 });
 
-export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
+export const labelEditModule = new ContainerModule(({bind,isBound}) => {
     bind(EditLabelMouseListener).toSelf().inSingletonScope();
     bind(TYPES.MouseListener).toService(EditLabelMouseListener);
     bind(EditLabelKeyListener).toSelf().inSingletonScope();
@@ -43,7 +43,7 @@ export const labelEditModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, ApplyLabelEditCommand);
 });
 
-export const labelEditUiModule = new ContainerModule((bind, _unbind, isBound) => {
+export const labelEditUiModule = new ContainerModule(({bind,isBound}) => {
     const context = { bind, isBound };
     configureActionHandler(context, EditLabelAction.KIND, EditLabelActionHandler);
     bind(EditLabelUI).toSelf().inSingletonScope();

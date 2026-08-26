@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { saveAs } from 'file-saver';
-import { inject, injectable } from 'inversify';
+import { inject, injectable, injectFromBase } from 'inversify';
 import {
     Action,
     ActionMessage,
@@ -57,6 +57,7 @@ const receivedFromServerProperty = '__receivedFromServer';
  * external model source.
  */
 @injectable()
+@injectFromBase()
 export abstract class DiagramServerProxy extends ModelSource {
 
     @inject(TYPES.ILogger) protected logger: ILogger;

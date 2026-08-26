@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from 'inversify';
+import { inject, injectable, injectFromBase } from 'inversify';
 import { Action, Bounds, HoverFeedbackAction, Point, RequestPopupModelAction, SetPopupModelAction } from 'sprotty-protocol';
 import { IActionHandler } from '../../base/actions/action-handler.js';
 import { CommandExecutionContext, CommandReturn, ICommand, PopupCommand, SystemCommand } from '../../base/commands/command.js';
@@ -137,6 +137,7 @@ export abstract class AbstractHoverMouseListener extends MouseListener {
     }
 }
 
+@injectFromBase()
 @injectable()
 export class HoverMouseListener extends AbstractHoverMouseListener {
 
@@ -278,6 +279,7 @@ export class HoverMouseListener extends AbstractHoverMouseListener {
 
 }
 
+@injectFromBase()
 @injectable()
 export class PopupHoverMouseListener extends AbstractHoverMouseListener {
 

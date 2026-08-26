@@ -14,11 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, interfaces, multiInject, optional } from "inversify";
+import { Bind, inject, injectable, IsBound, multiInject, optional, ServiceIdentifier } from "inversify";
 import { Bounds } from "sprotty-protocol";
 import { SModelElementImpl, SParentElementImpl } from "../../base/model/smodel.js";
 import { TYPES } from "../../base/types.js";
-import { isInjectable } from "../../utils/inversify.js";
+import { bindInjectable } from "../../utils/inversify.js";
 import { ILogger } from '../../utils/logging.js';
 import { InstanceRegistry } from "../../utils/registry.js";
 import { BoundsData } from "./hidden-bounds-updater.js";
@@ -119,19 +119,12 @@ export interface ILayout {
 }
 
 
-export function configureLayout(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-    kind: string, constr: interfaces.ServiceIdentifier<ILayout>) {
+export function configureLayout(context: { bind: Bind, isBound: IsBound },
+    kind: string, constr: ServiceIdentifier<ILayout>) {
 
-    if (typeof constr === 'function') {
-        if (!isInjectable(constr)) {
-            throw new Error(`Layouts be @injectable: ${constr.name}`);
-        }
-        if (!context.isBound(constr)) {
-            context.bind(constr).toSelf();
-        }
-    }
+    bindInjectable(context, constr, 'Layouts');
     context.bind(TYPES.LayoutRegistration).toDynamicValue(ctx => ({
         layoutKind: kind,
-        factory: () => ctx.container.get(constr)
+        factory: () => ctx.get(constr)
     }));
 }

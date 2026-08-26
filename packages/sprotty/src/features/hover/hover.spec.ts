@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container } from 'inversify';
+import { Container, injectFromBase } from 'inversify';
 import { Action, Hoverable, HoverFeedbackAction } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import defaultModule from '../../base/di.config.js';
@@ -25,6 +25,7 @@ import { HoverMouseListener } from './hover.js';
 import { hoverFeedbackFeature, popupFeature } from './model.js';
 
 describe('hover', () => {
+    @injectFromBase()
     class HoverListenerMock extends HoverMouseListener {
 
         resetLastHoverFeedbackElement() {

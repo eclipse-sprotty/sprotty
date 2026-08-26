@@ -20,7 +20,7 @@ import { TYPES } from '../../base/types.js';
 import { ExportSvgCommand, ExportSvgKeyListener, ExportSvgPostprocessor } from './export.js';
 import { SvgExporter } from './svg-exporter.js';
 
-const exportSvgModule = new ContainerModule((bind, _unbind, isBound) => {
+const exportSvgModule = new ContainerModule(({bind, isBound}) => {
     bind(ExportSvgKeyListener).toSelf().inSingletonScope();
     bind(TYPES.KeyListener).toService(ExportSvgKeyListener);
     bind(ExportSvgPostprocessor).toSelf().inSingletonScope();

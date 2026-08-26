@@ -26,7 +26,7 @@ import { DiamondAnchor, EllipseAnchor, RectangleAnchor } from "./polyline-anchor
 import { PolylineEdgeRouter } from "./polyline-edge-router.js";
 import { EdgeRouterRegistry } from "./routing.js";
 
-const routingModule = new ContainerModule((bind, _unbind, isBound) => {
+const routingModule = new ContainerModule(({bind, isBound}) => {
     bind(EdgeRouterRegistry).toSelf().inSingletonScope();
 
     bind(AnchorComputerRegistry).toSelf().inSingletonScope();

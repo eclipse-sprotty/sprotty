@@ -110,7 +110,7 @@ export class HybridLayoutConfigurator extends DefaultLayoutConfigurator {
 /**
  * Client-only layout configuration
  */
-export const clientLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+export const clientLayoutModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
     const context = { bind, unbind, isBound, rebind };
 
     // Bind model source
@@ -145,7 +145,7 @@ export const clientLayoutModule = new ContainerModule((bind, unbind, isBound, re
 /**
  * Server-only layout configuration
  */
-export const serverLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+export const serverLayoutModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
     const context = { bind, unbind, isBound, rebind };
 
     // Bind model source
@@ -154,13 +154,13 @@ export const serverLayoutModule = new ContainerModule((bind, unbind, isBound, re
     // Layout engine configuration
     bind(ElkFactory).toConstantValue(elkFactory);
     bind(ILayoutConfigurator).to(ServerLayoutConfigurator);
-    bind(TYPES.IModelLayoutEngine).toDynamicValue((context) => (
+    bind(TYPES.IModelLayoutEngine).toDynamicValue((ctx) => (
         new ElkLayoutEngine(
-            context.container.get(ElkFactory), // elk factory
+            ctx.get(ElkFactory), // elk factory
             undefined, // filter
-            context.container.get(ILayoutConfigurator), // layout configurator
+            ctx.get(ILayoutConfigurator), // layout configurator
             undefined, // layout preprocessor
-            undefined, // layout postprocessor
+            undefined // layout postprocessor
         )
     )).inSingletonScope();
 
@@ -184,7 +184,7 @@ export const serverLayoutModule = new ContainerModule((bind, unbind, isBound, re
 /**
  * Hybrid layout configuration
  */
-export const hybridLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+export const hybridLayoutModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
     const context = { bind, unbind, isBound, rebind };
 
     // Bind model source
@@ -193,13 +193,13 @@ export const hybridLayoutModule = new ContainerModule((bind, unbind, isBound, re
     // Layout engine configuration
     bind(ElkFactory).toConstantValue(elkFactory);
     bind(ILayoutConfigurator).to(HybridLayoutConfigurator);
-    bind(TYPES.IModelLayoutEngine).toDynamicValue((context) => (
+    bind(TYPES.IModelLayoutEngine).toDynamicValue((ctx) => (
         new ElkLayoutEngine(
-            context.container.get(ElkFactory), // elk factory
+            ctx.get(ElkFactory), // elk factory
             undefined, // filter
-            context.container.get(ILayoutConfigurator), // layout configurator
+            ctx.get(ILayoutConfigurator), // layout configurator
             undefined, // layout preprocessor
-            undefined, // layout postprocessor
+            undefined // layout postprocessor
         )
     )).inSingletonScope();
 

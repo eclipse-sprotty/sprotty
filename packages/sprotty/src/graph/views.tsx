@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { inject, injectable } from 'inversify';
+import { inject, injectable, injectFromBase } from 'inversify';
 import { VNode } from "snabbdom";
 import { getSubType, Point } from 'sprotty-protocol';
 import { IView, IViewArgs, RenderingContext } from "../base/views/view.js";
@@ -133,6 +133,7 @@ export class PolylineEdgeView extends RoutableView {
  * @see EdgeRouterRegistry
  */
 @injectable()
+@injectFromBase()
 export class JumpingPolylineEdgeView extends PolylineEdgeView {
 
     protected jumpOffsetBefore = 5;
@@ -284,6 +285,7 @@ export class JumpingPolylineEdgeView extends PolylineEdgeView {
  * @see EdgeRouterRegistry
  */
 @injectable()
+@injectFromBase()
 export class PolylineEdgeViewWithGapsOnIntersections extends JumpingPolylineEdgeView {
 
     protected override skipOffsetBefore = 3;
@@ -444,6 +446,7 @@ export class SCompartmentView implements IView {
 }
 
 @injectable()
+@injectFromBase()
 export class SBezierCreateHandleView extends SRoutingHandleView {
 
     override render(handle: Readonly<SRoutingHandleImpl>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {
@@ -476,6 +479,7 @@ export class SBezierCreateHandleView extends SRoutingHandleView {
 }
 
 @injectable()
+@injectFromBase()
 export class SBezierControlHandleView extends SRoutingHandleView {
 
     override render(handle: Readonly<SRoutingHandleImpl>, context: RenderingContext, args?: { route?: RoutedPoint[] }): VNode {

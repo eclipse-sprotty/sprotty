@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { ContainerModule, injectable } from 'inversify';
+import { ContainerModule, decorate, injectable } from 'inversify';
 import {
     ElkLayoutEngine as ElkLayoutEnginePlain, DefaultElementFilter as DefaultElementFilterPlain,
     DefaultLayoutConfigurator as DefaultLayoutConfiguratorPlain, ElkFactory as ElkFactoryPlain,
@@ -22,18 +22,21 @@ import {
     ILayoutPreprocessor as ILayoutPreprocessorPlain, ILayoutPostprocessor as ILayoutPostprocessorPlain
 } from './elk-layout.js';
 
-export const ElkLayoutEngine: typeof ElkLayoutEnginePlain = injectable()(ElkLayoutEnginePlain);
+decorate(injectable(), ElkLayoutEnginePlain);
+export const ElkLayoutEngine = ElkLayoutEnginePlain;
 
 export type ElkFactory = ElkFactoryPlain;
 export const ElkFactory = Symbol('ElkFactory');
 
 export type IElementFilter = IElementFilterPlain;
 export const IElementFilter = Symbol('IElementFilter');
-export const DefaultElementFilter: typeof DefaultElementFilterPlain = injectable()(DefaultElementFilterPlain);
+decorate(injectable(), DefaultElementFilterPlain);
+export const DefaultElementFilter = DefaultElementFilterPlain;
 
 export type ILayoutConfigurator = ILayoutConfiguratorPlain;
 export const ILayoutConfigurator = Symbol('ILayoutConfigurator');
-export const DefaultLayoutConfigurator: typeof DefaultLayoutConfiguratorPlain = injectable()(DefaultLayoutConfiguratorPlain);
+decorate(injectable(), DefaultLayoutConfiguratorPlain);
+export const DefaultLayoutConfigurator = DefaultLayoutConfiguratorPlain;
 
 export type ILayoutPreprocessor = ILayoutPreprocessorPlain;
 export const ILayoutPreprocessor = Symbol('ILayoutPreprocessor');
@@ -57,15 +60,13 @@ export const ILayoutPostprocessor = Symbol('ILayoutPostprocessor');
  * You can import `ElkConstructor` from `'elkjs/lib/elk.bundled'` for the bundled variant or
  * `'elkjs/lib/elk-api'` for the webworker variant.
  */
-export const elkLayoutModule = new ContainerModule(bind => {
+export const elkLayoutModule = new ContainerModule(({bind}) => {
     bind(ElkLayoutEngine).toDynamicValue(context => {
-        const elkFactory = context.container.get<ElkFactory>(ElkFactory);
-        const elementFilter = context.container.get<IElementFilter>(IElementFilter);
-        const layoutConfigurator = context.container.get<ILayoutConfigurator>(ILayoutConfigurator);
-        const layoutPreprocessor = context.container.isBound(ILayoutPreprocessor)
-            ? context.container.get<ILayoutPreprocessor>(ILayoutPreprocessor) : undefined;
-        const layoutPostprocessor = context.container.isBound(ILayoutPostprocessor)
-            ? context.container.get<ILayoutPostprocessor>(ILayoutPostprocessor) : undefined;
+        const elkFactory = context.get<ElkFactory>(ElkFactory);
+        const elementFilter = context.get<IElementFilter>(IElementFilter);
+        const layoutConfigurator = context.get<ILayoutConfigurator>(ILayoutConfigurator);
+        const layoutPreprocessor = context.get<ILayoutPreprocessor>(ILayoutPreprocessor, {optional: true});
+        const layoutPostprocessor = context.get<ILayoutPostprocessor>(ILayoutPostprocessor, {optional: true});
         return new ElkLayoutEngine(elkFactory, elementFilter, layoutConfigurator, layoutPreprocessor, layoutPostprocessor);
     }).inSingletonScope();
     bind(IElementFilter).to(DefaultElementFilter);

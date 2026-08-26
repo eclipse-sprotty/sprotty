@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from 'inversify';
+import { injectable, injectFromBase } from 'inversify';
 import { ActionHandlerRegistry, LocalModelSource } from 'sprotty';
 import {
     Action, CollapseExpandAction, CollapseExpandAllAction, SCompartment, SEdge, SGraph, SLabel,
@@ -22,6 +22,7 @@ import {
 } from 'sprotty-protocol';
 
 @injectable()
+@injectFromBase()
 export class ClassDiagramModelSource extends LocalModelSource {
 
     expansionState: {[key: string]: boolean};

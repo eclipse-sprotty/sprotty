@@ -2,6 +2,13 @@
 
 This change log covers only the `elkjs` layout of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v2.0.0 (Aug. 2026)
+
+ * Updated dependency to `inversify` ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): version constraint is now `^8` in all sprotty packages.
+ * `elkLayoutModule` resolves the optional `ILayoutPreprocessor` and `ILayoutPostprocessor` with `{ optional: true }`, because the resolution context of InversifyJS 8 no longer exposes the container to check whether a service is bound.
+
+-----
+
 ### v1.0.0 (Oct. 2023)
 
 This version marks the transition of Sprotty's incubation phase into maturity. As part of this, all deprecated API have been removed.

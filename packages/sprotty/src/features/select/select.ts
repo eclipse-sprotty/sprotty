@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, optional } from 'inversify';
+import { inject, injectable, injectFromBase, optional } from 'inversify';
 import { VNode } from 'snabbdom';
 import {
     Action, BringToFrontAction, GetSelectionAction, ResponseAction,
@@ -251,6 +251,7 @@ export class SelectMouseListener extends MouseListener {
 }
 
 @injectable()
+@injectFromBase()
 export class GetSelectionCommand extends ModelRequestCommand {
     static readonly KIND = GetSelectionAction.KIND;
 

@@ -16,16 +16,17 @@
 import { ContainerModule } from "inversify";
 
 import { TYPES } from "../../base/types.js";
-import { IContextMenuService } from "./context-menu-service.js";
+import { IContextMenuService, IContextMenuServiceProvider } from "./context-menu-service.js";
 import { ContextMenuProviderRegistry } from "./menu-providers.js";
 import { ContextMenuMouseListener } from "./mouse-listener.js";
 
-const contextMenuModule = new ContainerModule(bind => {
-    bind(TYPES.IContextMenuServiceProvider).toProvider<IContextMenuService>(ctx => {
+const contextMenuModule = new ContainerModule(({bind}) => {
+    bind<IContextMenuServiceProvider>(TYPES.IContextMenuServiceProvider).toFactory(ctx => {
         return () => {
             return new Promise<IContextMenuService>((resolve, reject) => {
-                if (ctx.container.isBound(TYPES.IContextMenuService)) {
-                    resolve(ctx.container.get<IContextMenuService>(TYPES.IContextMenuService));
+                const service = ctx.get<IContextMenuService>(TYPES.IContextMenuService, { optional: true });
+                if (service !== undefined) {
+                    resolve(service);
                 } else {
                     reject();
                 }

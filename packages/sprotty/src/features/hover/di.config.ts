@@ -32,7 +32,7 @@ import {
 } from "./hover.js";
 import { PopupPositionUpdater } from "./popup-position-updater.js";
 
-const hoverModule = new ContainerModule((bind, _unbind, isBound) => {
+const hoverModule = new ContainerModule(({bind, isBound}) => {
     bind(PopupPositionUpdater).toSelf().inSingletonScope();
     bind(TYPES.PopupVNodePostprocessor).toService(PopupPositionUpdater);
     bind(HoverMouseListener).toSelf().inSingletonScope();

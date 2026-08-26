@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable } from 'inversify';
+import { injectable, injectFromBase } from 'inversify';
 import { ActionMessage } from 'sprotty-protocol';
 import { DiagramServerProxy } from './diagram-server.js';
 
@@ -22,6 +22,7 @@ import { DiagramServerProxy } from './diagram-server.js';
  * An external ModelSource that connects to the model provider using a websocket.
  */
 @injectable()
+@injectFromBase()
 export class WebSocketDiagramServerProxy extends DiagramServerProxy {
 
     protected webSocket?: WebSocket;

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from "inversify";
+import { inject, injectable, injectFromBase } from "inversify";
 import { angleBetweenPoints, Bounds, centerOfLine, Point } from "sprotty-protocol";
 import { ResolvedHandleMove } from "../move/move.js";
 import { AbstractEdgeRouter, LinearRouteOptions } from "./abstract-edge-router.js";
@@ -28,6 +28,7 @@ export interface PolylineRouteOptions extends LinearRouteOptions {
 }
 
 @injectable()
+@injectFromBase()
 export class PolylineEdgeRouter extends AbstractEdgeRouter {
 
     @inject(AnchorComputerRegistry) declare anchorRegistry: AnchorComputerRegistry;

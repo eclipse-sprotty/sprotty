@@ -18,7 +18,7 @@ import { ContainerModule } from "inversify";
 import { TYPES } from "../../base/types.js";
 import { OpenMouseListener } from "./open.js";
 
-const openModule = new ContainerModule(bind => {
+const openModule = new ContainerModule(({bind}) => {
     bind(OpenMouseListener).toSelf().inSingletonScope();
     bind(TYPES.MouseListener).toService(OpenMouseListener);
 });

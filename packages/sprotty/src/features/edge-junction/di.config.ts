@@ -19,7 +19,7 @@ import { TYPES } from "../../base/types.js";
 import { JunctionFinder } from "./junction-finder.js";
 import { JunctionPostProcessor } from "./junction-postprocessor.js";
 
-const edgeJunctionModule = new ContainerModule(bind => {
+const edgeJunctionModule = new ContainerModule(({bind}) => {
     bind(JunctionFinder).toSelf().inSingletonScope();
     bind(TYPES.IEdgeRoutePostprocessor).toService(JunctionFinder);
     bind(JunctionPostProcessor).toSelf().inSingletonScope();

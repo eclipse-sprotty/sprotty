@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from 'inversify';
+import { inject, injectable, injectFromBase, unmanaged } from 'inversify';
 import { Action, almostEquals, Bounds, CenterAction, Dimension, FitToScreenAction, Viewport } from 'sprotty-protocol';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
@@ -34,7 +34,7 @@ export abstract class BoundsAwareViewportCommand extends Command {
     oldViewport: Viewport;
     newViewport?: Viewport;
 
-    constructor(protected readonly animate: boolean) {
+    constructor(@unmanaged() protected readonly animate: boolean) {
         super();
     }
 
@@ -126,6 +126,8 @@ export abstract class BoundsAwareViewportCommand extends Command {
     }
 }
 
+@injectFromBase()
+@injectable()
 export class CenterCommand extends BoundsAwareViewportCommand {
     static readonly KIND = CenterAction.KIND;
 
@@ -158,6 +160,8 @@ export class CenterCommand extends BoundsAwareViewportCommand {
     }
 }
 
+@injectFromBase()
+@injectable()
 export class FitToScreenCommand extends BoundsAwareViewportCommand {
     static readonly KIND = FitToScreenAction.KIND;
 

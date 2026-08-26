@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { injectable } from "inversify";
+import { injectable, injectFromBase } from "inversify";
 import { VNode } from "snabbdom";
 import { IViewArgs, PolylineEdgeView, RenderingContext, SEdgeImpl, SLabelImpl, SShapeElementImpl, ShapeView, isEdgeLayoutable, setAttr, svg } from "sprotty";
 import { Hoverable, Point, Selectable, getSubType, toDegrees } from "sprotty-protocol";
@@ -605,6 +605,7 @@ export class EdgeLabelView extends ShapeView {
 }
 
 @injectable()
+@injectFromBase()
 export class EdgeWithArrow extends PolylineEdgeView {
     protected override renderAdditionals(edge: SEdgeImpl, segments: Point[], context: RenderingContext): VNode[] {
         const p1 = segments[segments.length - 1];

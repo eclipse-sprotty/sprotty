@@ -221,6 +221,5 @@ export * from './utils/browser.js';
 export * from './utils/codicon.js';
 export * from './utils/color.js';
 export * from './utils/geometry.js';
-export * from './utils/inversify.js';
 export * from './utils/logging.js';
 export * from './utils/registry.js';

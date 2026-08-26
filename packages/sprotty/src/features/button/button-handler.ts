@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { injectable, interfaces, multiInject, optional } from 'inversify';
+import { Bind, injectable, IsBound, multiInject, optional, ServiceIdentifier } from 'inversify';
 import { Action } from 'sprotty-protocol';
 import { TYPES } from '../../base/types.js';
-import { isInjectable } from '../../utils/inversify.js';
+import { bindInjectable } from '../../utils/inversify.js';
 import { InstanceRegistry } from '../../utils/registry.js';
 import { SButtonImpl } from './model.js';
 
@@ -43,18 +43,11 @@ export class ButtonHandlerRegistry extends InstanceRegistry<IButtonHandler> {
 /**
  * Utility function to register a button handler for an button type.
  */
-export function configureButtonHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
-    type: string, constr: interfaces.ServiceIdentifier<IButtonHandler>): void {
-    if (typeof constr === 'function') {
-        if (!isInjectable(constr)) {
-            throw new Error(`Button handlers should be @injectable: ${constr.name}`);
-        }
-        if (!context.isBound(constr)) {
-            context.bind(constr).toSelf();
-        }
-    }
+export function configureButtonHandler(context: { bind: Bind, isBound: IsBound },
+    type: string, constr: ServiceIdentifier<IButtonHandler>): void {
+    bindInjectable(context, constr, 'Button handlers');
     context.bind(TYPES.IButtonHandlerRegistration).toDynamicValue(ctx => ({
         TYPE: type,
-        factory: () => ctx.container.get(constr)
+        factory: () => ctx.get(constr)
     }));
 }

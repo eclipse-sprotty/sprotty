@@ -51,7 +51,7 @@ import {
     TerminalNodeView
 } from "./views.js";
 
-export const flowchartModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+export const flowchartModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
 
     const context = { bind, unbind, isBound, rebind };
 
