@@ -55,7 +55,6 @@ This example demonstrates the different approaches to styling diagram elements i
 
 ## File Structure
 
-- `src/model.ts` - Custom node model for load monitoring
 - `src/views.tsx` - Custom view with conditional styling logic
 - `src/di.config.ts` - Dependency injection configuration
 - `src/standalone.ts` - Main application and model setup

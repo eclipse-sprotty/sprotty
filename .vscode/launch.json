@@ -28,7 +28,7 @@
             "request": "launch",
             "runtimeExecutable": "node",
             "runtimeArgs": [
-                "${workspaceFolder}/examples/server/server-app"
+                "${workspaceFolder}/examples/lib/server/server-app"
             ],
             "cwd": "${workspaceFolder}/examples",
             "skipFiles": [
@@ -36,7 +36,7 @@
             ],
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceFolder}/examples/server/**/*.js",
+                "${workspaceFolder}/examples/lib/**/*.js",
                 "${workspaceFolder}/packages/sprotty/lib/**/*.js",
                 "${workspaceFolder}/packages/sprotty-protocol/lib/**/*.js",
                 "${workspaceFolder}/packages/sprotty-elk/lib/**/*.js"

@@ -1,3 +1,3 @@
-# Langium Package Generator
+# Sprotty Project Generator
 
-This [Yeoman](https://yeoman.io) generator is used to create a new Sprotty project. See the [Sprotty documentation](https://sprotty.org/docs/getting_started/) to learn how to use it.
+This [Yeoman](https://yeoman.io) generator is used to create a new Sprotty project. See the [Sprotty documentation](https://sprotty.org/docs/learn/getting-started/) to learn how to use it.

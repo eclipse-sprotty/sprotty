@@ -137,6 +137,6 @@ document.querySelectorAll('input[name="layout"]').forEach(radio => {
 
 - [Micro-Layout Recipe](https://sprotty.org/docs/recipes/micro-layout/) - Complete guide to micro-layout concepts
 - [Sprotty Documentation](https://sprotty.org/docs/) - General Sprotty documentation
-- [Layout API Reference](https://sprotty.org/docs/api/) - Detailed API documentation
+- [Layout API Reference](https://sprotty.org/docs/ref/sprotty-core/) - Detailed API documentation
 
 This example provides hands-on experience with Sprotty's micro-layout system, making it easy to understand how to create well-organized, visually appealing node layouts in your own diagrams.
