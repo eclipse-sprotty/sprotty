@@ -8,7 +8,7 @@ Sprotty is a web-based diagramming framework: TypeScript, SVG rendering through 
 npm install                       # ~10 s warm, longer on first clone
 npm run build                     # tsc project build + webpack examples, ~7 s
 npm run lint                      # eslint, ~3 s — errors gate, warnings don't
-npm test                          # full vitest suite, 237 tests, ~2-5 s
+npm test                          # full vitest suite, 244 tests, ~2-5 s
 npm run test -w sprotty           # tests of one package (any of the four lib packages)
 npx vitest run --config vite.config.mts packages/sprotty/src/base/model/smodel.spec.ts   # single spec, <1 s
 npm run coverage                  # v8 coverage report, ~2 s

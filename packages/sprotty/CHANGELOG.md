@@ -4,7 +4,7 @@ This change log covers only the client part of Sprotty. See [here](https://githu
 
 ### v2.0.0 (Aug. 2026)
 
-Updated dependency to `inversify` ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): version constraint is now `^8` in all sprotty packages. InversifyJS 8 is a rewrite of InversifyJS 6 and requires changes in downstream code.
+Updated dependency to `inversify` ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): version constraint is now `~8.2` in all sprotty packages. InversifyJS 8 is a rewrite of InversifyJS 6 and requires changes in downstream code.
 
 **Breaking changes in Sprotty**
 

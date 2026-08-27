@@ -1,10 +1,12 @@
 ---
-status: accepted
+status: superseded
 date: 2024-12-17
-superseded-by:
+superseded-by: 0007-inversify-8-upgrade.md
 ---
 
 # ADR-0004: Inversify as a regular dependency with a Theia-aligned caret range
+
+> **Superseded by [ADR-0007](0007-inversify-8-upgrade.md)** (2026-08-26): the range is now `~8.2` on InversifyJS 8, and downstream alignment no longer gates a major upgrade. The decision to keep inversify a regular dependency rather than a `peerDependencies` entry — and the single-instance constraint behind it — still stands; everything below is the 6.x-era record.
 
 *Recorded retroactively on 2026-08-25 from [#292](https://github.com/eclipse-sprotty/sprotty/pull/292), [#296](https://github.com/eclipse-sprotty/sprotty/issues/296), [#357](https://github.com/eclipse-sprotty/sprotty/pull/357), [#429](https://github.com/eclipse-sprotty/sprotty/pull/429), commit `bad4c45`, and [#477](https://github.com/eclipse-sprotty/sprotty/pull/477) (merged 2024-12-17, v1.4.0).*
 
