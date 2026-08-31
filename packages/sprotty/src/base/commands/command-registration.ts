@@ -14,9 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, injectable, interfaces, multiInject, optional } from "inversify";
+import { Container, injectable, multiInject, optional } from "inversify";
 import { Action } from "sprotty-protocol";
-import { isInjectable } from "../../utils/inversify.js";
+import { BindingContext, isInjectable } from "../../utils/inversify.js";
 import { ActionHandlerRegistry, IActionHandler, IActionHandlerInitializer } from "../actions/action-handler.js";
 import { TYPES } from "../types.js";
 import { ICommand } from "./command.js";
@@ -56,7 +56,7 @@ export interface ICommandConstructor<T extends Action> {
 /**
  * Use this method in your DI configuration to register a new command to the diagram.
  */
-export function configureCommand<T extends Action>(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function configureCommand<T extends Action>(context: BindingContext,
         constr: ICommandConstructor<T>) {
     if (!isInjectable(constr)) {
         throw new Error(`Commands should be @injectable: ${constr.name}`);

@@ -18,7 +18,7 @@ import { inject, injectable, interfaces, multiInject, optional } from "inversify
 import { Bounds } from "sprotty-protocol";
 import { SModelElementImpl, SParentElementImpl } from "../../base/model/smodel.js";
 import { TYPES } from "../../base/types.js";
-import { isInjectable } from "../../utils/inversify.js";
+import { BindingContext, isInjectable } from "../../utils/inversify.js";
 import { ILogger } from '../../utils/logging.js';
 import { InstanceRegistry } from "../../utils/registry.js";
 import { BoundsData } from "./hidden-bounds-updater.js";
@@ -119,7 +119,7 @@ export interface ILayout {
 }
 
 
-export function configureLayout(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function configureLayout(context: BindingContext,
     kind: string, constr: interfaces.ServiceIdentifier<ILayout>) {
 
     if (typeof constr === 'function') {

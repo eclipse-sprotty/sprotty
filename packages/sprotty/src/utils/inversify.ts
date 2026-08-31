@@ -16,7 +16,23 @@
 
 import 'reflect-metadata';
 
-import { interfaces } from "inversify";
+import { Container, interfaces } from "inversify";
+
+/**
+ * The part of a DI container that the `configureX` utility functions need in order to add
+ * bindings: either an Inversify `Container`, or the `bind`/`isBound` pair that a `ContainerModule`
+ * callback receives.
+ */
+export type BindingContext =
+    | Container
+    | { bind: interfaces.Bind, isBound: interfaces.IsBound };
+
+/**
+ * A `BindingContext` that can also replace an existing binding.
+ */
+export type RebindingContext =
+    | Container
+    | { bind: interfaces.Bind, isBound: interfaces.IsBound, rebind: interfaces.Rebind };
 
 export function isInjectable(constr: interfaces.Newable<unknown>| Function ): boolean {
     return Reflect.getMetadata('inversify:paramtypes', constr) !== undefined;

@@ -1,0 +1,75 @@
+/********************************************************************************
+ * Copyright (c) 2026 TypeFox and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+
+/*
+ * Styling for the element types registered by `createSprottyContainer`.
+ *
+ * Import alongside `sprotty.css`, which carries the rules the framework itself needs. Without
+ * these rules SVG defaults apply: nodes fill black and edges render as filled shapes rather than
+ * lines. Override any rule in your own stylesheet.
+ */
+
+.sprotty-node {
+    fill: #aae;
+    stroke: #66b;
+    stroke-width: 1;
+}
+
+.sprotty-node.mouseover {
+    stroke-width: 2;
+}
+
+.sprotty-node.selected {
+    stroke: #66b;
+    stroke-width: 3;
+}
+
+.sprotty-port {
+    fill: #66b;
+    stroke: #66b;
+    stroke-width: 1;
+}
+
+.sprotty-edge {
+    fill: none;
+    stroke: #488;
+    stroke-width: 1.5;
+}
+
+.sprotty-edge.mouseover {
+    stroke-width: 3;
+}
+
+.sprotty-edge.selected {
+    stroke-width: 3;
+}
+
+.sprotty-label {
+    fill: #000;
+    stroke: none;
+    font-size: 11pt;
+    text-anchor: middle;
+}
+
+.sprotty-comp {
+    fill: none;
+    stroke: none;
+}
+
+.sprotty-routing-handle {
+    fill: #66b;
+    stroke: none;
+}

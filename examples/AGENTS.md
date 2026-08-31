@@ -26,5 +26,6 @@ Example URLs follow `http://localhost:8080/<dir>/<html-file>`, e.g. `/circlegrap
 - ELK layout in the browser: `random-graph/`
 - Edge routing (manhattan/bezier) and label editing: `classdiagram/`
 - Custom views, styling, micro-layout, layout strategies: the four `*-showcase/` dirs (each has a README)
+- Diagram built with the simplified API instead of a hand-written `ContainerModule`: `custom-views-showcase/src/simpleAPI.ts` — the same configuration as its `di.config.ts`, kept side by side. It returns a `SprottyDiagram` rather than a `Container`, so its `standalone.ts` sets the model and dispatches without touching `TYPES` or `container.get`; `di.config.ts` is not wired in
 
-Do **not** copy the `configureModelElement(container, ...)` call from `random-graph*/src/di.config.ts` — passing the container instead of the `context` object is a quirk that happens to work; every other example passes `context` (see `classdiagram/src/di.config.ts`).
+The `configureX` helpers accept either a `Container` or the `{ bind, isBound }` pair from a `ContainerModule` callback; both are the exported `BindingContext` type. Inside a module pass the `context` object, because that is what you have (see `classdiagram/src/di.config.ts`); `random-graph*/src/di.config.ts` passes the container directly, which is equally supported.

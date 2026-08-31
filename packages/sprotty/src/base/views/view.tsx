@@ -21,7 +21,7 @@ import { injectable, multiInject, optional, interfaces, inject } from 'inversify
 import { VNode } from 'snabbdom';
 import { TYPES } from '../types.js';
 import { InstanceRegistry } from '../../utils/registry.js';
-import { isInjectable } from '../../utils/inversify.js';
+import { BindingContext, isInjectable } from '../../utils/inversify.js';
 import { SModelElementImpl, SModelRootImpl, SParentElementImpl } from '../model/smodel.js';
 import { EMPTY_ROOT, CustomFeatures } from '../model/smodel-factory.js';
 import { registerModelElement } from '../model/smodel-utils.js';
@@ -125,13 +125,13 @@ export class ViewRegistry extends InstanceRegistry<IView> {
 /**
  * Combines `registerModelElement` and `configureView`.
  */
-export function configureModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function configureModelElement(context: BindingContext,
         type: string, modelConstr: new () => SModelElementImpl, viewConstr: interfaces.ServiceIdentifier<IView>,
         features?: CustomFeatures): void {
     registerModelElement(context, type, modelConstr, features);
     configureView(context, type, viewConstr);
 }
-export function overrideModelElement(context: {bind: interfaces.Bind, isBound: interfaces.IsBound},
+export function overrideModelElement(context: BindingContext,
         type: string, modelConstr: new () => SModelElementImpl, viewConstr: interfaces.ServiceIdentifier<IView>,
         features?: CustomFeatures): void {
     registerModelElement(context, type, modelConstr, features, true);
@@ -143,7 +143,7 @@ export function overrideModelElement(context: {bind: interfaces.Bind, isBound: i
 /**
  * Utility function to register a view for a model element type.
  */
-export function configureView(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function configureView(context: BindingContext,
         type: string, constr: interfaces.ServiceIdentifier<IView>, isOverride?: boolean): void {
     if (typeof constr === 'function') {
         if (!isInjectable(constr)) {

@@ -14,9 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, interfaces } from 'inversify';
+import { Container } from 'inversify';
 import { safeAssign } from 'sprotty-protocol';
 import { Limits } from '../../utils/geometry.js';
+import { RebindingContext } from '../../utils/inversify.js';
 import { TYPES } from '../types.js';
 
 export interface ViewerOptions {
@@ -73,7 +74,7 @@ export const defaultViewerOptions: () => ViewerOptions = () => ({
  * Utility function to partially set viewer options. Default values (from `defaultViewerOptions`) are used for
  * options that are not specified.
  */
-export function configureViewerOptions(context: { bind: interfaces.Bind, isBound: interfaces.IsBound, rebind: interfaces.Rebind },
+export function configureViewerOptions(context: RebindingContext,
         options: Partial<ViewerOptions>): void {
     const opt: ViewerOptions = {
         ...defaultViewerOptions(),

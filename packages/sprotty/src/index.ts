@@ -195,6 +195,7 @@ export * from './graph/views.js';
 // ------------------ Library ------------------
 
 export * from './lib/modules.js';
+export * from './lib/create-diagram.js';
 export * from './lib/generic-views.js';
 export * from './lib/html-views.js';
 export * from './lib/jsx.js';

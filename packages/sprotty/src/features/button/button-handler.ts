@@ -17,7 +17,7 @@
 import { injectable, interfaces, multiInject, optional } from 'inversify';
 import { Action } from 'sprotty-protocol';
 import { TYPES } from '../../base/types.js';
-import { isInjectable } from '../../utils/inversify.js';
+import { BindingContext, isInjectable } from '../../utils/inversify.js';
 import { InstanceRegistry } from '../../utils/registry.js';
 import { SButtonImpl } from './model.js';
 
@@ -43,7 +43,7 @@ export class ButtonHandlerRegistry extends InstanceRegistry<IButtonHandler> {
 /**
  * Utility function to register a button handler for an button type.
  */
-export function configureButtonHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function configureButtonHandler(context: BindingContext,
     type: string, constr: interfaces.ServiceIdentifier<IButtonHandler>): void {
     if (typeof constr === 'function') {
         if (!isInjectable(constr)) {

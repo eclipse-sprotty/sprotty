@@ -312,6 +312,14 @@
     opacity: 0.9;
 }
 
+/* Routing handles, created by the framework when an edge is selected. Sprotty styles these in
+   default-diagram.css, which this example cannot import: it puts .sprotty-node on a wrapper <g>,
+   so that sheet's fill/stroke would be inherited by every descendant that sets no paint. */
+.sprotty-routing-handle {
+    fill: #66b;
+    stroke: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .header-title {

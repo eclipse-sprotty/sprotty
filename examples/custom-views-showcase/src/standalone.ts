@@ -14,19 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource, IActionDispatcher } from 'sprotty';
+import { RectangularNodeView } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
+import { BasicShapeNode } from './model.js';
 
 export default async function runCustomViewsShowcase() {
     console.log('Starting Custom Views Showcase...');
 
-    const container = createContainer();
-    console.log('Container created');
-
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-    console.log('Services retrieved');
+    const diagram = createDiagram();
+    console.log('Diagram created');
+    diagram.addModelElement('node:basic-circle', BasicShapeNode, RectangularNodeView);
 
     // Create sample data demonstrating all view types
     const sampleModel: SGraph = {
@@ -297,11 +295,11 @@ export default async function runCustomViewsShowcase() {
     };
 
     // Initialize the model
-    modelSource.setModel(sampleModel);
+    diagram.setModel(sampleModel);
 
     // Fit the diagram to screen with padding after a short delay to ensure rendering is complete
     setTimeout(() => {
-        dispatcher.dispatch(FitToScreenAction.create([], { padding: 20 }));
+        diagram.dispatch(FitToScreenAction.create([], { padding: 20 }));
     }, 100);
 
     console.log('Model set with', sampleModel.children.length, 'children');

@@ -82,11 +82,12 @@ After exploring this example, you should understand:
 src/
 ├── model.ts          # Custom model classes with properties
 ├── views.tsx         # All custom view implementations
-├── di.config.ts      # Dependency injection configuration
+├── simpleAPI.ts      # Dependency injection configuration — the one this example uses
+├── di.config.ts      # The same container written out by hand, kept for comparison
 └── standalone.ts     # Application setup and sample data
 
 css/
-├── diagram.css       # Diagram styling (loaded from di.config.ts)
+├── diagram.css       # Diagram styling (loaded from simpleAPI.ts)
 └── page.css          # Page chrome (linked from the HTML)
 
 custom-views-showcase.html   # Demo page with documentation

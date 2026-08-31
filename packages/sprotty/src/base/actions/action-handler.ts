@@ -17,7 +17,7 @@
 import { injectable, multiInject, optional, interfaces } from "inversify";
 import { TYPES } from "../types.js";
 import { MultiInstanceRegistry } from "../../utils/registry.js";
-import { isInjectable } from "../../utils/inversify.js";
+import { BindingContext, isInjectable } from "../../utils/inversify.js";
 import { ICommand } from "../commands/command.js";
 import { Action } from "sprotty-protocol";
 
@@ -70,7 +70,7 @@ export class ActionHandlerRegistry extends MultiInstanceRegistry<IActionHandler>
 /**
  * Utility function to register an action handler for an action kind.
  */
-export function configureActionHandler(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function configureActionHandler(context: BindingContext,
         kind: string, constr: interfaces.ServiceIdentifier<IActionHandler>): void {
     if (typeof constr === 'function') {
         if (!isInjectable(constr)) {
@@ -89,7 +89,7 @@ export function configureActionHandler(context: { bind: interfaces.Bind, isBound
 /**
  * Utility function to register an action handler for an action kind.
  */
-export function onAction(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function onAction(context: BindingContext,
         kind: string, handle: (action: Action) => ICommand | Action | void): void {
     context.bind(TYPES.ActionHandlerRegistration).toConstantValue({
         actionKind: kind,

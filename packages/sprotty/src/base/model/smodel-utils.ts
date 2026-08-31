@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { interfaces } from "inversify";
 import { Bounds, Point } from "sprotty-protocol";
+import { BindingContext } from "../../utils/inversify.js";
 import { TYPES } from "../types.js";
 import { CustomFeatures, SModelElementRegistration } from "./smodel-factory.js";
 import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImpl } from "./smodel.js";
@@ -23,7 +23,7 @@ import { SChildElementImpl, SModelElementImpl, SModelRootImpl, SParentElementImp
 /**
  * Register a model element constructor for an element type.
  */
-export function registerModelElement(context: { bind: interfaces.Bind, isBound: interfaces.IsBound },
+export function registerModelElement(context: BindingContext,
         type: string, constr: new () => SModelElementImpl, features?: CustomFeatures, isOverride?: boolean): void {
     context.bind<SModelElementRegistration>(TYPES.SModelElementRegistration).toConstantValue({
         type, constr, features, isOverride
