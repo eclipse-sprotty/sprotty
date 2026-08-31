@@ -6,7 +6,7 @@
 ## Decomposition
 
 - [x] ESM migration (#515, merged 2026-08-24 — recorded as ADR-0006).
-- [ ] Pointer-capture listener switch, so dragging survives leaving the canvas (#485): groundwork `PointerTool` landed in #488; the mouse→pointer listener switch itself was deferred to 2.0 as a breaking interaction change.
+- [ ] Mouse→pointer listener switch (#485): groundwork `PointerTool` landed in #488 and the non-breaking `PointerCaptureListener` (dragging survives leaving the canvas) landed with #485; the listener switch itself was deferred to 2.0 as a breaking interaction change.
 - [x] Inversify major upgrade (commit `313ad56`) — landed on **8**, not the 7 named in #489, which was superseded before this window; recorded as ADR-0007.
 - [ ] Widen the inversify range from `~8.2` to `^8` once the 8.x line settles — the tighter pin is deliberate and temporary (ADR-0007).
 - [ ] Re-evaluate the snabbdom `~3.5.1` pin — its rationale (pure-ESM snabbdom vs. CommonJS sprotty, #418) lapsed with the ESM migration (ADR-0006).

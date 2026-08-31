@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 TypeFox and others.
+ * Copyright (c) 2025-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,8 @@ export class PointerTool implements IVNodePostprocessor {
     }
 
     protected handleEvent(methodName: PointerEventKind, model: SModelRootImpl, event: PointerEvent) {
-        const element = this.getTargetElement(model, event);
+        // Capture events fall back to the root: the target may be a node removed from the DOM mid-drag.
+        const element = this.getTargetElement(model, event) ?? (isCaptureEvent(methodName) ? model : undefined);
         if (!element) return;
         const actions = this.pointerListeners
             .map((listener) => listener[methodName](element, event))
@@ -112,6 +113,10 @@ export type PointerEventKind =
     | "pointerLeave"
     | "gotPointerCapture"
     | "lostPointerCapture";
+
+function isCaptureEvent(kind: PointerEventKind): boolean {
+    return kind === "gotPointerCapture" || kind === "lostPointerCapture";
+}
 
 export interface IPointerListener {
 
@@ -179,4 +184,84 @@ export class PointerListener implements IPointerListener {
         return [];
     }
 
+}
+
+/**
+ * Captures the pointer on mouse/pen presses so drags continue outside the canvas (#485).
+ * Produces no actions; the mouse listeners keep handling the drag. Touch is never captured,
+ * as `TouchTool` relies on the browser's implicit touch capture.
+ */
+@injectable()
+export class PointerCaptureListener extends PointerListener {
+
+    protected capturedPointerIds = new Set<number>();
+
+    override pointerDown(target: SModelElementImpl, event: PointerEvent): (Action | Promise<Action>)[] {
+        if (this.shouldCapture(event)) {
+            // Capture the hit element, not the root, so the compatibility mouse events keep their target.
+            const element = this.getCaptureElement(event.target);
+            if (element) {
+                this.setCapture(element, event.pointerId);
+            }
+        }
+        return [];
+    }
+
+    override lostPointerCapture(target: SModelElementImpl, event: PointerEvent): (Action | Promise<Action>)[] {
+        // A captured element removed mid-drag drops the capture: re-capture on the root while pressed.
+        if (this.capturedPointerIds.has(event.pointerId) && event.buttons !== 0) {
+            const root = this.getCaptureElement(event.currentTarget);
+            if (root) {
+                this.setCapture(root, event.pointerId);
+            }
+        }
+        return [];
+    }
+
+    override pointerUp(target: SModelElementImpl, event: PointerEvent): (Action | Promise<Action>)[] {
+        this.releaseCapture(event);
+        return [];
+    }
+
+    override pointerCancel(target: SModelElementImpl, event: PointerEvent): (Action | Promise<Action>)[] {
+        this.releaseCapture(event);
+        return [];
+    }
+
+    protected shouldCapture(event: PointerEvent): boolean {
+        return event.isPrimary && event.button === 0 && event.pointerType !== 'touch';
+    }
+
+    protected getCaptureElement(target: EventTarget | null): Element | undefined {
+        if (target instanceof Element) {
+            return target;
+        }
+        if (target instanceof Node && target.parentElement) {
+            return target.parentElement;
+        }
+        return undefined;
+    }
+
+    protected setCapture(element: Element, pointerId: number): void {
+        try {
+            element.setPointerCapture(pointerId);
+            this.capturedPointerIds.add(pointerId);
+        } catch {
+            // Ignore: the pointer may no longer be active.
+        }
+    }
+
+    protected releaseCapture(event: PointerEvent): void {
+        this.capturedPointerIds.delete(event.pointerId);
+        const element = this.getCaptureElement(event.target);
+        if (element) {
+            try {
+                if (element.hasPointerCapture(event.pointerId)) {
+                    element.releasePointerCapture(event.pointerId);
+                }
+            } catch {
+                // Ignore: the capture may already be released.
+            }
+        }
+    }
 }

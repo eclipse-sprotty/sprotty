@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,8 @@ import { SModelRootImpl } from '../../base/model/smodel.js';
 import { TYPES } from '../../base/types.js';
 import { SGraphImpl, SNodeImpl } from '../../graph/sgraph.js';
 import { ConsoleLogger } from '../../utils/logging.js';
-import { ElementMove, MoveCommand } from './move.js';
+import { CommitModelAction } from '../../model-source/commit-model.js';
+import { ElementMove, MoveCommand, MoveMouseListener } from './move.js';
 
 describe('move', () => {
     const container = new Container();
@@ -168,4 +169,55 @@ describe('move', () => {
         expect(pointSE.y).equals(getNode('node2', redoneModel).bounds.y);
     });
 
+});
+
+describe('MoveMouseListener', () => {
+    const container = new Container();
+    container.load(defaultModule);
+
+    registerModelElement(container, 'graph', SGraphImpl);
+    registerModelElement(container, 'node:circle', SNodeImpl);
+
+    const graphFactory = container.get<IModelFactory>(TYPES.IModelFactory);
+
+    function createModel(): SModelRootImpl {
+        const node0 = { id: 'node0', type: 'node:circle', position: { x: 0, y: 0 }, selected: true };
+        return graphFactory.createRoot({ id: 'graph', type: 'graph', children: [node0] });
+    }
+
+    function mouseEvent(props: Partial<MouseEvent> = {}): MouseEvent {
+        return { button: 0, buttons: 1, pageX: 0, pageY: 0, shiftKey: false, ...props } as MouseEvent;
+    }
+
+    it('emits an unfinished move while dragging a selected element', () => {
+        const model = createModel();
+        const node = model.index.getById('node0')!;
+        const listener = new MoveMouseListener();
+        listener.mouseDown(node, mouseEvent());
+        const actions = listener.mouseMove(node, mouseEvent({ buttons: 1, pageX: 10, pageY: 20 }));
+        const move = actions.find(a => a.kind === MoveAction.KIND) as MoveAction | undefined;
+        expect(move, 'a MoveAction is produced').to.not.be.undefined;
+        expect(move!.finished).to.be.false;
+    });
+
+    it('commits the move on mouseUp even when released far outside the canvas', () => {
+        const model = createModel();
+        const node = model.index.getById('node0')!;
+        const listener = new MoveMouseListener();
+        listener.mouseDown(node, mouseEvent());
+        listener.mouseMove(node, mouseEvent({ buttons: 1, pageX: 10, pageY: 20 }));
+        const actions = listener.mouseUp(node, mouseEvent({ pageX: 9999, pageY: 9999, buttons: 0 }));
+        const kinds = actions.map(a => (a as { kind: string }).kind);
+        expect(kinds).to.contain(MoveAction.KIND);
+        expect(kinds).to.contain(CommitModelAction.KIND);
+        expect((listener as any).startDragPosition).to.be.undefined;
+    });
+
+    it('does not start a drag on the secondary button', () => {
+        const model = createModel();
+        const node = model.index.getById('node0')!;
+        const listener = new MoveMouseListener();
+        listener.mouseDown(node, mouseEvent({ button: 2 }));
+        expect((listener as any).startDragPosition).to.be.undefined;
+    });
 });

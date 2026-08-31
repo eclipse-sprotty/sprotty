@@ -115,4 +115,23 @@ describe('PointerTool', () => {
         expect(pointerDown(inner).defaultPrevented).toBe(false);
         expect(dispatched).toEqual([]);
     });
+
+    it('falls back to the model root for capture events whose target is not a model element', () => {
+        const { outside } = mount();
+        class CaptureRecorder extends PointerListener {
+            targets: string[] = [];
+            override lostPointerCapture(target: SModelElementImpl): (Action | Promise<Action>)[] {
+                this.targets.push(target.id);
+                return [];
+            }
+        }
+        const listener = new CaptureRecorder();
+        tool.register(listener);
+        const vnode = h('svg');
+        tool.decorate(vnode, root);
+        outside.addEventListener('lostpointercapture', vnode.data!.on!.lostpointercapture as EventListener);
+        outside.dispatchEvent(new PointerEvent('lostpointercapture', { bubbles: true }));
+        expect(listener.targets).toEqual(['root']);
+        tool.deregister(listener);
+    });
 });
