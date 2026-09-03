@@ -14,20 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import type { EdgePlacement as EdgePlacementSchema } from 'sprotty-protocol';
+import type { EdgeLayoutable, EdgePlacement as EdgePlacementSchema } from 'sprotty-protocol';
 import { SChildElementImpl, SModelElementImpl } from '../../base/model/smodel.js';
 import { InternalBoundsAware, isBoundsAware } from '../bounds/model.js';
 import { SRoutableElementImpl } from '../routing/model.js';
 
 export const edgeLayoutFeature = Symbol('edgeLayout');
-
-/**
- * @deprecated Use EdgeLayoutable from sprotty-protocol instead
- * Feature extension interface for {@link edgeLayoutFeature}.
- */
-export interface EdgeLayoutable {
-    edgePlacement: EdgePlacementSchema
-}
 
 export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): element is T & SChildElementImpl & InternalBoundsAware & EdgeLayoutable {
     return element instanceof SChildElementImpl
@@ -38,44 +30,6 @@ export function isEdgeLayoutable<T extends SModelElementImpl>(element: T): eleme
 
 export function checkEdgePlacement(element: SChildElementImpl): element is SChildElementImpl & EdgeLayoutable {
     return 'edgePlacement' in element && element.edgePlacement !== undefined;
-}
-
-/**
- * @deprecated Use EdgeSide from sprotty-protocol instead
- */
-export type EdgeSide = 'left' | 'right' | 'top' | 'bottom' | 'on';
-
-/**
- * @deprecated Use EdgePlacement from sprotty-protocol instead
- */
-export class EdgePlacement extends Object {
-    /**
-     * true, if the label should be rotated to touch the edge tangentially
-     */
-    rotate: boolean;
-
-    /**
-     * where is the label relative to the line's direction
-     */
-    side: EdgeSide;
-
-    /**
-     * between 0 (source anchor) and 1 (target anchor)
-     */
-    position: number;
-
-    /**
-     * space between label and edge/connected nodes
-     */
-    offset: number;
-
-    /**
-     * where should the label be moved when move feature is enabled.
-     * 'edge' means the label is moved along the edge, 'free' means the label is moved freely, 'none' means the label is not moved.
-     * Default is 'edge'.
-     */
-    moveMode?: 'edge' | 'free' | 'none';
-
 }
 
 export const DEFAULT_EDGE_PLACEMENT: EdgePlacementSchema = {

@@ -14,18 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Expandable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
 export const expandFeature = Symbol('expandFeature');
-
-/**
- * Feature extension interface for {@link expandFeature}.
- * Model elements that implement this interface can be expanded/collapsed
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface Expandable {
-    expanded: boolean
-}
 
 export function isExpandable(element: SModelElementImpl): element is SModelElementImpl & Expandable {
     return element.hasFeature(expandFeature) && 'expanded' in element;

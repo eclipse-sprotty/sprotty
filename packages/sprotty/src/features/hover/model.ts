@@ -14,17 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Hoverable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
 export const hoverFeedbackFeature = Symbol('hoverFeedbackFeature');
-
-/**
- * Feature extension interface for {@link hoverFeedbackFeature}.
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface Hoverable {
-    hoverFeedback: boolean
-}
 
 export function isHoverable(element: SModelElementImpl): element is SModelElementImpl & Hoverable {
     return element.hasFeature(hoverFeedbackFeature);

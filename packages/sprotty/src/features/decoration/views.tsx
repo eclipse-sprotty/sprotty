@@ -19,9 +19,10 @@ import { svg } from '../../lib/jsx.js';
 
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
+import { SIssueSeverity } from 'sprotty-protocol';
 import { IView, RenderingContext } from '../../base/views/view.js';
 import { setClass } from '../../base/views/vnode-utils.js';
-import { SIssueMarkerImpl, SIssueSeverity } from './model.js';
+import { SIssueMarkerImpl } from './model.js';
 
 @injectable()
 export class IssueMarkerView implements IView {

@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { inject, injectable, multiInject, optional } from 'inversify';
-import { Action, Bounds, ExportSvgOptions, RequestExportSvgAction, ResponseAction } from 'sprotty-protocol';
+import { Action, Bounds, ExportSvgOptions, RequestExportSvgAction, ExportSvgAction } from 'sprotty-protocol';
 import { ActionDispatcher } from '../../base/actions/action-dispatcher.js';
 import { SModelRootImpl } from '../../base/model/smodel.js';
 import { TYPES } from '../../base/types.js';
@@ -23,28 +23,6 @@ import { ViewerOptions } from '../../base/views/viewer-options.js';
 import { ILogger } from '../../utils/logging.js';
 import { isBoundsAware } from '../bounds/model.js';
 import { ISvgExportPostProcessor } from './svg-export-postprocessor.js';
-
-/**
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface ExportSvgAction extends ResponseAction {
-    kind: typeof ExportSvgAction.KIND;
-    svg: string;
-    responseId: string;
-    options?: ExportSvgOptions;
-}
-export namespace ExportSvgAction {
-    export const KIND = 'exportSvg';
-
-    export function create(svg: string, requestId: string, options?: ExportSvgOptions): ExportSvgAction {
-        return {
-            kind: KIND,
-            svg,
-            responseId: requestId,
-            options
-        };
-    }
-}
 
 @injectable()
 export class SvgExporter {

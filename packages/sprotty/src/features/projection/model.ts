@@ -19,17 +19,6 @@ import { transformToRootBounds } from '../../base/model/smodel-utils.js';
 import { SChildElementImpl, SModelRootImpl, SParentElementImpl } from '../../base/model/smodel.js';
 import { isBoundsAware } from '../bounds/model.js';
 
-/**
- * Model elements implementing this interface can be displayed on a projection bar.
- * _Note:_ If set, the projectedBounds property will be prefered over the model element bounds.
- * Otherwise model elements also have to be `BoundsAware` so their projections can be shown.
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface Projectable {
-    projectionCssClasses: string[],
-    projectedBounds?: Bounds,
-}
-
 export function isProjectable(arg: unknown): arg is ProjectableSchema {
     return hasOwnProperty(arg, 'projectionCssClasses');
 }

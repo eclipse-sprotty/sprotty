@@ -17,10 +17,10 @@
 import { inject, injectable } from 'inversify';
 import {
     Anchor, EMPTY_ROOT, IActionDispatcher, IContextMenuItemProvider, IContextMenuService, LabeledAction, MenuItem,
-    RequestExportSvgAction, SModelRootImpl, TYPES, ViewerOptions
+    SModelRootImpl, TYPES, ViewerOptions
 } from 'sprotty';
 import {
-    CenterAction, DeleteElementAction, FitToScreenAction, GetSelectionAction, Point, SelectionResult, SetPopupModelAction
+    CenterAction, DeleteElementAction, FitToScreenAction, GetSelectionAction, Point, RequestExportSvgAction, SelectionResult, SetPopupModelAction
 } from 'sprotty-protocol';
 
 @injectable()

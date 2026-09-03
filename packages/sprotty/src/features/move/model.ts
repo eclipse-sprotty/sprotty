@@ -14,19 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { hasOwnProperty, Point } from 'sprotty-protocol';
+import { hasOwnProperty, Locateable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
 export const moveFeature = Symbol('moveFeature');
-
-/**
- * An element that can be placed at a specific location using its position property.
- * Feature extension interface for {@link moveFeature}.
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface Locateable {
-    position: Point
-}
 
 export function isLocateable(element: SModelElementImpl): element is SModelElementImpl & Locateable {
     return hasOwnProperty(element, 'position');
