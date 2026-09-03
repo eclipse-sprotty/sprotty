@@ -59,7 +59,7 @@ export interface ICommandConstructor<T extends Action> {
  * InversifyJS 8 offers no way to reach the container from a resolution, so a contextual binding
  * cannot be provided by a per-action child container any more.
  */
-const ACTION_HOLDER = Symbol('ActionHolder');
+const ACTION_HOLDER = Symbol.for('ActionHolder');
 
 interface ActionHolder {
     action?: Action
