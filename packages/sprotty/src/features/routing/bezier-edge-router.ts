@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from 'inversify';
+import { inject, injectable, injectFromBase } from 'inversify';
 import { Action, centerOfLine, Point } from 'sprotty-protocol';
 import { Command, CommandExecutionContext, CommandReturn } from '../../base/commands/command.js';
 import { SModelElementImpl } from '../../base/model/smodel.js';
@@ -27,6 +27,7 @@ import { SDanglingAnchorImpl, SRoutableElementImpl, SRoutingHandleImpl } from '.
 import { EdgeRouterRegistry, RoutedPoint } from './routing.js';
 
 @injectable()
+@injectFromBase()
 export class BezierEdgeRouter extends AbstractEdgeRouter {
 
     static readonly KIND = 'bezier';

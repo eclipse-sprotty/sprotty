@@ -12,8 +12,6 @@
  * https://www.gnu.org/software/classpath/license.html.
  ********************************************************************************/
 
-import 'reflect-metadata';
-
 import { Container } from 'inversify';
 import { VNode } from 'snabbdom';
 import { Action, ComputedBoundsAction, RequestBoundsAction, RequestExportSvgAction } from 'sprotty-protocol';

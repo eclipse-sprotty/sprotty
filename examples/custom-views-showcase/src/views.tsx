@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 /** @jsx svg */
-import { injectable } from 'inversify';
+import { injectable, injectFromBase } from 'inversify';
 import { VNode } from 'snabbdom';
 import { IView, IViewArgs, PolylineEdgeView, RectangularNodeView, RenderingContext, svg } from 'sprotty';
 import { BasicShapeNode, ComplexNode, CustomLabel, EnhancedNode, StatefulNode, StyledEdge } from './model.js';
@@ -418,6 +418,7 @@ export class StatefulNodeView implements IView {
  * Styled Edge View - demonstrates custom edge rendering
  */
 @injectable()
+@injectFromBase()
 export class StyledEdgeView extends PolylineEdgeView {
     protected override renderLine(edge: StyledEdge, segments: any[], context: RenderingContext): VNode {
         return <path

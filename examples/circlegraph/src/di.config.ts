@@ -29,7 +29,7 @@ export default (nodeCreator: (point?: Point) => void) => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
-    const circlegraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const circlegraphModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

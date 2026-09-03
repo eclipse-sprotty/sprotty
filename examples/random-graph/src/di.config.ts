@@ -16,7 +16,7 @@
 
 import { LayoutOptions } from 'elkjs';
 import ElkConstructor from 'elkjs/lib/elk.bundled.js';
-import { Container, ContainerModule } from 'inversify';
+import { Container, ContainerModule, injectable, injectFromBase } from 'inversify';
 import {
     Animation, CommandExecutionContext, configureModelElement, configureViewerOptions, ConsoleLogger,
     edgeIntersectionModule, edgeJunctionModule, isSelectable, isViewport, loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
@@ -37,7 +37,7 @@ export default (containerId: string) => {
         algorithms: ['layered']
     });
 
-    const randomGraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const randomGraphModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
         bind(ElkFactory).toConstantValue(elkFactory);
@@ -105,6 +105,8 @@ export class RandomGraphLayoutConfigurator extends DefaultLayoutConfigurator {
 /**
  * Moves the viewport so that the selected element stays at the same position on the screen.
  */
+@injectFromBase()
+@injectable()
 export class TrackSelectedUpdateModelCommand extends UpdateModelCommand {
 
     override createAnimations(data: UpdateAnimationData, root: SModelRootImpl, context: CommandExecutionContext): Animation[] {

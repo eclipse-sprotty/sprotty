@@ -18,7 +18,7 @@ import { ContainerModule } from "inversify";
 import { configureButtonHandler } from "../button/button-handler.js";
 import { ExpandButtonHandler } from "./expand.js";
 
-const expandModule = new ContainerModule((bind, _unbind, isBound) => {
+const expandModule = new ContainerModule(({bind, isBound}) => {
     configureButtonHandler({bind, isBound}, ExpandButtonHandler.TYPE, ExpandButtonHandler);
 });
 

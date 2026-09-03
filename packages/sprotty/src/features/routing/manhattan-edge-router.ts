@@ -20,11 +20,14 @@ import { ResolvedHandleMove } from "../move/move.js";
 import { AbstractEdgeRouter, DefaultAnchors, LinearRouteOptions, Side } from "./abstract-edge-router.js";
 import { RoutingHandleKind, SRoutableElementImpl, SRoutingHandleImpl } from "./model.js";
 import { RoutedPoint } from "./routing.js";
+import { injectable, injectFromBase } from 'inversify';
 
 export interface ManhattanRouterOptions extends LinearRouteOptions {
     standardDistance: number;
 }
 
+@injectFromBase()
+@injectable()
 export class ManhattanEdgeRouter extends AbstractEdgeRouter {
 
     static readonly KIND = 'manhattan';

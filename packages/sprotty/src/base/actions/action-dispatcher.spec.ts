@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, injectable, interfaces } from "inversify";
+import { Container, injectable, Newable } from "inversify";
 import { Action, Bounds, RedoAction, RejectAction, RequestModelAction, SetModelAction, UndoAction } from 'sprotty-protocol';
 import { describe, expect, it } from 'vitest';
 import { ICommandStack } from "../commands/command-stack.js";
@@ -62,7 +62,7 @@ describe('ActionDispatcher', () => {
         }
     }
 
-    function setup(options: { requestHandler?: interfaces.Newable<IActionHandler>, initialize?: boolean } = {}) {
+    function setup(options: { requestHandler?: Newable<IActionHandler>, initialize?: boolean } = {}) {
         const state = {
             execCount: 0,
             undoCount: 0,

@@ -16,7 +16,7 @@
 
 /** @jsx svg */
 import { svg } from 'sprotty';
-import { injectable } from 'inversify';
+import { injectable, injectFromBase } from 'inversify';
 import { VNode } from 'snabbdom';
 import { IView, RenderingContext, IViewArgs, PolylineEdgeView, ShapeView } from 'sprotty';
 import {
@@ -182,6 +182,7 @@ export class HybridLayoutNodeView extends ShapeView {
  * Layout Edge View - Works with all layout strategies
  */
 @injectable()
+@injectFromBase()
 export class LayoutEdgeView extends PolylineEdgeView {
     override render(edge: Readonly<LayoutEdge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const router = this.edgeRouterRegistry.get(edge.routerKind);

@@ -33,7 +33,7 @@ import { ExampleNodeView } from "./views.js";
 export default (containerId: string) => {
     require('../css/diagram.css');
 
-    const jsxampleModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const jsxampleModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

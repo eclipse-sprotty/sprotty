@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, optional } from 'inversify';
+import { inject, injectable, injectFromBase, optional } from 'inversify';
 import { Action, ApplyLabelEditAction } from 'sprotty-protocol';
 import { IActionDispatcherProvider } from '../../base/actions/action-dispatcher.js';
 import { IActionHandler } from '../../base/actions/action-handler.js';
@@ -48,6 +48,7 @@ export interface IEditLabelValidationDecorator {
 }
 
 @injectable()
+@injectFromBase()
 export class EditLabelUI extends AbstractUIExtension {
     static readonly ID = 'editLabelUi';
 

@@ -24,7 +24,7 @@ import { HBoxLayouter } from "./hbox-layout.js";
 import { VBoxLayouter } from "./vbox-layout.js";
 import { StackLayouter} from "./stack-layout.js";
 
-const boundsModule = new ContainerModule((bind, _unbind, isBound) => {
+const boundsModule = new ContainerModule(({bind,isBound}) => {
     configureCommand({ bind, isBound }, SetBoundsCommand);
     configureCommand({ bind, isBound }, RequestBoundsCommand);
     bind(HiddenBoundsUpdater).toSelf().inSingletonScope();

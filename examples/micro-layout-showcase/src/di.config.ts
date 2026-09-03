@@ -39,7 +39,7 @@ export default () => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
-    const microLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const microLayoutModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

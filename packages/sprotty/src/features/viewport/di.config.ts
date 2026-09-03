@@ -22,7 +22,7 @@ import { ScrollMouseListener } from "./scroll.js";
 import { GetViewportCommand, SetViewportCommand } from "./viewport.js";
 import { ZoomMouseListener } from "./zoom.js";
 
-const viewportModule = new ContainerModule((bind , _unbind, isBound) => {
+const viewportModule = new ContainerModule(({bind, isBound}) => {
     configureCommand({ bind, isBound }, CenterCommand);
     configureCommand({ bind, isBound }, FitToScreenCommand);
     configureCommand({ bind, isBound }, SetViewportCommand);

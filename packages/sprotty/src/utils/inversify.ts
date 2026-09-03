@@ -14,10 +14,29 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import 'reflect-metadata';
+import { Bind, IsBound, ServiceIdentifier } from "inversify";
 
-import { interfaces } from "inversify";
-
-export function isInjectable(constr: interfaces.Newable<unknown>| Function ): boolean {
-    return Reflect.getMetadata('inversify:paramtypes', constr) !== undefined;
+/**
+ * Bind `constr` to itself unless it is already bound, translating InversifyJS' binding failure into
+ * a message that names the sprotty concept and the decorators it expects. Service identifiers that
+ * are not constructors are left alone, as are constructors that are already bound.
+ *
+ * InversifyJS only rejects a missing `@injectable()` when the constructor takes arguments; a class
+ * whose dependencies are all injected into properties binds without complaint and resolves them to
+ * `undefined`. There is no public API to detect that case.
+ */
+export function bindInjectable(context: { bind: Bind, isBound: IsBound },
+        constr: ServiceIdentifier<unknown>, role: string): void {
+    if (typeof constr !== 'function' || context.isBound(constr)) {
+        return;
+    }
+    try {
+        context.bind(constr).toSelf();
+    } catch (error) {
+        throw new Error(
+            `${role} must be decorated with @injectable(): ${constr.name}. `
+            + 'InversifyJS does not inherit injection metadata, so a subclass needs its own '
+            + '@injectable() and @injectFromBase({ extendConstructorArguments: true, extendProperties: true }).',
+            { cause: error });
+    }
 }

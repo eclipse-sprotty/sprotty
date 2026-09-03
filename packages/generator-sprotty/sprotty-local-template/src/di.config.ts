@@ -7,7 +7,7 @@ import {
 import { TaskNodeView } from './views';
 
 export default (containerId: string) => {
-    const myModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const myModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

@@ -19,7 +19,7 @@ import { configureCommand } from "../../base/commands/command-registration.js";
 import { TYPES } from '../../base/types.js';
 import { LocationPostprocessor, MoveCommand, MoveMouseListener } from './move.js';
 
-const moveModule = new ContainerModule((bind, _unbind, isBound) => {
+const moveModule = new ContainerModule(({bind, isBound}) => {
     bind(MoveMouseListener).toSelf().inSingletonScope();
     bind(TYPES.MouseListener).toService(MoveMouseListener);
     configureCommand({ bind, isBound }, MoveCommand);

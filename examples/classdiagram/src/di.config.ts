@@ -66,7 +66,7 @@ export default (containerId: string) => {
     require('sprotty/css/edit-label.css');
     require('../css/diagram.css');
 
-    const classDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const classDiagramModule = new ContainerModule(({bind, unbind, isBound, rebind}) => {
         bind(TYPES.ModelSource).to(ClassDiagramModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);

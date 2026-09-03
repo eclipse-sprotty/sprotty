@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import configureAutocomplete, { AutocompleteResult, AutocompleteSettings } from "autocompleter";
-import { inject, injectable } from "inversify";
+import { inject, injectable, injectFromBase } from "inversify";
 import { Action, isAction } from 'sprotty-protocol';
 import { IActionDispatcherProvider } from "../../base/actions/action-dispatcher.js";
 import { LabeledAction, isLabeledAction } from "../../base/actions/action.js";
@@ -34,6 +34,7 @@ import { isSelectable } from "../select/model.js";
 import { CommandPaletteActionProviderRegistry } from "./action-providers.js";
 
 @injectable()
+@injectFromBase()
 export class CommandPalette extends AbstractUIExtension {
     static readonly ID = "command-palette";
     static readonly isInvokePaletteKey = (event: KeyboardEvent) => matchesKeystroke(event, 'Space', 'ctrl');

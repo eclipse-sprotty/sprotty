@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable } from 'inversify';
+import { inject, injectable, injectFromBase } from 'inversify';
 import { GetViewportAction, Point, ResponseAction, SetViewportAction, Viewport, ViewportResult } from 'sprotty-protocol';
 import { Animation } from '../../base/animations/animation.js';
 import { CommandExecutionContext, CommandReturn, ICommand, MergeableCommand } from '../../base/commands/command.js';
@@ -83,6 +83,8 @@ export class SetViewportCommand extends MergeableCommand {
     }
 }
 
+@injectFromBase()
+@injectable()
 export class GetViewportCommand extends ModelRequestCommand {
     static readonly KIND = GetViewportAction.KIND;
 

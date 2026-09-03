@@ -2,6 +2,30 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v2.0.0 (Aug. 2026)
+
+Updated dependency to `inversify` ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): version constraint is now `~8.2` in all sprotty packages. InversifyJS 8 is a rewrite of InversifyJS 6 and requires changes in downstream code.
+
+**Breaking changes in Sprotty**
+
+ * Subclasses of Sprotty classes that have injected members now need `@injectFromBase()` in addition to `@injectable()`, because InversifyJS no longer passes injection metadata down to subclasses. A missing decorator leaves the inherited dependencies `undefined` *without* raising an error, so this is worth checking in every subclass. If the base class declares constructor parameters that are not injected, those parameters need `@unmanaged()`, since `@injectFromBase()` validates the metadata of the base class.
+ * Removed the `isInjectable` utility. The `configure*` utilities still report a missing `@injectable()` decorator, now by translating the error raised by InversifyJS. Note that InversifyJS cannot detect the case where a class has no constructor arguments and all of its dependencies are injected into properties.
+ * `TYPES.Action` is now bound in the container that registers the commands instead of in a child container created for each action. It resolves to `undefined` while no command is being created.
+ * `TYPES.IViewer` is now bound in the main container, constrained with `whenParentIs`, instead of in child containers created for `TYPES.ModelViewer` and `TYPES.PopupModelViewer`.
+
+**Changes required in dependency injection configurations**
+
+These follow from InversifyJS 8 itself and affect every application that configures a Sprotty container:
+
+ * `import 'reflect-metadata'` is no longer needed, as InversifyJS brings its own polyfill.
+ * The callback passed to `ContainerModule` receives a single options object instead of positional arguments: `new ContainerModule(({ bind, isBound, rebind }) => ...)`. That object can be passed directly to Sprotty's `configure*` utilities.
+ * `Container.createChild()` and the `Container.parent` setter were removed; a parent is now passed to the constructor as `new Container({ parent })`.
+ * The `interfaces` namespace was removed in favour of top-level type exports. Note that `Rebind` is asynchronous in InversifyJS 8 and that the synchronous variant is called `RebindSync`.
+ * `toProvider` was removed; provider bindings are expressed as `bind<MyProvider>(TYPES.MyProvider).toFactory(...)`, where the type argument is the type of the provider function rather than the type it provides.
+ * The object passed to `toDynamicValue` and `toFactory` no longer exposes `container`. Use `ctx.get(...)` instead of `ctx.container.get(...)`, and `ctx.get(..., { optional: true })` instead of guarding with `ctx.container.isBound(...)`.
+
+-----
+
 ### v1.4.0 (Dec. 2024)
 
  * Updated dependency to `inversify` ([#477](https://github.com/eclipse-sprotty/sprotty/pull/477)):  version constraint is now `^6.1.3` in all sprotty packages.

@@ -2,6 +2,12 @@
 
 This change log covers only the Yeoman `generator-sprotty` package of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
 
+### v2.0.0 (Aug. 2026)
+
+ * Updated the generated project to `inversify` version 8 ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): the `reflect-metadata` dependency and its import were removed, and the `ContainerModule` callback now takes a single options object.
+
+-----
+
 ### v1.0.0 (Oct. 2023)
 
 Several improvements of the generator template were made in ([#388](https://github.com/eclipse-sprotty/sprotty/pull/388)):

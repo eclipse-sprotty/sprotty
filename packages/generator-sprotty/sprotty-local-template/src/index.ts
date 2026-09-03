@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { LocalModelSource, TYPES } from 'sprotty';
 import createContainer from './di.config';
 import { graph } from './model-source';

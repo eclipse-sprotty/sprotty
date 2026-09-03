@@ -25,11 +25,11 @@ import { ComputedBoundsApplicator, ModelSource } from "./model-source.js";
  * done according to the needs of the application. You can choose between a local (LocalModelSource)
  * and a remote (e.g. WebSocketDiagramServer) implementation.
  */
-const modelSourceModule = new ContainerModule((bind, _unbind, isBound) => {
-    bind(TYPES.ModelSourceProvider).toProvider<ModelSource>((context) => {
+const modelSourceModule = new ContainerModule(({bind,isBound}) => {
+    bind<() => Promise<ModelSource>>(TYPES.ModelSourceProvider).toFactory((context) => {
         return () => {
             return new Promise<ModelSource>((resolve) => {
-                resolve(context.container.get<ModelSource>(TYPES.ModelSource));
+                resolve(context.get<ModelSource>(TYPES.ModelSource));
             });
         };
     });

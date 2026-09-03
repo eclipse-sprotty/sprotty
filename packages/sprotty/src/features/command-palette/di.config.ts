@@ -18,7 +18,7 @@ import { TYPES } from "../../base/types.js";
 import { CommandPaletteActionProviderRegistry } from "./action-providers.js";
 import { CommandPalette, CommandPaletteKeyListener } from "./command-palette.js";
 
-const commandPaletteModule = new ContainerModule((bind) => {
+const commandPaletteModule = new ContainerModule(({bind}) => {
     bind(CommandPalette).toSelf().inSingletonScope();
     bind(TYPES.IUIExtension).toService(CommandPalette);
     bind(CommandPaletteKeyListener).toSelf().inSingletonScope();

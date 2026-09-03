@@ -17,7 +17,6 @@
 /** @jsx svg */
 import { svg } from '../../lib/jsx.js';
 
-import 'reflect-metadata';
 import { expect, describe, it } from 'vitest';
 import { VNode } from 'snabbdom';
 import { Bounds, Point, toDegrees } from 'sprotty-protocol';

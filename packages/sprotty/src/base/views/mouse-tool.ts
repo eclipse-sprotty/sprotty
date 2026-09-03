@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { inject, injectable, multiInject, optional } from "inversify";
+import { inject, injectable, injectFromBase, multiInject, optional } from "inversify";
 import { VNode } from "snabbdom";
 import { Action, isAction, Point } from "sprotty-protocol";
 import { IActionDispatcher } from "../actions/action-dispatcher.js";
@@ -153,6 +153,7 @@ export class MouseTool implements IVNodePostprocessor {
 }
 
 @injectable()
+@injectFromBase()
 export class PopupMouseTool extends MouseTool {
     constructor(@multiInject(TYPES.PopupMouseListener) @optional() protected override mouseListeners: MouseListener[] = []) {
         super(mouseListeners);
