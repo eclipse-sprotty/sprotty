@@ -16,7 +16,7 @@
 
 import { inject, injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Action, ExportSvgAction, generateRequestId, RequestAction } from 'sprotty-protocol';
+import { Action, RequestExportSvgAction } from 'sprotty-protocol';
 import { CommandExecutionContext, CommandResult, HiddenCommand } from '../../base/commands/command.js';
 import { SModelElementImpl, SModelRootImpl } from '../../base/model/smodel.js';
 import { TYPES } from '../../base/types.js';
@@ -36,32 +36,6 @@ export class ExportSvgKeyListener extends KeyListener {
             return [ RequestExportSvgAction.create() ];
         else
             return [];
-    }
-}
-
-/**
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface ExportSvgOptions {
-    skipCopyStyles?: boolean
-}
-
-/**
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface RequestExportSvgAction extends RequestAction<ExportSvgAction> {
-    kind: typeof RequestExportSvgAction.KIND
-    options?: ExportSvgOptions
-}
-export namespace RequestExportSvgAction {
-    export const KIND = 'requestExportSvg';
-
-    export function create(options: ExportSvgOptions = {}): RequestExportSvgAction {
-        return {
-            kind: KIND,
-            requestId: generateRequestId(),
-            options
-        };
     }
 }
 

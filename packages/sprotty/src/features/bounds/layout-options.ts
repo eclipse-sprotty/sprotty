@@ -16,12 +16,6 @@
 
 import { JsonMap } from 'sprotty-protocol';
 
-/** @deprecated Use HAlignment from `sprotty-protocol` instead */
-export type HAlignment = 'left' | 'center' | 'right';
-
-/** @deprecated Use VAlignment from `sprotty-protocol` instead */
-export type VAlignment = 'top' | 'center' | 'bottom';
-
 export interface AbstractLayoutOptions extends JsonMap {
     resizeContainer: boolean
     paddingTop: number

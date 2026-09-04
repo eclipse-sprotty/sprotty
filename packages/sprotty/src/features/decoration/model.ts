@@ -38,19 +38,3 @@ export class SDecoration extends SShapeElementImpl implements Decoration {
 export class SIssueMarkerImpl extends SDecoration {
     issues: SIssueSchema[];
 }
-
-/** @deprecated Use SIssueMarkerImpl instead. */
-export const SIssueMarker = SIssueMarkerImpl;
-
-/**
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export type SIssueSeverity = 'error' | 'warning' | 'info';
-
-/**
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export class SIssue {
-    message: string;
-    severity: SIssueSeverity;
-}

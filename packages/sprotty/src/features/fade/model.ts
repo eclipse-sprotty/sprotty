@@ -14,17 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
+import { Fadeable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
 export const fadeFeature = Symbol('fadeFeature');
-
-/**
- * Feature extension interface for {@link fadeFeature}.
- * @deprecated Use the definition from `sprotty-protocol` instead.
- */
-export interface Fadeable {
-    opacity: number
-}
 
 export function isFadeable(element: SModelElementImpl): element is SModelElementImpl & Fadeable {
     return element.hasFeature(fadeFeature) && (element as any)['opacity'] !== undefined;

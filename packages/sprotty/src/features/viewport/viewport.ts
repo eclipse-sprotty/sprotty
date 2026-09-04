@@ -106,15 +106,18 @@ export class GetViewportCommand extends ModelRequestCommand {
 
 export class ViewportAnimation extends Animation {
 
-    /** @deprecated Use `Math.log(newViewport.zoom / oldViewport.zoom)` instead. */
-    protected zoomFactor: number;
-
     constructor(protected element: SModelElementImpl & Viewport,
                 protected oldViewport: Viewport,
                 protected newViewport: Viewport,
                 protected override context: CommandExecutionContext) {
         super(context);
-        this.zoomFactor = Math.log(newViewport.zoom / oldViewport.zoom);
+    }
+
+    /**
+     * Returns the logarithmic zoom factor between the old and the new viewport.
+     */
+    protected get zoomFactor(): number {
+        return Math.log(this.newViewport.zoom / this.oldViewport.zoom);
     }
 
     tween(t: number, context: CommandExecutionContext): SModelRootImpl {

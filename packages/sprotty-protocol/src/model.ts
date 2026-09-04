@@ -47,9 +47,6 @@ export interface ViewportRootElement extends SModelRoot, Partial<Viewport>, Part
  */
 export interface SGraph extends ViewportRootElement, Partial<LayoutableChild> {
     children: SModelElement[]
-
-    /** @deprecated Use `position` and `size` instead. */
-    bounds?: Bounds
 }
 
 export interface SShapeElement extends SModelElement, Partial<LayoutableChild> {

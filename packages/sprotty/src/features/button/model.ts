@@ -14,17 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { SShapeElement } from 'sprotty-protocol';
 import { boundsFeature, layoutableChildFeature, SShapeElementImpl } from '../bounds/model.js';
 import { fadeFeature } from '../fade/model.js';
-
-/**
- * @deprecated Use SButton from `sprotty-protocol` instead.
- */
-export interface SButtonSchema extends SShapeElement {
-    pressed: boolean
-    enabled: boolean
-}
 
 export class SButtonImpl extends SShapeElementImpl {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutableChildFeature, fadeFeature];
