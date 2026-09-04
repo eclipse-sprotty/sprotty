@@ -1,6 +1,6 @@
 ## Eclipse Sprotty Change Log (elkjs Layout)
 
-This change log covers only the `elkjs` layout of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
+This change log covers only the `elkjs` layout of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/main/CHANGELOG.md) for other packages.
 
 ### v2.0.0 (Aug. 2026)
 

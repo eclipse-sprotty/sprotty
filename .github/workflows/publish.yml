@@ -6,10 +6,10 @@ permissions:
 
 on:
   push:
-    # Only trigger on changes to package.json files in the master and maintenance branches
+    # Only trigger on changes to package.json files in the main and maintenance branches
     branches:
-      - 'master'
-      - 'maintenance-*'
+      - 'main'
+      - 'maintenance/*'
     paths:
       - '**/package.json'
 

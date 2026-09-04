@@ -1,6 +1,6 @@
 ## Eclipse Sprotty Change Log
 
-This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md) for other packages.
+This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/main/CHANGELOG.md) for other packages.
 
 ### v2.0.0 (Aug. 2026)
 

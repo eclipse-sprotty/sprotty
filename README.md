@@ -34,7 +34,7 @@ The project is built with [GitHub Actions](https://github.com/eclipse-sprotty/sp
 
 For further information please consult the [documentation on the website](https://sprotty.org/docs/).
 
-The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/master/CHANGELOG.md). Changes are tracked seperately for each package.
+The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/main/CHANGELOG.md). Changes are tracked seperately for each package.
 
 ## References
 
