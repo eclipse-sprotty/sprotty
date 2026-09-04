@@ -22,6 +22,6 @@ Publishing runs exclusively through `.github/workflows/publish.yml` (npm trusted
 ## Consequences
 
 - No npm tokens to manage; the `publish` environment gates releases.
-- Version bumps are manual commits to `packages/*/package.json` (versions kept in lock-step by convention); the workflow triggers on `package.json` changes pushed to `master` or `maintenance-*` branches.
+- Version bumps are manual commits to `packages/*/package.json` (versions kept in lock-step by convention); the workflow triggers on `package.json` changes pushed to `main` or `maintenance/*` branches.
 - The workflow's Test step is advisory (`if: success() || failure()`) — a failing test does not block the publish; the Build CI on PRs is the actual quality gate.
 - Anything that still references ci.eclipse.org or Lerna is stale by definition and should be fixed on sight.

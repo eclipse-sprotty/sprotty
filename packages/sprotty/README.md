@@ -23,7 +23,7 @@ Some selected features:
 
 For further information please consult the [documentation on the website](https://sprotty.org/docs/).
 
-The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/master/packages/sprotty/CHANGELOG.md).
+The version history is documented in the [CHANGELOG](https://github.com/eclipse-sprotty/sprotty/blob/main/packages/sprotty/CHANGELOG.md).
 
 ## References
 
