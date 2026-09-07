@@ -8,7 +8,7 @@ Sprotty is a web-based diagramming framework: TypeScript, SVG rendering through 
 npm install                       # ~10 s warm, longer on first clone
 npm run build                     # tsc project build + webpack examples, ~7 s
 npm run lint                      # eslint, ~3 s — errors gate, warnings don't
-npm test                          # full vitest suite, 244 tests, ~2-5 s
+npm test                          # full vitest suite, ~2-5 s
 npm run test -w sprotty           # tests of one package (any of the four lib packages)
 npx vitest run --config vite.config.mts packages/sprotty/src/base/model/smodel.spec.ts   # single spec, <1 s
 npm run coverage                  # v8 coverage report, ~2 s
@@ -43,7 +43,7 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - Do not edit `CHANGELOG.md` files per change; they are batched by maintainers at release time.
 - Done means: `npm run build`, `npm run lint` (0 errors), and `npm test` all pass locally, output shown.
 - A bugfix includes a co-located regression spec (`*.spec.ts` next to the fixed file).
-- Behaviour documented on sprotty.org or promised in `docs/product-specs/` is a compatibility contract: changing it is a breaking change even when signatures stay the same. A change to intended behaviour updates the capability's spec in the same change.
+- Behaviour documented on sprotty.org or promised in `docs/product-specs/` is a compatibility contract: changing it is a breaking change even when signatures stay the same. A change to intended behaviour updates the capability's spec in the same change; a change that alters a design recorded in `docs/design-docs/` adds a dated amendment to that doc in the same change.
 - If reality contradicts this file or `docs/`, fix the doc as part of the change — never silently work around it.
 
 ## PR conventions
@@ -56,7 +56,7 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - `docs/ARCHITECTURE.md` — package topology, runtime cycle, extension points, gotchas.
 - `examples/AGENTS.md` — how examples are built, run, and added.
 - `docs/adr/` — decision records; do not contradict accepted ADRs.
-- `docs/design-docs/index.md` — point-in-time design rationale (trade-offs, rejected alternatives), indexed with trust labels; check before refactoring a deliberate design away.
+- `docs/design-docs/index.md` — design rationale as built (trade-offs, rejected alternatives, invariants), indexed with trust labels; check before refactoring a deliberate design away.
 - `docs/product-specs/index.md` — behaviour contracts per capability; bug-vs-intended is adjudicated there.
 - `docs/exec-plans/` — multi-session work gets a plan in `active/`; move it to `completed/` when done.
 - https://sprotty.org/docs/ — the public documentation (concepts live there, not in this repo).
