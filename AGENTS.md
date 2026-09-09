@@ -60,5 +60,5 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - `docs/adr/` — decision records; do not contradict accepted ADRs.
 - `docs/design-docs/index.md` — design rationale as built (trade-offs, rejected alternatives, invariants), indexed with trust labels; check before refactoring a deliberate design away.
 - `docs/product-specs/index.md` — behaviour contracts per capability; bug-vs-intended is adjudicated there.
-- `docs/exec-plans/` — multi-session work gets a plan in `active/`; move it to `completed/` when done.
+- `docs/exec-plans/` — multi-session work gets a plan in `active/`; move it to `completed/` when done. Debt deferred on purpose is listed in `docs/exec-plans/tech-debt-tracker.md` with its reason.
 - https://sprotty.org/docs/ — the public documentation (concepts live there, not in this repo).
