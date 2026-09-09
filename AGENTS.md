@@ -7,7 +7,7 @@ Sprotty is a web-based diagramming framework: TypeScript, SVG rendering through 
 ```sh
 npm install                       # ~10 s warm, longer on first clone
 npm run build                     # tsc project build + webpack examples, ~7 s
-npm run lint                      # eslint, ~3 s — errors gate, warnings don't
+npm run lint                      # eslint, ~3 s — every finding fails (all rules are errors, --max-warnings 0)
 npm test                          # full vitest suite, ~2-5 s
 npm run test -w sprotty           # tests of one package (any of the four lib packages)
 npx vitest run --config vite.config.mts packages/sprotty/src/base/model/smodel.spec.ts   # single spec, <1 s
@@ -20,9 +20,9 @@ The suite is fast — run `npm test` after every change, not just at the end.
 
 ## Why and where
 
-- `packages/sprotty-protocol/` — the wire format: serializable actions + model schema + server-side `DiagramServer`. Runs in browser and Node; **must stay free of runtime dependencies**.
+- `packages/sprotty-protocol/` — the wire format: serializable actions + model schema + server-side `DiagramServer`. Runs in browser and Node; **must stay free of runtime dependencies** (enforced by `test/package-layering.spec.ts`).
 - `packages/sprotty/` — the client framework. `src/base/` is the kernel (action dispatcher, command stack, viewers, DI `types.ts` + `di.config.ts`); `src/features/<feature>/` are optional feature modules; `src/graph/` the SGraph element classes and views; `src/lib/` opt-in helpers (JSX factories, `loadDefaultModules`); `src/model-source/` the client-server glue (`LocalModelSource`, `DiagramServerProxy`).
-- `packages/sprotty-elk/` — ELK layout; `src/elk-layout.ts` is Inversify-free, `src/inversify.ts` wraps it (inversify is an *optional* dependency here).
+- `packages/sprotty-elk/` — ELK layout; `src/elk-layout.ts` is Inversify-free, `src/inversify.ts` wraps it (inversify is an *optional* dependency here; `test/package-layering.spec.ts` enforces the split).
 - `examples/` — demo apps bundled by a single webpack build; see `examples/AGENTS.md` before touching them.
 - Architecture, runtime model, and extension idioms: `docs/ARCHITECTURE.md`. Public docs (tutorials, concepts, API): https://sprotty.org/docs/ — topic→URL map at the end of `docs/ARCHITECTURE.md`.
 
@@ -32,8 +32,9 @@ The suite is fast — run `npm test` after every change, not just at the end.
 - Feature folders follow a fixed template: `di.config.ts` (ContainerModule), `model.ts` (feature symbol, interfaces, type guards, element classes), `<feature>.ts` (commands/listeners), `views.tsx`, co-located `*.spec.ts`. New public API is re-exported from `packages/sprotty/src/index.ts`; new DI symbols go into `TYPES` in `src/base/types.ts`.
 - Actions are plain data: `interface XAction extends Action` + namespace with `KIND` and `create()` — never classes.
 - Views: `.tsx` files start with `/** @jsx svg */` and import `svg` from the JSX lib; subclass `ShapeView` (or a more specific base) and early-return on `!this.isVisible(...)`.
-- Every source file carries the full 15-line EPL-2.0/GPL-2.0 header including the `SPDX-License-Identifier` line — copy it from a neighboring file and set the current year. Lint only checks the copyright line; the rest of the block is required anyway. In the copyright line, name the contributing organization.
-- Public API is never removed directly: mark `@deprecated` with a pointer to the replacement and keep an alias; removals happen only at the next major release.
+- Every source file carries the full 15-line EPL-2.0/GPL-2.0 header including the `SPDX-License-Identifier` line — copy it from a neighboring file and set the current year; `test/license-header.spec.ts` checks the full block. In the copyright line, name the contributing organization.
+- Subclassing a class that has injected members needs `@injectFromBase()` next to `@injectable()` — inversify 8 does not pass injection metadata down, and a missing decorator fails silently at runtime; `test/inject-from-base.spec.ts` catches it statically (details in `docs/ARCHITECTURE.md`, gotchas).
+- Public API is never removed directly: mark `@deprecated` with a pointer to the replacement and keep an alias; removals happen only at the next major release (ADR-0003; its addendum covers the one exception, a removal a dependency forces).
 - Tests build real Inversify containers (no mocks of the framework), assert views via `snabbdom-to-html`, use `happy-dom` for DOM. Helpers stay local to the spec file.
 
 ## Boundaries and definition of done
@@ -55,6 +56,7 @@ The suite is fast — run `npm test` after every change, not just at the end.
 
 - `docs/ARCHITECTURE.md` — package topology, runtime cycle, extension points, gotchas.
 - `examples/AGENTS.md` — how examples are built, run, and added.
+- `test/` — repo-wide structural sensors (license header, `@injectFromBase()`, package layering), each failing with a message that says how to fix it; they run as part of `npm test`.
 - `docs/adr/` — decision records; do not contradict accepted ADRs.
 - `docs/design-docs/index.md` — design rationale as built (trade-offs, rejected alternatives, invariants), indexed with trust labels; check before refactoring a deliberate design away.
 - `docs/product-specs/index.md` — behaviour contracts per capability; bug-vs-intended is adjudicated there.

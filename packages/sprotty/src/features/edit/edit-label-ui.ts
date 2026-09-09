@@ -89,8 +89,8 @@ export class EditLabelUI extends AbstractUIExtension {
         element.style.position = 'absolute';
         element.style.top = '0px';
         element.style.left = '0px';
-        element.addEventListener('keydown', (event: KeyboardEvent) => this.hideIfEscapeEvent(event));
-        element.addEventListener('keyup', (event: KeyboardEvent) => this.validateLabelIfContentChange(event, element.value));
+        element.addEventListener('keydown', (event: Event) => this.hideIfEscapeEvent(event as KeyboardEvent));
+        element.addEventListener('keyup', (event: Event) => this.validateLabelIfContentChange(event as KeyboardEvent, element.value));
         element.addEventListener('blur', () => window.setTimeout(() => this.applyLabelEdit(), 200));
         containerElement.appendChild(element);
     }
@@ -265,8 +265,10 @@ function hasEditableLabel(contextElementIds: string[], root: Readonly<SModelRoot
     return getEditableLabels(contextElementIds, root).length === 1;
 }
 
-function getEditableLabels(contextElementIds: string[], root: Readonly<SModelRootImpl>) {
-    return contextElementIds.map(id => root.index.getById(id)).filter(isEditableLabel);
+function getEditableLabels(contextElementIds: string[], root: Readonly<SModelRootImpl>): (EditableLabel & SModelElementImpl)[] {
+    return contextElementIds
+        .map(id => root.index.getById(id))
+        .filter((element): element is EditableLabel & SModelElementImpl => element !== undefined && isEditableLabel(element));
 }
 
 function scaledFont(font: string, zoom: number): string {

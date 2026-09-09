@@ -23,6 +23,12 @@ Option 2. From [#355](https://github.com/eclipse-sprotty/sprotty/pull/355): "I w
 
 ## Consequences
 
-- Public API is never removed directly (the standing rule in `AGENTS.md`); every removal is a two-step spanning at least one minor and the next major.
+- Public API is never removed directly (the standing rule in `AGENTS.md`); every removal is a two-step spanning at least one minor and the next major. The one exception is a removal a dependency forces — see the addendum below.
 - Deprecated aliases linger between majors — parallel names for the same concept are a standing cost (see ADR-0002's `SNode` vs `SNodeImpl` era).
 - Breaking *interaction* changes follow the same rhythm: they wait for the major (e.g. the pointer-capture listener switch deferred to v2.0 in [#488](https://github.com/eclipse-sprotty/sprotty/pull/488)).
+
+## Addendum 2026-09-09: removals forced by a dependency
+
+The decision is unchanged, but it assumes an alias *can* keep working through the deprecation window. Where a dependency change makes that impossible, the API may be removed in the same major release that adopts the dependency, without a preceding deprecation. The triggering case: `isInjectable` read `Reflect.getMetadata('inversify:paramtypes')`, which InversifyJS 8 never populates, so no alias could have kept it functional ([ADR-0007](0007-inversify-8-upgrade.md)); it was removed in 2.0 together with the upgrade.
+
+Conditions, all taken from that case: the removal ships only at a major; the package CHANGELOG names the removed API and its replacement, or states that there is none; and the forcing dependency is cited. A removal that *could* have been aliased still follows the two-step rule.

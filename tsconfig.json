@@ -11,12 +11,13 @@
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
+        "strict": true,
+        // Deliberately off: injected members (`@inject(...) protected foo: Foo;`) and fields assigned outside the
+        // constructor have no initializer. Enabling it produced 147 errors (88 on injected members), measured 2026-09-09.
+        "strictPropertyInitialization": false,
         "noImplicitReturns": true,
         "noImplicitOverride": true,
         "noUnusedLocals": true,
-        "strictNullChecks": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "esModuleInterop": true,
@@ -26,7 +27,8 @@
     },
     "include": [
         "**/src/**/*.ts",
-        "**/src/**/*.tsx"
+        "**/src/**/*.tsx",
+        "test/**/*.ts"
     ],
     "exclude": [
         "lib/**/*",

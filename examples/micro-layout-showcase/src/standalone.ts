@@ -478,7 +478,7 @@ function setupInteractiveControls(modelSource: LocalModelSource) {
         if (input) {
             input.addEventListener('input', (e) => {
                 const target = e.target as HTMLInputElement;
-                const value = parseInt(target.value);
+                const value = parseInt(target.value, 10);
                 updateInteractiveCard(modelSource, { [property]: value });
             });
         }
@@ -490,7 +490,7 @@ function setupInteractiveControls(modelSource: LocalModelSource) {
         if (input) {
             input.addEventListener('input', (e) => {
                 const target = e.target as HTMLInputElement;
-                const value = parseInt(target.value);
+                const value = parseInt(target.value, 10);
                 updateInteractiveCard(modelSource, { [property]: value });
             });
         }

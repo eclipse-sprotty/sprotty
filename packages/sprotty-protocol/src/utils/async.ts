@@ -19,7 +19,7 @@
  * An object that exposes a promise and functions to resolve and reject it.
  */
 export class Deferred<T> {
-    resolve: (value?: T | PromiseLike<T>) => void;
+    resolve: (value: T | PromiseLike<T>) => void;
     reject: (reason?: any) => void;
     readonly promise: Promise<T>;
     private _state: DeferredState = 'unresolved';
