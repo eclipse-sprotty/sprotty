@@ -17,7 +17,7 @@ sprotty-protocol   (leaf — zero runtime deps; browser + Node)
  examples          (private workspace; depends on sprotty, sprotty-elk, sprotty-library)
 ```
 
-Build order is fixed by TypeScript project references in `tsconfig.build.json`. The four library packages have `tsconfig.src.json` (emits to `lib/`, excludes specs) and — except `sprotty-library`, which has no tests — `tsconfig.test.json` (`noEmit`, specs only); `generator-sprotty` has neither. Every package's plain `tsconfig.json` exists for editor support.
+Build order is fixed by TypeScript project references in `tsconfig.build.json`. The four library packages have `tsconfig.src.json` (emits to `lib/`, excludes specs) and `tsconfig.test.json` (`noEmit`, specs only); `generator-sprotty` has neither. Every package's plain `tsconfig.json` exists for editor support.
 
 ## The runtime cycle
 

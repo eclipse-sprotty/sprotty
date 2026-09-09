@@ -31,7 +31,7 @@ export class ExpandButtonView implements IView {
         const path = (expandable !== undefined && expandable.expanded)
             ? 'M 1,5 L 8,12 L 15,5 Z'
             : 'M 1,8 L 8,15 L 8,1 Z';
-        return <g class-sprotty-button="{true}" class-enabled="{button.enabled}">
+        return <g class-sprotty-button={true} class-enabled={button.enabled}>
                 <rect x={0} y={0} width={16} height={16} opacity={0}></rect>
                 <path d={path}></path>
             </g>;

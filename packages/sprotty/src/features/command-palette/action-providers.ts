@@ -35,7 +35,7 @@ export class CommandPaletteActionProviderRegistry implements ICommandPaletteActi
 
     getActions(root: Readonly<SModelRootImpl>, text: string, lastMousePosition?: Point, index?: number) {
         const actionLists = this.actionProviders.map(provider => provider.getActions(root, text, lastMousePosition, index));
-        return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc));
+        return Promise.all(actionLists).then(p => p.reduce((acc, promise) => promise !== undefined ? acc.concat(promise) : acc, []));
     }
 }
 
