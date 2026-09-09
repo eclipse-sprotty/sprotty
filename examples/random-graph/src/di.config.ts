@@ -48,12 +48,12 @@ export default (containerId: string) => {
         rebind(UpdateModelCommand).to(TrackSelectedUpdateModelCommand);
 
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'graph', SGraphImpl, SGraphView);
-        configureModelElement(container, 'node', SNodeImpl, RectangularNodeView);
-        configureModelElement(container, 'port', SPortImpl, PortViewWithExternalLabel);
-        configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections);
-        configureModelElement(container, 'label:node', SLabelImpl, SLabelView);
-        configureModelElement(container, 'label:port', SLabelImpl, SLabelView);
+        configureModelElement(context, 'graph', SGraphImpl, SGraphView);
+        configureModelElement(context, 'node', SNodeImpl, RectangularNodeView);
+        configureModelElement(context, 'port', SPortImpl, PortViewWithExternalLabel);
+        configureModelElement(context, 'edge', SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections);
+        configureModelElement(context, 'label:node', SLabelImpl, SLabelView);
+        configureModelElement(context, 'label:port', SLabelImpl, SLabelView);
 
         configureViewerOptions(context, {
             needsClientLayout: true,

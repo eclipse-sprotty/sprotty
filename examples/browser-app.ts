@@ -19,7 +19,7 @@ import runClassDiagram from "./classdiagram/src/standalone.js";
 import runRandomGraph from "./random-graph/src/standalone.js";
 import runRandomGraphDistributed from "./random-graph-distributed/src/standalone.js";
 import runSvgPreRendered from "./svg/src/standalone.js";
-import runMulticore from "./multicore/src/multicore.js";
+import runMulticore from "./multicore/src/standalone.js";
 import runFlowchart from "./flowchart/src/standalone.js";
 import runJsxample from "./jsxample/src/standalone.js";
 import runStylingShowcase from "./styling-showcase/src/standalone.js";
