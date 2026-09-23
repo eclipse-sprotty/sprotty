@@ -23,7 +23,7 @@
     "directory": "packages/sprotty"
   },
   "dependencies": {
-    "autocompleter": "^9.1.2",
+    "autocompleter": "^10.0.0",
     "file-saver": "^2.0.5",
     "inversify": "~8.2",
     "snabbdom": "~3.5.1",

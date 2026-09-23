@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { saveAs } from 'file-saver';
+import fileSaver from 'file-saver';
 import { inject, injectable, injectFromBase } from 'inversify';
 import {
     Action,
@@ -206,7 +206,7 @@ export abstract class DiagramServerProxy extends ModelSource {
 
     protected handleExportSvgAction(action: ExportSvgAction): boolean {
         const blob = new Blob([action.svg], { type: 'text/plain;charset=utf-8' });
-        saveAs(blob, 'diagram.svg');
+        fileSaver.saveAs(blob, 'diagram.svg');
         return false;
     }
 
