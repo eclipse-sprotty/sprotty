@@ -46,9 +46,12 @@ export abstract class Animation {
                         dtime = time - start;
                     }
                     const t = Math.min(1, dtime / this.context.duration);
-                    const current = this.tween(this.ease(t), this.context);
+                    const eased = this.ease(t);
+                    const current = this.tween(eased, this.context);
                     this.context.modelChanged.update(current);
-                    if (t === 1) {
+                    // Floating-point rounding can make the eased value reach 1 while t is still slightly below 1.
+                    // Stop in that case too, otherwise the next frame would apply the end state a second time.
+                    if (t === 1 || eased === 1) {
                         this.context.logger.log(this, (frames * 1000 / this.context.duration) + ' fps');
                         resolve(current);
                     } else if (this.stopped) {
