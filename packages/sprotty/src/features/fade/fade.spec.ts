@@ -89,4 +89,12 @@ describe('FadeAnimation', () => {
         expect(root.children.map(child => child.id)).toEqual(['in']);
         expect(root.index.getById('out')).toBeUndefined();
     });
+
+    it('removes a faded-out element only once', () => {
+        const { root, fadingOut, context } = createModel();
+        const animation = new FadeAnimation(root, [{ element: fadingOut, type: 'out' }], context, true);
+        animation.tween(1, context);
+        expect(root.children).not.toContain(fadingOut);
+        expect(() => animation.tween(1, context)).not.toThrow();
+    });
 });

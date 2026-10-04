@@ -45,7 +45,8 @@ export class FadeAnimation extends Animation {
                 element.opacity = t;
             } else if (elementFade.type === 'out') {
                 element.opacity = 1 - t;
-                if (t === 1 && this.removeAfterFadeOut && element instanceof SChildElementImpl) {
+                if (t === 1 && this.removeAfterFadeOut && element instanceof SChildElementImpl
+                        && element.parent.children.includes(element)) {
                     element.parent.remove(element);
                 }
             }

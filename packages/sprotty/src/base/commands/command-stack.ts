@@ -251,12 +251,19 @@ export class CommandStack implements ICommandStack {
 
                 const newState = copyState(state);
                 if (commandResult instanceof Promise) {
-                    commandResult.then(newModel => {
-                        if (target === 'main')
-                            beforeResolve.call(this, command, context);
-                        newState[target] = { model: newModel, modelChanged: true };
-                        resolve(newState);
-                    });
+                    commandResult.then(
+                        newModel => {
+                            if (target === 'main')
+                                beforeResolve.call(this, command, context);
+                            newState[target] = { model: newModel, modelChanged: true };
+                            resolve(newState);
+                        },
+                        error => {
+                            this.logger.error(this, "Failed to execute command:", error);
+                            newState[target] = { model: state[target].model, modelChanged: true };
+                            resolve(newState);
+                        }
+                    );
                 } else if (commandResult instanceof SModelRootImpl) {
                     if (target === 'main')
                         beforeResolve.call(this, command, context);
