@@ -33,10 +33,17 @@ export abstract class Animation {
         // in case start() is called multiple times, we need to reset the stopped flag
         this.stopped = false;
         return new Promise<SModelRootImpl>(
-            (resolve: (model: SModelRootImpl) => void, reject: (model: SModelRootImpl) => void) => {
+            (resolve, reject) => {
                 let start: number | undefined = undefined;
                 let frames = 0;
                 const lambda = (time: number) => {
+                    try {
+                        step(time);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                const step = (time: number) => {
                     frames++;
                     let dtime: number;
                     if (start === undefined) {

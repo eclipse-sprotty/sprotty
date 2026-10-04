@@ -73,4 +73,22 @@ describe('Animation', () => {
 
         expect(animation.values).toEqual([0, 1]);
     });
+
+    it('rejects when a frame fails and lets other frame tasks run', async () => {
+        const syncer = new ManualFrameSyncer();
+        const failure = new Error('Failed to tween');
+        const animation = new class extends Animation {
+            tween(): SModelRootImpl {
+                throw failure;
+            }
+        }(createContext(syncer));
+        const result = animation.start();
+        let nextTaskRan = false;
+        syncer.onNextFrame(() => { nextTaskRan = true; });
+
+        syncer.frame(0);
+
+        await expect(result).rejects.toBe(failure);
+        expect(nextTaskRan).toBe(true);
+    });
 });
