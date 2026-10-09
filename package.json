@@ -14,7 +14,7 @@
     "@types/node": "~24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "@vitest/coverage-v8": "~4.1.0",
+    "@vitest/coverage-v8": "~4.1.11",
     "concurrently": "~8.2.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.0.0",
@@ -24,7 +24,7 @@
     "shx": "^0.3.4",
     "typescript": "~5.9.2",
     "vite": "~8.0.0",
-    "vitest": "~4.1.0"
+    "vitest": "~4.1.11"
   },
   "resolutions": {
     "vite": "~8.0.0"
