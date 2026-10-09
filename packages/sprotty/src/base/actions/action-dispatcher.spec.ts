@@ -179,7 +179,7 @@ describe('ActionDispatcher', () => {
             await actionDispatcher.request(RequestModelAction.create());
             expect.fail();
         } catch (err) {
-            expect(err.message).to.equal('because bar');
+            expect((err as Error).message).to.equal('because bar');
         }
     });
 });

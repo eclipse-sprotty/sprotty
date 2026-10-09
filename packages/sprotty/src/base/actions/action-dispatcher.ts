@@ -102,10 +102,11 @@ export class ActionDispatcher implements IActionDispatcher {
         if (!action.requestId) {
             return Promise.reject(new Error('Request without requestId'));
         }
-        const deferred = new Deferred<Res>();
+        // The map holds the deferreds of all pending requests; the response type is only known here.
+        const deferred = new Deferred<ResponseAction>();
         this.requests.set(action.requestId, deferred);
         this.dispatch(action).catch(() => { /* Logged in handleAction method */ });
-        return deferred.promise;
+        return deferred.promise as Promise<Res>;
     }
 
     protected handleAction(action: Action): Promise<void> {

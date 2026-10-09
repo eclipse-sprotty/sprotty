@@ -12,16 +12,25 @@ The virtual-DOM library was chosen for raw patching speed: "we choose that one a
 
 ## The application-level performance toolkit
 
-Framework-built-in level-of-detail was deliberately scoped out ([#182](https://github.com/eclipse-sprotty/sprotty/pull/182)), and generalized filtering machinery likewise stayed out of core ("currently there's not much to generalize there", EclipseCon 2023). What the framework provides are the primitives; the techniques are applied in application code:
+The framework enables level-of-detail rendering but does not implement it: [#182](https://github.com/eclipse-sprotty/sprotty/pull/182) added the visibility primitives and kept level-of-detail out as a separate concern, and concrete implementations are the adopter's to add (maintainer, 2026-09-07). Generalized filtering machinery likewise stayed out of core ("currently there's not much to generalize there", EclipseCon 2023). What the framework provides are the primitives; the techniques are applied in application code:
 
 1. **Viewport culling** — views return early for elements outside the viewport (`ShapeView.isVisible` / `RoutableView.isVisible`). Edge culling deliberately tests only the whole route's bounding box against the canvas (`packages/sprotty/src/features/routing/views.ts`): visibility checks run per element per frame, so they "have to be fast … it's an approximation" — false positives are accepted by design; do not "fix" it to exact segment intersection. Culling is skipped for hidden (measurement/export) rendering — `targetKind === 'hidden'` must render everything.
 2. **Zoom-dependent (level-of-detail) rendering** — the recommended idiom is plain case distinctions inside an application view's `render`: return `undefined` when not visible, then branch on the viewport zoom to render simplified representations below thresholds — or entirely different ones (merged shapes, placeholder text). Cheap by design; no framework machinery involved.
 3. **Smart filtering** — run graph analysis as an app-side pre-processing pass *before* diagram generation, annotating elements with a CSS-like `display` property ("values like highlight, normal, faded-out or none — none means don't render this at all", EclipseCon 2023), possibly in multiple passes. Reference implementation: [TypeFox/sprotty-view-filtering](https://github.com/TypeFox/sprotty-view-filtering).
 4. **Hierarchy + lazy loading** — for large models, represent hierarchy as nested (containment) nodes, collapse by default, and load/unload subgraph data on expand/collapse (the `expand` feature is designed for this — the whole model need not exist client-side). Hierarchy-crossing edges: "we recommend to use ports to split these connections" — collapsed containers keep their external connections visible, and layout engines handle port-split edges better. Reference implementation: [TypeFox/sprotty-nested-demo](https://github.com/TypeFox/sprotty-nested-demo).
 
+*Items 3 and 4 are application-level recipes rather than framework design, kept here as rescued history. They are candidates to move to sprotty.org once the site's performance page is verified (roadmap: website repo coordination), leaving a pointer.*
+
 ## Layout engine choice
 
 ELK was chosen for concrete capabilities the alternatives lacked: ports with position constraints ("crucial for … block diagrams where it's really important to see exactly from which port a connection is going out"), nested graphs, and hyperedges (EclipseCon 2023). Its sprawling configuration options are an acknowledged cost, not a Sprotty API problem. For large graphs, layout can run out of process — [TypeFox/elk-server](https://github.com/TypeFox/elk-server) via `SocketElkServer`/`StdioElkServer` (`packages/sprotty-elk/src/node/`) — which "can yield better performance for large graphs" than in-process elkjs (2022 post); the Node backends are a deliberate option, not dead code.
+
+## Invariants
+
+- Hidden rendering (`targetKind === 'hidden'`) renders every element, whatever the viewport — enforced by `packages/sprotty/src/features/bounds/views.spec.ts` and `packages/sprotty/src/features/routing/views.spec.ts`.
+- Edge culling tests only the whole route's bounding box; a route whose box crosses the canvas is rendered even if no segment does — enforced by `packages/sprotty/src/features/routing/views.spec.ts`. Exact segment intersection is not a fix.
+- View `render` implementations and `IVNodePostprocessor`s run per animation frame and must stay cheap — no sensor; judgment.
+- Level-of-detail and filtering machinery stays out of core; the framework only enables it — no sensor; judgment.
 
 ## Sources
 
@@ -29,3 +38,7 @@ ELK was chosen for concrete capabilities the alternatives lacked: ports with pos
 - [High-performance graphical view filtering with Sprotty](https://www.youtube.com/watch?v=AH7K2N8-X0Q) (Bicker/Spönemann, EclipseCon 2023) — SVG rationale, culling, LOD, filtering, nesting, ELK capabilities
 - [Textual and graphical languages for the cloud era](https://www.typefox.io/blog/textual-graphical-languages-cloud-era/) (Spönemann, 2022) — out-of-process ELK
 - [Visualizing large hierarchical data](https://www.typefox.io/blog/visualizing-large-hierarchical-data/) (Fontorbe, 2023) — nesting + lazy loading pattern
+
+## Amendments
+
+- 2026-09-07: The level-of-detail statement was corrected — #182 kept level-of-detail separate from viewport culling; it was never a decision against the framework enabling it (maintainer). Invariants section added; the culling approximation is now pinned by a test (AX design-doc review).

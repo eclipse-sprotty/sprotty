@@ -2,20 +2,27 @@
 
 This change log covers only the client part of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/main/CHANGELOG.md) for other packages.
 
-### v2.0.0 (Aug. 2026)
+### v2.0.0 (unreleased)
 
-Updated dependency to `inversify` ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): version constraint is now `~8.2` in all sprotty packages. InversifyJS 8 is a rewrite of InversifyJS 6 and requires changes in downstream code.
+This is a major release with breaking changes: the packages are published as ES modules only, the dependency to InversifyJS was updated to version 8, and all API that was deprecated during the 1.x line has been removed. The migration notes below are grouped by cause.
 
-**Breaking changes in Sprotty**
+**ES modules only** ([#515](https://github.com/eclipse-sprotty/sprotty/pull/515))
+
+ * `sprotty`, `sprotty-protocol`, `sprotty-elk` and `sprotty-library` are now ESM-only packages (`"type": "module"` with an `exports` map); there is no CommonJS build. Applications that `require()` Sprotty need to switch to `import`, and TypeScript projects should use a module resolution that honors `exports` (`node16`, `nodenext` or `bundler`).
+ * Deep imports into `sprotty` keep working through the `sprotty/lib/*` and `sprotty/css/*` export patterns, but now require the file extension, e.g. `sprotty/lib/features/viewport/viewport.js`. `sprotty-protocol` no longer exposes deep imports; import from the package root instead.
+ * The compilation target is now ES2022. Class fields declared without an initializer exist on instances with the value `undefined`, so `'property' in element` checks against optional properties are no longer reliable; compare with `undefined` instead.
+ * Updated `tinyqueue` to version 3.
+
+**InversifyJS 8** ([#561](https://github.com/eclipse-sprotty/sprotty/pull/561)): version constraint is now `~8.2` in all sprotty packages. InversifyJS 8 is a rewrite of InversifyJS 6 and requires changes in downstream code.
+
+Breaking changes in Sprotty:
 
  * Subclasses of Sprotty classes that have injected members now need `@injectFromBase()` in addition to `@injectable()`, because InversifyJS no longer passes injection metadata down to subclasses. A missing decorator leaves the inherited dependencies `undefined` *without* raising an error, so this is worth checking in every subclass. If the base class declares constructor parameters that are not injected, those parameters need `@unmanaged()`, since `@injectFromBase()` validates the metadata of the base class.
  * Removed the `isInjectable` utility. The `configure*` utilities still report a missing `@injectable()` decorator, now by translating the error raised by InversifyJS. Note that InversifyJS cannot detect the case where a class has no constructor arguments and all of its dependencies are injected into properties.
  * `TYPES.Action` is now bound in the container that registers the commands instead of in a child container created for each action. It resolves to `undefined` while no command is being created.
  * `TYPES.IViewer` is now bound in the main container, constrained with `whenParentIs`, instead of in child containers created for `TYPES.ModelViewer` and `TYPES.PopupModelViewer`.
 
-**Changes required in dependency injection configurations**
-
-These follow from InversifyJS 8 itself and affect every application that configures a Sprotty container:
+Changes required in dependency injection configurations; these follow from InversifyJS 8 itself and affect every application that configures a Sprotty container:
 
  * `import 'reflect-metadata'` is no longer needed, as InversifyJS brings its own polyfill.
  * The callback passed to `ContainerModule` receives a single options object instead of positional arguments: `new ContainerModule(({ bind, isBound, rebind }) => ...)`. That object can be passed directly to Sprotty's `configure*` utilities.
@@ -23,6 +30,43 @@ These follow from InversifyJS 8 itself and affect every application that configu
  * The `interfaces` namespace was removed in favour of top-level type exports. Note that `Rebind` is asynchronous in InversifyJS 8 and that the synchronous variant is called `RebindSync`.
  * `toProvider` was removed; provider bindings are expressed as `bind<MyProvider>(TYPES.MyProvider).toFactory(...)`, where the type argument is the type of the provider function rather than the type it provides.
  * The object passed to `toDynamicValue` and `toFactory` no longer exposes `container`. Use `ctx.get(...)` instead of `ctx.container.get(...)`, and `ctx.get(..., { optional: true })` instead of guarding with `ctx.container.isBound(...)`.
+
+**Removed deprecated API** ([#566](https://github.com/eclipse-sprotty/sprotty/pull/566)), following the [deprecation policy](https://github.com/eclipse-sprotty/sprotty/blob/main/docs/adr/0003-deprecate-then-remove-policy.md): every definition marked `@deprecated` during the 1.x line is gone.
+
+ * Definitions that had moved to `sprotty-protocol` are no longer exported from `sprotty`; update the import: `ExportSvgOptions`, `RequestExportSvgAction`, `ExportSvgAction`, `EdgeLayoutable`, `EdgeSide`, `EdgePlacement`, `Expandable`, `Fadeable`, `Hoverable`, `Locateable`, `Projectable`, `Selectable`, `SIssue`, `SIssueSeverity`, `HAlignment` and `VAlignment`. `SButtonSchema` is replaced by `SButton` from `sprotty-protocol`.
+ * The `SIssueMarker` alias was removed; use `SIssueMarkerImpl`.
+ * `ViewportAnimation.zoomFactor` is now a protected getter computed from the old and new viewport instead of a field.
+
+**New features**
+
+ * Touch support ([#475](https://github.com/eclipse-sprotty/sprotty/pull/475)): the new `TouchTool` dispatches touch events to `ITouchListener` implementations bound to `TYPES.ITouchListener`. `ScrollMouseListener` implements it, so the viewport can be panned with one finger and zoomed with a two-finger pinch.
+ * Pointer event support ([#488](https://github.com/eclipse-sprotty/sprotty/pull/488)): the new `PointerTool` dispatches pointer events, including `gotpointercapture` and `lostpointercapture`, to `IPointerListener` implementations bound to `TYPES.IPointerListener`; `PointerListener` is a no-op base class. The built-in listeners still react to mouse events; switching them to pointer capture is tracked in [#485](https://github.com/eclipse-sprotty/sprotty/issues/485).
+ * Holding Shift while using the mouse wheel scrolls the viewport horizontally ([#502](https://github.com/eclipse-sprotty/sprotty/pull/502)), except on macOS, where the system already maps Shift + wheel to horizontal scrolling.
+ * Viewport animations that change the zoom level now interpolate scroll and zoom consistently, so the diagram no longer drifts along a curve while zooming ([#510](https://github.com/eclipse-sprotty/sprotty/pull/510)).
+ * New showcase examples for styling ([#496](https://github.com/eclipse-sprotty/sprotty/pull/496)), micro-layout ([#498](https://github.com/eclipse-sprotty/sprotty/pull/498)), custom views ([#499](https://github.com/eclipse-sprotty/sprotty/pull/499)) and layout strategies ([#503](https://github.com/eclipse-sprotty/sprotty/pull/503)).
+
+**Fixed bugs**
+
+ * Edge labels honor the positions assigned by a layout engine instead of snapping to the edge midpoint ([#533](https://github.com/eclipse-sprotty/sprotty/pull/533)).
+ * SVG export no longer copies `block-size` from the hidden rendering, which shrank the exported image ([#540](https://github.com/eclipse-sprotty/sprotty/pull/540)).
+ * Bounds collected during hidden renderings that were not triggered by a `RequestBoundsAction` (e.g. an SVG export) no longer leak into the next `ComputedBoundsAction` ([#542](https://github.com/eclipse-sprotty/sprotty/pull/542)).
+ * The command palette builds its suggestion entries with DOM APIs instead of `innerHTML` ([#548](https://github.com/eclipse-sprotty/sprotty/pull/548)).
+ * `TouchTool` and `CommandPaletteActionProviderRegistry` no longer throw when no listener or provider is registered, and `ExpandButtonView` sets the `enabled` class according to `button.enabled` instead of unconditionally.
+
+**Other API changes**
+
+Enabling TypeScript's `strict` mode surfaced a few signatures that were looser than their implementation:
+
+ * `Deferred.resolve` (`sprotty-protocol`) takes a required value, matching the resolver type of `Promise`.
+ * Tasks passed to `AnimationFrameSyncer.onNextFrame` and `onEndOfNextFrame` always receive a timestamp; their type is `(time: number) => void`.
+ * `on()` from `vnode-utils` has typed overloads for the standard DOM event names, so listeners receive the specific event type.
+ * `KeyTool.focus(element, event)` declares the parameters it has always been called with.
+
+**Tooling**
+
+ * The repository moved from Yarn to npm workspaces ([#534](https://github.com/eclipse-sprotty/sprotty/pull/534)) and to Node.js 24, TypeScript 5.9 and Vitest 4; contributors use `npm install` and `npm run build`. Releases are published from GitHub Actions with OIDC trusted publishing ([#549](https://github.com/eclipse-sprotty/sprotty/pull/549)).
+
+Fixed issues and closed PRs: https://github.com/eclipse-sprotty/sprotty/milestone/12?closed=1
 
 -----
 

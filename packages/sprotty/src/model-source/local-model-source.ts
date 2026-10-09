@@ -173,7 +173,7 @@ export class LocalModelSource extends ModelSource {
                 else if (layoutResult !== undefined)
                     newRoot = layoutResult;
             } catch (error) {
-                this.logger.error(this, error.toString(), error.stack);
+                this.logger.error(this, String(error), error instanceof Error ? error.stack : undefined);
             }
         }
 

@@ -112,6 +112,7 @@ describe('UpdateModelCommand', () => {
         compare(model2, newModel as SModelRootImpl);
     });
 
+    // inject-from-base: exempt — constructed with `new`, never resolved by a container
     class TestUpdateModelCommand extends UpdateModelCommand {
         constructor(action: UpdateModelAction, edgeRouterRegistry?: EdgeRouterRegistry) {
             super(action);

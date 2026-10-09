@@ -6,7 +6,7 @@
 
 The SModel is a **view model**: a lightweight, computed projection of an application-specific **semantic model** that Sprotty itself never sees. Producing a diagram is a model-to-model transformation (semantic model → SModel), re-run whenever the source changes. Three commitments follow:
 
-- **The client holds only the view model of the current diagram.** Semantic knowledge — and the bulk of the data — stays behind the model source or server: "the diagram only knows about diagram stuff like nodes, edges, graphs" (EclipseCon France 2018). The split is consciously modeled on LSP's smart-server/dumb-client pattern, and its stated purpose is browser memory: a server "can handle much bigger amounts of data, e.g. from a database or a development workspace", which "minimizes the memory footprint on the client" (2017 announcement post). Do not move semantic-model or bulk-data handling into the client packages.
+- **The client holds only the view model of the current diagram.** Semantic knowledge — and the bulk of the data — stays behind the model source or server: "the diagram only knows about diagram stuff like nodes, edges, graphs" (EclipseCon France 2018). The split is consciously modeled on LSP's smart-server/dumb-client pattern, and its stated purpose is browser memory: a server "can handle much bigger amounts of data, e.g. from a database or a development workspace", which "minimizes the memory footprint on the client" (2017 announcement post). Do not move semantic-model or bulk-data handling into the client packages. The package boundary that serves this split — serializable model and actions in `sprotty-protocol`, runtime classes in `sprotty` — is ADR-0002 (`../adr/0002-sprotty-protocol-package-split.md`).
 - **Diagrams are disposable projections, not documents.** Diagrams are "computed projections of richer underlying data, allowing multiple focused views to coexist" (2026 retrospective); Sprotty's stated goal is fast, customizable diagrams "without carrying over the complexity of traditional modeling frameworks" — no meta-model layer.
 - **Regeneration wins.** When the source changes, the projection is recomputed. This is why regeneration erasing client-side edits is adjudicated *intended* ([#306](https://github.com/eclipse-sprotty/sprotty/issues/306)) and why `CommitModelAction` replaces the external model with a reduced copy ([#177](https://github.com/eclipse-sprotty/sprotty/issues/177)) — both recorded in the client-server spec. Features that would make the SModel authoritative (wholesale diagram-file persistence in core, meta-model layers) contradict the doctrine.
 
@@ -35,6 +35,8 @@ The positive rule covers *all* diagram interaction, not just editing: **every us
 - **Rename refactoring for name labels** — editing a node's name label does "not change the diagram model here but [triggers] a semantic action, a rename, from the language server protocol, such that all the references to that element get updated."
 - **Content assist for cross-reference labels** — double-clicking such a label triggers LSP completion: the SModel carries the corresponding text offset, the completion result is inserted as text, and a wrong choice yields a normal validation error, visible in the diagram too.
 
+*The three patterns above are application-level guidance for language-server integrations, kept here as rescued history. They are candidates to move to sprotty.org (roadmap: website repo coordination), leaving the rule and a pointer.*
+
 One semantic operation, defined once on the server, surfaces in both the text editor and the diagram — the pattern GLSP later generalized as its *operations*. In language-server scenarios this hardens into the text-first rule: "the diagram is always updated from changes of the text, never the other way around" (2020 post).
 
 Two pragmatic caveats close the argument. For canonical diagrams that only want manual node positions (the state-machine case), storing that bit of layout in the semantic model itself is acceptable — one file instead of two, "of course not the purist approach", but simpler. And question the requirement itself: "maybe diagram editing is not necessary — it adds a lot of complexity … it may not be the most sensible thing to spend an hour laying out your diagram when you can instead write a proper semantic model fast." Combined text+diagram editing is judged genuinely hard — element identity, error handling, transactions — which is why sprotty core keeps only limited editing machinery and graphics-first editing is deliberately left to GLSP (see the ecosystem section in `../ARCHITECTURE.md`).
@@ -47,6 +49,12 @@ When an application persists diagram state (population choices, manual positions
 
 When persisted diagram state goes stale against the semantic model (elements renamed or deleted), the intended behaviour is to *mark* orphaned elements and let the user clean up (the `decoration` feature ships the marker mechanism). Automatic reconciliation was explicitly rejected: transient broken states — a syntax error mid-edit that makes half the model vanish — would destroy the user's diagram work before they finish typing (EclipseCon 2019).
 
+## Invariants
+
+- Client packages hold no semantic-model or bulk-data handling; the SModel is a computed projection, never the source of truth — no sensor; judgment on every model-source or protocol change.
+- Core offers no diagram-side edit mechanism that writes back into the SModel; a user change goes into a transformation input (semantic model or diagram configuration) and the transformation re-runs — no sensor; judgment. The behaviour promises this yields (`CommitModelAction`, regeneration) are in `../product-specs/client-server-protocol.md`.
+- Core never persists the SModel; persisting diagram state is the application's job, in a reduced format — no sensor; judgment.
+
 ## Sources
 
 - [Sprotty — a web-based diagramming framework](https://www.typefox.io/blog/sprotty-a-web-based-diagramming-framework/) (Jan Köhnlein, 2017)
@@ -55,3 +63,7 @@ When persisted diagram state goes stale against the semantic model (elements ren
 - [Domain-specific languages in Theia and VS Code](https://www.typefox.io/blog/domain-specific-languages-in-theia-and-vs-code/) (Köhnlein, 2020) — the text-first rule
 - [Textual and graphical languages for the cloud era](https://www.typefox.io/blog/textual-graphical-languages-cloud-era/) (Spönemann, 2022)
 - [10 years of open source](https://www.typefox.io/blog/10-years-of-open-source/) (Spönemann, 2026) — the view-model positioning restated
+
+## Amendments
+
+- 2026-09-07: ADR-0002 cited for the package boundary; Invariants section added; the language-server patterns marked as application guidance (AX design-doc review).
