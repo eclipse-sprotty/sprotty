@@ -19,6 +19,7 @@ import { describe, expect, it } from 'vitest';
 import defaultModule from "../di.config.js";
 import { TYPES } from "../types.js";
 import { IViewerProvider } from "../views/viewer.js";
+import { NullLogger } from '../../utils/logging.js';
 import { ICommandStack } from "./command-stack.js";
 import {
     Command,
@@ -132,6 +133,12 @@ class TestPopupCommand extends PopupCommand {
     redo(context: CommandExecutionContext): CommandReturn {
         operations.push('redo ' + this.name);
         return context.root;
+    }
+}
+
+class RejectingCommand extends TestCommand {
+    override execute(): CommandReturn {
+        return Promise.reject(new Error('Failed animation'));
     }
 }
 
@@ -300,5 +307,23 @@ describe('CommandStack', () => {
         expect(3).to.be.equal(viewerUpdates);
         expect(2).to.be.equal(hiddenViewerUpdates);
         expect(['exec Foo', 'exec Bar', 'exec Hidden', 'undo Bar', 'exec Hidden', 'redo Bar']).to.be.eql(operations);
+    });
+
+    it('renders after a rejected command and continues with later commands', async () => {
+        const isolatedContainer = new Container();
+        isolatedContainer.load(defaultModule);
+        isolatedContainer.rebind(TYPES.IViewerProvider).toConstantValue(mockViewerProvider);
+        isolatedContainer.rebind(TYPES.ILogger).to(NullLogger);
+        const isolatedStack = isolatedContainer.get<ICommandStack>(TYPES.ICommandStack);
+        viewerUpdates = 0;
+        operations = [];
+
+        await isolatedStack.execute(new RejectingCommand('Failed'));
+        expect(viewerUpdates).toBe(1);
+        await isolatedStack.undo();
+        expect(operations).toEqual([]);
+        await isolatedStack.execute(new TestCommand('After failure'));
+        expect(viewerUpdates).toBe(2);
+        expect(operations).toEqual(['exec After failure']);
     });
 });
