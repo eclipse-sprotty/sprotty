@@ -45,6 +45,7 @@
             "types": "./lib/index.d.ts",
             "import": "./lib/index.js",
             "default": "./lib/index.js"
-        }
+        },
+        "./lib/*": "./lib/*"
     }
 }

@@ -66,7 +66,7 @@ export class CommandPalette extends AbstractUIExtension {
         this.paletteIndex = 0;
         this.contextActions = undefined;
         this.inputElement!.value = "";
-        this.autoCompleteResult = configureAutocomplete.default(this.autocompleteSettings(root));
+        this.autoCompleteResult = configureAutocomplete(this.autocompleteSettings(root));
         this.inputElement.focus();
     }
 
