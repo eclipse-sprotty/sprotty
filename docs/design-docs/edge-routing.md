@@ -4,7 +4,7 @@
 
 ## The 2019 redesign
 
-PR [#51](https://github.com/eclipse-sprotty/sprotty/pull/51) (merged 2019-02-11) introduced the shape that still stands: routers behind an `EdgeRouterRegistry` keyed by the edge's `routerKind`, anchor computers behind an `AnchorComputerRegistry` keyed by `{router kind}:{anchor kind}`, routing state on `SRoutableElement`, and interactive routing handles as child elements of the edge. One judgment from the review survives as a behaviour rule: on *reconnecting* an edge, keeping the existing route makes no sense for manhattan routing (Jan Köhnlein) — as opposed to *moving* a node, where routes are deliberately preserved (see the product spec).
+PR [#51](https://github.com/eclipse-sprotty/sprotty/pull/51) (merged 2019-02-11) introduced the shape that still stands: routers behind an `EdgeRouterRegistry` keyed by the edge's `routerKind`, anchor computers behind an `AnchorComputerRegistry` keyed by `{router kind}:{anchor kind}`, routing state on `SRoutableElement` (`SRoutableElementImpl` since the ADR-0002 package split), and interactive routing handles as child elements of the edge. One judgment from the review survives as a behaviour rule: on *reconnecting* an edge, keeping the existing route makes no sense for manhattan routing (Jan Köhnlein) — as opposed to *moving* a node, where routes are deliberately preserved (see the product spec).
 
 ## Route pre-computation via view args ([#208](https://github.com/eclipse-sprotty/sprotty/issues/208) → [#226](https://github.com/eclipse-sprotty/sprotty/pull/226), v0.10.0)
 
@@ -25,3 +25,12 @@ The per-edge router interface cannot express routers that need the whole graph �
 ## Bezier support ([#245](https://github.com/eclipse-sprotty/sprotty/pull/245), v0.11.0)
 
 Contributed as "preliminary support for cubic Bézier curve edges" with interactive add/remove of curve segments via +/− handles. Known accepted limitation: the intersection finder treats routes as straight segments, so bezier edges are excluded from line jumps (commit `9241c35`, issue [#287](https://github.com/eclipse-sprotty/sprotty/issues/287) — left open for future support).
+
+## Invariants
+
+- `edgeIntersectionModule` and `edgeJunctionModule` stay out of `loadDefaultModules` — enforced by `packages/sprotty/src/lib/modules.spec.ts`.
+- A root view that renders edges calls `EdgeRouterRegistry.routeAllChildren` and passes the result as the `edgeRouting` view arg (`SGraphView` does); without it, edge views route in isolation and route postprocessors never see the full set — no sensor; judgment when adding or changing root views.
+
+## Amendments
+
+- 2026-09-07: `SRoutableElement` annotated with its current name; Invariants section added, with the opt-in-modules rule promoted to a test (AX design-doc review).

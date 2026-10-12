@@ -19,20 +19,20 @@ import { injectable } from "inversify";
 @injectable()
 export class AnimationFrameSyncer {
 
-    tasks: ((x?: number) => void) [] = [];
-    endTasks: ((x?: number) => void) [] = [];
+    tasks: ((time: number) => void) [] = [];
+    endTasks: ((time: number) => void) [] = [];
     triggered: boolean = false;
 
     isAvailable(): boolean {
         return typeof requestAnimationFrame === "function";
     }
 
-    onNextFrame(task: (x?: number) => void) {
+    onNextFrame(task: (time: number) => void) {
         this.tasks.push(task);
         this.trigger();
     }
 
-    onEndOfNextFrame(task: (x?: number) => void) {
+    onEndOfNextFrame(task: (time: number) => void) {
         this.endTasks.push(task);
         this.trigger();
     }
@@ -43,7 +43,7 @@ export class AnimationFrameSyncer {
             if (this.isAvailable())
                 requestAnimationFrame((time: number) => this.run(time));
             else
-                setTimeout((time: number) => this.run(time));
+                setTimeout(() => this.run(performance.now()));
         }
     }
 

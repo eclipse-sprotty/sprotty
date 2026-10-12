@@ -34,7 +34,7 @@ export class ContextMenuProviderRegistry implements IContextMenuItemProvider {
 
     getItems(root: Readonly<SModelRootImpl>, lastMousePosition?: Point) {
         const menues = this.menuProviders.map(provider => provider.getItems(root, lastMousePosition));
-        return Promise.all(menues).then(this.flattenAndRestructure);
+        return Promise.all(menues).then(items => this.flattenAndRestructure(items as MenuItem[][]));
     }
 
     private flattenAndRestructure(p: MenuItem[][]): MenuItem[] {

@@ -2,6 +2,14 @@
 
 This change log covers only the client-server protocol of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/main/CHANGELOG.md) for other packages.
 
+### v2.0.0 (unreleased)
+
+ * The package is now published as ES modules only ([#515](https://github.com/eclipse-sprotty/sprotty/pull/515)): `"type": "module"` with an `exports` map that exposes only the package root. Deep imports such as `sprotty-protocol/lib/utils/geometry` no longer resolve; every module is re-exported from the root, so import from `sprotty-protocol` instead. The package still has no runtime dependencies.
+ * Removed the deprecated `bounds` property of `SGraph`; use `position` and `size` ([#566](https://github.com/eclipse-sprotty/sprotty/pull/566)).
+ * `Deferred.resolve` takes a required value, matching the resolver type of `Promise`.
+
+-----
+
 ### v1.3.0 (Jul. 2024)
 
  * Moved actions related to SVG exporting from the `sprotty` package ([#459](https://github.com/eclipse-sprotty/sprotty/pull/459)).

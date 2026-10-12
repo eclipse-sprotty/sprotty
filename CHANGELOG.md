@@ -5,6 +5,7 @@ The Sprotty project consists of several packages, for which we track changes sep
  - [sprotty](https://github.com/eclipse-sprotty/sprotty/blob/main/packages/sprotty/CHANGELOG.md)
  - [sprotty-protocol](https://github.com/eclipse-sprotty/sprotty/blob/main/packages/sprotty-protocol/CHANGELOG.md)
  - [sprotty-elk](https://github.com/eclipse-sprotty/sprotty/blob/main/packages/sprotty-elk/CHANGELOG.md)
+ - [sprotty-library](https://github.com/eclipse-sprotty/sprotty/blob/main/packages/sprotty-library/CHANGELOG.md)
  - [generator-sprotty](https://github.com/eclipse-sprotty/sprotty/blob/main/packages/generator-sprotty/CHANGELOG.md)
  - [sprotty-theia](https://github.com/eclipse-sprotty/sprotty-theia/blob/master/CHANGELOG.md)
  - [sprotty-vscode](https://github.com/eclipse-sprotty/sprotty-vscode/blob/master/packages/sprotty-vscode/CHANGELOG.md)

@@ -56,7 +56,9 @@ export function mergeStyle(vnode: VNode, style: any) {
     getData(vnode).style = {...(getData(vnode).style || {}), ...style};
 }
 
-export function on(vnode: VNode, event: string, listener: (event: Event) => void) {
+export function on<K extends keyof GlobalEventHandlersEventMap>(vnode: VNode, event: K, listener: (event: GlobalEventHandlersEventMap[K]) => void): void;
+export function on(vnode: VNode, event: string, listener: (event: Event) => void): void;
+export function on(vnode: VNode, event: string, listener: (event: any) => void): void {
     const val = getOn(vnode);
     if (val[event]) {
         throw new Error('EventListener for ' + event + ' already registered on VNode');

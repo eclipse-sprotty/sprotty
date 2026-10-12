@@ -88,4 +88,23 @@ describe('RoutableView.isVisible', () => {
         const context = { targetKind: 'hidden' } as RenderingContext;
         expect(view.isVisible(routable, routable.routingPoints, context)).to.equal(true);
     });
+
+    it('should return true when only the bounding box of the route intersects the canvas', () => {
+        // The bounding-box test is a deliberate approximation chosen for speed: this L-shaped route
+        // passes below and to the right of the canvas without any segment crossing it, yet its
+        // bounding box covers the canvas, so the edge is rendered. Do not replace the check with
+        // exact segment intersection - see docs/design-docs/rendering-and-performance.md.
+        const model = createModel();
+        model.scroll = { x: 0, y: 0 };
+        model.zoom = 1;
+        const routable = model.children[0].children[0] as SRoutableElementImpl;
+        routable.routingPoints = [
+            { x: -150, y: 20 },
+            { x: 20, y: 20 },
+            { x: 20, y: -150 }
+        ];
+        const context = { targetKind: 'main' } as RenderingContext;
+        expect(view.isVisible(routable, routable.routingPoints, context),
+            'edge culling tests only the bounding box of the route (approximation by design)').to.equal(true);
+    });
 });

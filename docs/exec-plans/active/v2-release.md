@@ -11,12 +11,13 @@
 - [ ] Widen the inversify range from `~8.2` to `^8` once the 8.x line settles — the tighter pin is deliberate and temporary (ADR-0007).
 - [ ] Re-evaluate the snabbdom `~3.5.1` pin — its rationale (pure-ESM snabbdom vs. CommonJS sprotty, #418) lapsed with the ESM migration (ADR-0006).
 - [ ] Post-ESM dependency upgrades explicitly deferred in #515 ("Upgrading dependencies will come in a future PR").
-- [ ] Remove the API deprecated since 1.0 in one sweep, per ADR-0003.
+- [x] Remove the API deprecated since 1.0 in one sweep, per ADR-0003 (#566, merged 2026-09-04; the per-symbol replacement list is in the `sprotty` changelog).
 
 ## Progress log
 
 - 2026-08-25: Plan created by rescuing the decisions parked in discussion #489, milestone 12, and the #488/#515 threads (AX design-history work).
 - 2026-08-27: Inversify item closed as done-on-8 and the range-widening follow-up split out, after the ADR-0007 record.
+- 2026-09-09: Deprecated-API sweep closed against #566 while working off the changelog backlog; the generator template's `sprotty: ^1.0.0` range still needs to move to `^2.0.0` at release.
 
 ## Decision log
 

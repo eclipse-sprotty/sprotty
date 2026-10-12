@@ -61,7 +61,7 @@ export class TouchTool implements IVNodePostprocessor {
             return;
         const actions = this.touchListeners
             .map(listener => listener[methodName](element, event))
-            .reduce((a, b) => a.concat(b));
+            .reduce((a, b) => a.concat(b), []);
         if (actions.length > 0) {
             event.preventDefault();
             for (const actionOrPromise of actions) {

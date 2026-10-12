@@ -2,9 +2,10 @@
 
 This change log covers only the Yeoman `generator-sprotty` package of Sprotty. See [here](https://github.com/eclipse-sprotty/sprotty/blob/main/CHANGELOG.md) for other packages.
 
-### v2.0.0 (Aug. 2026)
+### v2.0.0 (unreleased)
 
- * Updated the generated project to `inversify` version 8 ([#XXX](https://github.com/eclipse-sprotty/sprotty/pull/XXX)): the `reflect-metadata` dependency and its import were removed, and the `ContainerModule` callback now takes a single options object.
+ * Updated the generated project to `inversify` version 8 ([#561](https://github.com/eclipse-sprotty/sprotty/pull/561)): the `reflect-metadata` dependency and its import were removed, and the `ContainerModule` callback now takes a single options object.
+ * The generated project uses TypeScript 5.9 ([#515](https://github.com/eclipse-sprotty/sprotty/pull/515)). It bundles with esbuild, which handles the ESM-only Sprotty packages without further configuration.
 
 -----
 

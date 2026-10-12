@@ -4,9 +4,6 @@ module.exports = {
         browser: true,
         node: true
     },
-    extends: [
-        'prettier'
-    ],
     parser: '@typescript-eslint/parser',
     ignorePatterns: [
         '**/{node_modules,lib}',
@@ -18,99 +15,43 @@ module.exports = {
         project: './tsconfig.json'
     },
     plugins: [
-        'eslint-plugin-no-null',
-        '@typescript-eslint',
-        'header'
+        '@typescript-eslint'
     ],
+    // Every rule is an error so that `npm run lint` fails on any finding; the lint script also passes
+    // --max-warnings 0, so a rule added at `warn` level gates as well. The license header is checked
+    // by test/license-header.spec.ts, not here.
     rules: {
-        '@typescript-eslint/indent': 'off',
-        '@typescript-eslint/naming-convention': 'off',
         '@typescript-eslint/no-dynamic-delete': 'error',
-        '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-misused-new': 'error',
-        '@typescript-eslint/no-shadow': [
-            'warn',
-            {
-                'hoist': 'all'
-            }
-        ],
-        '@typescript-eslint/no-unused-expressions': 'off',
-        'semi': [
-            'error',
-            'always'
-        ],
-        'header/header': ['error', 'block', [{'pattern': '[\n\r]+ \\* Copyright \\([cC]\\) \\d{4}(-\\d{4})? .*[\n\r]+'}]],
-        'brace-style': [
-            'warn',
-            '1tbs',
-            { 'allowSingleLine': true }
-        ],
-        'comma-dangle': ['warn', {
-            'arrays': 'only-multiline',
-            'objects': 'only-multiline',
-        }],
+        '@typescript-eslint/no-shadow': ['error', { 'hoist': 'all' }],
+        'brace-style': ['error', '1tbs', { 'allowSingleLine': true }],
+        'comma-dangle': ['error', { 'arrays': 'only-multiline', 'objects': 'only-multiline' }],
         'constructor-super': 'error',
-        'curly': 'off',
-        'eol-last': 'warn',
-        'eqeqeq': [
-            'warn',
-            'smart'
-        ],
-        'guard-for-in': 'warn',
-        'id-blacklist': 'off',
-        'id-match': 'off',
-        'keyword-spacing': ['warn', { 'before': true }],
-        'max-len': [
-            'warn',
-            {
-                'code': 180
-            }
-        ],
-        'no-prototype-builtins': 'error',
+        'eol-last': 'error',
+        'eqeqeq': ['error', 'smart'],
+        'guard-for-in': 'error',
+        'keyword-spacing': ['error', { 'before': true }],
+        'max-len': ['error', { 'code': 180 }],
         'no-caller': 'error',
-        'no-console': 'off',
-        'no-debugger': 'warn',
+        'no-debugger': 'error',
         'no-eval': 'error',
-        'no-fallthrough': 'warn',
-        'no-invalid-this': 'warn',
-        'no-new-wrappers': 'warn',
-        'no-null/no-null': 'off',
-        'no-redeclare': 'off',
-        'no-restricted-imports': [
-            'error',
-            '..',
-            '../index',
-            '../..',
-            '../../index'
-        ],
-        'no-return-await': 'warn',
+        'no-fallthrough': 'error',
+        'no-invalid-this': 'error',
+        'no-new-wrappers': 'error',
+        'no-prototype-builtins': 'error',
+        'no-restricted-imports': ['error', '..', '../index', '../..', '../../index'],
+        'no-return-await': 'error',
         'no-sequences': 'error',
         'no-throw-literal': 'error',
-        'no-trailing-spaces': 'warn',
-        'no-underscore-dangle': 'off',
+        'no-trailing-spaces': 'error',
         'no-unsafe-finally': 'error',
         'no-var': 'error',
-        'prefer-const': [
-            'warn',
-            {
-                'destructuring': 'all'
-            }
-        ],
-        'prefer-object-spread': 'warn',
-        'radix': 'warn',
-        'spaced-comment': [
-            'warn',
-            'always',
-            {
-                'markers': [
-                    '/'
-                ],
-                'exceptions': [
-                    '*'
-                ]
-            }
-        ],
-        'space-infix-ops': 'warn',
-        'use-isnan': 'warn'
+        'prefer-const': ['error', { 'destructuring': 'all' }],
+        'prefer-object-spread': 'error',
+        'radix': 'error',
+        'semi': ['error', 'always'],
+        'space-infix-ops': 'error',
+        'spaced-comment': ['error', 'always', { 'markers': ['/'], 'exceptions': ['*'] }],
+        'use-isnan': 'error'
     }
 };

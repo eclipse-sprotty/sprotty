@@ -22,6 +22,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SModelRootImpl } from '../../base/model/smodel.js';
 import { SvgExporter } from './svg-exporter.js';
 
+// inject-from-base: exempt — constructed with `new`, never resolved by a container
 class TestSvgExporter extends SvgExporter {
     createSvgForTest(svgElement: SVGSVGElement): string {
         return this.createSvg(svgElement, undefined as unknown as SModelRootImpl);

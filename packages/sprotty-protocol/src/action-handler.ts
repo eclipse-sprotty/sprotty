@@ -41,9 +41,9 @@ export class ServerActionHandlerRegistry {
      */
     onAction<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
         if (this.handlers.has(kind)) {
-            this.handlers.get(kind)!.push(handler);
+            this.handlers.get(kind)!.push(handler as ServerActionHandler);
         } else {
-            this.handlers.set(kind, [handler]);
+            this.handlers.set(kind, [handler as ServerActionHandler]);
         }
     }
 
@@ -53,7 +53,7 @@ export class ServerActionHandlerRegistry {
     removeActionHandler<A extends Action>(kind: string, handler: ServerActionHandler<A>) {
         const list = this.handlers.get(kind);
         if (list) {
-            const index = list.indexOf(handler);
+            const index = list.indexOf(handler as ServerActionHandler);
             if (index >= 0) {
                 list.splice(index, 1);
             }

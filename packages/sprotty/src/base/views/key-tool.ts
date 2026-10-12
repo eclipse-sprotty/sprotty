@@ -58,7 +58,7 @@ export class KeyTool implements IVNodePostprocessor {
         this.handleEvent('keyUp', element, event);
     }
 
-    focus() {}
+    focus(element: SModelRootImpl, event: FocusEvent): void {}
 
     decorate(vnode: VNode, element: SModelElementImpl): VNode {
         if (element instanceof SModelRootImpl) {

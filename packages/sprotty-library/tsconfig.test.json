@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.src.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "references": [{
+    "path": "./tsconfig.src.json"
+  }],
+  "include": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
+  "exclude": [
+    "lib",
+    "node_modules"
+  ]
+}

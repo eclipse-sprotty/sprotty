@@ -31,10 +31,10 @@ export default (containerId: string) => {
         rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'graph', SGraphImpl, SGraphView);
-        configureModelElement(container, 'node', SNodeImpl, RectangularNodeView);
-        configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeView);
-        configureModelElement(container, 'label', SLabelImpl, SLabelView);
+        configureModelElement(context, 'graph', SGraphImpl, SGraphView);
+        configureModelElement(context, 'node', SNodeImpl, RectangularNodeView);
+        configureModelElement(context, 'edge', SEdgeImpl, PolylineEdgeView);
+        configureModelElement(context, 'label', SLabelImpl, SLabelView);
 
         configureViewerOptions(context, {
             needsClientLayout: false,

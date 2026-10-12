@@ -124,7 +124,7 @@ export class CommandPalette extends AbstractUIExtension {
             onSelect: (item: LabeledAction) => this.onSelect(item),
             render: (item: LabeledAction, currentValue: string): HTMLDivElement | undefined =>
                 this.renderLabeledActionSuggestion(item, currentValue),
-            customize: (input: HTMLInputElement, inputRect: ClientRect | DOMRect, container: HTMLDivElement, maxHeight: number) => {
+            customize: (input: HTMLInputElement | HTMLTextAreaElement, inputRect: ClientRect | DOMRect, container: HTMLDivElement, maxHeight: number) => {
                 this.customizeSuggestionContainer(container, inputRect, maxHeight);
             }
         };
