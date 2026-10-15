@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import { DOMHelper } from "./views/dom-helper.js";
 import { IdPostprocessor } from "./views/id-postprocessor.js";
 import { KeyTool } from "./views/key-tool.js";
 import { MousePositionTracker, MouseTool, PopupMouseTool } from "./views/mouse-tool.js";
-import { PointerTool } from "./views/pointer-tool.js";
+import { PointerCaptureListener, PointerTool } from "./views/pointer-tool.js";
 import { TouchTool } from "./views/touch-tool.js";
 import { IViewArgs, RenderingTargetKind, ViewRegistry } from "./views/view.js";
 import { ViewerCache } from "./views/viewer-cache.js";
@@ -130,6 +130,8 @@ const defaultContainerModule = new ContainerModule(({bind,isBound}) => {
     bind(TYPES.IVNodePostprocessor).toService(MouseTool);
     bind(PointerTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(PointerTool);
+    bind(PointerCaptureListener).toSelf().inSingletonScope();
+    bind(TYPES.IPointerListener).toService(PointerCaptureListener);
     bind(TouchTool).toSelf().inSingletonScope();
     bind(TYPES.IVNodePostprocessor).toService(TouchTool);
     bind(KeyTool).toSelf().inSingletonScope();
