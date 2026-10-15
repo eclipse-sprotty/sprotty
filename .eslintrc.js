@@ -40,6 +40,13 @@ module.exports = {
         'no-new-wrappers': 'error',
         'no-prototype-builtins': 'error',
         'no-restricted-imports': ['error', '..', '../index', '../..', '../../index'],
+        'no-restricted-syntax': [
+            'error',
+            {
+                'selector': "CallExpression[callee.name='Symbol']",
+                'message': "Use Symbol.for('name') instead of Symbol('name') so the value is shared across duplicate module instances (see #559)."
+            }
+        ],
         'no-return-await': 'error',
         'no-sequences': 'error',
         'no-throw-literal': 'error',
@@ -53,5 +60,13 @@ module.exports = {
         'space-infix-ops': 'error',
         'spaced-comment': ['error', 'always', { 'markers': ['/'], 'exceptions': ['*'] }],
         'use-isnan': 'error'
-    }
+    },
+    overrides: [
+        {
+            files: ['**/*.spec.ts'],
+            rules: {
+                'no-restricted-syntax': 'off'
+            }
+        }
+    ]
 };

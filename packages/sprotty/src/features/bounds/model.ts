@@ -21,10 +21,10 @@ import { DOMHelper } from '../../base/views/dom-helper.js';
 import { ViewerOptions } from '../../base/views/viewer-options.js';
 import { getWindowScroll } from '../../utils/browser.js';
 
-export const boundsFeature = Symbol('boundsFeature');
-export const layoutContainerFeature = Symbol('layoutContainerFeature');
-export const layoutableChildFeature = Symbol('layoutableChildFeature');
-export const alignFeature = Symbol('alignFeature');
+export const boundsFeature = Symbol.for('boundsFeature');
+export const layoutContainerFeature = Symbol.for('layoutContainerFeature');
+export const layoutableChildFeature = Symbol.for('layoutableChildFeature');
+export const alignFeature = Symbol.for('alignFeature');
 
 /**
  * Model elements that implement this interface have a position and a size.
