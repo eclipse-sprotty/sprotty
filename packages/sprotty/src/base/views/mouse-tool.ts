@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,13 @@ export class MouseTool implements IVNodePostprocessor {
     @inject(TYPES.IActionDispatcher) protected actionDispatcher: IActionDispatcher;
     @inject(TYPES.DOMHelper) protected domHelper: DOMHelper;
 
-    constructor(@multiInject(TYPES.MouseListener) @optional() protected mouseListeners: MouseListener[] = []) { }
+    constructor(@multiInject(TYPES.MouseListener) @optional() protected mouseListeners: IMouseListener[] = []) { }
 
-    register(mouseListener: MouseListener) {
+    register(mouseListener: IMouseListener) {
         this.mouseListeners.push(mouseListener);
     }
 
-    deregister(mouseListener: MouseListener) {
+    deregister(mouseListener: IMouseListener) {
         const index = this.mouseListeners.indexOf(mouseListener);
         if (index >= 0)
             this.mouseListeners.splice(index, 1);
@@ -63,7 +63,7 @@ export class MouseTool implements IVNodePostprocessor {
             return;
         const actions = this.mouseListeners
             .map(listener => listener[methodName](element, event as WheelEvent))
-            .reduce((a, b) => a.concat(b));
+            .reduce((a, b) => a.concat(b), []);
         if (actions.length > 0) {
             event.preventDefault();
             for (const actionOrPromise of actions) {
@@ -78,7 +78,7 @@ export class MouseTool implements IVNodePostprocessor {
         }
     }
 
-    protected focusOnMouseEvent<K extends keyof MouseListener>(methodName: K, model: SModelRootImpl) {
+    protected focusOnMouseEvent<K extends keyof IMouseListener>(methodName: K, model: SModelRootImpl) {
         if (document && methodName === 'mouseDown') {
             const domElement = document.getElementById(this.domHelper.createUniqueDOMElementId(model));
             if (domElement !== null && typeof domElement.focus === 'function')
@@ -143,7 +143,7 @@ export class MouseTool implements IVNodePostprocessor {
             on(vnode, 'drop', (event: MouseEvent) => this.handleEvent('drop', element, event));
         }
         vnode = this.mouseListeners.reduce(
-            (n: VNode, listener: MouseListener) => listener.decorate(n, element),
+            (n: VNode, listener: IMouseListener) => listener.decorate(n, element),
             vnode);
         return vnode;
     }
@@ -155,7 +155,7 @@ export class MouseTool implements IVNodePostprocessor {
 @injectable()
 @injectFromBase()
 export class PopupMouseTool extends MouseTool {
-    constructor(@multiInject(TYPES.PopupMouseListener) @optional() protected override mouseListeners: MouseListener[] = []) {
+    constructor(@multiInject(TYPES.PopupMouseListener) @optional() protected override mouseListeners: IMouseListener[] = []) {
         super(mouseListeners);
     }
 }
@@ -164,8 +164,37 @@ export type MouseEventKind =
     'mouseOver' | 'mouseOut' | 'mouseEnter' | 'mouseLeave' | 'mouseDown' | 'mouseMove' | 'mouseUp'
     | 'wheel' | 'doubleClick' | 'contextMenu' | 'dragOver' | 'drop';
 
+export interface IMouseListener {
+
+    mouseOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    mouseOut(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    mouseEnter(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    mouseLeave(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    mouseMove(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    mouseUp(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    wheel(target: SModelElementImpl, event: WheelEvent): (Action | Promise<Action>)[];
+
+    doubleClick(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    contextMenu(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    dragOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    drop(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[];
+
+    decorate(vnode: VNode, element: SModelElementImpl): VNode;
+}
+
 @injectable()
-export class MouseListener {
+export class MouseListener implements IMouseListener {
 
     mouseOver(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
         return [];
