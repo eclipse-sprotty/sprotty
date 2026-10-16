@@ -14,28 +14,27 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LocalModelSource, TYPES } from 'sprotty';
 import { ILayoutConfigurator } from 'sprotty-elk';
 import { SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol';
-import createContainer, { RandomGraphLayoutConfigurator } from './di.config.js';
+import createDiagram, { RandomGraphLayoutConfigurator } from './simpleAPI.js';
 
 export default function runRandomGraph() {
-    const container = createContainer('sprotty');
+    const diagram = createDiagram('sprotty');
 
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    modelSource.setModel(createRandomGraph());
+    diagram.setModel(createRandomGraph());
 
-    const layoutConfigurator = container.get<RandomGraphLayoutConfigurator>(ILayoutConfigurator);
+    // The layout configurator is not one of the diagram's services, so it comes from the container
+    const layoutConfigurator = diagram.container.get<RandomGraphLayoutConfigurator>(ILayoutConfigurator);
     document.getElementById('direction')!.addEventListener('change', async (event) => {
         layoutConfigurator.setDirection((event.target as any)?.value ?? 'LEFT');
-        modelSource.updateModel();
+        diagram.updateModel();
     });
 
     document.getElementById('junction')!.addEventListener('change', async (event) => {
         if ((event.target as any).checked) {
-            modelSource.updateModel(createRandomGraphWithJunction());
+            diagram.updateModel(createRandomGraphWithJunction());
         } else {
-            modelSource.updateModel(createRandomGraph());
+            diagram.updateModel(createRandomGraph());
         }
     });
 }

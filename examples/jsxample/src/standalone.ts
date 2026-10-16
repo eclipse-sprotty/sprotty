@@ -14,12 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LocalModelSource, TYPES } from 'sprotty';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
 
 export default async function runJsxample() {
-    const container = createContainer('sprotty');
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
+    const diagram = createDiagram('sprotty');
 
     const graph = {
         id: 'root',
@@ -51,5 +49,5 @@ export default async function runJsxample() {
             }
         ]
     };
-    modelSource.setModel(graph);
+    diagram.setModel(graph);
 }

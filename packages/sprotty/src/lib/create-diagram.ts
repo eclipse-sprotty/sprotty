@@ -80,7 +80,7 @@ export interface SprottyDiagramOptions<S extends ModelSource = LocalModelSource>
      *
      * A module passed here must register only its own subtypes: registering one of the default
      * types collides with the default registration and fails at first render. See
-     * `docs/adr/0001-container-owns-the-base-vocabulary.md`.
+     * `docs/adr/0007-simplified-diagram-api.md`.
      */
     modules?: ContainerModule[]
 }
@@ -113,7 +113,9 @@ export interface SprottyDiagramBase<S extends ModelSource> extends IActionDispat
      * between two sources and therefore an error, these calls are ordered statements and the last
      * one wins.
      *
-     * Must be called before the diagram dispatches its first action; see `addActionHandler`.
+     * Must be called before the diagram dispatches its first action, and before `modelSource` or
+     * `actionDispatcher` is read: resolving either service builds the model element registry. A
+     * late call is ignored with a warning; see `addActionHandler`.
      */
     addModelElement(type: string, modelConstr: new () => SModelElementImpl,
         viewConstr: interfaces.ServiceIdentifier<IView>, features?: CustomFeatures): void
@@ -203,7 +205,8 @@ export const defaultElements: Record<string, ElementRegistration> = {
  *
  * The `container` property is an ordinary Inversify container: anything the options and the `addX`
  * methods do not cover can be bound by loading another module onto it afterwards. Nothing is
- * resolved eagerly, so it stays open until the diagram dispatches its first action.
+ * resolved eagerly, so it stays open until the diagram dispatches its first action or one of its
+ * services is read.
  *
  * Styling is not part of the diagram. Import `sprotty/css/sprotty.css` and, for the default element
  * types to be visible, `sprotty/css/default-diagram.css`.
@@ -230,13 +233,22 @@ class SprottyDiagramImpl<S extends ModelSource> implements SprottyDiagramBase<S>
     /** Whether the registries have been built, which the first dispatched action does. */
     private sealed = false;
 
+    /**
+     * Whether the model element registry has been built. Resolving either service does that, ahead
+     * of any dispatch: both reach the command stack, which creates its empty roots on construction
+     * and so instantiates `SModelRegistry`.
+     */
+    private elementsSealed = false;
+
     constructor(readonly container: Container) { }
 
     get modelSource(): S {
+        this.elementsSealed = true;
         return this.container.get<S>(TYPES.ModelSource);
     }
 
     get actionDispatcher(): IActionDispatcher {
+        this.elementsSealed = true;
         return this.container.get<IActionDispatcher>(TYPES.IActionDispatcher);
     }
 
@@ -267,7 +279,7 @@ class SprottyDiagramImpl<S extends ModelSource> implements SprottyDiagramBase<S>
 
     addModelElement(type: string, modelConstr: new () => SModelElementImpl,
             viewConstr: interfaces.ServiceIdentifier<IView>, features?: CustomFeatures): void {
-        this.warnIfSealed('addModelElement', type);
+        this.warnIfSealed(this.elementsSealed, 'addModelElement', type);
         registerModelElement(this.container, type, modelConstr, features,
             hasRegisteredType(this.container, TYPES.SModelElementRegistration, type));
         configureView(this.container, type, viewConstr,
@@ -275,12 +287,12 @@ class SprottyDiagramImpl<S extends ModelSource> implements SprottyDiagramBase<S>
     }
 
     addCommand<T extends Action>(commandConstr: ICommandConstructor<T>): void {
-        this.warnIfSealed('addCommand', commandConstr.KIND);
+        this.warnIfSealed(this.sealed, 'addCommand', commandConstr.KIND);
         configureCommand(this.container, commandConstr);
     }
 
     addActionHandler(kind: string, handlerConstr: interfaces.ServiceIdentifier<IActionHandler>): void {
-        this.warnIfSealed('addActionHandler', kind);
+        this.warnIfSealed(this.sealed, 'addActionHandler', kind);
         configureActionHandler(this.container, kind, handlerConstr);
     }
 
@@ -293,13 +305,13 @@ class SprottyDiagramImpl<S extends ModelSource> implements SprottyDiagramBase<S>
         return this.modelSource as unknown as LocalModelSource;
     }
 
-    private warnIfSealed(method: string, subject: string): void {
-        if (this.sealed) {
+    private warnIfSealed(sealed: boolean, method: string, subject: string): void {
+        if (sealed) {
             this.container.get<ILogger>(TYPES.ILogger).warn(this,
-                `${method}('${subject}') was called after this diagram dispatched its first action. `
+                `${method}('${subject}') was called after the registry it adds to was built. `
                 + 'Registrations are read once, when the registries are built, so this one is '
-                + 'ignored. Register before the first setModel or dispatch, or register on the live '
-                + 'registry.');
+                + 'ignored. Register before the first setModel or dispatch, and before reading '
+                + 'modelSource or actionDispatcher.');
         }
     }
 }

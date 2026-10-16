@@ -14,17 +14,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { RectangularNodeView } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, FitToScreenAction } from 'sprotty-protocol';
 import createDiagram from './simpleAPI.js';
-import { BasicShapeNode } from './model.js';
 
 export default async function runCustomViewsShowcase() {
     console.log('Starting Custom Views Showcase...');
 
     const diagram = createDiagram();
     console.log('Diagram created');
-    diagram.addModelElement('node:basic-circle', BasicShapeNode, RectangularNodeView);
 
     // Create sample data demonstrating all view types
     const sampleModel: SGraph = {

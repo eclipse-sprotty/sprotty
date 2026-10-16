@@ -14,17 +14,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LocalModelSource, TYPES, IActionDispatcher } from 'sprotty';
 import { SLabel, UpdateModelAction } from 'sprotty-protocol';
 import {
     CORE_DISTANCE,
     CORE_WIDTH,
     ChannelSchema, CoreSchema, CrossbarSchema, Direction, ProcessorSchema
 } from './chipmodel.js';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
 
 export default function runMulticore() {
-    const container = createContainer();
+    const diagram = createDiagram();
 
     // Initialize model
     const dim = 32;
@@ -116,10 +115,8 @@ export default function runMulticore() {
     };
 
     // Run
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    modelSource.setModel(processor);
+    diagram.setModel(processor);
 
-    const actionDispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
     function changeModel() {
         for (let i = 0; i < processor.children!.length; ++i) {
             const child = processor.children![i];
@@ -128,7 +125,7 @@ export default function runMulticore() {
             }
         }
         // modelSource.update() would trigger hidden bounds computation, which is not necessary here
-        actionDispatcher.dispatch(UpdateModelAction.create(processor));
+        diagram.dispatch(UpdateModelAction.create(processor));
     }
 
     setInterval(() => changeModel(), 300);

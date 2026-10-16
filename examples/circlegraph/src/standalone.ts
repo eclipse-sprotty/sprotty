@@ -14,11 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import {
-    TYPES, IActionDispatcher, ElementMove, LocalModelSource
-} from 'sprotty';
+import { ElementMove } from 'sprotty';
 import { Bounds, Point, SEdge, SelectAction, SGraph, SNode, getBasicType, MoveAction } from 'sprotty-protocol';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
 
 const NODE_SIZE = 60;
 
@@ -61,11 +59,10 @@ export default async function runCircleGraph() {
         };
     }
 
-    const container = createContainer((point?: Point) => {
+    const diagram = createDiagram((point?: Point) => {
         createNode(point);
     });
-    const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
+    const modelSource = diagram.modelSource;
 
     // Initialize model
     const node0 = { id: 'node0', type: 'node:circle', position: { x: 100, y: 100 }, size: { width: NODE_SIZE, height: NODE_SIZE } };
@@ -83,7 +80,7 @@ export default async function runCircleGraph() {
     });
 
     // Run
-    modelSource.setModel(graph);
+    diagram.setModel(graph);
 
     async function createNode(point?: Point) {
         const newElements = addNode(getVisibleBounds(viewport));
@@ -97,7 +94,7 @@ export default async function runCircleGraph() {
             };
         }
         modelSource.addElements(newElements);
-        dispatcher.dispatch(SelectAction.create({ selectedElementsIDs: newElements.map(e => e.id) }));
+        diagram.dispatch(SelectAction.create({ selectedElementsIDs: newElements.map(e => e.id) }));
         focusGraph();
     }
 
@@ -120,7 +117,7 @@ export default async function runCircleGraph() {
                 });
             }
         });
-        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true, stoppable: true }));
+        diagram.dispatch(MoveAction.create(nodeMoves, { animate: true, stoppable: true }));
         focusGraph();
     });
 
@@ -139,7 +136,7 @@ export default async function runCircleGraph() {
                 });
             }
         });
-        dispatcher.dispatch(MoveAction.create(nodeMoves, { animate: true, stoppable: true }));
+        diagram.dispatch(MoveAction.create(nodeMoves, { animate: true, stoppable: true }));
         focusGraph();
     });
 

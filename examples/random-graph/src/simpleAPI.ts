@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2023 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,11 @@
 
 import { LayoutOptions } from 'elkjs';
 import ElkConstructor from 'elkjs/lib/elk.bundled.js';
-import { Container, ContainerModule } from 'inversify';
+import { ContainerModule } from 'inversify';
 import {
-    Animation, CommandExecutionContext, configureModelElement, configureViewerOptions, ConsoleLogger,
-    edgeIntersectionModule, edgeJunctionModule, isSelectable, isViewport, loadDefaultModules, LocalModelSource, LogLevel, PolylineEdgeViewWithGapsOnIntersections,
-    RectangularNodeView, SEdgeImpl, SGraphImpl, SGraphView, SLabelImpl, SLabelView, SModelRootImpl, SNodeImpl, SPortImpl,
-    TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
+    Animation, CommandExecutionContext, createSprottyDiagram, edgeIntersectionModule, edgeJunctionModule,
+    isSelectable, isViewport, LogLevel, PolylineEdgeViewWithGapsOnIntersections, SEdgeImpl, SLabelImpl, SLabelView,
+    SModelRootImpl, SPortImpl, TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
 } from 'sprotty';
 import {
     DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, elkLayoutModule, ILayoutConfigurator
@@ -38,35 +37,28 @@ export default (containerId: string) => {
     });
 
     const randomGraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         bind(TYPES.IModelLayoutEngine).toService(ElkLayoutEngine);
         bind(ElkFactory).toConstantValue(elkFactory);
         bind(RandomGraphLayoutConfigurator).toSelf().inSingletonScope();
         rebind(ILayoutConfigurator).to(RandomGraphLayoutConfigurator).inSingletonScope();
-        rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
         rebind(UpdateModelCommand).to(TrackSelectedUpdateModelCommand);
-
-        const context = { bind, unbind, isBound, rebind };
-        configureModelElement(container, 'graph', SGraphImpl, SGraphView);
-        configureModelElement(container, 'node', SNodeImpl, RectangularNodeView);
-        configureModelElement(container, 'port', SPortImpl, PortViewWithExternalLabel);
-        configureModelElement(container, 'edge', SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections);
-        configureModelElement(container, 'label:node', SLabelImpl, SLabelView);
-        configureModelElement(container, 'label:port', SLabelImpl, SLabelView);
-
-        configureViewerOptions(context, {
-            needsClientLayout: true,
-            baseDiv: containerId
-        });
     });
 
-    const container = new Container();
-    loadDefaultModules(container);
-    container.load(edgeIntersectionModule);
-    container.load(edgeJunctionModule);
-    container.load(elkLayoutModule, randomGraphModule);
-    return container;
+    return createSprottyDiagram({
+        viewerOptions: {
+            baseDiv: containerId
+        },
+        logLevel: LogLevel.log,
+        // randomGraphModule rebinds the configurator elkLayoutModule binds, so it has to come last
+        modules: [edgeIntersectionModule, edgeJunctionModule, elkLayoutModule, randomGraphModule],
+        elements: {
+            // Deliberately replace the default views of the basic 'port' and 'edge' types
+            'port': [SPortImpl, PortViewWithExternalLabel],
+            'edge': [SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections],
+            'label:node': [SLabelImpl, SLabelView],
+            'label:port': [SLabelImpl, SLabelView]
+        }
+    });
 };
 
 export class RandomGraphLayoutConfigurator extends DefaultLayoutConfigurator {

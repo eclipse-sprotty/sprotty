@@ -66,7 +66,7 @@ After exploring this example, you should understand:
 src/
 ├── model.ts          # Layout-aware model classes for each strategy
 ├── views.tsx         # Custom views optimized for each layout type
-├── di.config.ts      # Three separate DI modules for each strategy
+├── simpleAPI.ts      # One set of diagram options per strategy
 └── standalone.ts     # Demo application with strategy switching
 
 css/
@@ -76,77 +76,83 @@ css/
 
 ## Implementation Patterns
 
+Each strategy is one set of options for `createSprottyDiagram`, in `simpleAPI.ts`. The diagram
+supplies the model source, the logger and the default element types; every strategy replaces the
+default `edge` view with `LayoutEdgeView`.
+
 ### Client Layout Configuration
 
 ```typescript
-const clientLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-    const context = { bind, unbind, isBound, rebind };
-
-    // Enable client layout only
-    configureViewerOptions(context, {
-        needsClientLayout: true,
-        needsServerLayout: false,
-        baseDiv: 'sprotty'
-    });
-
-    // Register nodes with layout features
-    configureModelElement(context, 'node:client', SNodeImpl, ClientLayoutNodeView);
-});
+client: () => ({
+    // needsClientLayout: true and needsServerLayout: false are the defaults
+    logLevel: LogLevel.log,
+    elements: {
+        'node:client': [SNodeImpl, ClientLayoutNodeView],
+        'edge': [SEdgeImpl, LayoutEdgeView]
+        // ...compartments and labels with layoutableChildFeature
+    }
+})
 ```
 
 ### Server Layout Configuration
 
 ```typescript
-const serverLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-    const context = { bind, unbind, isBound, rebind };
-
-    // Configure ELK layout engine
-    bind(ElkFactory).toConstantValue(elkFactory);
-    bind(ILayoutConfigurator).to(ServerLayoutConfigurator);
-    bind(TYPES.IModelLayoutEngine).toDynamicValue((context) => (
-        new ElkLayoutEngine(
-            context.container.get(ElkFactory),
-            undefined,
-            context.container.get(ILayoutConfigurator),
-            undefined,
-            undefined
-        )
-    )).inSingletonScope();
-
-    // Enable server layout only
-    configureViewerOptions(context, {
-        needsClientLayout: false,
-        needsServerLayout: true,
-        baseDiv: 'sprotty'
+// Shared by the server and hybrid strategies
+function elkLayoutEngineModule(configurator: typeof DefaultLayoutConfigurator): ContainerModule {
+    return new ContainerModule((bind) => {
+        bind(ElkFactory).toConstantValue(elkFactory);
+        bind(ILayoutConfigurator).to(configurator);
+        bind(TYPES.IModelLayoutEngine).toDynamicValue((context) => (
+            new ElkLayoutEngine(
+                context.container.get(ElkFactory),
+                undefined,
+                context.container.get(ILayoutConfigurator),
+                undefined,
+                undefined
+            )
+        )).inSingletonScope();
     });
-});
+}
+
+server: () => ({
+    // Enable server layout only
+    viewerOptions: {
+        needsClientLayout: false,
+        needsServerLayout: true
+    },
+    logLevel: LogLevel.log,
+    modules: [elkLayoutEngineModule(ServerLayoutConfigurator)],
+    elements: {
+        'node': [ServerLayoutNode, ServerLayoutNodeView],
+        'edge': [LayoutEdge, LayoutEdgeView]
+    }
+})
 ```
 
 ### Hybrid Layout Configuration
 
 ```typescript
-const hybridLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-    const context = { bind, unbind, isBound, rebind };
-
-    // Configure ELK layout engine
-    bind(ElkFactory).toConstantValue(elkFactory);
-    bind(ILayoutConfigurator).to(HybridLayoutConfigurator);
-    bind(TYPES.IModelLayoutEngine).toDynamicValue((context) => (
-        new ElkLayoutEngine(/* ... */)
-    )).inSingletonScope();
-
-    // Enable both layout types
-    configureViewerOptions(context, {
-        needsClientLayout: true,   // For micro-layout
-        needsServerLayout: true    // For macro-layout
-    });
-
-    // Register with layout features
-    configureModelElement(context, 'node:hybrid', SNodeImpl, HybridLayoutNodeView, {
-        enable: [layoutContainerFeature, layoutableChildFeature]
-    });
-});
+hybrid: () => ({
+    // Enable both layout types: client layout (the default) for micro-layout,
+    // server layout for macro-layout
+    viewerOptions: {
+        needsServerLayout: true
+    },
+    logLevel: LogLevel.log,
+    modules: [elkLayoutEngineModule(HybridLayoutConfigurator)],
+    elements: {
+        // Register with layout features
+        'node:hybrid': [SNodeImpl, HybridLayoutNodeView, {
+            enable: [layoutContainerFeature, layoutableChildFeature, boundsFeature]
+        }],
+        'edge': [SEdgeImpl, LayoutEdgeView]
+        // ...compartments and labels
+    }
+})
 ```
+
+`createLayoutDiagram(strategy)` builds a fresh diagram from the chosen options each time the
+strategy is switched.
 
 ## Layout Strategy Comparison
 
@@ -161,7 +167,7 @@ const hybridLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) =
 
 ## Design Decisions Explained
 
-### Why Three Separate DI Modules?
+### Why Three Separate Option Sets?
 
 Each layout strategy requires different:
 
@@ -170,7 +176,7 @@ Each layout strategy requires different:
 - Model element registrations
 - Feature enablement
 
-Separating them into modules makes the differences explicit and the code easier to understand.
+Separating them into one options object per strategy makes the differences explicit and the code easier to understand.
 
 ### Why Different Node Views?
 

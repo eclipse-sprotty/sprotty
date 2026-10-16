@@ -14,8 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource } from 'sprotty';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
 import {
     ForeignObjectElement, SShapeElement, ShapedPreRenderedElement, ViewportRootElement, Projectable
 } from 'sprotty-protocol';
@@ -37,7 +36,7 @@ function loadFile(path: string): Promise<string> {
 export default async function runSVG() {
     const svgLogo = await loadFile('images/SVG_logo.svg');
     const tiger = await loadFile('images/Ghostscript_Tiger.svg');
-    const container = createContainer();
+    const diagram = createDiagram();
 
     // Initialize model
     const model: ViewportRootElement = {
@@ -89,6 +88,5 @@ export default async function runSVG() {
     };
 
     // Run
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    await modelSource.setModel(model);
+    await diagram.setModel(model);
 }

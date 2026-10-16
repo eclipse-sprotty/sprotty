@@ -14,12 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource } from 'sprotty';
+import { SprottyDiagram } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, SCompartment, FitToScreenAction } from 'sprotty-protocol';
-import { createLayoutContainer } from './di.config.js';
+import { createLayoutDiagram } from './simpleAPI.js';
 // Global variables for the demo
-let currentContainer: any;
-let currentModelSource: LocalModelSource;
+let currentDiagram: SprottyDiagram;
 let currentStrategy: 'client' | 'server' | 'hybrid' = 'client';
 
 /**
@@ -39,18 +38,17 @@ export default async function runLayoutStrategiesShowcase(): Promise<void> {
 async function switchLayoutStrategy(strategy: 'client' | 'server' | 'hybrid'): Promise<void> {
     currentStrategy = strategy;
 
-    // Create new container with the selected strategy
-    currentContainer = createLayoutContainer(strategy);
-    currentModelSource = await currentContainer.getAsync(TYPES.ModelSource);
+    // Create new diagram with the selected strategy
+    currentDiagram = createLayoutDiagram(strategy);
 
     // Create and set the appropriate model
     const model = createModelForStrategy(strategy);
 
-    await currentModelSource.setModel(model);
+    await currentDiagram.setModel(model);
 
     // Fit to screen after a short delay
     setTimeout(() => {
-        currentModelSource.actionDispatcher.dispatch(FitToScreenAction.create([], { padding: 20 }));
+        currentDiagram.dispatch(FitToScreenAction.create([], { padding: 20 }));
     }, 100);
 
     // Update active button state

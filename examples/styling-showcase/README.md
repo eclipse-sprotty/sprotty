@@ -56,7 +56,7 @@ This example demonstrates the different approaches to styling diagram elements i
 ## File Structure
 
 - `src/views.tsx` - Custom view with conditional styling logic
-- `src/di.config.ts` - Dependency injection configuration
+- `src/simpleAPI.ts` - Diagram configuration with `createSprottyDiagram`
 - `src/standalone.ts` - Main application and model setup
 - `css/diagram.css` - All styling examples organized by concept
 - `css/page.css` - Page layout and controls

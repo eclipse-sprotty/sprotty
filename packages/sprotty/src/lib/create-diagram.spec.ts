@@ -416,4 +416,33 @@ describe('SprottyDiagram registration window', () => {
         diagram.addModelElement('node:custom', SNodeImpl, CustomNodeView);
         expect(logger.warnings).to.have.lengthOf(1);
     });
+
+    it('seals element types once the model source is read, which builds the model registry', () => {
+        const diagram = createSprottyDiagram();
+        const logger = recordWarnings(diagram.container);
+        void diagram.modelSource;
+        diagram.addModelElement('node:custom', SNodeImpl, CustomNodeView);
+        expect(logger.warnings).to.have.lengthOf(1);
+        expect(logger.warnings[0]).to.contain(`addModelElement('node:custom')`);
+        expect(diagram.container.get<SModelRegistry>(TYPES.SModelRegistry).hasKey('node:custom'))
+            .to.equal(false);
+    });
+
+    it('seals element types once the action dispatcher is read, too', () => {
+        const diagram = createSprottyDiagram();
+        const logger = recordWarnings(diagram.container);
+        void diagram.actionDispatcher;
+        diagram.addModelElement('node:custom', SNodeImpl, CustomNodeView);
+        expect(logger.warnings).to.have.lengthOf(1);
+    });
+
+    it('keeps commands and action handlers open after a service is read, until the first dispatch', () => {
+        const diagram = createSprottyDiagram();
+        const logger = recordWarnings(diagram.container);
+        void diagram.modelSource;
+        diagram.addCommand(TestCommand);
+        diagram.addActionHandler('test', TestActionHandler);
+        expect(logger.warnings).to.be.empty;
+        expect(diagram.container.get(ActionHandlerRegistry).get('test')).to.have.lengthOf(1);
+    });
 });

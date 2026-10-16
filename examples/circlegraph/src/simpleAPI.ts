@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2023 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule, injectable, inject } from 'inversify';
+import { ContainerModule, injectable, inject } from 'inversify';
 import {
-    TYPES, configureViewerOptions, SGraphView, ConsoleLogger, LogLevel, loadDefaultModules,
-    LocalModelSource, CircularNode, configureModelElement, SGraphImpl, SEdgeImpl, selectFeature,
-    PolylineEdgeView, MouseListener, SModelElementImpl
+    TYPES, LogLevel, CircularNode, SEdgeImpl, selectFeature, PolylineEdgeView, MouseListener,
+    SModelElementImpl, createSprottyDiagram
 } from 'sprotty';
 import { Action, Point } from 'sprotty-protocol';
 import { CircleNodeView } from './views.js';
@@ -29,30 +28,24 @@ export default (nodeCreator: (point?: Point) => void) => {
     require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
-    const circlegraphModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
-        rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+    // The drop listener is not an element registration, so it still comes in a module
+    const circlegraphModule = new ContainerModule((bind) => {
         bind(NodeCreator).toConstantValue(nodeCreator);
         bind(DroppableMouseListener).toSelf().inSingletonScope();
         bind(TYPES.MouseListener).toService(DroppableMouseListener);
-        const context = { bind, unbind, isBound, rebind };
-
-        configureModelElement(context, 'graph', SGraphImpl, SGraphView);
-        configureModelElement(context, 'node:circle', CircularNode, CircleNodeView);
-        configureModelElement(context, 'edge:straight', SEdgeImpl, PolylineEdgeView, {
-            disable: [selectFeature]
-        });
-
-        configureViewerOptions(context, {
-            needsClientLayout: false
-        });
     });
 
-    const container = new Container();
-    loadDefaultModules(container);
-    container.load(circlegraphModule);
-    return container;
+    return createSprottyDiagram({
+        viewerOptions: {
+            needsClientLayout: false
+        },
+        logLevel: LogLevel.log,
+        modules: [circlegraphModule],
+        elements: {
+            'node:circle': [CircularNode, CircleNodeView],
+            'edge:straight': [SEdgeImpl, PolylineEdgeView, { disable: [selectFeature] }]
+        }
+    });
 };
 
 @injectable()
@@ -70,4 +63,3 @@ class DroppableMouseListener extends MouseListener {
         return [];
     }
 }
-

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2023 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { Container, ContainerModule } from 'inversify';
 import {
-    TYPES, ConsoleLogger, LogLevel, loadDefaultModules, LocalModelSource, PreRenderedView,
-    ProjectedViewportView, ViewportRootElementImpl, ShapedPreRenderedElementImpl, configureModelElement,
+    LogLevel, PreRenderedView, ProjectedViewportView, ViewportRootElementImpl, ShapedPreRenderedElementImpl,
     ForeignObjectElementImpl, ForeignObjectView, RectangularNode, RectangularNodeView, moveFeature,
     selectFeature, EditableLabel, editLabelFeature, WithEditableLabel, withEditLabelFeature,
-    isEditableLabel, configureViewerOptions
+    isEditableLabel, createSprottyDiagram
 } from 'sprotty';
 
 export default () => {
@@ -28,34 +26,27 @@ export default () => {
     require('sprotty/css/edit-label.css');
     require('../css/diagram.css');
 
-    const svgModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-        rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
-        bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
-        const context = { bind, unbind, isBound, rebind };
-
-        configureModelElement(context, 'svg', ViewportRootElementImpl, ProjectedViewportView);
-        configureModelElement(context, 'pre-rendered', ShapedPreRenderedElementImpl, PreRenderedView);
-        configureModelElement(context, 'foreign-object', ForeignObjectElementImpl, ForeignObjectView);
-        configureModelElement(context, 'node', RectangleWithEditableLabel, RectangularNodeView, {
-            enable: [withEditLabelFeature]
-        });
-        configureModelElement(context, 'child-foreign-object', EditableForeignObjectElement, ForeignObjectView, {
-            disable: [moveFeature, selectFeature], // disable move/select as we want the parent node to react to select/move
-            enable: [editLabelFeature] // enable editing -- see also EditableForeignObjectElement below
-        });
-
-        configureViewerOptions(context, {
+    return createSprottyDiagram({
+        viewerOptions: {
             zoomLimits: { min: 0.4, max: 5 },
             horizontalScrollLimits: { min: -500, max: 2000 },
             verticalScrollLimits: { min: -500, max: 1500 }
-        });
+        },
+        logLevel: LogLevel.log,
+        elements: {
+            'svg': [ViewportRootElementImpl, ProjectedViewportView],
+            'pre-rendered': [ShapedPreRenderedElementImpl, PreRenderedView],
+            'foreign-object': [ForeignObjectElementImpl, ForeignObjectView],
+            // Deliberately replaces the default model class of the basic 'node' type
+            'node': [RectangleWithEditableLabel, RectangularNodeView, {
+                enable: [withEditLabelFeature]
+            }],
+            'child-foreign-object': [EditableForeignObjectElement, ForeignObjectView, {
+                disable: [moveFeature, selectFeature], // disable move/select as we want the parent node to react to select/move
+                enable: [editLabelFeature] // enable editing -- see also EditableForeignObjectElement below
+            }]
+        }
     });
-
-    const container = new Container();
-    loadDefaultModules(container);
-    container.load(svgModule);
-    return container;
 };
 
 export class RectangleWithEditableLabel extends RectangularNode implements WithEditableLabel {

@@ -14,14 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource, IActionDispatcher } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
 
 export default async function runStylingShowcase() {
-    const container = createContainer();
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
+    const diagram = createDiagram();
 
     // Create the network topology diagram demonstrating different styling approaches
     const graph: SGraph = {
@@ -159,14 +156,14 @@ export default async function runStylingShowcase() {
     };
 
     // Initialize the model
-    modelSource.setModel(graph);
+    diagram.setModel(graph);
 
     // Fit the diagram to screen with padding when first loaded
-    dispatcher.dispatch(FitToScreenAction.create([], { padding: 20 }));
+    diagram.dispatch(FitToScreenAction.create([], { padding: 20 }));
 
     // Button to simulate load changes for conditional styling demonstration
     document.getElementById('changeLoad')?.addEventListener('click', () => {
-        const currentModel = modelSource.model;
+        const currentModel = diagram.modelSource.model;
         const monitor = currentModel.children?.find(child => child.id === 'monitor1') as SNode & { loadPercentage: number };
         if (monitor) {
             // Cycle through different load values to demonstrate conditional styling
@@ -176,7 +173,7 @@ export default async function runStylingShowcase() {
             monitor.loadPercentage = loadValues[nextIndex];
 
             // Update the model to trigger re-rendering
-            modelSource.updateModel(currentModel);
+            diagram.updateModel(currentModel);
         }
     });
 }

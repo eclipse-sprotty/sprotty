@@ -14,7 +14,7 @@ Example URLs follow `http://localhost:8080/<dir>/<html-file>`, e.g. `/circlegrap
 
 ## Adding an example
 
-1. Create `examples/<name>/` with `<name>.html`, `css/page.css` + `css/diagram.css`, and `src/standalone.ts` exporting a `run<Name>()` function; `src/di.config.ts` default-exports a container factory that `require`s its CSS inside the factory and ends with `loadDefaultModules(container)` **before** loading the example module.
+1. Create `examples/<name>/` with `<name>.html`, `css/page.css` + `css/diagram.css`, and `src/standalone.ts` exporting a `run<Name>()` function; `src/simpleAPI.ts` default-exports a diagram factory that `require`s its CSS inside the factory and returns `createSprottyDiagram({ … })`. Under `elements`, register only the types the default set lacks or that you deliberately override; put any other bindings in a `ContainerModule` passed through `modules`, which must not register default types (`docs/adr/0007-simplified-diagram-api.md`, Decision 2). Set `logLevel` and any viewer option that differs from the default explicitly. `standalone.ts` sets the model and dispatches through the returned `SprottyDiagram`.
 2. Register it in `examples/browser-app.ts`: add the import *and* a branch in the `data-app` dispatch chain.
 3. Add a card for it in `examples/index.html`.
 4. Rebuild and verify in the browser at `http://localhost:8080/<name>/<name>.html`.
@@ -26,6 +26,10 @@ Example URLs follow `http://localhost:8080/<dir>/<html-file>`, e.g. `/circlegrap
 - ELK layout in the browser: `random-graph/`
 - Edge routing (manhattan/bezier) and label editing: `classdiagram/`
 - Custom views, styling, micro-layout, layout strategies: the four `*-showcase/` dirs (each has a README)
-- Diagram built with the simplified API instead of a hand-written `ContainerModule`: `custom-views-showcase/src/simpleAPI.ts` — the same configuration as its `di.config.ts`, kept side by side. It returns a `SprottyDiagram` rather than a `Container`, so its `standalone.ts` sets the model and dispatches without touching `TYPES` or `container.get`; `di.config.ts` is not wired in
+- Every example except `flowchart/` builds its diagram with `createSprottyDiagram` in `src/simpleAPI.ts`, and its `standalone.ts` uses the returned `SprottyDiagram` without `TYPES`; only `random-graph` (below) still calls `container.get`
+- Same configuration written both ways: `custom-views-showcase/` keeps its hand-written `ContainerModule` in `src/di.config.ts`, unwired, next to `src/simpleAPI.ts`
+- A service the diagram does not expose: `random-graph/src/standalone.ts` reads the ELK layout configurator through `diagram.container`
+- Server-backed model source (no `setModel`; the model is requested through the dispatcher): `random-graph-distributed/`
+- `flowchart/` still builds a hand-written container: `Flowchart.flowchartModule` from `sprotty-library` registers default types (`graph`, `label`, `edge`, the routing points), so it collides with `createSprottyDiagram`'s defaults until that module is brought in line with ADR-0007 (Decision 2)
 
-The `configureX` helpers accept either a `Container` or the `{ bind, isBound }` pair from a `ContainerModule` callback; both are the exported `BindingContext` type. Inside a module pass the `context` object, because that is what you have (see `classdiagram/src/di.config.ts`); `random-graph*/src/di.config.ts` passes the container directly, which is equally supported.
+The `configureX` helpers accept either a `Container` or the `{ bind, isBound }` pair from a `ContainerModule` callback; both are the exported `BindingContext` type. The examples register elements through `elements` instead; inside a hand-written module, pass the `context` object, as `custom-views-showcase/src/di.config.ts` and `flowchart/src/di.config.ts` do.

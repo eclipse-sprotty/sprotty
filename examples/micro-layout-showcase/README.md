@@ -85,18 +85,17 @@ This example demonstrates the micro-layout concepts in Sprotty, showing how to a
 }
 ```
 
-### DI Configuration
+### Diagram Configuration
 
 ```typescript
-// Essential: Enable client-side layout
-configureViewerOptions(context, {
-    needsClientLayout: true,    // Required for micro-layout
-    baseDiv: 'sprotty'
-});
-
-// Enable layoutable child feature for nested nodes
-configureModelElement(context, 'node:basic', SNodeImpl, RectangularNodeView, {
-    enable: [layoutableChildFeature]
+// Essential: client-side layout, which createSprottyDiagram enables by default
+// (needsClientLayout: true) and micro-layout requires
+createSprottyDiagram({
+    logLevel: LogLevel.log,
+    elements: {
+        // Enable layoutable child feature for nested nodes
+        'node:basic': [SNodeImpl, RectangularNodeView, { enable: [layoutableChildFeature] }]
+    }
 });
 ```
 
@@ -119,7 +118,7 @@ document.querySelectorAll('input[name="layout"]').forEach(radio => {
 
 - `src/model.ts` - Interactive card model with layout properties
 - `src/views.tsx` - Custom views for cards and components
-- `src/di.config.ts` - DI configuration with `needsClientLayout: true`
+- `src/simpleAPI.ts` - Diagram configuration with `createSprottyDiagram` (client layout is its default)
 - `src/standalone.ts` - Main application and interactive controls
 - `css/diagram.css` - Card and component styling
 - `css/page.css` - Page layout and control panel styling

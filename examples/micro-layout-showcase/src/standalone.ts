@@ -14,14 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { TYPES, LocalModelSource, IActionDispatcher } from 'sprotty';
+import { LocalModelSource } from 'sprotty';
 import { SGraph, SNode, SLabel, SCompartment, FitToScreenAction } from 'sprotty-protocol';
-import createContainer from './di.config.js';
+import createDiagram from './simpleAPI.js';
 
 export default async function runMicroLayoutShowcase() {
-    const container = createContainer();
-    const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
-    const dispatcher = container.get<IActionDispatcher>(TYPES.IActionDispatcher);
+    const diagram = createDiagram();
 
     // Create the micro-layout demonstration diagram
     const graph: SGraph = {
@@ -45,14 +43,14 @@ export default async function runMicroLayoutShowcase() {
     };
 
     // Initialize the model
-    modelSource.setModel(graph);
+    diagram.setModel(graph);
 
     // Setup interactive controls
-    setupInteractiveControls(modelSource);
+    setupInteractiveControls(diagram.modelSource);
 
     // Fit the diagram to screen with padding after a short delay to ensure rendering is complete
     setTimeout(() => {
-        dispatcher.dispatch(FitToScreenAction.create([], { padding: 20, animate: false }));
+        diagram.dispatch(FitToScreenAction.create([], { padding: 20, animate: false }));
     }, 300);
 }
 
