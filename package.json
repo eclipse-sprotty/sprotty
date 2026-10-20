@@ -20,11 +20,11 @@
     "semver": "^7.5.4",
     "shx": "^0.3.4",
     "typescript": "~5.9.2",
-    "vite": "~8.0.0",
+    "vite": "~8.3.4",
     "vitest": "~4.1.11"
   },
   "resolutions": {
-    "vite": "~8.0.0"
+    "vite": "~8.3.4"
   },
   "engines": {
     "node": ">=24",
