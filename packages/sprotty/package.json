@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5",
-    "happy-dom": "^20.8.8",
+    "happy-dom": "^21.0.4",
     "snabbdom-to-html": "^7.1.0"
   },
   "scripts": {
