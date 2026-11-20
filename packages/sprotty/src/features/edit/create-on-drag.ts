@@ -17,7 +17,7 @@
 import { Action } from "sprotty-protocol";
 import { SModelElementImpl } from "../../base/model/smodel.js";
 
-export const creatingOnDragFeature = Symbol('creatingOnDragFeature');
+export const creatingOnDragFeature = Symbol.for('creatingOnDragFeature');
 
 /**
  *  Feature extension interface for {@link creatingOnDragFeature}.

@@ -20,7 +20,7 @@ import { Command, CommandExecutionContext, CommandReturn } from '../../base/comm
 import { SChildElementImpl, SModelElementImpl, SParentElementImpl } from '../../base/model/smodel.js';
 import { TYPES } from '../../base/types.js';
 
-export const deletableFeature = Symbol('deletableFeature');
+export const deletableFeature = Symbol.for('deletableFeature');
 
 /**
  *  Feature extension interface for {@link deletableFeature}.
