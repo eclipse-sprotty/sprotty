@@ -81,20 +81,20 @@ export default () => {
         },
         logLevel: LogLevel.log,
         elements: {
-            'node:basic-circle': [BasicShapeNode, BasicShapeView, basicShapeFeatures],
-            'node:basic-triangle': [BasicShapeNode, BasicShapeView, basicShapeFeatures],
-            'node:basic-diamond': [BasicShapeNode, BasicShapeView, basicShapeFeatures],
-            'node:enhanced': [EnhancedNode, EnhancedNodeView, {
+            'node:basic-circle': { model: BasicShapeNode, view: BasicShapeView, features: basicShapeFeatures },
+            'node:basic-triangle': { model: BasicShapeNode, view: BasicShapeView, features: basicShapeFeatures },
+            'node:basic-diamond': { model: BasicShapeNode, view: BasicShapeView, features: basicShapeFeatures },
+            'node:enhanced': { model: EnhancedNode, view: EnhancedNodeView, features: {
                 enable: [selectFeature, moveFeature, hoverFeedbackFeature, popupFeature]
-            }],
-            'node:complex': [ComplexNode, ComplexNodeView, {
+            } },
+            'node:complex': { model: ComplexNode, view: ComplexNodeView, features: {
                 enable: [selectFeature, moveFeature, hoverFeedbackFeature, popupFeature, fadeFeature]
-            }],
-            'node:stateful': [StatefulNode, StatefulNodeView, {
+            } },
+            'node:stateful': { model: StatefulNode, view: StatefulNodeView, features: {
                 enable: [selectFeature, hoverFeedbackFeature]
-            }],
-            'edge:styled': [StyledEdge, StyledEdgeView],
-            'label:custom': [CustomLabel, CustomLabelView]
+            } },
+            'edge:styled': { model: StyledEdge, view: StyledEdgeView },
+            'label:custom': { model: CustomLabel, view: CustomLabelView }
         }
     });
 };

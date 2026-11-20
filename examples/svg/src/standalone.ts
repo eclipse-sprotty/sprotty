@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import createDiagram from './simpleAPI.js';
+import createDiagram from './simple-api.js';
 import {
     ForeignObjectElement, SShapeElement, ShapedPreRenderedElement, ViewportRootElement, Projectable
 } from 'sprotty-protocol';

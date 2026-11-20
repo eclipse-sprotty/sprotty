@@ -27,8 +27,8 @@ import { TYPES } from '../base/types.js';
 import { ViewRegistry, configureModelElement, configureView } from '../base/views/view.js';
 import { ViewerOptions } from '../base/views/viewer-options.js';
 import { selectFeature } from '../features/select/model.js';
-import { SGraphView } from '../graph/views.js';
-import { SNodeImpl } from '../graph/sgraph.js';
+import { SCompartmentView, SGraphView, SLabelView } from '../graph/views.js';
+import { SCompartmentImpl, SLabelImpl, SNodeImpl, SPortImpl } from '../graph/sgraph.js';
 import { LocalModelSource } from '../model-source/local-model-source.js';
 import { ModelSource } from '../model-source/model-source.js';
 import { ILogger, ConsoleLogger, LogLevel, NullLogger } from '../utils/logging.js';
@@ -122,7 +122,7 @@ describe('createSprottyDiagram', () => {
             const container = createSprottyDiagram().container;
             const models = container.get<SModelRegistry>(TYPES.SModelRegistry);
             const views = container.get<ViewRegistry>(TYPES.ViewRegistry);
-            for (const type of Object.keys(defaultElements)) {
+            for (const type of Object.keys(defaultElements())) {
                 expect(models.hasKey(type), `model ${type}`).to.equal(true);
                 expect(views.hasKey(type), `view ${type}`).to.equal(true);
             }
@@ -145,7 +145,7 @@ describe('createSprottyDiagram', () => {
 
         it('adds a new type', () => {
             const diagram = createSprottyDiagram({
-                elements: { 'node:custom': [SNodeImpl, CustomNodeView] }
+                elements: { 'node:custom': { model: SNodeImpl, view: CustomNodeView } }
             });
             const views = diagram.container.get<ViewRegistry>(TYPES.ViewRegistry);
             expect(views.get('node:custom')).to.be.an.instanceOf(CustomNodeView);
@@ -153,7 +153,7 @@ describe('createSprottyDiagram', () => {
 
         it('replaces a default type instead of throwing', () => {
             const diagram = createSprottyDiagram({
-                elements: { 'node': [SNodeImpl, CustomNodeView] }
+                elements: { 'node': { model: SNodeImpl, view: CustomNodeView } }
             });
             const views = diagram.container.get<ViewRegistry>(TYPES.ViewRegistry);
             expect(views.get('node')).to.be.an.instanceOf(CustomNodeView);
@@ -162,10 +162,48 @@ describe('createSprottyDiagram', () => {
         it('applies custom features', () => {
             const marker = Symbol('marker');
             const diagram = createSprottyDiagram({
-                elements: { 'node:featured': [SNodeImpl, CustomNodeView, { enable: [marker] }] }
+                elements: { 'node:featured': { model: SNodeImpl, view: CustomNodeView, features: { enable: [marker] } } }
             });
             const models = diagram.container.get<SModelRegistry>(TYPES.SModelRegistry);
             expect(models.get('node:featured', undefined).features?.has(marker)).to.equal(true);
+        });
+
+        it('infers the model class from the type prefix when none is given', () => {
+            const diagram = createSprottyDiagram({
+                elements: {
+                    'node:inferred': { view: CustomNodeView },
+                    'label:inferred': { view: SLabelView },
+                    'comp:inferred': { view: SCompartmentView }
+                }
+            });
+            const models = diagram.container.get<SModelRegistry>(TYPES.SModelRegistry);
+            expect(models.get('node:inferred', undefined)).to.be.an.instanceOf(SNodeImpl);
+            expect(models.get('label:inferred', undefined)).to.be.an.instanceOf(SLabelImpl);
+            expect(models.get('comp:inferred', undefined)).to.be.an.instanceOf(SCompartmentImpl);
+        });
+
+        it('prefers an explicit model class over the inferred one', () => {
+            const diagram = createSprottyDiagram({
+                elements: { 'node:explicit': { model: SPortImpl, view: CustomNodeView } }
+            });
+            const models = diagram.container.get<SModelRegistry>(TYPES.SModelRegistry);
+            expect(models.get('node:explicit', undefined)).to.be.an.instanceOf(SPortImpl);
+        });
+
+        it('throws on creation for a type whose prefix has no inferred model class', () => {
+            expect(() => createSprottyDiagram({ elements: { 'icon': { view: CustomNodeView } } }))
+                .to.throw(/'icon' has no model class/);
+        });
+    });
+
+    describe('defaultElements', () => {
+
+        it('returns a fresh object on every call, so changing one affects no diagram', () => {
+            const defaults = defaultElements();
+            defaults['node'] = { model: SNodeImpl, view: CustomNodeView };
+            expect(defaultElements()['node'].view).to.equal(RectangularNodeView);
+            const views = createSprottyDiagram().container.get<ViewRegistry>(TYPES.ViewRegistry);
+            expect(views.get('node')).to.not.be.an.instanceOf(CustomNodeView);
         });
     });
 
@@ -444,5 +482,23 @@ describe('SprottyDiagram registration window', () => {
         diagram.addActionHandler('test', TestActionHandler);
         expect(logger.warnings).to.be.empty;
         expect(diagram.container.get(ActionHandlerRegistry).get('test')).to.have.lengthOf(1);
+    });
+
+    it('seals element types when a registry is resolved through the container directly', () => {
+        const diagram = createSprottyDiagram();
+        const logger = recordWarnings(diagram.container);
+        diagram.container.get<ViewRegistry>(TYPES.ViewRegistry);
+        diagram.addModelElement('node:custom', SNodeImpl, CustomNodeView);
+        expect(logger.warnings).to.have.lengthOf(1);
+        expect(logger.warnings[0]).to.contain(`addModelElement('node:custom')`);
+    });
+
+    it('seals commands and action handlers when the handler registry is resolved through the container', () => {
+        const diagram = createSprottyDiagram();
+        const logger = recordWarnings(diagram.container);
+        diagram.container.get(ActionHandlerRegistry);
+        diagram.addActionHandler('test', TestActionHandler);
+        expect(logger.warnings).to.have.lengthOf(1);
+        expect(logger.warnings[0]).to.contain(`addActionHandler('test')`);
     });
 });

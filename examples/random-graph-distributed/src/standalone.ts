@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { RequestModelAction, FitToScreenAction } from 'sprotty-protocol';
-import createDiagram from './simpleAPI.js';
+import createDiagram from './simple-api.js';
 
 export default function runRandomGraphDistributed() {
     const diagram = createDiagram('sprotty');

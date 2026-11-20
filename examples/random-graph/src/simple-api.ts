@@ -19,8 +19,8 @@ import ElkConstructor from 'elkjs/lib/elk.bundled.js';
 import { ContainerModule } from 'inversify';
 import {
     Animation, CommandExecutionContext, createSprottyDiagram, edgeIntersectionModule, edgeJunctionModule,
-    isSelectable, isViewport, LogLevel, PolylineEdgeViewWithGapsOnIntersections, SEdgeImpl, SLabelImpl, SLabelView,
-    SModelRootImpl, SPortImpl, TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
+    isSelectable, isViewport, LogLevel, PolylineEdgeViewWithGapsOnIntersections, SLabelView,
+    SModelRootImpl, TYPES, UpdateAnimationData, UpdateModelCommand, ViewportAnimation
 } from 'sprotty';
 import {
     DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, elkLayoutModule, ILayoutConfigurator
@@ -53,10 +53,10 @@ export default (containerId: string) => {
         modules: [edgeIntersectionModule, edgeJunctionModule, elkLayoutModule, randomGraphModule],
         elements: {
             // Deliberately replace the default views of the basic 'port' and 'edge' types
-            'port': [SPortImpl, PortViewWithExternalLabel],
-            'edge': [SEdgeImpl, PolylineEdgeViewWithGapsOnIntersections],
-            'label:node': [SLabelImpl, SLabelView],
-            'label:port': [SLabelImpl, SLabelView]
+            'port': { view: PortViewWithExternalLabel },
+            'edge': { view: PolylineEdgeViewWithGapsOnIntersections },
+            'label:node': { view: SLabelView },
+            'label:port': { view: SLabelView }
         }
     });
 };

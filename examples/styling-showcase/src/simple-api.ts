@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import {
-    LogLevel, RectangularNodeView, PolylineEdgeView, SNodeImpl, SEdgeImpl, SLabelImpl, SLabelView,
+    LogLevel, RectangularNodeView, PolylineEdgeView, SLabelView,
     selectFeature, hoverFeedbackFeature, createSprottyDiagram
 } from 'sprotty';
 import { LoadMonitorNodeView } from './views.js';
@@ -31,31 +31,31 @@ export default () => {
         logLevel: LogLevel.log,
         elements: {
             // Section 1: Default styling - basic nodes with only sprotty-node class
-            'node:default': [SNodeImpl, RectangularNodeView],
+            'node:default': { view: RectangularNodeView },
 
             // Section 2: Subtype-based styling - different node types get additional CSS classes
-            'node:server': [SNodeImpl, RectangularNodeView],
-            'node:database': [SNodeImpl, RectangularNodeView],
-            'node:router': [SNodeImpl, RectangularNodeView],
+            'node:server': { view: RectangularNodeView },
+            'node:database': { view: RectangularNodeView },
+            'node:router': { view: RectangularNodeView },
 
             // Section 3: Custom CSS classes - node with additional cssClasses property
-            'node:critical': [SNodeImpl, RectangularNodeView],
+            'node:critical': { view: RectangularNodeView },
 
             // Section 4: Conditional styling - custom view with dynamic CSS classes
-            'node:load-monitor': [SNodeImpl, LoadMonitorNodeView],
+            'node:load-monitor': { view: LoadMonitorNodeView },
 
             // Section 5: Interactive styling - node with selection and hover features
-            'node:interactive': [SNodeImpl, RectangularNodeView, {
+            'node:interactive': { view: RectangularNodeView, features: {
                 enable: [selectFeature, hoverFeedbackFeature]
-            }],
+            } },
 
             // Edge configurations
-            'edge:ethernet': [SEdgeImpl, PolylineEdgeView],
-            'edge:wireless': [SEdgeImpl, PolylineEdgeView],
-            'edge:fiber': [SEdgeImpl, PolylineEdgeView],
+            'edge:ethernet': { view: PolylineEdgeView },
+            'edge:wireless': { view: PolylineEdgeView },
+            'edge:fiber': { view: PolylineEdgeView },
 
             // Label configuration
-            'label:text': [SLabelImpl, SLabelView]
+            'label:text': { view: SLabelView }
         }
     });
 };

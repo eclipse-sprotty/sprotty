@@ -17,7 +17,7 @@
 import { ContainerModule } from 'inversify';
 import {
     SCompartmentView, SLabelView, TYPES, LogLevel, HtmlRootView, PreRenderedView, SvgExporter,
-    PreRenderedElementImpl, HtmlRootImpl, SLabelImpl, SCompartmentImpl, createSprottyDiagram
+    PreRenderedElementImpl, HtmlRootImpl, createSprottyDiagram
 } from 'sprotty';
 import { ProcessorView, CoreView, CrossbarView, ChannelView, SimpleCoreView } from './views.js';
 import { Channel, Core, Crossbar, Processor } from './chipmodel.js';
@@ -49,16 +49,16 @@ export default () => {
         logLevel: LogLevel.log,
         modules: [multicoreModule],
         elements: {
-            'processor': [Processor, ProcessorView],
-            'core': [Core, CoreView],
-            'simplecore': [Core, SimpleCoreView],
-            'crossbar': [Crossbar, CrossbarView],
-            'channel': [Channel, ChannelView],
-            'label:heading': [SLabelImpl, SLabelView],
-            'label:info': [SLabelImpl, SLabelView],
-            'comp': [SCompartmentImpl, SCompartmentView],
-            'html': [HtmlRootImpl, HtmlRootView],
-            'pre-rendered': [PreRenderedElementImpl, PreRenderedView]
+            'processor': { model: Processor, view: ProcessorView },
+            'core': { model: Core, view: CoreView },
+            'simplecore': { model: Core, view: SimpleCoreView },
+            'crossbar': { model: Crossbar, view: CrossbarView },
+            'channel': { model: Channel, view: ChannelView },
+            'label:heading': { view: SLabelView },
+            'label:info': { view: SLabelView },
+            'comp': { view: SCompartmentView },
+            'html': { model: HtmlRootImpl, view: HtmlRootView },
+            'pre-rendered': { model: PreRenderedElementImpl, view: PreRenderedView }
         }
     });
 };

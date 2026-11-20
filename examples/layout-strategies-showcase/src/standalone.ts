@@ -16,7 +16,7 @@
 
 import { SprottyDiagram } from 'sprotty';
 import { SGraph, SNode, SEdge, SLabel, SCompartment, FitToScreenAction } from 'sprotty-protocol';
-import { createLayoutDiagram } from './simpleAPI.js';
+import { createLayoutDiagram } from './simple-api.js';
 // Global variables for the demo
 let currentDiagram: SprottyDiagram;
 let currentStrategy: 'client' | 'server' | 'hybrid' = 'client';

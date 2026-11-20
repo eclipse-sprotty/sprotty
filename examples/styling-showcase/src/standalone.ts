@@ -15,7 +15,7 @@
  ********************************************************************************/
 
 import { SGraph, SNode, SEdge, SLabel, FitToScreenAction } from 'sprotty-protocol';
-import createDiagram from './simpleAPI.js';
+import createDiagram from './simple-api.js';
 
 export default async function runStylingShowcase() {
     const diagram = createDiagram();

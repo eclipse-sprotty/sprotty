@@ -16,8 +16,9 @@ the common case. While it was being designed, a variant that returned the raw In
 was prototyped; it was never committed, and neither was any other variant recorded below, so no
 deprecation cycle under ADR-0003 applies to anything this record rejects.
 
-Three decisions shape the API, and they are recorded together because they constrain each other:
-what the factory returns, who registers the base element types, and the shape of the options object.
+Four decisions shape the API, and they are recorded together because they constrain each other:
+what the factory returns, who registers the base element types, the shape of the options object, and
+the shape of one element registration.
 
 What application code needs from the result can be counted rather than guessed. Across the 12
 example applications, code outside a `di.config.ts` resolves exactly two services from the
@@ -55,9 +56,12 @@ verbs, the model verbs, and the three `addX` registration methods. Five properti
   one with `RequestModelAction` instead. A verb that is absent teaches that boundary at the call
   site; one that throws teaches it at run time. Rejected: declaring `setModel` unconditionally and
   rejecting at run time when the bound source cannot honour it.
-- **The dispatcher is mirrored by `extends IActionDispatcher`, and no further.** The diagram carries
-  `dispatch`, `dispatchAll` and `request` because it *is* an `IActionDispatcher` and can be passed
-  wherever one is expected; the compiler then keeps the mirror complete if that interface grows.
+- **The dispatcher is mirrored by intersecting `IActionDispatcher`, and no further.**
+  `SprottyDiagram<S>` is `SprottyDiagramBase<S> & IActionDispatcher & LocalModelVerbs<S>`: the diagram
+  carries `dispatch`, `dispatchAll` and `request` because it *is* an `IActionDispatcher` and can be
+  passed wherever one is expected; the compiler then keeps the mirror complete if that interface
+  grows. `SprottyDiagramBase` holds only what the diagram adds, so the dispatcher sits beside the
+  model verbs as one more capability rather than as the base's supertype.
   Rejected: named verbs for common actions (`fitToScreen`, `center`, `undo`). `sprotty-protocol`
   alone declares 34 action namespaces, so any subset is arbitrary and permanently behind, and it
   would set up a second, partial vocabulary beside the actions.
@@ -67,21 +71,24 @@ verbs, the model verbs, and the three `addX` registration methods. Five properti
   `ContainerModule` calls `configureModelElement`, `configureCommand` and `configureActionHandler`.
 - **A late registration warns.** Registrations are read once, when the registries are built, and a
   later one is otherwise silently ignored — the diagram paints a `MissingView` for a type the author
-  did register. Because the verbs pass *through* the diagram, it can flag the moment registration is
-  sealed and log a warning naming the call. Rejected: throwing. Sealing is asynchronous —
-  `ActionDispatcher.initialize` builds the action handler registry inside a `.then`, and the viewer
-  (and with it the view registry) is resolved through `IViewerProvider` only when the command stack
-  first renders — so a registration made in the same tick as the first dispatch may still land, and
-  throwing would reject a call that would have worked. The warning is logged at `warn`, which is this
-  API's default log level precisely so that registration mistakes are visible.
+  did register. The diagram watches the registries themselves: it registers Inversify's
+  container-level `onActivation` for `ActionHandlerRegistry` (closing `addCommand` and
+  `addActionHandler`) and for `TYPES.SModelRegistry` and `TYPES.ViewRegistry` (closing
+  `addModelElement`). All three are singletons, so each hook fires once, at exactly the moment the
+  registrations are read — however the registry was reached, through the diagram's verbs or straight
+  from `diagram.container`. Rejected: setting the flags from the diagram's own verbs and accessors,
+  which misses every registry built through the container, and is how the first version worked.
+  Rejected: throwing. A late registration only fails to take effect; throwing would turn that into a
+  failure of a diagram that otherwise works. The warning is logged at `warn`, which is this API's
+  default log level precisely so that registration mistakes are visible.
 - **Services resolve lazily.** `modelSource` and `actionDispatcher` are getters over
   `container.get`. Both bindings are singletons, so a getter is identity-stable, and the factory
   stays pure: it instantiates nothing, needs no DOM, and leaves the container open to a later `load`
   or `rebind`. Rejected: resolving both in the factory and storing them as fields, which would build
   the dispatcher, command stack and model source at construction and silently miss any binding
   changed afterwards. The laziness ends at the first read: either getter reaches the command stack,
-  whose `@postConstruct` builds `SModelRegistry`, so reading one closes element registration, and
-  the getters flag that for `addModelElement`.
+  whose `@postConstruct` builds `SModelRegistry`, so reading one closes element registration — which
+  the activation hook above observes like any other path.
 
 `SprottyDiagram` is exported as a type; the implementing class is not. Under ADR-0003 an exported
 class freezes its constructor signature and protected members as public API, and there is no
@@ -146,6 +153,41 @@ The nested shape also matches how `ViewerOptions` is handled everywhere else —
 `configureViewerOptions`, `overrideViewerOptions` and `TYPES.ViewerOptions` all treat it as one
 object — so a caller already holding a `Partial<ViewerOptions>` passes it straight through.
 
+## Decision 4: an element registration is an object, and its model class may be inferred
+
+An entry under `elements` is `{ model?, view, features? }`, not a positional tuple. When `model` is
+omitted it is inferred from the type's prefix — the part before the first `:` — through the exported
+`inferredModelClasses` table: `node:task` gets `SNodeImpl`, `label:info` gets `SLabelImpl`,
+`comp:body` and `compartment:body` get `SCompartmentImpl`. An entry without `model` whose prefix is
+not in the table makes `createSprottyDiagram` throw, naming the type.
+
+### Options considered
+
+1. **A tuple `[model, view, features?]`.** Shortest to write, but its positions carry no names, and a
+   fourth field could only be appended positionally. The first version used it.
+2. **An object with a required `model`.** Readable and extensible, but every entry still imports a
+   model class, even the many that only repeat the class the prefix already names.
+3. **An object plus built-in names**, `{ standardModel: 'node' } | { model }` and
+   `{ standardView: 'rectangular-node' } | { view }`, so that newcomers import nothing. Rejected: it
+   adds a second vocabulary of strings that must stay in step with the framework's classes, pulls
+   every named view into the bundle whether used or not, and sits a string `'node'` right next to type
+   keys such as `'node:task'` that mean something else.
+4. **An object whose `model` is inferred from the type prefix.**
+
+### Decision
+
+Option 4. The `prefix:subtype` convention for type strings already runs through Sprotty — the
+default views, CSS classes and features all assume it — so inference uses an existing vocabulary
+instead of inventing one. Across the examples it drops the model class from roughly half the entries
+and, with it, most `S*Impl` imports. An unknown prefix throws rather than falling back to a generic
+element: the fallback would surface later, as an element that renders but lacks the behaviour its
+type suggests. The error arrives at construction, like any other mistake in the options object;
+only a late `addX` call, a timing mistake, warns.
+
+`defaultElements()` is a function returning a fresh object, following `defaultViewerOptions()`, so
+no caller can change the defaults of another diagram. `addModelElement` keeps its positional
+signature: it is an imperative call with a fixed arity, where named fields add nothing.
+
 ## Consequences
 
 - An application needs neither `TYPES` nor `container.get` for the ordinary path; `container`
@@ -158,17 +200,15 @@ object — so a caller already holding a `Partial<ViewerOptions>` passes it stra
 - The base-vocabulary contract is enforced by convention and documentation, not by the type system.
   Modules written against older Sprotty versions may collide, and the error arrives at first render
   rather than at diagram construction.
-- `defaultElements` must keep covering every element type the default modules can create.
+- `defaultElements()` must keep covering every element type the default modules can create.
   `routing-point` and `volatile-routing-point` are included because `routingModule` is always loaded
   and creates those handles whenever an edge is selected.
-- The late-registration warning is **best-effort**. Element registration is caught on every ordinary
-  path, because both accessors that close it belong to the diagram; only resolving services straight
-  from `diagram.container` escapes it. Command and handler registration is caught less often:
-  `diagram.actionDispatcher.dispatch(…)` or `diagram.modelSource.setModel(…)` builds
-  `ActionHandlerRegistry` without the diagram seeing a dispatch, and a later `addCommand` or
-  `addActionHandler` then falls back to the silent behaviour. Detecting it exactly would require the
-  registries to report their own construction — a change to shared framework machinery for one
-  convenience layer, the same trade Decision 2 declines.
+- The late-registration warning is **exact** for registrations made through the diagram's `addX`
+  methods: the registries report their own construction through Inversify's activation hooks, which
+  needs no change to shared framework machinery. A registration bound by hand on `diagram.container`
+  after that point is still silently ignored, since it never passes through the diagram.
+- `inferredModelClasses` is public API: adding a prefix is compatible, while removing one or changing
+  its class breaks every registration that relies on it.
 - `SprottyDiagramOptions` carries a type parameter. It is defaulted, so `createSprottyDiagram({…})`
   never mentions it; a caller who declares an options object separately and passes a non-local model
   source must write `SprottyDiagramOptions<WebSocketDiagramServerProxy>` for the model verbs to

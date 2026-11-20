@@ -17,10 +17,8 @@
 import {
     LogLevel,
     RectangularNodeView,
-    SCompartmentImpl,
     SCompartmentView,
-    SLabelImpl, SLabelView,
-    SNodeImpl,
+    SLabelView,
     createSprottyDiagram,
     layoutableChildFeature
 } from 'sprotty';
@@ -36,25 +34,25 @@ export default () => {
         logLevel: LogLevel.log,
         elements: {
             // Interactive card that users can modify
-            'node:interactive-card': [InteractiveCardNode, InteractiveCardView, { enable: [layoutableChildFeature] }],
+            'node:interactive-card': { model: InteractiveCardNode, view: InteractiveCardView, features: { enable: [layoutableChildFeature] } },
 
             // Demo cards showing different layout types
-            'node:demo-card': [SNodeImpl, DemoCardView, { enable: [layoutableChildFeature] }],
+            'node:demo-card': { view: DemoCardView, features: { enable: [layoutableChildFeature] } },
 
             // Small components (icons, buttons, metrics)
-            'node:component': [SNodeImpl, ComponentView, { enable: [layoutableChildFeature] }],
+            'node:component': { view: ComponentView, features: { enable: [layoutableChildFeature] } },
 
             // Basic nodes for nested examples (with layoutableChildFeature)
-            'node:basic': [SNodeImpl, RectangularNodeView, { enable: [layoutableChildFeature] }],
+            'node:basic': { view: RectangularNodeView, features: { enable: [layoutableChildFeature] } },
 
             // Regular nodes for comparison (without layoutableChildFeature)
-            'node:regular': [SNodeImpl, RectangularNodeView],
+            'node:regular': { view: RectangularNodeView },
 
             // Compartments for complex layouts
-            'comp:compartment': [SCompartmentImpl, SCompartmentView],
+            'comp:compartment': { view: SCompartmentView },
 
             // Labels
-            'label:text': [SLabelImpl, SLabelView]
+            'label:text': { view: SLabelView }
         }
     });
 };

@@ -94,7 +94,7 @@ createSprottyDiagram({
     logLevel: LogLevel.log,
     elements: {
         // Enable layoutable child feature for nested nodes
-        'node:basic': [SNodeImpl, RectangularNodeView, { enable: [layoutableChildFeature] }]
+        'node:basic': { view: RectangularNodeView, features: { enable: [layoutableChildFeature] } }
     }
 });
 ```
@@ -118,7 +118,7 @@ document.querySelectorAll('input[name="layout"]').forEach(radio => {
 
 - `src/model.ts` - Interactive card model with layout properties
 - `src/views.tsx` - Custom views for cards and components
-- `src/simpleAPI.ts` - Diagram configuration with `createSprottyDiagram` (client layout is its default)
+- `src/simple-api.ts` - Diagram configuration with `createSprottyDiagram` (client layout is its default)
 - `src/standalone.ts` - Main application and interactive controls
 - `css/diagram.css` - Card and component styling
 - `css/page.css` - Page layout and control panel styling

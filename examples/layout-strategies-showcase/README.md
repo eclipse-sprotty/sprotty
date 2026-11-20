@@ -66,7 +66,7 @@ After exploring this example, you should understand:
 src/
 ├── model.ts          # Layout-aware model classes for each strategy
 ├── views.tsx         # Custom views optimized for each layout type
-├── simpleAPI.ts      # One set of diagram options per strategy
+├── simple-api.ts     # One set of diagram options per strategy
 └── standalone.ts     # Demo application with strategy switching
 
 css/
@@ -76,7 +76,7 @@ css/
 
 ## Implementation Patterns
 
-Each strategy is one set of options for `createSprottyDiagram`, in `simpleAPI.ts`. The diagram
+Each strategy is one set of options for `createSprottyDiagram`, in `simple-api.ts`. The diagram
 supplies the model source, the logger and the default element types; every strategy replaces the
 default `edge` view with `LayoutEdgeView`.
 
@@ -87,8 +87,8 @@ client: () => ({
     // needsClientLayout: true and needsServerLayout: false are the defaults
     logLevel: LogLevel.log,
     elements: {
-        'node:client': [SNodeImpl, ClientLayoutNodeView],
-        'edge': [SEdgeImpl, LayoutEdgeView]
+        'node:client': { view: ClientLayoutNodeView },
+        'edge': { view: LayoutEdgeView }
         // ...compartments and labels with layoutableChildFeature
     }
 })
@@ -123,8 +123,8 @@ server: () => ({
     logLevel: LogLevel.log,
     modules: [elkLayoutEngineModule(ServerLayoutConfigurator)],
     elements: {
-        'node': [ServerLayoutNode, ServerLayoutNodeView],
-        'edge': [LayoutEdge, LayoutEdgeView]
+        'node': { model: ServerLayoutNode, view: ServerLayoutNodeView },
+        'edge': { model: LayoutEdge, view: LayoutEdgeView }
     }
 })
 ```
@@ -142,10 +142,10 @@ hybrid: () => ({
     modules: [elkLayoutEngineModule(HybridLayoutConfigurator)],
     elements: {
         // Register with layout features
-        'node:hybrid': [SNodeImpl, HybridLayoutNodeView, {
+        'node:hybrid': { view: HybridLayoutNodeView, features: {
             enable: [layoutContainerFeature, layoutableChildFeature, boundsFeature]
-        }],
-        'edge': [SEdgeImpl, LayoutEdgeView]
+        } },
+        'edge': { view: LayoutEdgeView }
         // ...compartments and labels
     }
 })

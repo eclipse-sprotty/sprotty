@@ -22,11 +22,7 @@ import {
     LogLevel,
     SprottyDiagram,
     SprottyDiagramOptions,
-    SNodeImpl,
-    SEdgeImpl,
-    SCompartmentImpl,
     SCompartmentView,
-    SLabelImpl,
     SLabelView,
     layoutableChildFeature,
     layoutContainerFeature,
@@ -133,17 +129,17 @@ const strategyOptions: Record<'client' | 'server' | 'hybrid', () => SprottyDiagr
     client: () => ({
         logLevel: LogLevel.log,
         elements: {
-            'node:client': [SNodeImpl, ClientLayoutNodeView],
-            'compartment:layout': [SCompartmentImpl, SCompartmentView, {
+            'node:client': { view: ClientLayoutNodeView },
+            'compartment:layout': { view: SCompartmentView, features: {
                 enable: [layoutContainerFeature, layoutableChildFeature]
-            }],
-            'label:layout': [SLabelImpl, SLabelView, {
+            } },
+            'label:layout': { view: SLabelView, features: {
                 enable: [layoutableChildFeature]
-            }],
-            'label:text': [SLabelImpl, SLabelView, {
+            } },
+            'label:text': { view: SLabelView, features: {
                 enable: [layoutableChildFeature]
-            }],
-            'edge': [SEdgeImpl, LayoutEdgeView]
+            } },
+            'edge': { view: LayoutEdgeView }
         }
     }),
 
@@ -156,8 +152,8 @@ const strategyOptions: Record<'client' | 'server' | 'hybrid', () => SprottyDiagr
         logLevel: LogLevel.log,
         modules: [elkLayoutEngineModule(ServerLayoutConfigurator)],
         elements: {
-            'node': [ServerLayoutNode, ServerLayoutNodeView],
-            'edge': [LayoutEdge, LayoutEdgeView]
+            'node': { model: ServerLayoutNode, view: ServerLayoutNodeView },
+            'edge': { model: LayoutEdge, view: LayoutEdgeView }
         }
     }),
 
@@ -170,19 +166,19 @@ const strategyOptions: Record<'client' | 'server' | 'hybrid', () => SprottyDiagr
         logLevel: LogLevel.log,
         modules: [elkLayoutEngineModule(HybridLayoutConfigurator)],
         elements: {
-            'node:hybrid': [SNodeImpl, HybridLayoutNodeView, {
+            'node:hybrid': { view: HybridLayoutNodeView, features: {
                 enable: [layoutContainerFeature, layoutableChildFeature, boundsFeature]
-            }],
-            'compartment:layout': [SCompartmentImpl, SCompartmentView, {
+            } },
+            'compartment:layout': { view: SCompartmentView, features: {
                 enable: [layoutContainerFeature, layoutableChildFeature, boundsFeature]
-            }],
-            'label:layout': [SLabelImpl, SLabelView, {
+            } },
+            'label:layout': { view: SLabelView, features: {
                 enable: [layoutableChildFeature, boundsFeature]
-            }],
-            'label:text': [SLabelImpl, SLabelView, {
+            } },
+            'label:text': { view: SLabelView, features: {
                 enable: [layoutableChildFeature, boundsFeature]
-            }],
-            'edge': [SEdgeImpl, LayoutEdgeView]
+            } },
+            'edge': { view: LayoutEdgeView }
         }
     })
 };

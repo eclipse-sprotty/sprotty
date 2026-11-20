@@ -34,17 +34,17 @@ export default () => {
         },
         logLevel: LogLevel.log,
         elements: {
-            'svg': [ViewportRootElementImpl, ProjectedViewportView],
-            'pre-rendered': [ShapedPreRenderedElementImpl, PreRenderedView],
-            'foreign-object': [ForeignObjectElementImpl, ForeignObjectView],
+            'svg': { model: ViewportRootElementImpl, view: ProjectedViewportView },
+            'pre-rendered': { model: ShapedPreRenderedElementImpl, view: PreRenderedView },
+            'foreign-object': { model: ForeignObjectElementImpl, view: ForeignObjectView },
             // Deliberately replaces the default model class of the basic 'node' type
-            'node': [RectangleWithEditableLabel, RectangularNodeView, {
+            'node': { model: RectangleWithEditableLabel, view: RectangularNodeView, features: {
                 enable: [withEditLabelFeature]
-            }],
-            'child-foreign-object': [EditableForeignObjectElement, ForeignObjectView, {
+            } },
+            'child-foreign-object': { model: EditableForeignObjectElement, view: ForeignObjectView, features: {
                 disable: [moveFeature, selectFeature], // disable move/select as we want the parent node to react to select/move
                 enable: [editLabelFeature] // enable editing -- see also EditableForeignObjectElement below
-            }]
+            } }
         }
     });
 };

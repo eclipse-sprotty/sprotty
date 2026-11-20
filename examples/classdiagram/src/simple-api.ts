@@ -31,10 +31,7 @@ import {
     SBezierControlHandleView,
     SBezierCreateHandleView,
     SButtonImpl,
-    SCompartmentImpl,
     SCompartmentView,
-    SEdgeImpl,
-    SLabelImpl,
     SLabelView,
     SRoutingHandleImpl,
     TYPES,
@@ -82,29 +79,29 @@ export default (containerId: string) => {
         logLevel: LogLevel.log,
         modules: [edgeIntersectionModule, classDiagramModule],
         elements: {
-            'node:package': [RectangularNode, NodeView],
-            'node:class': [ClassNode, NodeView, {
+            'node:package': { model: RectangularNode, view: NodeView },
+            'node:class': { model: ClassNode, view: NodeView, features: {
                 enable: [expandFeature, nameFeature, withEditLabelFeature]
-            }],
-            'label:heading': [ClassLabel, SLabelView, {
+            } },
+            'label:heading': { model: ClassLabel, view: SLabelView, features: {
                 enable: [editLabelFeature]
-            }],
-            'label:text': [PropertyLabel, SLabelView, {
+            } },
+            'label:text': { model: PropertyLabel, view: SLabelView, features: {
                 enable: [moveFeature, selectFeature]
-            }],
-            'comp:comp': [SCompartmentImpl, SCompartmentView],
-            'comp:header': [SCompartmentImpl, SCompartmentView],
-            'comp:pkgcontent': [SCompartmentImpl, SCompartmentView],
-            'icon': [Icon, IconView],
-            'label:icon': [SLabelImpl, SLabelView],
-            'edge:straight': [SEdgeImpl, JumpingPolylineEdgeView],
-            'edge:bezier': [SEdgeImpl, BezierCurveEdgeView],
-            'html': [HtmlRootImpl, HtmlRootView],
-            'pre-rendered': [PreRenderedElementImpl, PreRenderedView],
-            'button:expand': [SButtonImpl, ExpandButtonView],
-            'bezier-create-routing-point': [SRoutingHandleImpl, SBezierCreateHandleView],
-            'bezier-remove-routing-point': [SRoutingHandleImpl, SBezierCreateHandleView],
-            'bezier-routing-point': [SRoutingHandleImpl, SBezierControlHandleView]
+            } },
+            'comp:comp': { view: SCompartmentView },
+            'comp:header': { view: SCompartmentView },
+            'comp:pkgcontent': { view: SCompartmentView },
+            'icon': { model: Icon, view: IconView },
+            'label:icon': { view: SLabelView },
+            'edge:straight': { view: JumpingPolylineEdgeView },
+            'edge:bezier': { view: BezierCurveEdgeView },
+            'html': { model: HtmlRootImpl, view: HtmlRootView },
+            'pre-rendered': { model: PreRenderedElementImpl, view: PreRenderedView },
+            'button:expand': { model: SButtonImpl, view: ExpandButtonView },
+            'bezier-create-routing-point': { model: SRoutingHandleImpl, view: SBezierCreateHandleView },
+            'bezier-remove-routing-point': { model: SRoutingHandleImpl, view: SBezierCreateHandleView },
+            'bezier-routing-point': { model: SRoutingHandleImpl, view: SBezierControlHandleView }
         }
     });
 };

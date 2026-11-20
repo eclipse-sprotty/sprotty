@@ -16,7 +16,7 @@
 
 import { ElementMove } from 'sprotty';
 import { Bounds, Point, SEdge, SelectAction, SGraph, SNode, getBasicType, MoveAction } from 'sprotty-protocol';
-import createDiagram from './simpleAPI.js';
+import createDiagram from './simple-api.js';
 
 const NODE_SIZE = 60;
 

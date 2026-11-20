@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2026 TypeFox and others.
+ * Copyright (c) 2024-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-import { LogLevel, WebSocketDiagramServerProxy, createSprottyDiagram } from 'sprotty';
+import { LogLevel, createSprottyDiagram } from "sprotty";
+import { ExampleNodeView } from "./views.js";
 
-/**
- * The server sends only the default element types, so no `elements` are registered. With a
- * server-backed model source the diagram has no `setModel`/`updateModel`: the model is requested
- * through the dispatcher instead.
- */
 export default (containerId: string) => {
-    require('sprotty/css/sprotty.css');
     require('../css/diagram.css');
 
     return createSprottyDiagram({
-        modelSource: WebSocketDiagramServerProxy,
-        viewerOptions: {
-            needsClientLayout: false,
-            needsServerLayout: true,
-            baseDiv: containerId
-        },
-        logLevel: LogLevel.log
+        logLevel: LogLevel.log,
+        elements: {
+            // Deliberately replaces the default view of the basic 'node' type
+            'node': { view: ExampleNodeView }
+        }
     });
 };

@@ -15,29 +15,36 @@
  ********************************************************************************/
 
 /*
- * Styling for the element types registered by `createSprottyContainer`.
+ * Styling for the element types registered by `createSprottyDiagram`.
  *
  * Import alongside `sprotty.css`, which carries the rules the framework itself needs. Without
  * these rules SVG defaults apply: nodes fill black and edges render as filled shapes rather than
  * lines. Override any rule in your own stylesheet.
+ *
+ * Node and port rules match only the shapes the default views render (`rect`, `circle`,
+ * `polygon`), so a custom view that puts `.sprotty-node` on a wrapper `<g>` does not pass these
+ * paints down to its descendants. `:where()` adds no specificity, so these rules weigh the same as
+ * a plain `.sprotty-node` rule, and a stylesheet loaded after this one overrides them. Edge rules
+ * stay on the class: the default edge view puts it on a `<g>` on purpose, and its path inherits
+ * `fill: none` and the stroke from there.
  */
 
-.sprotty-node {
+:where(rect, circle, polygon).sprotty-node {
     fill: #aae;
     stroke: #66b;
     stroke-width: 1;
 }
 
-.sprotty-node.mouseover {
+:where(rect, circle, polygon).sprotty-node.mouseover {
     stroke-width: 2;
 }
 
-.sprotty-node.selected {
+:where(rect, circle, polygon).sprotty-node.selected {
     stroke: #66b;
     stroke-width: 3;
 }
 
-.sprotty-port {
+:where(rect, circle, polygon).sprotty-port {
     fill: #66b;
     stroke: #66b;
     stroke-width: 1;

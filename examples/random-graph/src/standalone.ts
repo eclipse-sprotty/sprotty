@@ -16,7 +16,7 @@
 
 import { ILayoutConfigurator } from 'sprotty-elk';
 import { SEdge, SGraph, SLabel, SNode, SPort } from 'sprotty-protocol';
-import createDiagram, { RandomGraphLayoutConfigurator } from './simpleAPI.js';
+import createDiagram, { RandomGraphLayoutConfigurator } from './simple-api.js';
 
 export default function runRandomGraph() {
     const diagram = createDiagram('sprotty');

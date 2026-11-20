@@ -20,7 +20,7 @@ import {
     CORE_WIDTH,
     ChannelSchema, CoreSchema, CrossbarSchema, Direction, ProcessorSchema
 } from './chipmodel.js';
-import createDiagram from './simpleAPI.js';
+import createDiagram from './simple-api.js';
 
 export default function runMulticore() {
     const diagram = createDiagram();

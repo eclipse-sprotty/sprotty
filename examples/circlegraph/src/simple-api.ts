@@ -16,7 +16,7 @@
 
 import { ContainerModule, injectable, inject } from 'inversify';
 import {
-    TYPES, LogLevel, CircularNode, SEdgeImpl, selectFeature, PolylineEdgeView, MouseListener,
+    TYPES, LogLevel, CircularNode, selectFeature, PolylineEdgeView, MouseListener,
     SModelElementImpl, createSprottyDiagram
 } from 'sprotty';
 import { Action, Point } from 'sprotty-protocol';
@@ -42,8 +42,8 @@ export default (nodeCreator: (point?: Point) => void) => {
         logLevel: LogLevel.log,
         modules: [circlegraphModule],
         elements: {
-            'node:circle': [CircularNode, CircleNodeView],
-            'edge:straight': [SEdgeImpl, PolylineEdgeView, { disable: [selectFeature] }]
+            'node:circle': { model: CircularNode, view: CircleNodeView },
+            'edge:straight': { view: PolylineEdgeView, features: { disable: [selectFeature] } }
         }
     });
 };
