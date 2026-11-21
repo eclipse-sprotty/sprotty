@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2024 TypeFox and others.
+ * Copyright (c) 2017-2026 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,7 @@ export const TYPES = {
     ModelSource: Symbol('ModelSource'),
     ModelSourceProvider: Symbol('ModelSourceProvider'),
     ModelViewer: Symbol('ModelViewer'),
+    /** Multi-inject token for IMouseListener implementations (see mouse-tool). */
     MouseListener: Symbol('MouseListener'),
     PatcherProvider: Symbol('PatcherProvider'),
     IPointerListener: Symbol('IPointerListener'),
