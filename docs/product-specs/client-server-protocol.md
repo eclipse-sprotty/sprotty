@@ -4,7 +4,7 @@
 
 ## Behaviour contract
 
-Layout responsibility is negotiated by two flags — `needsClientLayout` (default `true`) and `needsServerLayout` (default `false`) — set in the client's `ViewerOptions` and transmitted to the server inside `RequestModelAction.options`:
+Layout responsibility is negotiated by two flags — `microLayoutOnModelUpdate` (default `true`) and `serverLayoutOnModelUpdate` (default `false`) — set in the client's `ViewerOptions` and transmitted to the server inside `RequestModelAction.options`. The flags were named `needsClientLayout` / `needsServerLayout` before 2.0; a server that still reads the old keys does not find them and uses its defaults:
 
 - Neither flag: the server answers `RequestModelAction` with `SetModelAction` carrying final coordinates — enforced by `packages/sprotty-protocol/src/diagram-server.spec.ts` ("sets the model without client or server layout").
 - Server layout only: the server runs its `ModelLayoutEngine` before sending `SetModelAction`/`UpdateModelAction` — enforced by `packages/sprotty-protocol/src/diagram-server.spec.ts` ("sets the model with server layout, but without client layout").
@@ -14,7 +14,8 @@ Layout responsibility is negotiated by two flags — `needsClientLayout` (defaul
 Further promises:
 
 - On the client, bounds requests are answered by measuring a hidden rendering — enforced by `packages/sprotty/src/features/bounds/hidden-bounds-updater.spec.ts`.
-- `LocalModelSource` honours the same negotiation without a server (fixed vs. dynamic bounds mode) — enforced by `packages/sprotty/src/model-source/local-model-source.spec.ts`.
+- `LocalModelSource` honours `microLayoutOnModelUpdate` without a server (fixed vs. dynamic bounds mode) — enforced by `packages/sprotty/src/model-source/local-model-source.spec.ts`.
+- `LocalModelSource` ignores `serverLayoutOnModelUpdate`: it runs its layout engine whenever one is bound — (unverified)
 - Custom server behaviour registers through `ServerActionHandlerRegistry`; action kinds without a registered handler fall back to the built-in handling — enforced by `packages/sprotty-protocol/src/diagram-server.spec.ts` ("calls a registered action handler" / "does not call an unregistered action handler").
 - Actions crossing the wire are plain JSON objects discriminated by `kind`; consumers never need `instanceof` (see ADR-0002) — (unverified)
 - Request/response actions correlate via `requestId`, namespaced per context (`setRequestContext`) so client- and server-generated ids cannot collide (see ADR-0001) — (unverified)
@@ -35,7 +36,7 @@ Further promises:
 - Server side: `DiagramServer`, `DiagramServices`, `IDiagramGenerator`, `IModelLayoutEngine`, `ServerActionHandlerRegistry`
 - Wire: `ActionMessage`, `RequestModelAction`, `SetModelAction`, `UpdateModelAction`, `RequestBoundsAction`, `ComputedBoundsAction`
 - Client side: `DiagramServerProxy`, `WebSocketDiagramServerProxy`, `LocalModelSource`
-- Config: `needsClientLayout`, `needsServerLayout` (in `ViewerOptions` / `DiagramOptions`)
+- Config: `microLayoutOnModelUpdate`, `serverLayoutOnModelUpdate` (in `ViewerOptions` / `DiagramOptions`)
 
 ## Pointers
 

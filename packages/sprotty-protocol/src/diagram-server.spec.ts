@@ -74,8 +74,8 @@ describe('DiagramServer', () => {
         await server.accept(<RequestModelAction>{
             kind: RequestModelAction.KIND,
             options: {
-                needsClientLayout: false,
-                needsServerLayout: false
+                microLayoutOnModelUpdate: false,
+                serverLayoutOnModelUpdate: false
             },
             requestId: 'req1'
         });
@@ -96,8 +96,8 @@ describe('DiagramServer', () => {
         await server.accept(<RequestModelAction>{
             kind: RequestModelAction.KIND,
             options: {
-                needsClientLayout: false,
-                needsServerLayout: true
+                microLayoutOnModelUpdate: false,
+                serverLayoutOnModelUpdate: true
             },
             requestId: 'req1'
         });
@@ -119,8 +119,8 @@ describe('DiagramServer', () => {
         await server.accept(<RequestModelAction>{
             kind: RequestModelAction.KIND,
             options: {
-                needsClientLayout: true,
-                needsServerLayout: false
+                microLayoutOnModelUpdate: true,
+                serverLayoutOnModelUpdate: false
             },
             requestId: 'req1'
         });
@@ -140,8 +140,8 @@ describe('DiagramServer', () => {
         server.accept(<RequestModelAction>{
             kind: RequestModelAction.KIND,
             options: {
-                needsClientLayout: true,
-                needsServerLayout: true
+                microLayoutOnModelUpdate: true,
+                serverLayoutOnModelUpdate: true
             },
             requestId: 'req1'
         });

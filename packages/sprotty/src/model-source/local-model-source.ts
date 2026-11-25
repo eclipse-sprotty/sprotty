@@ -146,11 +146,11 @@ export class LocalModelSource extends ModelSource {
     }
 
     /**
-     * If client layout is active, run a `RequestBoundsAction` and wait for the resulting
+     * If `microLayoutOnModelUpdate` is set, run a `RequestBoundsAction` and wait for the resulting
      * `ComputedBoundsAction`, otherwise call `doSubmitModel(…)` directly.
      */
     protected async submitModel(newRoot: SModelRoot, update: boolean | Match[], cause?: Action): Promise<void> {
-        if (this.viewerOptions.needsClientLayout) {
+        if (this.viewerOptions.microLayoutOnModelUpdate) {
             const computedBounds = await this.actionDispatcher.request<ComputedBoundsAction>(RequestBoundsAction.create(newRoot));
             const index = this.computedBoundsApplicator.apply(this.currentRoot, computedBounds);
             await this.doSubmitModel(newRoot, update, cause, index);

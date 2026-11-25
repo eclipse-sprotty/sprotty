@@ -31,7 +31,7 @@ After exploring this example, you should understand:
 
 1. **Layout Strategy Selection** - When to use client, server, or hybrid approaches
 2. **Configuration Patterns** - How to set up each strategy with dependency injection
-3. **Viewer Options** - Configuring `needsClientLayout` and `needsServerLayout` properly
+3. **Viewer Options** - Configuring `microLayoutOnModelUpdate`, and why `serverLayoutOnModelUpdate` only matters with a remote `DiagramServer`
 4. **ELK Integration** - Setting up Eclipse Layout Kernel for server-side layout
 5. **Layout Workflow** - Understanding the bounds computation and rendering phases
 6. **Model Structure** - How to structure models for each layout strategy
@@ -82,10 +82,9 @@ css/
 const clientLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     const context = { bind, unbind, isBound, rebind };
 
-    // Enable client layout only
+    // Micro-layout only: no layout engine is bound
     configureViewerOptions(context, {
-        needsClientLayout: true,
-        needsServerLayout: false,
+        microLayoutOnModelUpdate: true,
         baseDiv: 'sprotty'
     });
 
@@ -113,10 +112,9 @@ const serverLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) =
         )
     )).inSingletonScope();
 
-    // Enable server layout only
+    // Layout engine only: ELK runs because it is bound above
     configureViewerOptions(context, {
-        needsClientLayout: false,
-        needsServerLayout: true,
+        microLayoutOnModelUpdate: false,
         baseDiv: 'sprotty'
     });
 });
@@ -135,10 +133,9 @@ const hybridLayoutModule = new ContainerModule((bind, unbind, isBound, rebind) =
         new ElkLayoutEngine(/* ... */)
     )).inSingletonScope();
 
-    // Enable both layout types
+    // Micro-layout first, then ELK (bound above) positions the nodes using the measured bounds
     configureViewerOptions(context, {
-        needsClientLayout: true,   // For micro-layout
-        needsServerLayout: true    // For macro-layout
+        microLayoutOnModelUpdate: true
     });
 
     // Register with layout features

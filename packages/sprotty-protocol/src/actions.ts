@@ -263,8 +263,8 @@ export namespace SetBoundsAction {
 /**
  * Sent from the model source to the client to request bounds for the given model. The model is
  * rendered invisibly so the bounds can derived from the DOM. The response is a ComputedBoundsAction.
- * This hidden rendering round-trip is necessary if the client is responsible for parts of the layout
- * (see `needsClientLayout` viewer option).
+ * This hidden rendering round-trip measures element bounds and applies micro-layouts
+ * (see `microLayoutOnModelUpdate` viewer option).
  */
 export interface RequestBoundsAction extends RequestAction<ComputedBoundsAction> {
     kind: typeof RequestBoundsAction.KIND
@@ -284,8 +284,8 @@ export namespace RequestBoundsAction {
 
 /**
  * Sent from the client to the model source (e.g. a DiagramServer) to transmit the result of bounds
- * computation as a response to a RequestBoundsAction. If the server is responsible for parts of
- * the layout (see `needsServerLayout` viewer option), it can do so after applying the computed bounds
+ * computation as a response to a RequestBoundsAction. If the server runs its layout engine on model
+ * updates (see `serverLayoutOnModelUpdate` viewer option), it does so after applying the computed bounds
  * received with this action. Otherwise there is no need to send the computed bounds to the server,
  * so they can be processed locally by the client.
  */

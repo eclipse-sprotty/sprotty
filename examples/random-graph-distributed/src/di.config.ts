@@ -37,8 +37,8 @@ export default (containerId: string) => {
         configureModelElement(context, 'label', SLabelImpl, SLabelView);
 
         configureViewerOptions(context, {
-            needsClientLayout: false,
-            needsServerLayout: true,
+            microLayoutOnModelUpdate: false,
+            serverLayoutOnModelUpdate: true,
             baseDiv: containerId
         });
     });

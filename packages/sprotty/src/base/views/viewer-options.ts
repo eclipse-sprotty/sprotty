@@ -36,10 +36,16 @@ export interface ViewerOptions {
     popupClass: string
     /** CSS class added to popup boxes when they are closed. */
     popupClosedClass: string
-    /** Whether client layouts need to be computed by Sprotty. This activates a hidden rendering cycle. */
-    needsClientLayout: boolean
-    /** Whether the model source needs to invoke a layout engine after a model update. */
-    needsServerLayout: boolean
+    /**
+     * Whether model sources request a hidden rendering cycle before each model update: element bounds are
+     * measured in the DOM and the micro-layouts named in the `layout` property of containers are applied.
+     */
+    microLayoutOnModelUpdate: boolean
+    /**
+     * Whether a remote `DiagramServer` runs its layout engine on each model update, using the bounds computed
+     * by the client. Not used by `LocalModelSource`, which runs its layout engine whenever one is bound.
+     */
+    serverLayoutOnModelUpdate: boolean
     /** Delay for opening a popup box after mouse hovering an element. */
     popupOpenDelay: number
     /** Delay for closing a popup box after leaving the corresponding element. */
@@ -60,8 +66,8 @@ export const defaultViewerOptions: () => ViewerOptions = () => ({
     popupDiv: 'sprotty-popup',
     popupClass: 'sprotty-popup',
     popupClosedClass: 'sprotty-popup-closed',
-    needsClientLayout: true,
-    needsServerLayout: false,
+    microLayoutOnModelUpdate: true,
+    serverLayoutOnModelUpdate: false,
     popupOpenDelay: 1000,
     popupCloseDelay: 300,
     zoomLimits: { min: 0.01, max: 10 },

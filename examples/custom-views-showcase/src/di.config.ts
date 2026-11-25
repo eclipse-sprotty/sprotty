@@ -80,7 +80,7 @@ export default () => {
         configureModelElement(context, 'label:custom', CustomLabel, CustomLabelView);
 
         configureViewerOptions(context, {
-            needsClientLayout: false,
+            microLayoutOnModelUpdate: false,
             baseDiv: 'sprotty'
         });
     });

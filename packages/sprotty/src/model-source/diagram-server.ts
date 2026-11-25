@@ -172,8 +172,8 @@ export abstract class DiagramServerProxy extends ModelSource {
 
     protected handleRequestModel(action: RequestModelAction): boolean {
         const newOptions = {
-            needsClientLayout: this.viewerOptions.needsClientLayout,
-            needsServerLayout: this.viewerOptions.needsServerLayout,
+            microLayoutOnModelUpdate: this.viewerOptions.microLayoutOnModelUpdate,
+            serverLayoutOnModelUpdate: this.viewerOptions.serverLayoutOnModelUpdate,
             ...action.options
         };
         const newAction = {
@@ -185,11 +185,11 @@ export abstract class DiagramServerProxy extends ModelSource {
     }
 
     /**
-     * If the server requires to compute a layout, the computed bounds are forwarded. Otherwise they
+     * If `serverLayoutOnModelUpdate` is set, the computed bounds are forwarded to the server. Otherwise they
      * are applied to the current model locally and a model update is triggered.
      */
     protected handleComputedBounds(action: ComputedBoundsAction): boolean {
-        if (this.viewerOptions.needsServerLayout) {
+        if (this.viewerOptions.serverLayoutOnModelUpdate) {
             return true;
         } else {
             const root = this.currentRoot;

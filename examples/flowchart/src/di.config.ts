@@ -36,7 +36,7 @@ export default (containerId: string) => {
         const context = { bind, unbind, isBound, rebind };
 
         configureViewerOptions(context, {
-            needsClientLayout: true,
+            microLayoutOnModelUpdate: true,
         });
     });
 

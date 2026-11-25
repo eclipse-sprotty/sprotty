@@ -74,7 +74,7 @@ export default () => {
 
         // CRITICAL: Enable client-side layout for micro-layout to work
         configureViewerOptions(context, {
-            needsClientLayout: true,
+            microLayoutOnModelUpdate: true,
             baseDiv: 'sprotty'
         });
     });
