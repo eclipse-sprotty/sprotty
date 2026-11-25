@@ -232,6 +232,9 @@ const defaultTypes: ReadonlySet<string> = new Set(Object.keys(defaultElements())
 /**
  * Create a diagram that is ready to render, without writing a `ContainerModule`.
  *
+ * This API is experimental: its shape may still change in a minor release, without going through
+ * the usual deprecation cycle.
+ *
  * With no options the diagram warns to the console, takes its model from a `LocalModelSource`,
  * renders into the `sprotty` element, and knows the default element types. Pass options to add
  * element types, change the viewer or command stack options, swap the model source, raise or lower
@@ -255,6 +258,8 @@ const defaultTypes: ReadonlySet<string> = new Set(Object.keys(defaultElements())
  *
  * Styling is not part of the diagram. Import `sprotty/css/sprotty.css` and, for the default element
  * types to be visible, `sprotty/css/default-diagram.css`.
+ *
+ * @experimental
  */
 export function createSprottyDiagram<S extends ModelSource = LocalModelSource>(
         options: SprottyDiagramOptions<S> = {}): SprottyDiagram<S> {
