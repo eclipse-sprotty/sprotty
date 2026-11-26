@@ -116,10 +116,9 @@ export const clientLayoutModule = new ContainerModule(({bind, unbind, isBound, r
     // Bind model source
     bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
 
-    // Configure for client-side layout only
+    // Micro-layout only: no layout engine is bound
     configureViewerOptions(context, {
-        needsClientLayout: true,
-        needsServerLayout: false,
+        microLayoutOnModelUpdate: true,
         baseDiv: 'sprotty'
     });
 
@@ -164,10 +163,9 @@ export const serverLayoutModule = new ContainerModule(({bind, unbind, isBound, r
         )
     )).inSingletonScope();
 
-    // Configure for server-side layout only
+    // Layout engine only: ELK runs because it is bound above (LocalModelSource ignores serverLayoutOnModelUpdate)
     configureViewerOptions(context, {
-        needsClientLayout: false,
-        needsServerLayout: true,
+        microLayoutOnModelUpdate: false,
         baseDiv: 'sprotty'
     });
 
@@ -203,10 +201,9 @@ export const hybridLayoutModule = new ContainerModule(({bind, unbind, isBound, r
         )
     )).inSingletonScope();
 
-    // Configure for both client and server layout
+    // Micro-layout first, then ELK (bound above) positions the nodes using the measured bounds
     configureViewerOptions(context, {
-        needsClientLayout: true,
-        needsServerLayout: true,
+        microLayoutOnModelUpdate: true,
         baseDiv: 'sprotty'
     });
 

@@ -45,7 +45,7 @@ export default (nodeCreator: (point?: Point) => void) => {
         });
 
         configureViewerOptions(context, {
-            needsClientLayout: false
+            microLayoutOnModelUpdate: false
         });
     });
 

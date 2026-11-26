@@ -73,31 +73,31 @@ export class DiagramServer {
     }
 
     /**
-     * Whether the client needs to compute the layout of parts of the model. This affects the behavior
-     * of `submitModel`.
+     * Whether the client measures bounds and applies micro-layouts in a hidden rendering before the model
+     * is shown. This affects the behavior of `submitModel`.
      *
      * This setting is determined by the `DiagramOptions` that are received with the `RequestModelAction`
-     * from the client. If the client does not specify whether it needs client layout, the default value
+     * from the client. If the client does not specify `microLayoutOnModelUpdate`, the default value
      * is `true`.
      */
-    get needsClientLayout(): boolean {
-        if (this.state.options && this.state.options.needsClientLayout !== undefined) {
-            return !!this.state.options.needsClientLayout;
+    get microLayoutOnModelUpdate(): boolean {
+        if (this.state.options && this.state.options.microLayoutOnModelUpdate !== undefined) {
+            return !!this.state.options.microLayoutOnModelUpdate;
         }
         return true;
     }
 
     /**
-     * Whether the server needs to compute the layout of parts of the model. This affects the behavior
-     * of `submitModel`.
+     * Whether the layout engine is run automatically on each model update, using the bounds computed by
+     * the client if `microLayoutOnModelUpdate` is also set. This affects the behavior of `submitModel`.
      *
      * This setting is determined by the `DiagramOptions` that are received with the `RequestModelAction`
-     * from the client. If the client does not specify whether it needs server layout, the default value
+     * from the client. If the client does not specify `serverLayoutOnModelUpdate`, the default value
      * is `false`.
      */
-    get needsServerLayout(): boolean {
-        if (this.state.options && this.state.options.needsServerLayout !== undefined) {
-            return !!this.state.options.needsServerLayout;
+    get serverLayoutOnModelUpdate(): boolean {
+        if (this.state.options && this.state.options.serverLayoutOnModelUpdate !== undefined) {
+            return !!this.state.options.serverLayoutOnModelUpdate;
         }
         return false;
     }
@@ -199,8 +199,8 @@ export class DiagramServer {
      * Submit a model to the client after it has been updated in the server state.
      */
      protected async submitModel(newRoot: SModelRoot, update: boolean, cause?: Action): Promise<void> {
-        if (this.needsClientLayout) {
-            if (!this.needsServerLayout) {
+        if (this.microLayoutOnModelUpdate) {
+            if (!this.serverLayoutOnModelUpdate) {
                 // In this case the client won't send us the computed bounds
                 this.dispatch({ kind: RequestBoundsAction.KIND, newRoot });
             } else {
@@ -223,7 +223,7 @@ export class DiagramServer {
         if (newRoot.revision !== this.state.revision) {
             return;
         }
-        if (this.needsServerLayout && this.layoutEngine) {
+        if (this.serverLayoutOnModelUpdate && this.layoutEngine) {
             newRoot = await this.layoutEngine.layout(newRoot);
         }
         const modelType = newRoot.type;
@@ -251,7 +251,7 @@ export class DiagramServer {
         if (!this.layoutEngine) {
             return;
         }
-        if (!this.needsServerLayout) {
+        if (!this.serverLayoutOnModelUpdate) {
             let newRoot = cloneModel(this.state.currentRoot);
             newRoot = await this.layoutEngine.layout(newRoot);
             newRoot.revision = ++this.state.revision;

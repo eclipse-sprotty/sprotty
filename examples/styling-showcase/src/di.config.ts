@@ -65,7 +65,7 @@ export default () => {
         configureModelElement(context, 'label:text', SLabelImpl, SLabelView);
 
         configureViewerOptions(context, {
-            needsClientLayout: false,
+            microLayoutOnModelUpdate: false,
             baseDiv: 'sprotty'
         });
     });

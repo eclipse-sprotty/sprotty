@@ -20,7 +20,7 @@ export default (containerId: string) => {
         configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
 
         configureViewerOptions(context, {
-            needsClientLayout: false,
+            microLayoutOnModelUpdate: false,
             baseDiv: containerId
         });
     });

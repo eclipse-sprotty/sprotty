@@ -84,7 +84,7 @@ describe('LocalModelSource', () => {
     }
 
     it('sets the model in fixed mode', () => {
-        const container = setup({ needsClientLayout: false });
+        const container = setup({ microLayoutOnModelUpdate: false });
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
@@ -115,7 +115,7 @@ describe('LocalModelSource', () => {
     });
 
     it('requests bounds in dynamic mode', async () => {
-        const container = setup({ needsClientLayout: true });
+        const container = setup({ microLayoutOnModelUpdate: true });
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
@@ -187,7 +187,7 @@ describe('LocalModelSource', () => {
     });
 
     it('adds and removes elements', () => {
-        const container = setup({ needsClientLayout: false });
+        const container = setup({ microLayoutOnModelUpdate: false });
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
@@ -259,7 +259,7 @@ describe('LocalModelSource', () => {
     });
 
     it('resolves promises in fixed mode', async () => {
-        const container = setup({ needsClientLayout: false });
+        const container = setup({ microLayoutOnModelUpdate: false });
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 
@@ -280,7 +280,7 @@ describe('LocalModelSource', () => {
     });
 
     it('resolves promises in dynamic mode', async () => {
-        const container = setup({ needsClientLayout: true });
+        const container = setup({ microLayoutOnModelUpdate: true });
         const modelSource = container.get<LocalModelSource>(TYPES.ModelSource);
         const dispatcher = container.get<MockActionDispatcher>(TYPES.IActionDispatcher);
 

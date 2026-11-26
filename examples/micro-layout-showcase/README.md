@@ -29,7 +29,7 @@ This example demonstrates the micro-layout concepts in Sprotty, showing how to a
 
 ## Key Learning Points
 
-1. **Client-side Layout**: Micro-layout requires `needsClientLayout: true` in the DI configuration
+1. **Client-side Layout**: Micro-layout requires `microLayoutOnModelUpdate: true` in the DI configuration
 2. **Layout Property**: Any `SNode` or `SCompartment` can have a `layout` property (`vbox`, `hbox`, or `stack`)
 3. **Layout Options**: Fine-tune layouts with:
    - **Alignment**: `hAlign` and `vAlign` for positioning children
@@ -90,7 +90,7 @@ This example demonstrates the micro-layout concepts in Sprotty, showing how to a
 ```typescript
 // Essential: Enable client-side layout
 configureViewerOptions(context, {
-    needsClientLayout: true,    // Required for micro-layout
+    microLayoutOnModelUpdate: true,    // Required for micro-layout
     baseDiv: 'sprotty'
 });
 
@@ -119,7 +119,7 @@ document.querySelectorAll('input[name="layout"]').forEach(radio => {
 
 - `src/model.ts` - Interactive card model with layout properties
 - `src/views.tsx` - Custom views for cards and components
-- `src/di.config.ts` - DI configuration with `needsClientLayout: true`
+- `src/di.config.ts` - DI configuration with `microLayoutOnModelUpdate: true`
 - `src/standalone.ts` - Main application and interactive controls
 - `css/diagram.css` - Card and component styling
 - `css/page.css` - Page layout and control panel styling

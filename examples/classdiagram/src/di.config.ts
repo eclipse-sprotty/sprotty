@@ -111,7 +111,7 @@ export default (containerId: string) => {
 
 
         configureViewerOptions(context, {
-            needsClientLayout: true,
+            microLayoutOnModelUpdate: true,
             baseDiv: containerId
         });
     });
