@@ -17,13 +17,13 @@
 import { Hoverable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
-export const hoverFeedbackFeature = Symbol('hoverFeedbackFeature');
+export const hoverFeedbackFeature = Symbol.for('hoverFeedbackFeature');
 
 export function isHoverable(element: SModelElementImpl): element is SModelElementImpl & Hoverable {
     return element.hasFeature(hoverFeedbackFeature);
 }
 
-export const popupFeature = Symbol('popupFeature');
+export const popupFeature = Symbol.for('popupFeature');
 
 export function hasPopupFeature(element: SModelElementImpl): boolean {
     return element.hasFeature(popupFeature);

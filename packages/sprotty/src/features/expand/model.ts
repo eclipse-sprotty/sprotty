@@ -17,7 +17,7 @@
 import { Expandable } from 'sprotty-protocol';
 import { SModelElementImpl } from '../../base/model/smodel.js';
 
-export const expandFeature = Symbol('expandFeature');
+export const expandFeature = Symbol.for('expandFeature');
 
 export function isExpandable(element: SModelElementImpl): element is SModelElementImpl & Expandable {
     return element.hasFeature(expandFeature) && 'expanded' in element;
